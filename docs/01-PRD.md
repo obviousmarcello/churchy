@@ -4,8 +4,9 @@
 |---|---|
 | **Product** | Churchy — customizable website & internal workspace platform for Hungarian churches |
 | **Document** | Product Requirements Document |
-| **Version** | 1.3 (draft) |
+| **Version** | 1.4 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.4** | Delivery approach: hybrid frontend-first (clickable prototype first, security core in parallel, backend module by module); launch scope = MVP (P0). |
 | **Changes in 1.3** | All open questions resolved (§14): free tier + paid website plans with billing at launch (FR-405, FR-408), diocesan bulk deals at launch (FR-407), Barion for payments, neutral public domain + `churchy.hu` app domain (FR-108), presets reviewed by pilot churches' clergy. |
 | **Changes in 1.2** | Website (R1) and workspace (R2) are built **in parallel**. Resolved open questions (§14.1): flat per-church workspace pricing, no pre-loaded hymnal content, configurable payroll CSV, **diocesan HR portal in R2** (§6.11), one-way calendar feed at launch. |
 | **Changes in 1.1** | Added Release 2: the internal workspace (*Munkatér*) — internal calendars, room & resource booking, worship/music planning with attachments, volunteer rotas, HR request management (§6.6–6.10 and related sections). |
@@ -422,7 +423,8 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 - HR may be handled outside the parish by a diocesan or district office through the diocesan HR portal (§6.11).
 - The website has a **free tier** and a **paid plan** (FR-405). The workspace (R2) is an optional **flat-priced add-on per church** on the paid plan, tiered by number of workspace users (indicatively up to 50 / 150 / 300). Dioceses can buy **bulk deals** for their parishes (FR-407); diocesan HR portal pricing is part of that deal. Exact prices are a business decision outside this document.
 - Denomination presets are reviewed by the **clergy of the pilot churches**; pilots are recruited to cover Roman Catholic, Reformed, Lutheran and one free church.
-- Development is done by **Claude Code agents** under human product ownership and review (see deliverables §3.3).
+- Development is done by **Claude Code agents** under human product ownership and review, using a **hybrid frontend-first** approach: a clickable prototype with fictitious demo data is available from week 2–4, the security core is built in parallel, and the backend is switched on module by module (deliverables §3). No real personal data enters the system before the protecting backend is in place.
+- **Launch scope is the MVP** — all P0 requirements of both releases; P1/P2 follow after launch.
 
 ## 12. Future scope (post-v1)
 
@@ -470,4 +472,4 @@ All open questions have been resolved. Remaining business inputs (exact prices, 
 | 8 | Payroll export format | **Configurable CSV** with column mapping, Excel-friendly. |
 | 9 | Diocesan HR | **Full diocesan HR portal in R2** (§6.11). |
 | 10 | Calendar sync | **One-way personal feed at launch**; two-way sync stays P2. |
-| — | Delivery approach | R1 and R2 **in parallel**, built by **Claude Code agents** (deliverables §3). |
+| — | Delivery approach | R1 and R2 **in parallel**, built by **Claude Code agents**, **hybrid frontend-first** (prototype → backend slices), launch scope = MVP (deliverables §3). |

@@ -4,8 +4,9 @@
 |---|---|
 | **Product** | Churchy — customizable website & internal workspace platform for Hungarian churches |
 | **Document** | Solution Design Document |
-| **Version** | 1.3 (draft) |
+| **Version** | 1.4 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.4** | Hybrid frontend-first delivery: data-access layer with mock and DB adapters, demo mode and demo environment (§4.4), contract tests (§17), demo environment (§18), packages (§29), ADR-19. |
 | **Changes in 1.3** | Domain split: neutral public domain vs. `churchy.hu` app domain (§4.1, §11, §20); plans, billing (Barion + online invoicing) and diocesan bulk deals (§19.1–19.3); ADR-17, ADR-18. |
 | **Changes in 1.2** | Diocesan HR portal (§25.7, RLS extension in §4.2); workspace plan tiers (§20.1); hymnal catalog without content (§24.2); parallel build: unified `people`/`events` schema from day one (ADR-16). |
 | **Changes in 1.1** | Added Part B — internal workspace (*Munkatér*): §20–§28. Updated §1–§3, §8, §11, §17, §29 (repo), §30 (ADRs). |
@@ -68,7 +69,8 @@ flowchart LR
 | Object storage | S3-compatible in an EU region | Media and PDFs; signed URLs for private files. |
 | Image processing | **sharp** | Resize to AVIF/WebP + JPEG fallback, strip EXIF/GPS. |
 | Auth | **Auth.js** (email magic link + password) + TOTP (otplib) | Simple for elderly users (magic link); 2FA for admins (FR-309). |
-| Validation | **Zod** | Shared schemas for forms, API, config. |
+| Validation | **Zod** | Shared schemas for forms, API, config — and the data contract between UI and adapters (§4.4). |
+| Data access | Repository interfaces per module with a **mock adapter** (in-memory, demo data) and a **DB adapter** (Drizzle/Postgres), selected per module | Enables the frontend-first build: screens are built and demoed before the backend exists, then modules switch to the DB one by one (ADR-19). |
 | Email | Transactional provider with EU data residency, via SMTP/API adapter | Swappable. Templates in **React Email**, Hungarian. |
 | Reverse proxy / TLS | **Caddy** with on-demand TLS (ask-endpoint validates domain against DB) | Automatic Let's Encrypt certificates for custom domains (FR-108). |
 | CDN | EU-capable CDN in front of Caddy, caching public HTML and assets | Sunday-morning peaks (NFR-03). |
@@ -128,6 +130,42 @@ Implemented in Next.js middleware: host → `tenantId` lookup (cached in-memory 
 - Public pages are rendered with ISR and tagged `t:<tenantId>`, `t:<tenantId>:<module>`, `t:<tenantId>:<entity>:<id>`.
 - On publish/update, the app calls `revalidateTag` for the affected tags and purges the CDN by surrogate key.
 - The schedule pages and "next services" widget are additionally revalidated **hourly and at midnight Europe/Budapest** so "Ma / Holnap" labels stay correct without edits.
+
+### 4.4 Data-access layer, mock adapter & demo mode
+
+The product is built **frontend-first** (ADR-19): screens are built against a mock adapter first and switched to the database module by module. Three rules make this safe.
+
+**1. One data contract (`packages/contracts`)**
+
+```ts
+// every repository method receives an explicit context — the DB adapter maps it to RLS settings
+type Ctx = { tenantId?: string; orgId?: string; actor: Actor };
+
+interface AnnouncementRepo {
+  latest(ctx: Ctx): Promise<Announcement | null>;
+  byWeek(ctx: Ctx, sunday: IsoDate): Promise<Announcement | null>;
+  upsert(ctx: Ctx, input: AnnouncementInput): Promise<Announcement>;   // validated with Zod
+  publish(ctx: Ctx, id: Id, at?: IsoDateTime): Promise<void>;
+}
+```
+
+- Zod schemas define every entity and input; both adapters return the same shapes.
+- A **contract test suite** per repository runs against both adapters in CI (§17).
+- Adapters are selected **per module** (`DATA_ADAPTER_NEWS=db`, `DATA_ADAPTER_HR=mock`, …) through one registry; UI and server components only import interfaces (lint rule).
+
+**2. Real logic everywhere**
+
+The schedule engine, calendar, Hungarian formatting, permission policy `can()`, booking rules and leave calculation are pure packages used identically by both adapters. In the prototype the UI already hides and shows actions through `can()`; when a module switches to the DB adapter, the same policy is enforced server-side and by RLS.
+
+**3. Mock adapter & demo mode (`packages/data-mock`, demo environment)**
+
+- In-memory store per demo session, seeded with fictitious Hungarian demo data (3 churches, 1 diocese); *Visszaállítás* resets it.
+- Simulation switches: latency, booking conflicts, upload failures, offline, payment failure — so screens are built for real behaviour.
+- **Outbox viewer** (*Kimenő levelek*) renders emails and pushes with the real templates instead of sending them.
+- **Role switcher** with ≥ 10 personas (visitor to diocesan HR) replaces login in demo mode only; the build flag that enables it is **impossible to set in staging/production** (startup check).
+- Demo banner *„Bemutató — nem valós adatok”*, password protection, `noindex`, own domain, and **no** database, storage, email, push or payment credentials in the demo environment.
+
+**Security before real data:** a module may serve real users only after its DB adapter passes the contract tests *and* its security acceptance criteria: tenant isolation (§4.2), authentication (§13), and for requests, HR and diocesan access the encryption and access logging of §8.3, §25 and §28.
 
 ## 5. Customization model
 
@@ -566,6 +604,7 @@ sequenceDiagram
 | Performance | Home, schedule, news detail | Lighthouse CI, WebPageTest profile "Moto G / 4G" | Perf ≥ 90, LCP ≤ 2.5 s |
 | Load | Sunday peak simulation | k6 | 200 req/s, p95 < 500 ms uncached, error rate < 0.1 % |
 | Usability | Editors aged 55+, visitors | Moderated sessions (5 + 5) | NFR-10, G2 targets |
+| Contract (hybrid) | Every repository against **both** mock and DB adapters | Vitest contract suites | 100 % pass for every module switched to DB; mock always passes |
 | Concurrency (R2) | Room booking under parallel requests | Integration tests, 100 parallel conflicting inserts | Exactly 1 succeeds, 99 receive conflict |
 | Workflow (R2) | Plan, booking and HR state machines; approval chains; leave-day calculation | Vitest, table-driven | Every allowed and forbidden transition tested |
 | Offline (R2) | Stage view & downloaded plans | Playwright with network offline emulation | Plan + attachments open offline |
@@ -583,7 +622,7 @@ flowchart LR
     PRD --> MIG[Migrations: expand → deploy → contract]
 ```
 
-- **Environments:** local (Docker Compose: app, Postgres, MinIO, Mailpit, Caddy), staging, production.
+- **Environments:** local (Docker Compose: app, Postgres, MinIO, Mailpit, Caddy), **demo** (mock adapters only, no data stores or provider credentials, password-protected, reset daily — §4.4), staging, production.
 - **Runtime:** ≥ 2 app containers behind Caddy, 1 worker container; managed PostgreSQL with PITR and daily logical backups to separate EU storage (NFR-07); object storage with versioning.
 - **Migrations:** backwards-compatible expand/contract; zero-downtime.
 - **Monitoring:** uptime check per primary domain (sample-based for large fleets), error tracking, Postgres metrics, queue depth, TLS expiry alerts, purge-job heartbeat.
@@ -1108,7 +1147,9 @@ churchy/
 │  ├─ hu/                     # formatting: dates, names, addresses, accounts, slugs, a/az
 │  ├─ presets/                # denomination presets (terminology, modules, rites, forms)
 │  ├─ themes/                 # tokens + component variants
-│  ├─ db/                     # Drizzle schema, migrations, RLS policies
+│  ├─ contracts/              # Zod schemas + repository interfaces + contract tests
+│  ├─ data-mock/              # mock adapter, demo data, simulation switches
+│  ├─ db/                     # Drizzle schema, migrations, RLS policies, DB adapters
 │  ├─ policy/                 # permissions
 │  ├─ jobs/                   # worker handlers
 │  ├─ booking/                # room rules, conflict alternatives, series expansion
@@ -1144,3 +1185,4 @@ churchy/
 | ADR-16 | Unified `people` and `events` (with `calendar_id`, `visibility`) in the **initial** schema | Add workspace fields by migration later | R1 and R2 are built in parallel; a shared schema from day one avoids conflicting migrations between the two streams. |
 | ADR-17 | Neutral public domain for church sites; branded `churchy.hu` app domain for admin, workspace and portals | Branded subdomains for everything; white-label everything | Public sites look official and unbranded; public hosts are cookie-free by construction; one recognizable login domain for staff. |
 | ADR-18 | External Hungarian online-invoicing service + Barion | Build invoicing in-house; international billing SaaS | NAV reporting and Hungarian VAT rules handled by a specialist; Barion is local and also used for donations. |
+| ADR-19 | **Hybrid frontend-first** delivery: screens built against a contract-tested mock adapter, security core built in parallel, backend switched on module by module | Backend-first vertical slices; pure UI-first with security added at the end | Demos from week 2 and usability/clergy feedback 4–5 weeks earlier, for ≈ +23 pd; the contract tests prevent drift, and the security core is never deferred. |

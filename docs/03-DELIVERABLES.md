@@ -3,8 +3,9 @@
 | | |
 |---|---|
 | **Document** | Deliverables breakdown & acceptance criteria |
-| **Version** | 1.3 (draft) |
+| **Version** | 1.4 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.4** | **Hybrid frontend-first delivery** (§3): clickable prototype on a mock data adapter in W1–W4, security core built in parallel from W2, backend added module by module in slices S1–S7; launch scope = MVP (P0); new prototype deliverables D-90 … D-92 (§4); DoD #9–#11; sections renumbered (§5–§17). |
 | **Changes in 1.3** | Commercial deliverables for R1 GA: plans & free tier (D-87), billing with Barion & online invoicing (D-88), diocesan bulk deals (D-89); domain split in D-03/D-27; pilot clergy review presets (D-23, D-41); effort and agent allocation updated. |
 | **Changes in 1.2** | Parallel delivery of R1 and R2 by Claude Code agents (§3: streams, dependencies, agent team, timeline, scenarios, human roles); diocesan HR portal deliverables D-84 … D-86; workspace plan tiers; resolved PRD questions reflected in D-02, D-51, D-53, D-57, D-64, D-77, D-78. |
 | **Inputs** | [01-PRD.md](./01-PRD.md), [02-SDD.md](./02-SDD.md) |
@@ -22,6 +23,7 @@ This document splits the PRD requirements into **deliverables** — units of wor
 - **Estimate** — human-equivalent person-days (pd) for one full-stack engineer; converted to Claude Code agent capacity in §3.3.
 - **Priority** — inherited from the PRD, relative to its release (P0 = launch must-have, P1 = GA, P2 = post-GA).
 - **Release** — **R1** public website (M0–M4, M9), **R2** internal workspace *Munkatér* (M5–M8, M10).
+- **Milestones M0–M10 (§5–§15)** group deliverables by *feature area*. The *build order* follows the hybrid plan in §3: each deliverable's **UI part** is built in Phase A (MP0–MP2) and its **BE part** in a backend slice (S1–S7).
 
 ## 2. Global Definition of Done
 
@@ -35,156 +37,229 @@ Applies to every deliverable in addition to its own AC:
 6. Feature works on the three demo tenants (Catholic, Reformed, Baptist) where applicable — for R2 including their seeded workspace data (staff, volunteers, teams, rooms, songs, plans, HR categories).
 7. Docs updated (README/ADR/runbook) when behavior, config or operations change.
 8. (R2) New tenant-owned tables have RLS policies and are covered by the isolation suite (D-03); new sensitive fields are encrypted per SDD §8.3 / §28.
+9. **Both parts pass:** a deliverable is done only when its UI part *and* its BE part pass their acceptance criteria; progress is always reported per part (§3.1).
+10. **Security before real data:** no module is opened to real users or real personal data until its BE part, tenant isolation (D-03), authentication (D-04) and — for requests, HR and diocesan access — encryption and access logging pass (§3.7).
+11. **Contract tests:** every repository change keeps the mock and DB adapters passing the same contract suite (D-90).
 
-## 3. Delivery plan
+## 3. Delivery plan — hybrid frontend-first
 
-The website (R1) and the workspace (R2) are built **in parallel** by **Claude Code agents**, after a short shared foundation milestone. Effort is still given in human-equivalent person-days (pd) because that is the stable way to size work; §3.3 converts it into agent capacity and calendar time.
+**Decision (2026-11-13):** the website (R1) and the workspace (R2) are built **in parallel** by **Claude Code agents** using a **hybrid frontend-first** approach (SDD ADR-19):
 
-### 3.1 Milestones by stream
+1. **Phase A — Clickable prototype (W1–W4):** all launch-scope screens are built for real, running against a **mock data adapter** with Hungarian demo data and a role switcher, so the product can be demoed from week 2.
+2. **Phase B — Backend slices (W2–W8):** the mock adapter is replaced by the real database **one module at a time**. The **security core** (database, tenant isolation, authentication, server-side permissions, encryption) is built by a dedicated agent **from week 2, in parallel with Phase A** — it is never "added later".
+3. **Phase C — Hardening & pilots (W9–W15):** quality gates, pentest, pilots, launch.
 
-| Stream | Milestone | Goal | Deliverables | Exit criterion | Effort |
-|---|---|---|---|---|---|
-| Shared | **M0 — Foundations** | Multi-tenant skeleton, CI/CD, **shared schema incl. unified `people` and `events`** | D-01 … D-07 | Two tenants served from one deployment on staging with isolated data | 24 pd |
-| Website (R1) | **M1 — Public MVP** | A visitor can use a complete church site | D-08 … D-17 | Demo tenants pass the visitor E2E suite | 47 pd |
-| Website (R1) | **M2 — Admin & customization** | Non-technical editors can run and brand a site | D-18 … D-27 | Editor E2E suite passes; one church configured from zero via the admin | 50 pd |
-| Website (R1) | **M3 — Requests, compliance & commercial** | Pastoral requests, legal pages, privacy; plans, billing, diocesan bulk deals | D-28 … D-33, D-87 … D-89 | Security & privacy review signed off; a test church and a test diocese subscribe and pay end-to-end in sandbox | 40 pd |
-| Website (R1) | **M4 — Hardening & pilot (R1 GA)** | Quality bars met; real churches live | D-34 … D-41 | 5 pilot churches live ≥ 4 weeks; R1 gates green | 28 pd |
-| Workspace (R2) | **M5 — Workspace foundation** | People, teams, roles, Munkatér shell, notifications, PWA, plan tiers | D-51 … D-56 | Staff and volunteers of a demo tenant sign in, see *Ma*, receive push | 25 pd |
-| Workspace (R2) | **M6 — Calendars & rooms** | Shared internal calendars; conflict-free room booking | D-57 … D-62 | Calendar & booking E2E suites pass; concurrency test green | 30 pd |
-| Workspace (R2) | **M7 — Worship & rotas** | Music plans, song library, attachments, scheduling, stage view | D-63 … D-70 | A month of plans built, approved and played from stage view on a demo tenant | 40 pd |
-| Workspace (R2) | **M8 — HR, diocesan portal & R2 GA** | HR tickets, leave, confidential handling, **diocesan HR portal**; R2 gates; pilot | D-71 … D-78, D-84 … D-86 | 3 pilot churches (≥ 1 linked to a diocese) ≥ 6 weeks; R2 gates green | 51 pd |
-| Website (R1) | **M9 — Website v1.x** | R1 P1/P2 scope | D-42 … D-50 | Per deliverable | 45 pd |
-| Workspace (R2) | **M10 — Workspace v1.x** | R2 P1/P2 scope | D-79 … D-83 | Per deliverable | 20 pd |
+**Launch scope = the MVP:** all P0 deliverables and the P0 parts of mixed-priority deliverables. P1 deliverables of M0–M8 (D-40, D-56, D-62, D-69, D-70, D-75, D-76, D-77, D-86 and the P1 parts of D-29, D-59, D-61, D-64, D-67, D-72, D-73) move to the post-launch backlog together with M9 and M10.
 
-| Total | Effort |
+### 3.1 UI and BE parts of a deliverable
+
+Every deliverable is delivered in up to two parts:
+
+- **UI part** — screens and interactions working against the mock adapter: layout, Hungarian copy, validation, permission-dependent visibility (using the real `can()` policy), empty/error/loading states, accessibility.
+- **BE part** — the real adapter for that module (Postgres, storage, jobs, emails, external services) plus **all** acceptance criteria about persistence, security, server-side enforcement, performance on real data, concurrency and integrations.
+
+Acceptance criteria in §5–§15 apply to the part they concern: criteria about screens and interaction belong to the UI part; criteria about data, security, integrations and performance belong to the BE part. **A deliverable is done only when both parts pass** — "demo-complete" is not "done" (DoD #9). Pure-logic deliverables (D-05, D-06, D-09 and the calculation parts of D-64, D-73) have no mock: they are built for real in Phase A.
+
+### 3.2 Milestones
+
+| Milestone | Phase | Weeks | Content | Exit criterion |
+|---|---|---|---|---|
+| **MP0 — Prototype foundation** | A | W1 | D-01, D-90, D-91, D-92; real pure logic D-05 (policy), D-06 (Hungarian formatting), D-09 (schedule engine); design system & *Klasszikus* theme (UI of D-08); presets data (D-23) | Password-protected demo URL live with 3 demo churches + 1 diocese and the role switcher |
+| **MP1 — Public site demo** | A | W2 | UI of D-08 (3 themes), D-10 … D-17 | Public site of all 3 demo churches demoable in 3 themes on a phone |
+| **MP2 — Full product demo** | A | W3–W4 | UI of admin (D-18 … D-27), requests & legal (D-28, D-29, D-31, D-32), onboarding (D-34), commercial (D-87 … D-89), workspace (D-51 … D-55, D-57 … D-61, D-63 … D-68), HR (D-71 … D-74), diocesan portal (D-84, D-85) | Every launch-scope screen demoable for every persona; usability round 1 can start |
+| **S1 — Security core** | B | **W2–W4** (parallel to Phase A) | BE of D-02, D-03, D-04, D-07, D-30; server enforcement of D-05 | Isolation suite, auth, encryption green on staging |
+| **S2 — Website content** | B | W5–W6 | BE of D-08 … D-26 and D-34 (content, schedule, media, publishing, caching, appearance, users, onboarding) | Public sites served from the DB; publish visible ≤ 60 s |
+| **S3 — Pastoral requests & compliance** | B | W5–W6 | BE of D-28, D-29, D-31, D-32, D-33 | First real-data gate passed for requests |
+| **S4 — Workspace core** | B | W5–W7 | BE of D-51 … D-55, D-57 … D-61 | Booking concurrency test green; push delivered |
+| **S5 — Worship** | B | W6–W8 | BE of D-63 … D-68 | Attachments served only via signed URLs; plans persist |
+| **S6 — HR & diocese** | B | W7–W8 | BE of D-71 … D-74, D-84, D-85 | Confidential & diocesan isolation tests green |
+| **S7 — Commercial & domains** | B | W7–W8 | BE of D-27, D-87 … D-89 | Sandbox payment + invoice end-to-end |
+| **H — Hardening** | C | W9 | D-34 timed trials, D-35 … D-39, automated parts of D-78 | **Code-complete**; all launch gates except pilots green |
+| **R1 launch** | C | W10–W13 | D-41 (website pilot, 4 weeks) | **R1 GA end of W13** |
+| **R2 launch** | C | W10–W15 | D-78 (workspace pilot, 6 weeks) | **R2 GA end of W15** |
+| **Post-launch** | — | W14+ | P1 items listed above, M9, M10 | Per deliverable |
+
+### 3.3 Effort
+
+| Part | Effort |
 |---|---|
-| Shared foundation (M0) | 24 pd |
-| Website stream to R1 GA (M1–M4) | 165 pd |
-| Workspace stream to R2 GA (M5–M8) | 146 pd |
-| **Both releases to GA** | **≈ 335 pd** |
-| Post-GA enhancements (M9, M10) | 65 pd |
+| Phase A — prototype foundation + UI parts (incl. D-90 … D-92) | ≈ 125 pd |
+| Phase B — security core + BE parts (incl. ≈ 10 pd rework allowance) | ≈ 160 pd |
+| Phase C — hardening, pilots, launch gates | ≈ 35 pd |
+| **MVP total** | **≈ 320 pd** (backend-first MVP would be ≈ 297 pd) |
+| Post-launch backlog (P1 items of M0–M8, M9, M10) | ≈ 103 pd |
 
-### 3.2 Cross-stream dependencies
-
-Because the streams share one codebase and data model, a few deliverables are **sync points**. The foundation is designed so neither stream has to migrate the other's tables (SDD ADR-16).
+### 3.4 Cross-module dependencies
 
 ```mermaid
 flowchart LR
-    M0[M0 Foundations<br/>D-01…D-07<br/>shared schema, auth, RLS, policy, hu lib]
-    M0 --> D09[D-09 Schedule engine]
-    M0 --> D19[D-19 Media pipeline]
-    M0 --> D30[D-30 App-level encryption]
-    M0 --> D51[D-51 People & teams]
-    M0 --> D15[D-15 Public events]
-    D09 --> D58[D-58 Calendar layers]
-    D09 --> D61[D-61 Service room blocks]
-    D09 --> D63[D-63 Service occurrences]
-    D19 --> D65[D-65 Attachments]
-    D30 --> D71[D-71 HR tickets]
-    D71 --> D84[D-84…D-86 Diocesan portal]
-    M0 --> D89[D-89 Organizations & bulk deals]
-    D89 --> D84
-    D87[D-87 Plans & entitlements] --> D53[D-53 Workspace tiers]
-    M0 --> D87
-    D15 --> D57[D-57 Event visibility]
-    D51 --> D16[D-16 Public staff page]
+    MP0[MP0 Prototype foundation<br/>D-01, D-90 contract, D-91 mock, D-92 demo<br/>real logic: D-05, D-06, D-09]
+    MP0 --> MP1[MP1 Public site UI]
+    MP0 --> MP2[MP2 Admin, workspace, HR, portal UI]
+    MP0 --> S1[S1 Security core<br/>D-02, D-03, D-04, D-07, D-30]
+    S1 --> S2[S2 Website content BE]
+    S1 --> S3[S3 Requests BE]
+    S1 --> S4[S4 Workspace core BE]
+    S4 --> S5[S5 Worship BE]
+    S3 --> S6[S6 HR & diocese BE]
+    S4 --> S6
+    S1 --> S7[S7 Commercial & domains BE]
+    MP1 --> S2
+    MP2 --> S4
+    S2 & S3 & S5 & S6 & S7 --> H[H Hardening]
 ```
 
-Scheduling rules that follow from this:
+Rules:
 
-1. In the website stream, **D-09 (schedule engine)**, **D-19 (media)**, **D-30 (encryption)** and **D-87 (plans & entitlements)** are pulled to the front, because the workspace stream depends on them. D-30 and D-87 are built right after M0, ahead of the rest of M3. **D-89** (organizations) must be merged before D-84 starts.
-2. In the workspace stream, M5 starts first (no website dependencies); M6/M7 start once D-09 is merged.
-3. `packages/ui` components for the admin shell (D-18) and the workspace shell (D-53) are owned by the website stream; the workspace stream consumes them and contributes additions through reviewed PRs.
+1. The **data contract (D-90)** is fixed in W1 and changed only through reviewed PRs; mock and DB adapters must both pass its contract tests, so screens don't need rework when a module switches to the database.
+2. A BE slice starts only after the UI of that module is accepted in a demo — feedback is incorporated before the backend hardens.
+3. `packages/ui` and the design system are owned by the lead agent in MP0; other agents contribute through reviewed PRs.
 
-### 3.3 Claude Code agent team
+### 3.5 Claude Code agent team
 
-| Agent | Count | Responsibility |
-|---|:-:|---|
-| **Lead / orchestrator** | 1 | Keeps the backlog from this document, assigns deliverables following §3.2, owns `CLAUDE.md` conventions and shared packages, merges and resolves conflicts on `main`, re-estimates after each milestone. |
-| **Website stream** | 2 | M1–M4, then M9. |
-| **Workspace stream** | 3 | M5–M8 incl. the diocesan portal, then M10. In W8–W9 one workspace agent moves to the website stream to build D-88/D-89 (the workspace stream has slack). |
-| **QA & review** | 1 | First-pass review of every PR against its acceptance criteria, owns E2E/visual/a11y/performance/load suites, seed data and test fixtures. |
-| **Peak total** | **7** | 3 during M0 (lead + 2 builders), 7 during the parallel build, 3–4 during pilots and enhancements. |
+| Weeks | Lead / orchestrator | UI agents | Backend agents | QA & review | **Total** |
+|---|:-:|:-:|:-:|:-:|:-:|
+| W1 (MP0) | 1 | 2 | — | — | **3** |
+| W2–W4 (MP1, MP2, S1) | 1 | 4 | 1 (security core) | 1 | **7** |
+| W5–W8 (S2–S7) | 1 | 1 (demo feedback, UI fixes) | 4 | 1 | **7** |
+| W9 (Hardening) | 1 | 1 | 3 | 1 | **6** |
+| W10–W15 (pilots, post-launch backlog) | 1 | 1 | 1 | 1 | **3–4** |
 
-**Why 7, not more:** the dependency graph rarely has more than 6–8 deliverables that can run independently; more agents increase merge conflicts in shared packages; and every merge still needs human approval — at 7 agents expect roughly **6–10 PRs per working day**, which is about the limit of one human reviewer.
+**Responsibilities**
 
-**Working model**
+- **Lead:** backlog from this document, assignment along §3.4, `CLAUDE.md`, design system and shared packages, merges.
+- **UI agents:** screens per deliverable against the mock adapter; in Phase B, feedback fixes and wiring.
+- **Backend agents:** the security core, then one slice at a time; each slice switches its modules from the mock to the DB adapter.
+- **QA & review:** first-pass review of every PR against its acceptance criteria; contract, E2E, visual, a11y, performance and load suites; demo data.
 
-- One deliverable = one branch in its own git worktree = one PR (deliverables > 5 pd are split into 2–3 PRs). The deliverable's acceptance criteria are copied into the PR as a checklist.
-- The CI gates (§2) are the objective Definition of Done; an agent can't mark a deliverable done while any gate is red.
-- The QA agent reviews first; a human approves every merge. Security-sensitive PRs (auth, RLS, encryption, HR, diocesan access, payments) need a **second, human technical review**.
-- Agents don't have production credentials; deployments to production are human-approved (D-01 AC3).
+**Capacity check (expected case, 2 pd per agent-day):**
 
-**Throughput assumption:** **1 agent-day ≈ 2 human-pd** of finished, reviewed work on well-specified deliverables (plausible range 1–3 pd). This is the biggest uncertainty in the plan: measure it during M0 (pd completed ÷ agent-days) and re-plan from week 3.
+- **Phase A UI:** ≈ 125 pd needed. W1 gives 2 agents × 5 days × 2 = 20 pd; W2–W4 give 4 agents × 15 days × 2 = 120 pd; so 140 pd of capacity.
+- **Security core:** ≈ 21 pd needed. 1 agent × 15 days × 2 gives 30 pd.
+- **Phase B slices:** ≈ 139 pd needed. 4 agents × 20 days × 2 gives 160 pd.
 
-### 3.4 Timeline
+**Working model** (unchanged):
 
-Expected case (2 pd per agent-day); week 1 = project start. Capacity check for weeks 3–9 (35 working days):
+- One deliverable part = one branch/worktree = one PR, with its acceptance criteria as a checklist.
+- CI gates are the Definition of Done.
+- The QA agent reviews first; a human approves every merge.
+- A second human reviews security-sensitive PRs: auth, RLS, encryption, HR, diocesan access, payments.
+- Agents have no production credentials.
 
-- **Workspace stream:** ≈ 140 pd of build (M5–M8 without the gate deliverable D-78). 3 agents for W3–W7 give 150 pd and 2 agents for W8–W9 give 40 pd, so 190 pd of capacity.
-- **Website stream:** 137 pd of build (M1–M3). 2 agents for W3–W9 give 140 pd, plus 1 borrowed agent for W8–W9 gives 20 pd, so 160 pd of capacity.
+**Throughput assumption:** 1 agent-day ≈ 2 human-pd (range 1–3). Measure it during MP0–MP1 and re-plan at the end of W2.
 
-Both streams fit, with roughly 15–35 % slack for integration and rework.
+### 3.6 Timeline
 
-| Weeks | Phase | Agents | Human & external work (critical path) |
-|---|---|:-:|---|
-| W1–W2 | **M0** shared foundation | 3 | Hosting (EU), **choose & register the neutral public domain**, `churchy.hu` DNS, email provider, GitHub & secrets; open Barion and invoicing-service accounts; set indicative prices; approve schema; **book** lawyer and pentest firm; recruit pilot churches covering **Roman Catholic, Reformed, Lutheran and a free church** (their clergy review the presets) and a pilot diocese for the bulk deal |
-| W3–W9 | **Parallel build** — website M1–M3 (incl. commercial D-87…D-89); workspace M5–M7 and M8 build items (D-71…D-77, D-84…D-86) | 7 | Daily PR approval; theme design sign-off (W4–W6); lawyer reviews legal, employee and volunteer privacy templates, retention defaults and terms of service (W4–W8); pilot clergy review presets (W5–W8) |
-| W10–W11 | **Hardening** — D-34…D-40 and D-78's automated parts; fixes | 5–7 | Usability studies for both releases; external pentest of website + workspace + diocesan portal; restore drill sign-off |
-| W12–W15 | **R1 pilot** (5 churches, 4 weeks) → **R1 GA end of W15** | 3–4 | Pilot support, go/no-go decision |
-| W12–W17 | **R2 pilot** (3 churches incl. one diocese link, 6 weeks) → **R2 GA end of W17** | (same) | Pilot support, go/no-go decision |
-| W16–W20 | **M9 + M10** enhancements | 3–4 | Prioritize based on pilot feedback |
+| Weeks | Phase | Human & external work |
+|---|---|---|
+| W1 | MP0 | Open accounts (EU hosting, demo domain e.g. `demo.churchy.hu`, `churchy.hu` + neutral domain, email, Barion & invoicing test accounts); set indicative prices; recruit pilot churches (RC, Reformed, Lutheran, free church) and a pilot diocese; book lawyer and pentest |
+| W2 | MP1 + S1 starts | **First demo**: public site to pilot candidates and the pilot diocese |
+| W3–W4 | MP2 + S1 | Pilot clergy review presets **on the prototype** (W3–W5); full-product demo to the diocese (bulk deal); lawyer starts on legal templates |
+| W4–W5 | S1 → S2 … | **Usability round 1 on the prototype** (editors, visitors, volunteers, worship leaders, HR handlers) |
+| W5–W8 | S2 … S7 | Daily PR approval; lawyer review of privacy notices, retention defaults, terms (until W8) |
+| W8–W9 | S7 → H | External pentest (website + workspace + diocesan portal); restore drill; usability round 2 (short confirmation) |
+| W10–W13 | R1 pilot | 5 churches incl. ≥ 2 via the diocesan bulk deal → **R1 GA end of W13** |
+| W10–W15 | R2 pilot | 3 churches incl. 1 diocesan link → **R2 GA end of W15** |
 
 ```mermaid
 gantt
-    title Churchy — parallel delivery with Claude Code agents (expected case)
+    title Churchy — hybrid frontend-first delivery (expected case)
     dateFormat  YYYY-MM-DD
     axisFormat  W%W
-    section Shared
-    M0 Foundations (3 agents)          :m0, 2027-01-04, 2w
-    section Website R1 (2 agents)
-    M1–M3 build                        :w1, after m0, 7w
-    M4 hardening                       :w2, after w1, 2w
-    R1 pilot (5 churches)              :w3, after w2, 4w
-    R1 GA                              :milestone, after w3, 0d
-    M9 enhancements                    :w4, after w3, 5w
-    section Workspace R2 (3 agents)
-    M5–M8 build incl. diocesan portal  :r1, after m0, 7w
-    R2 hardening (D-78)                :r2, after r1, 2w
-    R2 pilot (3 churches + diocese)    :r3, after r2, 6w
-    R2 GA                              :milestone, after r3, 0d
-    M10 enhancements                   :r4, after r3, 3w
-    section QA & review (1 agent)
-    Test suites, first-pass review     :q1, after m0, 15w
+    section Phase A — prototype
+    MP0 Prototype foundation           :mp0, 2027-01-04, 1w
+    MP1 Public site demo               :mp1, after mp0, 1w
+    MP2 Full product demo              :mp2, after mp1, 2w
+    Demo-ready (public site)           :milestone, after mp1, 0d
+    Demo-ready (everything)            :milestone, after mp2, 0d
+    section Phase B — backend
+    S1 Security core (parallel)        :s1, after mp0, 3w
+    S2 Website content                 :s2, after s1, 2w
+    S3 Requests & compliance           :s3, after s1, 2w
+    S4 Workspace core                  :s4, after s1, 3w
+    S5 Worship                         :s5, after s3, 3w
+    S6 HR & diocese                    :s6, after s3, 2w
+    S7 Commercial & domains            :s7, after s3, 2w
+    section Phase C — launch
+    Hardening (code-complete)          :h, after s5, 1w
+    R1 pilot (4 weeks)                 :p1, after h, 4w
+    R1 GA                              :milestone, after p1, 0d
+    R2 pilot (6 weeks)                 :p2, after h, 6w
+    R2 GA                              :milestone, after p2, 0d
 ```
 
 **Scenarios**
 
-| Scenario | Agent throughput | Build phase | R1 GA | R2 GA |
-|---|---|---|---|---|
-| Optimistic | 3 pd / agent-day | ~5 weeks | ~W13 (≈ 3 months) | ~W15 (≈ 3.5 months) |
-| **Expected** | **2 pd / agent-day** | **~7 weeks** | **~W15 (≈ 3.5 months)** | **~W17 (≈ 4 months)** |
-| Conservative | 1 pd / agent-day | ~13 weeks | ~W21 (≈ 5 months) | ~W23 (≈ 5.5 months) |
+| Scenario | Agent throughput | Full demo | Code-complete | R1 GA | R2 GA |
+|---|---|---|---|---|---|
+| Optimistic | 3 pd / agent-day | ~W3 | ~W7 | ~W11 | ~W13 |
+| **Expected** | **2 pd / agent-day** | **~W4** | **~W9** | **~W13** | **~W15** |
+| Conservative | 1 pd / agent-day | ~W7 | ~W15 | ~W19 | ~W21 |
 
-Even in the optimistic case, **about half the calendar time is not coding**: reviews by the lawyer and the pilot clergy, usability studies, the pentest and the 4- and 6-week pilots. Booking those early (W1–W2) is what keeps the dates.
+From W9 onward the dates are set by people, not agents: the pentest, the lawyer and the 4- and 6-week pilots. The prototype helps here: demos from W2 speed up pilot recruitment and the diocesan deal, and the clergy review and first usability round move 4–5 weeks earlier than in a backend-first plan.
 
-### 3.5 Human roles still required
+### 3.7 Rules for the hybrid approach
+
+| # | Rule | Enforced by |
+|---|---|---|
+| 1 | **Contract first** — data types and repository interfaces fixed in W1; mock and DB adapters pass the same contract tests. | D-90; CI |
+| 2 | **Real logic from day one** — schedule engine, permissions, leave and booking rules, Hungarian formatting are never mocked. | D-05, D-06, D-09; code review |
+| 3 | **The prototype uses the real permission policy** — the server later enforces the same `can()` code. | D-05; policy tests |
+| 4 | **No real personal data in the prototype** — demo banner, password protection, `noindex`, separate demo domain, no outbound email/push/payments. | D-92 |
+| 5 | **Security before real data** — a module accepts real users only after its BE part passes, including tenant isolation, auth and (for requests, HR, diocesan access) encryption and access logging. | DoD #10; §17 gate |
+| 6 | **Demo-complete ≠ done** — progress is reported per part (UI / BE); a deliverable counts as done only when both parts pass. | DoD #9; status reporting |
+| 7 | **Fake the hard parts honestly** — the mock simulates latency, booking conflicts, upload failures, offline and email sending, so screens handle real behaviour. | D-91 |
+
+### 3.8 Human roles still required
 
 | Role | Involvement |
 |---|---|
-| **Product owner (you)** | Prioritization, answers to product questions, acceptance of milestones, approval of PRs — about 2–3 hours per working day during the build phase. |
-| **Second technical reviewer** (strongly recommended) | Reviews security-sensitive PRs (auth, RLS, encryption, HR, diocesan access); a few hours per week. |
-| **Hungarian data-protection / employment lawyer** | Privacy notices, Impresszum template, HR retention defaults, processing agreement (D-31, D-78). |
-| **Pilot churches' clergy** (Roman Catholic, Reformed, Lutheran, free church) | Review their denomination's preset terminology, rites and plan templates (D-23, D-66). Greek Catholic, Unitarian and general presets ship as *béta* until a reviewer is found. |
-| **Penetration testing firm** | One combined test of website, workspace and diocesan portal (D-37, D-78). |
-| **Usability participants** | 5 editors (55+), 5 visitors, 5 volunteers, 3 worship leaders, 3 HR handlers (D-38, D-78). |
-| **Pilot partners** | 5 churches for R1, 3 of them also for R2, and 1 diocese/district office that also tests the bulk deal (D-41, D-78, D-89). |
-| **Business decisions** | Indicative prices for *Teljes*, workspace tiers and diocesan deals; terms of service; the neutral domain name. |
-| **Accounts & credentials** | EU hosting, managed Postgres, object storage, email provider, neutral domain + `churchy.hu` DNS, error tracking, **Barion** (sandbox + live), **online invoicing service** (test + live, connected to NAV). |
+| **Product owner (you)** | Demos and feedback triage (W2–W5), prioritization, milestone acceptance, PR approvals — about 2–3 hours per working day. |
+| **Second technical reviewer** (strongly recommended) | Security-sensitive PRs, mostly in S1, S3, S6, S7. |
+| **Hungarian data-protection / employment lawyer** | Privacy notices, Impresszum, HR retention defaults, terms of service, processing agreement (D-31, D-78). |
+| **Pilot churches' clergy** (Roman Catholic, Reformed, Lutheran, free church) | Review their preset on the prototype (D-23, D-66). Greek Catholic, Unitarian and general presets ship as *béta* until reviewed. |
+| **Penetration testing firm** | One combined test in W8–W9 (D-37, D-78). |
+| **Usability participants** | Round 1 on the prototype (W4–W5), short round 2 in W9: 5 editors (55+), 5 visitors, 5 volunteers, 3 worship leaders, 3 HR handlers (D-38, D-78). |
+| **Pilot partners** | 5 churches for R1, 3 of them also for R2, and 1 diocese that also tests the bulk deal (D-41, D-78, D-89). |
+| **Business decisions** | Indicative prices; terms of service; neutral domain name. |
+| **Accounts & credentials** | EU hosting, managed Postgres, object storage, email provider, demo domain, neutral domain + `churchy.hu` DNS, error tracking, Barion (sandbox + live), online invoicing service (test + live). |
 
 ---
 
-## 4. M0 — Foundations
+## 4. MP — Prototype foundation
+
+### D-90 Data contract & data-access layer
+- **Traces:** NFR-11, G4 · SDD §4.4 · **Priority:** P0 · **Est.:** 4 pd
+- **AC:**
+  1. Zod schemas and TypeScript types for **100 %** of launch-scope entities, and one repository interface per module (e.g. `ScheduleRepo`, `AnnouncementRepo`, `BookingRepo`, `HrTicketRepo`), every method taking an explicit tenant/organization context.
+  2. A contract test suite per repository; the mock adapter (D-91) passes 100 % of it in W1, and every DB adapter must pass 100 % before its slice is done.
+  3. Adapter selection **per module** by configuration (`DATA_ADAPTER_<MODULE>=mock|db`); UI code never imports an adapter directly (lint rule).
+  4. Switching the *news* module from mock to DB in S2 requires **0 changes** in UI code (verified in the S2 PR diff).
+- **Verification:** CI contract tests; lint; S2 diff review.
+
+### D-91 Mock adapter & Hungarian demo data
+- **Traces:** SDD §4.4 · **Priority:** P0 · **Est.:** 6 pd
+- **AC:**
+  1. In-memory adapter implementing all repositories, isolated per demo session; a *Visszaállítás* (reset) action restores the seed data.
+  2. Demo data: 3 churches (Catholic with 2 locations, Reformed, Baptist) and 1 diocese, each with full schedules incl. seasonal periods and exceptions, ≥ 10 news, ≥ 15 events, 4 weeks of announcements, ≥ 6 staff, ≥ 30 volunteers, ≥ 5 teams, ≥ 4 rooms, ≥ 40 songs, ≥ 8 service plans, ≥ 10 HR tickets across categories — all realistic Hungarian content and **entirely fictitious people**.
+  3. Simulation switches: latency (0–2,000 ms), booking conflicts, upload failure, offline, payment failure — each used by at least one E2E test.
+  4. *Kimenő levelek* (outbox) viewer shows every email/push that would have been sent, rendered with the real templates.
+- **Verification:** contract tests; E2E with simulation switches.
+
+### D-92 Demo mode & demo deployment
+- **Traces:** C-03, C-04, NFR-06 · SDD §4.4, §18 · **Priority:** P0 · **Est.:** 3 pd
+- **AC:**
+  1. Role switcher with **≥ 10 personas**: *Látogató, Tulajdonos, Szerkesztő, Iroda, Plébános/Vezető, Önkéntes, Zenei vezető, Teremfelelős, HR-felelős, Egyházmegyei HR*; switching takes ≤ 2 clicks and changes menus and permissions via the real `can()`.
+  2. Banner *„Bemutató — nem valós adatok”* on **100 %** of demo routes (automated test).
+  3. Demo deployment is password-protected, `noindex`, on its own domain, and has **no** database, storage, email, push or payment credentials (configuration check in CI); 0 outbound calls to such providers (network test).
+  4. Demo redeploys automatically from `main` and resets daily.
+- **Verification:** E2E, CI configuration check, network test.
+
+---
+
+## 5. M0 — Foundations
+
+> **Hybrid build order:** D-01, D-05 and D-06 are built in MP0 (W1); D-02, D-03, D-04 and D-07 form the **security core S1**, built in parallel from W2 (§3.2).
 
 ### D-01 Repository, tooling & CI pipeline
 - **Traces:** NFR-05, NFR-11 · SDD §3, §18, §29 · **Priority:** P0 · **Est.:** 3 pd
@@ -245,7 +320,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 5. M1 — Public MVP
+## 6. M1 — Public MVP
 
 ### D-08 Theme system & first theme (*Klasszikus*)
 - **Traces:** FR-103, FR-104, NFR-04 · SDD §5.4, §16 · **Priority:** P0 · **Est.:** 6 pd
@@ -338,7 +413,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 6. M2 — Admin & customization
+## 7. M2 — Admin & customization
 
 ### D-18 Admin shell, navigation & dashboard
 - **Traces:** FR-301, FR-302 · SDD §11.1–11.2 · **Priority:** P0 · **Est.:** 5 pd
@@ -429,7 +504,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 7. M3 — Pastoral requests, compliance & commercial
+## 8. M3 — Pastoral requests, compliance & commercial
 
 ### D-28 Request forms (form definitions)
 - **Traces:** FR-201, FR-205 · SDD §7.4, §12 · **Priority:** P0 · **Est.:** 5 pd
@@ -513,7 +588,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 8. M4 — Hardening & pilot (GA)
+## 9. M4 — Hardening & pilot (GA)
 
 ### D-34 Onboarding wizard & checklist
 - **Traces:** FR-401, FR-402, G1 · SDD §19 · **Priority:** P0 · **Est.:** 5 pd
@@ -552,7 +627,8 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
   1. 5 editors aged 55+: **≥ 4/5** upload weekly announcements unassisted in ≤ 3 min; **≥ 4/5** add a schedule exception unassisted in ≤ 5 min.
   2. 5 visitors: **≥ 90 %** find the next service time in ≤ 10 s on a phone.
   3. All severity-1 usability issues fixed before GA.
-- **Verification:** moderated usability study report.
+  4. **Round 1 runs on the prototype** in W4–W5 (all personas incl. workspace); its severity-1 findings are fixed in the UI before the affected module's BE slice starts. Round 2 in W9 is a short confirmation on the real system.
+- **Verification:** moderated usability study reports (round 1 and 2).
 
 ### D-39 Backups, restore & runbooks
 - **Traces:** NFR-02, NFR-07 · SDD §18 · **Priority:** P0 · **Est.:** 3 pd
@@ -580,7 +656,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 9. M5 — Workspace foundation (R2)
+## 10. M5 — Workspace foundation (R2)
 
 ### D-51 Unified people & teams model, directory
 - **Traces:** FR-502, FR-503, FR-009, G10 · SDD §21.1 · **Priority:** P0 · **Est.:** 5 pd
@@ -637,7 +713,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 10. M6 — Calendars & rooms (R2)
+## 11. M6 — Calendars & rooms (R2)
 
 ### D-57 Unified events with calendars & visibility
 - **Traces:** FR-601, FR-602, FR-609 · SDD §22.1 · **Priority:** P0 · **Est.:** 5 pd
@@ -693,7 +769,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 11. M7 — Worship & rotas (R2)
+## 12. M7 — Worship & rotas (R2)
 
 ### D-63 Service occurrence materialization
 - **Traces:** FR-801, FR-603 · SDD §24.1 · **Priority:** P0 · **Est.:** 3 pd
@@ -764,7 +840,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 12. M8 — HR, diocesan portal & R2 GA (R2)
+## 13. M8 — HR, diocesan portal & R2 GA (R2)
 
 ### D-71 HR categories, submission & ticket lifecycle
 - **Traces:** FR-901 … FR-903, G9 · SDD §25.1–25.2 · **Priority:** P0 · **Est.:** 7 pd
@@ -863,7 +939,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 13. M9 — Website v1.x enhancements (R1, post-GA)
+## 14. M9 — Website v1.x enhancements (R1, post-GA)
 
 | ID | Deliverable | Traces | Pri. | Est. | Key measurable acceptance criteria |
 |---|---|---|---|---|---|
@@ -879,7 +955,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 14. M10 — Workspace v1.x enhancements (R2, post-GA)
+## 15. M10 — Workspace v1.x enhancements (R2, post-GA)
 
 | ID | Deliverable | Traces | Pri. | Est. | Key measurable acceptance criteria |
 |---|---|---|---|---|---|
@@ -891,7 +967,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 
 ---
 
-## 15. Traceability matrix (PRD → deliverables)
+## 16. Traceability matrix (PRD → deliverables)
 
 | PRD requirement(s) | Deliverable(s) |
 |---|---|
@@ -908,6 +984,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 | FR-014, FR-022 | D-46 |
 | FR-015, FR-023, FR-109 | D-13, D-17 |
 | FR-016, FR-406 | D-50 |
+| NFR-11, G4 (delivery approach) | D-90, D-91, D-92 |
 | FR-405 | D-87 |
 | FR-407 | D-89 |
 | FR-408, C-13 | D-88 |
@@ -985,7 +1062,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 | C-11 | D-74 |
 | C-12 | D-76 |
 
-## 16. Quality gates (summary checklist)
+## 17. Quality gates (summary checklist)
 
 ### 16.1 R1 GA — public website
 
@@ -1001,6 +1078,8 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 | Onboarding | 3/3 churches live in ≤ 2 h active work | D-34 |
 | Pilot | 5 churches, ≥ 4 weeks, uptime ≥ 99.9 % | D-41 |
 | Reviews | Pilot-clergy preset sign-offs + legal review complete | D-23, D-31 |
+| Real-data gate | Per module: BE part, isolation, auth (+ encryption & access logging for sensitive modules) pass before real users | DoD #10 |
+| Demo isolation | Demo deployment has no production credentials; 0 outbound provider calls | D-92 |
 | Commercial | Card + transfer payment and invoice issuance pass in sandbox; diocesan bulk deal with ≥ 2 pilot parishes live | D-88, D-89, D-41 |
 
 ### 16.2 R2 GA — internal workspace (*Munkatér*)
