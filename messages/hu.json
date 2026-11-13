@@ -1,0 +1,12 @@
+{
+  "common": {
+    "appName": "Churchy",
+    "skipToContent": "Ugrás a tartalomra"
+  },
+  "public": {
+    "home": {
+      "placeholderTitle": "Isten hozta!",
+      "placeholderLead": "A Churchy prototípus hamarosan itt lesz."
+    }
+  }
+}

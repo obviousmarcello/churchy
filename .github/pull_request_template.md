@@ -1,6 +1,7 @@
 ## Deliverable
 
 <!-- e.g. D-05 [Logic] Permission policy module — closes #NN -->
+
 - Deliverable / part:
 - Closes:
 - Docs: `docs/03-DELIVERABLES.md` §…, `docs/02-SDD.md` §…

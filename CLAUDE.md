@@ -3,15 +3,15 @@
 Churchy is a hosted, multi-tenant platform for Hungarian churches. It has two releases built in parallel:
 
 - **R1 — public website** for each church: service schedule, announcements, news, events, rites, giving, and an admin.
-- **R2 — internal workspace (*Munkatér*)**: calendars, room booking, worship planning, HR requests, and a diocesan HR portal.
+- **R2 — internal workspace (_Munkatér_)**: calendars, room booking, worship planning, HR requests, and a diocesan HR portal.
 
 The source of truth is in `docs/`:
 
-| Doc | Use it for |
-|---|---|
-| `docs/01-PRD.md` | *What* and *why* — requirement IDs `FR-…`, `NFR-…`, `L-…`, `C-…` |
-| `docs/02-SDD.md` | *How* — architecture, data model, security design, ADRs |
-| `docs/03-DELIVERABLES.md` | *What to build next* — deliverables `D-xx` with acceptance criteria, the hybrid delivery plan (§3) and the Definition of Done (§2) |
+| Doc                       | Use it for                                                                                                                         |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/01-PRD.md`          | _What_ and _why_ — requirement IDs `FR-…`, `NFR-…`, `L-…`, `C-…`                                                                   |
+| `docs/02-SDD.md`          | _How_ — architecture, data model, security design, ADRs                                                                            |
+| `docs/03-DELIVERABLES.md` | _What to build next_ — deliverables `D-xx` with acceptance criteria, the hybrid delivery plan (§3) and the Definition of Done (§2) |
 
 Read the deliverable's section and the SDD sections it traces to **before** starting work. If the docs and this file disagree, the docs win; flag the conflict in your PR.
 
@@ -45,29 +45,29 @@ The plan is in `docs/03-DELIVERABLES.md` §3.
 
 - **Product UI is Hungarian only.**
   - All user-visible strings live in `messages/hu.json`; no hard-coded UI text in components (lint rule).
-  - Use the formal address (*Ön*).
+  - Use the formal address (_Ön_).
 - **Code, comments, commit messages, PRs and issues are in English.** Hungarian domain terms are fine in identifiers when there is no good English equivalent (e.g. `miserend` in a URL slug).
 - Locale `hu-HU`, timezone **`Europe/Budapest`** for all date logic (never the server timezone). Weeks start on **Monday**.
 - Always use `packages/hu` for:
   - dates (`2026. november 12., csütörtök`), times (`18:00`)
   - names (family name first), addresses (`1011 Budapest, Fő utca 1.`), phones (`+36 30 123 4567`), bank accounts (8-8-8)
-  - slugs (no diacritics), and the article *a/az*
+  - slugs (no diacritics), and the article _a/az_
 - **Sorting:** Hungarian collation (`Intl.Collator('hu')` / Postgres `hu-HU-x-icu`).
-- **Generated text:** never suffix user-provided names. Denomination terminology comes from presets (`t.term('serviceSchedule')`), never hard-coded — a Reformed church has no *szentmise*.
+- **Generated text:** never suffix user-provided names. Denomination terminology comes from presets (`t.term('serviceSchedule')`), never hard-coded — a Reformed church has no _szentmise_.
 - **Music:** Hungarian H/B notation by default.
 
 ## Stack (SDD §3)
 
-| Layer | Choice |
-|---|---|
-| Language, app | TypeScript (strict) · Next.js App Router (RSC) |
-| UI | Tailwind + CSS-variable theme tokens · Radix primitives |
-| Data | Drizzle + PostgreSQL 16 (RLS) · Zod for schemas and contracts |
-| Jobs | pg-boss |
-| Content & media | Tiptap (JSON content) · sharp |
-| Auth | Auth.js (magic link + password, TOTP) |
-| Tests | Vitest (unit/contract) · Playwright (E2E/visual) · axe-core · k6 |
-| Tooling | pnpm workspaces |
+| Layer           | Choice                                                           |
+| --------------- | ---------------------------------------------------------------- |
+| Language, app   | TypeScript (strict) · Next.js App Router (RSC)                   |
+| UI              | Tailwind + CSS-variable theme tokens · Radix primitives          |
+| Data            | Drizzle + PostgreSQL 16 (RLS) · Zod for schemas and contracts    |
+| Jobs            | pg-boss                                                          |
+| Content & media | Tiptap (JSON content) · sharp                                    |
+| Auth            | Auth.js (magic link + password, TOTP)                            |
+| Tests           | Vitest (unit/contract) · Playwright (E2E/visual) · axe-core · k6 |
+| Tooling         | pnpm workspaces                                                  |
 
 Don't add new runtime dependencies without saying why in the PR. Prefer what's already in the stack.
 
@@ -91,17 +91,24 @@ docs/                PRD, SDD, deliverables, ADRs, runbooks
 
 ## Commands
 
-D-01 creates these; keep this section in sync when you change scripts.
+Keep this section in sync when you change scripts. Node ≥ 22 (`.nvmrc`), pnpm 10 (`packageManager` in `package.json`).
 
 ```bash
 pnpm install          # install workspace
-pnpm dev              # run the app (mock adapters by default in Phase A)
-pnpm lint             # eslint incl. no-hardcoded-strings and adapter-import rules
-pnpm typecheck        # tsc --noEmit across the workspace
-pnpm test             # unit tests (Vitest)
-pnpm test:contract    # contract suites against mock (and DB when DATABASE_URL is set)
-pnpm e2e              # Playwright — pass --trace off unless debugging
+pnpm dev              # run the app on http://localhost:3000 (mock adapters by default in Phase A)
+pnpm build            # production build of apps/web
+pnpm lint             # ESLint (custom rules for hard-coded strings and adapter imports are added by D-06 [UI] / D-90)
+pnpm format           # Prettier write; `pnpm format:check` in CI
+pnpm typecheck        # tsc --noEmit in every package
+pnpm test             # unit tests (Vitest) in every package, TZ=Europe/Budapest
+pnpm test:coverage    # unit tests with coverage thresholds (80 %, 90 % for schedule/calendar)
+pnpm test:contract    # contract suites (*.contract.test.ts) against mock (and DB when DATABASE_URL is set)
+pnpm e2e              # Playwright against `next start` on :3100 — run `pnpm build` first; pass --trace off unless debugging
 ```
+
+Pinned toolchain notes: TypeScript is pinned to 5.9 and ESLint to 9 because lint tooling does not yet support the TypeScript 7 (Go) compiler. `@playwright/test` is pinned to the Playwright version installed in the environment.
+
+Workspace packages are consumed as TypeScript source (`exports` → `./src/index.ts`, `transpilePackages` in `apps/web/next.config.ts`). Each package owns its tests under `src/**/*.test.ts` and its own `vitest.config.ts`.
 
 ## Workflow for agents
 
