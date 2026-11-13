@@ -3,8 +3,9 @@
 | | |
 |---|---|
 | **Document** | Deliverables breakdown & acceptance criteria |
-| **Version** | 1.1 (draft) |
+| **Version** | 1.2 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.2** | Parallel delivery of R1 and R2 by Claude Code agents (§3: streams, dependencies, agent team, timeline, scenarios, human roles); diocesan HR portal deliverables D-84 … D-86; workspace plan tiers; resolved PRD questions reflected in D-02, D-51, D-53, D-57, D-64, D-77, D-78. |
 | **Inputs** | [01-PRD.md](./01-PRD.md), [02-SDD.md](./02-SDD.md) |
 | **Changes in 1.1** | Added Release 2 (internal workspace, *Munkatér*): milestones M5–M8 and M10, deliverables D-51 … D-83; former M5 renamed **M9**; traceability and quality gates extended. |
 
@@ -17,7 +18,7 @@ This document splits the PRD requirements into **deliverables** — units of wor
 - **ID** — `D-xx`, stable reference for planning tools and PRs.
 - **Traces** — PRD requirement IDs covered (`FR`, `NFR`, `L`, `C`) and SDD section.
 - **Acceptance criteria (AC)** — every criterion is binary (pass/fail) and checked by the stated **verification** method. A deliverable is done only when **all** its AC pass and the global Definition of Done (§2) is met.
-- **Estimate** — ideal person-days (pd) for one full-stack engineer; for planning only.
+- **Estimate** — human-equivalent person-days (pd) for one full-stack engineer; converted to Claude Code agent capacity in §3.3.
 - **Priority** — inherited from the PRD, relative to its release (P0 = launch must-have, P1 = GA, P2 = post-GA).
 - **Release** — **R1** public website (M0–M4, M9), **R2** internal workspace *Munkatér* (M5–M8, M10).
 
@@ -34,49 +35,141 @@ Applies to every deliverable in addition to its own AC:
 7. Docs updated (README/ADR/runbook) when behavior, config or operations change.
 8. (R2) New tenant-owned tables have RLS policies and are covered by the isolation suite (D-03); new sensitive fields are encrypted per SDD §8.3 / §28.
 
-## 3. Milestone overview
+## 3. Delivery plan
 
-| Milestone | Goal | Deliverables | Exit criterion | Est. |
-|---|---|---|---|---|
-| **M0 — Foundations** | Running multi-tenant skeleton, CI/CD, data model | D-01 … D-07 | Two tenants served from one deployment on staging with isolated data | 24 pd |
-| **M1 — Public MVP** | A visitor can use a complete church site | D-08 … D-17 | Demo tenants pass the visitor E2E suite on staging | 47 pd |
-| **M2 — Admin & customization** | Non-technical editors can run and brand a site | D-18 … D-27 | Editor E2E suite passes; one church configured from zero using only the admin | 50 pd |
-| **M3 — Requests & compliance** | Pastoral requests, legal pages, privacy | D-28 … D-33 | Security & privacy review signed off | 25 pd |
-| **M4 — Hardening & pilot (GA)** | Quality bars met; real churches live | D-34 … D-41 | 5 pilot churches live ≥ 4 weeks; GA quality gates green | 28 pd |
-| **M5 — Workspace foundation** (R2) | People, teams, roles, Munkatér shell, notifications, PWA | D-51 … D-56 | Staff and volunteers of a demo tenant sign in, see *Ma*, receive push | 25 pd |
-| **M6 — Calendars & rooms** (R2) | Shared internal calendars; conflict-free room booking | D-57 … D-62 | Calendar & booking E2E suites pass; concurrency test green | 30 pd |
-| **M7 — Worship & rotas** (R2) | Music plans, song library, attachments, scheduling, stage view | D-63 … D-70 | A full month of plans built, approved and played from stage view on a demo tenant | 40 pd |
-| **M8 — HR & R2 GA** (R2) | HR tickets, leave, confidential handling; R2 quality gates; pilot | D-71 … D-78 | 3 pilot churches using the workspace ≥ 6 weeks; R2 gates green | 37 pd |
-| **M9 — Website v1.x enhancements** (R1) | R1 P1/P2 scope (formerly M5) | D-42 … D-50 | Per deliverable | 45 pd |
-| **M10 — Workspace v1.x enhancements** (R2) | R2 P1/P2 scope not needed for R2 GA | D-79 … D-83 | Per deliverable | 20 pd |
+The website (R1) and the workspace (R2) are built **in parallel** by **Claude Code agents**, after a short shared foundation milestone. Effort is still given in human-equivalent person-days (pd) because that is the stable way to size work; §3.3 converts it into agent capacity and calendar time.
 
-- **Total to R1 GA (M0–M4): ≈ 174 pd** (≈ 4.5 months for 2 engineers incl. ~10 % buffer, plus design & QA support).
-- **Total to R2 GA (M5–M8): ≈ 132 pd** (≈ 3.5 months for 2 engineers incl. buffer), starting after R1 GA. M9 runs in parallel with a third (part-time) engineer or is interleaved.
+### 3.1 Milestones by stream
+
+| Stream | Milestone | Goal | Deliverables | Exit criterion | Effort |
+|---|---|---|---|---|---|
+| Shared | **M0 — Foundations** | Multi-tenant skeleton, CI/CD, **shared schema incl. unified `people` and `events`** | D-01 … D-07 | Two tenants served from one deployment on staging with isolated data | 24 pd |
+| Website (R1) | **M1 — Public MVP** | A visitor can use a complete church site | D-08 … D-17 | Demo tenants pass the visitor E2E suite | 47 pd |
+| Website (R1) | **M2 — Admin & customization** | Non-technical editors can run and brand a site | D-18 … D-27 | Editor E2E suite passes; one church configured from zero via the admin | 50 pd |
+| Website (R1) | **M3 — Requests & compliance** | Pastoral requests, legal pages, privacy | D-28 … D-33 | Security & privacy review signed off | 25 pd |
+| Website (R1) | **M4 — Hardening & pilot (R1 GA)** | Quality bars met; real churches live | D-34 … D-41 | 5 pilot churches live ≥ 4 weeks; R1 gates green | 28 pd |
+| Workspace (R2) | **M5 — Workspace foundation** | People, teams, roles, Munkatér shell, notifications, PWA, plan tiers | D-51 … D-56 | Staff and volunteers of a demo tenant sign in, see *Ma*, receive push | 25 pd |
+| Workspace (R2) | **M6 — Calendars & rooms** | Shared internal calendars; conflict-free room booking | D-57 … D-62 | Calendar & booking E2E suites pass; concurrency test green | 30 pd |
+| Workspace (R2) | **M7 — Worship & rotas** | Music plans, song library, attachments, scheduling, stage view | D-63 … D-70 | A month of plans built, approved and played from stage view on a demo tenant | 40 pd |
+| Workspace (R2) | **M8 — HR, diocesan portal & R2 GA** | HR tickets, leave, confidential handling, **diocesan HR portal**; R2 gates; pilot | D-71 … D-78, D-84 … D-86 | 3 pilot churches (≥ 1 linked to a diocese) ≥ 6 weeks; R2 gates green | 51 pd |
+| Website (R1) | **M9 — Website v1.x** | R1 P1/P2 scope | D-42 … D-50 | Per deliverable | 45 pd |
+| Workspace (R2) | **M10 — Workspace v1.x** | R2 P1/P2 scope | D-79 … D-83 | Per deliverable | 20 pd |
+
+| Total | Effort |
+|---|---|
+| Shared foundation (M0) | 24 pd |
+| Website stream to R1 GA (M1–M4) | 150 pd |
+| Workspace stream to R2 GA (M5–M8) | 146 pd |
+| **Both releases to GA** | **≈ 320 pd** |
+| Post-GA enhancements (M9, M10) | 65 pd |
+
+### 3.2 Cross-stream dependencies
+
+Because the streams share one codebase and data model, a few deliverables are **sync points**. The foundation is designed so neither stream has to migrate the other's tables (SDD ADR-16).
+
+```mermaid
+flowchart LR
+    M0[M0 Foundations<br/>D-01…D-07<br/>shared schema, auth, RLS, policy, hu lib]
+    M0 --> D09[D-09 Schedule engine]
+    M0 --> D19[D-19 Media pipeline]
+    M0 --> D30[D-30 App-level encryption]
+    M0 --> D51[D-51 People & teams]
+    M0 --> D15[D-15 Public events]
+    D09 --> D58[D-58 Calendar layers]
+    D09 --> D61[D-61 Service room blocks]
+    D09 --> D63[D-63 Service occurrences]
+    D19 --> D65[D-65 Attachments]
+    D30 --> D71[D-71 HR tickets]
+    D71 --> D84[D-84…D-86 Diocesan portal]
+    D15 --> D57[D-57 Event visibility]
+    D51 --> D16[D-16 Public staff page]
+```
+
+Scheduling rules that follow from this:
+
+1. In the website stream, **D-09 (schedule engine)**, **D-19 (media)** and **D-30 (encryption)** are pulled to the front, because the workspace stream depends on them. D-30 is built right after M0, ahead of the rest of M3.
+2. In the workspace stream, M5 starts first (no website dependencies); M6/M7 start once D-09 is merged.
+3. `packages/ui` components for the admin shell (D-18) and the workspace shell (D-53) are owned by the website stream; the workspace stream consumes them and contributes additions through reviewed PRs.
+
+### 3.3 Claude Code agent team
+
+| Agent | Count | Responsibility |
+|---|:-:|---|
+| **Lead / orchestrator** | 1 | Keeps the backlog from this document, assigns deliverables following §3.2, owns `CLAUDE.md` conventions and shared packages, merges and resolves conflicts on `main`, re-estimates after each milestone. |
+| **Website stream** | 2 | M1–M4, then M9. |
+| **Workspace stream** | 3 | M5–M8 incl. the diocesan portal, then M10. |
+| **QA & review** | 1 | First-pass review of every PR against its acceptance criteria, owns E2E/visual/a11y/performance/load suites, seed data and test fixtures. |
+| **Peak total** | **7** | 3 during M0 (lead + 2 builders), 7 during the parallel build, 3–4 during pilots and enhancements. |
+
+**Why 7, not more:** the dependency graph rarely has more than 6–8 deliverables that can run independently; more agents increase merge conflicts in shared packages; and every merge still needs human approval — at 7 agents expect roughly **6–10 PRs per working day**, which is about the limit of one human reviewer.
+
+**Working model**
+
+- One deliverable = one branch in its own git worktree = one PR (deliverables > 5 pd are split into 2–3 PRs). The deliverable's acceptance criteria are copied into the PR as a checklist.
+- The CI gates (§2) are the objective Definition of Done; an agent can't mark a deliverable done while any gate is red.
+- The QA agent reviews first; a human approves every merge. Security-sensitive PRs (auth, RLS, encryption, HR, diocesan access, payments) need a **second, human technical review**.
+- Agents don't have production credentials; deployments to production are human-approved (D-01 AC3).
+
+**Throughput assumption:** **1 agent-day ≈ 2 human-pd** of finished, reviewed work on well-specified deliverables (plausible range 1–3 pd). This is the biggest uncertainty in the plan: measure it during M0 (pd completed ÷ agent-days) and re-plan from week 3.
+
+### 3.4 Timeline
+
+Expected case (2 pd per agent-day); week 1 = project start. Capacity check: website stream 122 pd of build (M1–M3) ÷ (2 agents × 2 pd) ≈ 31 working days; workspace stream ≈ 140 pd of build (M5–M8 without the gate deliverable D-78) ÷ (3 agents × 2 pd) ≈ 23 working days. Both fit in weeks 3–9 with ~15 % slack for integration and rework.
+
+| Weeks | Phase | Agents | Human & external work (critical path) |
+|---|---|:-:|---|
+| W1–W2 | **M0** shared foundation | 3 | Hosting (EU), domains/DNS, email provider, GitHub & secrets; approve schema; **book** lawyer, pentest firm, clergy advisors; recruit pilot churches and a pilot diocese |
+| W3–W9 | **Parallel build** — website M1–M3; workspace M5–M7 and M8 build items (D-71…D-77, D-84…D-86) | 7 | Daily PR approval; theme design sign-off (W4–W6); lawyer reviews legal, employee and volunteer privacy templates and retention defaults (W4–W8); clergy advisors review presets (W5–W8) |
+| W10–W11 | **Hardening** — D-34…D-40 and D-78's automated parts; fixes | 5–7 | Usability studies for both releases; external pentest of website + workspace + diocesan portal; restore drill sign-off |
+| W12–W15 | **R1 pilot** (5 churches, 4 weeks) → **R1 GA end of W15** | 3–4 | Pilot support, go/no-go decision |
+| W12–W17 | **R2 pilot** (3 churches incl. one diocese link, 6 weeks) → **R2 GA end of W17** | (same) | Pilot support, go/no-go decision |
+| W16–W20 | **M9 + M10** enhancements | 3–4 | Prioritize based on pilot feedback |
 
 ```mermaid
 gantt
-    title Churchy delivery plan (2 engineers, indicative)
+    title Churchy — parallel delivery with Claude Code agents (expected case)
     dateFormat  YYYY-MM-DD
-    axisFormat  %b
-    section M0
-    Foundations           :m0, 2027-01-04, 3w
-    section M1
-    Public MVP            :m1, after m0, 5w
-    section M2
-    Admin & customization :m2, after m0, 6w
-    section M3
-    Requests & compliance :m3, after m1, 3w
-    section M4
-    Hardening & pilot     :m4, after m2, 5w
-    section R2 Workspace
-    M5 Workspace foundation :m5, after m4, 3w
-    M6 Calendars & rooms    :m6, after m5, 4w
-    M7 Worship & rotas      :m7, after m5, 5w
-    M8 HR & R2 GA (pilot)   :m8, after m7, 6w
-    M10 Workspace v1.x      :m10, after m8, 3w
-    section R1 follow-up
-    M9 Website v1.x         :m9, after m4, 8w
+    axisFormat  W%W
+    section Shared
+    M0 Foundations (3 agents)          :m0, 2027-01-04, 2w
+    section Website R1 (2 agents)
+    M1–M3 build                        :w1, after m0, 7w
+    M4 hardening                       :w2, after w1, 2w
+    R1 pilot (5 churches)              :w3, after w2, 4w
+    R1 GA                              :milestone, after w3, 0d
+    M9 enhancements                    :w4, after w3, 5w
+    section Workspace R2 (3 agents)
+    M5–M8 build incl. diocesan portal  :r1, after m0, 7w
+    R2 hardening (D-78)                :r2, after r1, 2w
+    R2 pilot (3 churches + diocese)    :r3, after r2, 6w
+    R2 GA                              :milestone, after r3, 0d
+    M10 enhancements                   :r4, after r3, 3w
+    section QA & review (1 agent)
+    Test suites, first-pass review     :q1, after m0, 15w
 ```
+
+**Scenarios**
+
+| Scenario | Agent throughput | Build phase | R1 GA | R2 GA |
+|---|---|---|---|---|
+| Optimistic | 3 pd / agent-day | ~5 weeks | ~W13 (≈ 3 months) | ~W15 (≈ 3.5 months) |
+| **Expected** | **2 pd / agent-day** | **~7 weeks** | **~W15 (≈ 3.5 months)** | **~W17 (≈ 4 months)** |
+| Conservative | 1 pd / agent-day | ~13 weeks | ~W21 (≈ 5 months) | ~W23 (≈ 5.5 months) |
+
+Even in the optimistic case, **about half the calendar time is not coding**: reviews by the lawyer and clergy advisors, usability studies, the pentest and the 4- and 6-week pilots. Booking those early (W1–W2) is what keeps the dates.
+
+### 3.5 Human roles still required
+
+| Role | Involvement |
+|---|---|
+| **Product owner (you)** | Prioritization, answers to product questions, acceptance of milestones, approval of PRs — about 2–3 hours per working day during the build phase. |
+| **Second technical reviewer** (strongly recommended) | Reviews security-sensitive PRs (auth, RLS, encryption, HR, diocesan access); a few hours per week. |
+| **Hungarian data-protection / employment lawyer** | Privacy notices, Impresszum template, HR retention defaults, processing agreement (D-31, D-78). |
+| **Clergy advisors** (one per denomination family) | Preset terminology, rites and plan templates (D-23, D-66). |
+| **Penetration testing firm** | One combined test of website, workspace and diocesan portal (D-37, D-78). |
+| **Usability participants** | 5 editors (55+), 5 visitors, 5 volunteers, 3 worship leaders, 3 HR handlers (D-38, D-78). |
+| **Pilot partners** | 5 churches for R1, 3 of them also for R2, and 1 diocese/district office (D-41, D-78). |
+| **Accounts & credentials** | EU hosting, managed Postgres, object storage, email provider, domain/DNS, error tracking; payment-provider sandbox for P2. |
 
 ---
 
@@ -85,17 +178,18 @@ gantt
 ### D-01 Repository, tooling & CI pipeline
 - **Traces:** NFR-05, NFR-11 · SDD §3, §18, §29 · **Priority:** P0 · **Est.:** 3 pd
 - **AC:**
-  1. Monorepo with the structure in SDD §20; `pnpm install && pnpm dev` starts the full local stack (app, Postgres, MinIO, Mailpit, Caddy) in **≤ 5 minutes** on a clean machine.
+  1. Monorepo with the structure in SDD §29 and a `CLAUDE.md` describing conventions, commands and the PR/AC workflow for agents; `pnpm install && pnpm dev` starts the full local stack (app, Postgres, MinIO, Mailpit, Caddy) in **≤ 5 minutes** on a clean machine.
   2. CI runs lint, typecheck, unit, integration, build and dependency/image scans on every PR; median CI duration **≤ 10 minutes**.
   3. Merges to `main` deploy automatically to staging; production deploy requires manual approval.
-- **Verification:** fresh-clone dry run by a second engineer; CI logs.
+- **Verification:** fresh-clone dry run by a second agent in a clean environment; CI logs.
 
 ### D-02 Database schema, migrations & seed data
 - **Traces:** SDD §8 · **Priority:** P0 · **Est.:** 5 pd
 - **AC:**
   1. All P0 tables from SDD §8.2 exist via versioned Drizzle migrations; `migrate up` then `down` then `up` succeeds.
-  2. Text sort columns use `hu-HU-x-icu` collation; `hungarian` text-search config + `unaccent` installed.
-  3. Seed script creates the **3 demo tenants** with ≥ 10 news, ≥ 15 events, 2 locations (Catholic), full schedules, 4 weeks of announcements, 6 staff, in Hungarian.
+  2. The shared tables both streams depend on are created in their **final shape** (SDD ADR-16): `people` with workspace fields, `events` with `calendar_id` + `visibility`, `calendars`, `teams`, `team_members`.
+  3. Text sort columns use `hu-HU-x-icu` collation; `hungarian` text-search config + `unaccent` installed.
+  4. Seed script creates the **3 demo tenants** with ≥ 10 news, ≥ 15 events, 2 locations (Catholic), full schedules, 4 weeks of announcements, 6 staff, in Hungarian.
 - **Verification:** migration CI job; seed run on staging.
 
 ### D-03 Tenant isolation (RLS) & tenant resolution
@@ -450,7 +544,7 @@ gantt
 ### D-51 Unified people & teams model, directory
 - **Traces:** FR-502, FR-503, FR-009, G10 · SDD §21.1 · **Priority:** P0 · **Est.:** 5 pd
 - **AC:**
-  1. `people` extended (login link, public flag, contact visibility, skills); existing public staff page keeps working unchanged (R1 E2E suite green).
+  1. Workspace features built on the shared `people` table from D-02 (login link, public flag, contact visibility, skills); the public staff page (D-16) keeps working (R1 E2E suite green).
   2. Teams, positions and memberships manageable in the workspace; a person can belong to multiple teams with multiple positions.
   3. Directory search & filter by team/position/skill in Hungarian collation order; each contact field obeys the person's visibility setting (tested for 4 visibility levels).
   4. Seed data: each demo tenant has ≥ 6 employees, ≥ 30 volunteers (incl. 3 without login, 2 minors), ≥ 5 teams.
@@ -471,6 +565,7 @@ gantt
   2. *Ma* shows to-dos (pending assignments, reviews, approvals), today, this week, my requests — each block appears only when non-empty.
   3. Workspace pages are `private, no-store` and `noindex` (header test).
   4. *Ma* interactive **≤ 1 s** p75 on mid-range phone profile; axe 0 serious/critical.
+  5. Workspace **plan tiers** (`none / 50 / 150 / 300` users): modules enabled per tier; warning at 90 % of the user cap, new invitations blocked at 100 %; deactivated users not counted (tests per tier).
 - **Verification:** E2E + Lighthouse (authenticated) + header tests.
 
 ### D-54 Notification service (in-app, email, web push)
@@ -506,7 +601,7 @@ gantt
 ### D-57 Unified events with calendars & visibility
 - **Traces:** FR-601, FR-602, FR-609 · SDD §22.1 · **Priority:** P0 · **Est.:** 5 pd
 - **AC:**
-  1. `events` migrated to `calendar_id` + `visibility`; all existing public events preserved (migration test).
+  1. Internal event creation/editing on the shared `events` table (D-02); public events created by the website stream (D-15) remain correct (R1 E2E suite green).
   2. Shared, team, personal and absence calendars; editor permissions per calendar.
   3. **Negative tests**: events with visibility `private`, `team`, `staff` never appear on any public route, iCal feed, sitemap or search (all 4 surfaces tested).
   4. Changing visibility to `public` makes the event appear on the website within ≤ 60 s.
@@ -571,7 +666,8 @@ gantt
 - **AC:**
   1. Songs with all PRD FR-803 fields; hymnal refs (platform catalog + church-defined songbooks); search by title, first line, hymnal number (*„RÉ 42”*), theme, season — accent-insensitive.
   2. Arrangements with ChordPro; transposition to all 12 keys correct for a 20-song reference set; capo display; H/B naming per user setting (*B♭* ↔ *B*, *B* ↔ *H* tested).
-  3. Import from CSV (title, hymnal, number, key) for ≥ 500 songs in ≤ 60 s.
+  3. Import from CSV (title, hymnal, number, first line, key, tempo, themes) for ≥ 500 songs in ≤ 60 s, with a Hungarian validation report (row-level errors, duplicates).
+  4. The platform ships **only the hymnal name catalog** — a new tenant has 0 songs (test); a downloadable CSV template is provided.
 - **Verification:** unit + E2E.
 
 ### D-65 Attachments: upload, versioning, preview, access control
@@ -627,7 +723,7 @@ gantt
 
 ---
 
-## 12. M8 — HR & R2 GA (R2)
+## 12. M8 — HR, diocesan portal & R2 GA (R2)
 
 ### D-71 HR categories, submission & ticket lifecycle
 - **Traces:** FR-901 … FR-903, G9 · SDD §25.1–25.2 · **Priority:** P0 · **Est.:** 7 pd
@@ -683,7 +779,7 @@ gantt
 ### D-77 Payroll export
 - **Traces:** FR-911 · SDD §25.6 · **Priority:** P1 · **Est.:** 2 pd
 - **AC:**
-  1. Monthly CSV of approved absences per employee; column mapping configurable; opens correctly in Hungarian Excel.
+  1. Monthly CSV of approved absences per employee; **column mapping configurable** (choose, rename and order columns; save as a named profile); opens correctly in Hungarian Excel.
   2. Export totals equal the sum of approved working days per employee (test).
 - **Verification:** integration.
 
@@ -692,11 +788,37 @@ gantt
 - **AC:**
   1. 2FA enforced for privileged workspace roles; HR screens idle timeout 30 min.
   2. Retention defaults and employee/volunteer privacy notices reviewed by a Hungarian employment/data-protection lawyer (record).
-  3. External penetration test of the workspace: 0 open critical/high.
+  3. External penetration test of the workspace **and diocesan portal**: 0 open critical/high.
   4. axe 0 serious/critical on all workspace routes; NFR-13 performance met.
   5. Usability: ≥ 4/5 volunteers accept an assignment and open the plan attachments unassisted in ≤ 1 min; ≥ 2/3 HR handlers process a leave request end-to-end in ≤ 3 min.
-  6. **3 pilot churches** (≥ 2 denominations) use calendars, rooms, worship planning and HR for **≥ 6 weeks** with 0 double bookings, 0 data-exposure incidents, ≥ 80 % plans approved ≥ 48 h before services.
+  6. **3 pilot churches** (≥ 2 denominations, ≥ 1 linked to a pilot diocese using the portal) use calendars, rooms, worship planning and HR for **≥ 6 weeks** with 0 double bookings, 0 data-exposure incidents, ≥ 80 % plans approved ≥ 48 h before services.
 - **Verification:** reports, review records, pilot report.
+
+### D-84 Diocesan organizations, linking & HR delegation
+- **Traces:** FR-912, FR-913 · SDD §4.2, §25.7 · **Priority:** P0 · **Est.:** 5 pd
+- **AC:**
+  1. Organizations, org memberships, links and delegations implemented; linking requires approval by **both** parish owner and diocesan admin; either side can revoke; all steps audit-logged in both places.
+  2. RLS branch exists **only** on HR tables; extended isolation suite: a diocesan session reads **0 rows from 100 % of non-HR tables** and 0 rows from non-delegated categories or unlinked parishes.
+  3. Revoking a link removes access on the next request (test) and returns open delegated tickets to the parish HR handler with a notification.
+- **Verification:** integration + security tests.
+
+### D-85 Diocesan HR portal (dashboard & cross-parish ticket handling)
+- **Traces:** FR-914 · SDD §25.7 · **Priority:** P0 · **Est.:** 6 pd
+- **AC:**
+  1. Portal at the organization's domain with *Áttekintés, Kérések, Távollétek, Sablonok, Jelentések, Plébániák*; mandatory 2FA for all diocesan users.
+  2. Unified inbox across linked parishes with parish filter; ticket handling identical to D-71/D-72/D-74 (shared components, same tests).
+  3. Every diocesan read and action appears in the **parish's** audit log with the organization as actor (test).
+  4. Explicit context switch between *Egyházmegye* and *Plébánia* for users with both; a session never carries both contexts (test).
+  5. Dashboard for 100 linked parishes with 5,000 tickets loads in **≤ 1.5 s** p95.
+- **Verification:** E2E + performance test.
+
+### D-86 Diocesan HR templates & cross-parish reports
+- **Traces:** FR-915, FR-916 · SDD §25.7 · **Priority:** P1 · **Est.:** 3 pd
+- **AC:**
+  1. Versioned category templates pushed to linked parishes; template-owned fields read-only in the parish; template update propagates to all linked parishes within ≤ 5 min.
+  2. Cross-parish leave-balance, absence and SLA reports, and payroll CSV with a *Plébánia* column; totals equal the sum of the per-parish exports (test).
+  3. Staff with `employer = diocese` appear in diocesan reports regardless of the parish they serve.
+- **Verification:** integration tests.
 
 ---
 
@@ -804,6 +926,9 @@ gantt
 | FR-908, FR-909 | D-75 |
 | FR-910 | D-76 |
 | FR-911 | D-77 |
+| FR-912, FR-913 | D-84 |
+| FR-914 | D-85 |
+| FR-915, FR-916 | D-86 |
 | L-11 | D-64 |
 | L-12 | D-72, D-73 |
 | NFR-13 | D-53, D-58, D-78 |
@@ -842,6 +967,7 @@ gantt
 | Visibility leakage | 0 non-public events / attachments on public surfaces | D-57, D-65 |
 | HR encryption & email hygiene | 0 plaintext markers in DB dump; 0 sensitive content in emails/pushes | D-54, D-71 |
 | Confidential access | 100 % of reads audit-logged; impersonation blocked | D-74 |
+| Diocesan isolation | 0 rows from non-HR tables, non-delegated categories and unlinked parishes | D-84 |
 | Workspace performance | Interactive ≤ 1 s p75; month view ≤ 500 ms | D-53, D-58 |
 | Offline | Downloaded plan + attachments open offline | D-69 |
 | Accessibility | axe 0 serious/critical on all workspace routes | D-78 |

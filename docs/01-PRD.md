@@ -4,8 +4,9 @@
 |---|---|
 | **Product** | Churchy — customizable website & internal workspace platform for Hungarian churches |
 | **Document** | Product Requirements Document |
-| **Version** | 1.1 (draft) |
+| **Version** | 1.2 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.2** | Website (R1) and workspace (R2) are built **in parallel**. Resolved open questions (§14.1): flat per-church workspace pricing, no pre-loaded hymnal content, configurable payroll CSV, **diocesan HR portal in R2** (§6.11), one-way calendar feed at launch. |
 | **Changes in 1.1** | Added Release 2: the internal workspace (*Munkatér*) — internal calendars, room & resource booking, worship/music planning with attachments, volunteer rotas, HR request management (§6.6–6.10 and related sections). |
 | **Status** | For review |
 | **Related** | [02-SDD.md](./02-SDD.md) (Solution Design), [03-DELIVERABLES.md](./03-DELIVERABLES.md) (Deliverables) |
@@ -71,7 +72,7 @@ Workspace and website share one login, one people directory, one calendar and th
 - Native mobile apps (the workspace is an installable, offline-capable PWA).
 - A free-form drag-and-drop page builder (customization is structured, see §6.2 — this protects quality and accessibility).
 - Online sacrament booking with automatic calendar allocation (v1 collects requests; the office confirms manually).
-- Hosting of diocesan / district-level (*egyházmegye*, *egyházkerület*) multi-site portals (possible later, see §12).
+- Diocesan / district-level (*egyházmegye*, *egyházkerület*) multi-site **website** portals (shared news, central web administration) — possible later, see §12. The diocesan **HR** portal *is* in scope (R2, §6.11).
 
 ## 4. Users & personas
 
@@ -106,6 +107,7 @@ Workspace and website share one login, one people directory, one calendar and th
 | **W5 — Facility manager** (*gondnok, teremfelelős*) | Responsible for rooms, keys, setup, cleaning. | Approve bookings, avoid conflicts, daily setup list. |
 | **W6 — HR handler** (*HR-felelős*) | Often the office manager, the pastor, or an external diocesan/district HR office. | Handle requests confidentially, run approvals, track leave balances and deadlines. |
 | **W7 — Leader / approver** (*plébános, vezető lelkész, igazgató*) | Approves leave, music plans, exceptions. | One-tap approvals, overview of who is available, no surprises on Sunday. |
+| **W8 — Diocesan HR officer** (*egyházmegyei / egyházkerületi HR-munkatárs*) | Works for a diocese or church district and handles HR for many parishes. | One login and one dashboard across all linked parishes, consistent HR categories, cross-parish reports and exports — without seeing anything else of the parishes' data. |
 
 ## 5. Denominational adaptability
 
@@ -148,6 +150,8 @@ Requirements are grouped by release:
 - **R2 — Internal workspace, *Munkatér*** (§6.6–6.10)
 
 Priority is relative to its release: **P0** = must-have for that release's launch, **P1** = should-have for that release's general availability, **P2** = later / nice-to-have.
+
+R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, people and events model); see [03-DELIVERABLES.md §3](./03-DELIVERABLES.md).
 
 ### 6.1 Public website — core content
 
@@ -282,7 +286,7 @@ Priority is relative to its release: **P0** = must-have for that release's launc
 |---|---|---|
 | FR-801 | **Service plan** (*Énekrend / Dicsőítési terv*) for any service occurrence (FR-002) or event: an ordered list of items — song, liturgical part, reading, prayer, sermon, announcement, other — each with title, duration, key, notes and responsible person. | P0 |
 | FR-802 | **Plan templates** per service type and denomination preset (e.g. Catholic Mass: *Bevonulás, Kyrie, Glória, Válaszos zsoltár, Alleluja, Felajánlás, Sanctus, Agnus Dei, Áldozás, Kivonulás*; Reformed: *Fennálló ének, Lekció, Igehirdetés előtti ének, Igehirdetés, Igehirdetés utáni ének, Áldás*; free church: *Dicsőítés blokk, Igehirdetés, Válaszének*). | P0 |
-| FR-803 | **Song library** (*Énektár*): title, alternative titles, first line, hymnal references (e.g. *Éneklő Egyház*, *Református énekeskönyv*, *Evangélikus énekeskönyv*, or church-defined songbooks) with numbers, authors/composers/translators, copyright & licence information, themes and liturgical-season tags, default key, tempo, time signature. | P0 |
+| FR-803 | **Song library** (*Énektár*): title, alternative titles, first line, hymnal references (e.g. *Éneklő Egyház*, *Református énekeskönyv*, *Evangélikus énekeskönyv*, or church-defined songbooks) with numbers, authors/composers/translators, copyright & licence information, themes and liturgical-season tags, default key, tempo, time signature. **No song content is pre-loaded**: the platform ships only a catalog of hymnal names/abbreviations; each church builds its library by hand or by **CSV import**. | P0 |
 | FR-804 | **Arrangements** per song (key, tempo, structure such as V1 R V2 R B R) with a **ChordPro chord chart**; automatic **transposition**, capo display and choice of Hungarian/German (*H*) or English (*B*) note naming. | P1 |
 | FR-805 | **Attachments** on songs, arrangements, plans and plan items: PDF sheet music, chord charts, lyrics, audio reference recordings, MusicXML, images, external links (YouTube, Spotify); versioned; in-app preview (PDF viewer, audio player) and download. Attachments are **internal only**, never public. | P0 |
 | FR-806 | **Team scheduling**: assign people to positions per plan; suggestions aware of availability, approved absences, other assignments the same day and fair rotation; **accept/decline in one tap** (also from email); swap requests; reminders. | P0 |
@@ -308,7 +312,17 @@ Priority is relative to its release: **P0** = must-have for that release's launc
 | FR-908 | **Staff records (light)** (*Munkatársi adatlap*): position, employment type (*munkaviszony, egyházi szolgálati viszony, megbízási jogviszony, önkéntes*), start/end date, manager, weekly hours/work pattern; restricted documents (contract, job description). | P1 |
 | FR-909 | **Onboarding / offboarding checklists** (keys, accounts, trainings, equipment) with assigned tasks and due dates. | P1 |
 | FR-910 | **Volunteer compliance tracking**: e.g. criminal-record certificate (*erkölcsi bizonyítvány*) required for work with minors, signed volunteer agreements, trainings — storing **only the fact of verification, date and expiry**, with expiry reminders. | P1 |
-| FR-911 | **Payroll export**: monthly CSV of approved absences per employee for the external payroll provider/accountant. No payroll calculation. | P1 |
+| FR-911 | **Payroll export**: monthly CSV of approved absences per employee with **configurable column mapping**, so it fits any payroll provider or accountant. No payroll calculation. | P1 |
+
+### 6.11 Diocesan HR portal (R2)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-912 | **Diocesan organizations** (*Egyházmegye / Egyházkerület / Egyházmegyei hivatal*): a platform-level organization that parishes can be **linked** to. Linking requires approval by both the parish owner and the diocesan admin; either side can unlink; all changes audited. | P0 |
+| FR-913 | **HR delegation**: a linked parish chooses which HR categories (or all HR) are handled by the diocese. Only delegated categories are visible to diocesan users; the diocese never sees the parish's website, calendars, rooms, worship data or non-delegated HR data. | P0 |
+| FR-914 | **Diocesan portal**: one login for diocesan HR staff with a cross-parish dashboard — tickets by parish/category/status, SLA and overdue items, approvals, absence calendar across parishes — and the same ticket handling as FR-903/FR-906. Diocesan roles: *Egyházmegyei HR-admin, HR-ügyintéző, Bizalmas ügyek kezelője*. | P0 |
+| FR-915 | **Diocesan HR category templates**: the diocese defines categories (fields, approval chains, SLA, retention) and pushes them to linked parishes; template updates are versioned and propagated. | P1 |
+| FR-916 | **Cross-parish reporting & export**: leave balances, absence and SLA reports and the payroll CSV across all linked parishes, with a parish column; staff employed by the diocese but serving in a parish are supported (employer field). | P1 |
 
 ## 7. Hungarian localization requirements
 
@@ -399,8 +413,9 @@ Priority is relative to its release: **P0** = must-have for that release's launc
 - Daily readings and Bible texts are copyrighted by their Hungarian publishers; v1 links out rather than republishing.
 - Budget favours open-source, EU-hosted components.
 - Workspace users sign in with their own email address; people without email (children, some elderly volunteers) are represented in the directory and rotas and managed by their team leader.
-- HR may be handled outside the parish (e.g. by a diocesan or district office); such handlers get scoped access to a church's HR categories.
-- The workspace (R2) is sold as an optional add-on plan on top of the website.
+- HR may be handled outside the parish by a diocesan or district office through the diocesan HR portal (§6.11).
+- The workspace (R2) is sold as an optional **flat-priced add-on per church**, tiered by number of workspace users (indicatively up to 50 / 150 / 300). Diocesan portal pricing is agreed with the diocese.
+- Development is done by **Claude Code agents** under human product ownership and review (see deliverables §3.3).
 
 ## 12. Future scope (post-v1)
 
@@ -410,7 +425,7 @@ Priority is relative to its release: **P0** = must-have for that release's launc
 - Member-only area for congregants (prayer requests, small-group materials).
 - Two-way sync with Google Workspace / Microsoft 365 calendars.
 - Expense claims with approval and accounting export; inventory/asset register.
-- Diocese/district-level shared HR service and shared song library across parishes.
+- Diocese/district-level shared song library and licensed hymnal indexes.
 - Additional public languages (German, Slovak, Romani, English) for minority and tourist audiences.
 
 ## 13. Risks
@@ -427,6 +442,8 @@ Priority is relative to its release: **P0** = must-have for that release's launc
 | Volunteers don't adopt another login | High | Magic links, one-tap accept/decline from email, PWA push, people without login handled by leaders. |
 | Sheet-music copyright infringement via attachments | Medium | Internal-only storage, licence fields, uploader confirmation, takedown process, usage reports. |
 | Wrong leave calculations (special work patterns, swapped work days) | Medium | Per-person work patterns, maintained working-day calendar, HR can override with audit trail. |
+| Diocesan access leaks parish data beyond delegated HR | High | Delegation enforced in database row-level security for HR tables only; two-sided linking approval; automated cross-tenant tests; audit of every diocesan read. |
+| Agent-built code quality / review bottleneck | Medium | Objective CI gates per deliverable, first-pass automated review, human approval of every merge, velocity re-estimated after the foundation milestone. |
 
 ## 14. Open questions
 
@@ -435,8 +452,13 @@ Priority is relative to its release: **P0** = must-have for that release's launc
 3. Which payment provider (Barion vs SimplePay) is preferred by target churches for P2 giving?
 4. Do we provide a shared `churchy.hu` subdomain brand, or white-label the default subdomain?
 5. Which clergy advisors validate each denomination preset?
-6. Is the workspace a paid add-on, and is it priced per church or per active user?
-7. Which hymnal indexes (titles + numbers) may we pre-load, and under what licence?
-8. Which payroll providers/accounting tools do target churches use (defines the CSV export format)?
-9. How common is diocesan/district-level HR handling — does it justify cross-tenant HR handlers in R2?
-10. Is two-way Google/Microsoft calendar sync a must-have for staff, or is the one-way feed enough?
+### 14.1 Resolved decisions
+
+| # | Question | Decision (2026-11-13) |
+|---|---|---|
+| 6 | Workspace pricing | Paid add-on, **flat price per church**, tiered by workspace user count. |
+| 7 | Pre-loaded hymnals | **None.** Ship only the hymnal name catalog; churches enter or **CSV-import** their songs. Licensed indexes may come later. |
+| 8 | Payroll export format | **Configurable CSV** with column mapping, Excel-friendly. |
+| 9 | Diocesan HR | **Full diocesan HR portal in R2** (§6.11). |
+| 10 | Calendar sync | **One-way personal feed at launch**; two-way sync stays P2. |
+| — | Delivery approach | R1 and R2 **in parallel**, built by **Claude Code agents** (deliverables §3). |

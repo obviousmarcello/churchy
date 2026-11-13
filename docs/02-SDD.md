@@ -4,8 +4,9 @@
 |---|---|
 | **Product** | Churchy — customizable website & internal workspace platform for Hungarian churches |
 | **Document** | Solution Design Document |
-| **Version** | 1.1 (draft) |
+| **Version** | 1.2 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.2** | Diocesan HR portal (§25.7, RLS extension in §4.2); workspace plan tiers (§20.1); hymnal catalog without content (§24.2); parallel build: unified `people`/`events` schema from day one (ADR-16). |
 | **Changes in 1.1** | Added Part B — internal workspace (*Munkatér*): §20–§28. Updated §1–§3, §8, §11, §17, §29 (repo), §30 (ADRs). |
 | **Inputs** | [01-PRD.md](./01-PRD.md) |
 | **Outputs** | [03-DELIVERABLES.md](./03-DELIVERABLES.md) |
@@ -103,6 +104,7 @@ Implemented in Next.js middleware: host → `tenantId` lookup (cached in-memory 
 - The app connects as a non-owner role without `BYPASSRLS`; each request opens a transaction and runs `SET LOCAL app.tenant_id = …`. Platform-console queries use a separate role and are audit-logged.
 - Object storage keys are prefixed `t/<tenant_id>/…`; private files (request attachments, PDFs of requests) are only served via short-lived signed URLs after a permission check.
 - Automated test (D-03 in deliverables): for every tenant table, attempt cross-tenant read/write and assert failure.
+- **Single exception — diocesan HR delegation (R2):** HR tables only (`hr_*`, `absences`, `leave_entitlements`, `staff_profiles`) carry an additional policy branch that admits a diocesan session (`app.org_id`) for rows of linked parishes in delegated categories. All other tables have no such branch, so a diocesan session cannot read them. Details in §25.7.
 
 ### 4.3 Caching per tenant
 
@@ -601,6 +603,7 @@ type WorkspaceModuleKey = 'ws.calendar' | 'ws.rooms' | 'ws.worship' | 'ws.rota'
   | 'ws.hr' | 'ws.hr.leave' | 'ws.hr.confidential' | 'ws.docs' | 'ws.board';
 ```
 
+- **Plan tiers:** the workspace is a flat-priced add-on per church (PRD §14.1). `tenants.ws_tier` (`none / s50 / m150 / l300`) enables the workspace modules and caps active workspace users; inviting beyond 90 % shows a Hungarian warning, at 100 % new invitations are blocked (deactivated users don't count).
 - Workspace pages are dynamic, never CDN-cached, `Cache-Control: private, no-store` except static assets; served with `X-Robots-Tag: noindex`.
 
 ### 20.2 Navigation (mobile bottom bar / desktop sidebar)
@@ -673,7 +676,7 @@ Memberships get an additional `ws_roles text[]` and optional scopes (`team_ids`,
 | Handle confidential tickets | | | | | | | | scoped categories |
 | Staff records, balances, payroll export | | | | | | | ✔ | |
 
-`can()` (§11.3) is extended with resource scopes. Every cell is unit-tested.
+`can()` (§11.3) is extended with resource scopes. Every cell is unit-tested. Diocesan roles (*Egyházmegyei HR-admin, HR-ügyintéző, Bizalmas ügyek kezelője*) are **organization** roles, not tenant roles; they are defined in §25.7 and have no capability outside delegated HR.
 
 ## 22. Internal calendars
 
@@ -768,7 +771,7 @@ The schedule engine produces *virtual* services. Anything attached to a specific
 
 | Table | Key columns |
 |---|---|
-| `hymnals` | `id, tenant_id? (null = platform catalog), abbreviation ("ÉE", "RÉ", "EÉ"), name, denomination?` |
+| `hymnals` | `id, tenant_id? (null = platform catalog), abbreviation ("ÉE", "RÉ", "EÉ"), name, denomination?` — the platform catalog holds **names/abbreviations only, no songs**; songs come from manual entry or CSV import (`title; hymnal; number; first_line; default_key; tempo; themes`) with a validation report |
 | `songs` | `id, tenant_id, title, alt_titles text[], first_line, lyrics text?, language, authors, composers, translators, copyright_holder, licence(public_domain/licensed/permission/own/unknown), licence_ref?, themes text[], seasons text[], default_key, tempo_bpm?, time_signature?, notes, search tsvector` |
 | `song_hymnal_refs` | `song_id, hymnal_id, number, verses_note?` |
 | `arrangements` | `id, song_id, name, key, tempo_bpm?, structure text, chordpro text?, notes` |
@@ -905,6 +908,60 @@ workingDays(person, from, to, halfDays) =
 
 Monthly CSV (UTF-8 with BOM for Excel, `;` separator — Hungarian Excel default): `Név; Adóazonosító (optional, if HR stored it); Típus; Kezdete; Vége; Munkanapok`. Column mapping configurable per tenant to match their payroll provider.
 
+### 25.7 Diocesan HR portal
+
+**Model**
+
+| Table | Key columns |
+|---|---|
+| `organizations` | `id, kind(egyhazmegye/egyhazkerulet/egyeb), name, slug, denomination, settings jsonb` — platform-level, not a tenant |
+| `org_memberships` | `org_id, user_id, roles(org_hr_admin/org_hr_handler/org_confidential_handler), category_scopes text[]?, parish_scopes uuid[]?` |
+| `org_links` | `org_id, tenant_id, status(requested/active/revoked), requested_by, approved_by_parish, approved_by_org, linked_at, revoked_at` |
+| `org_delegations` | `org_id, tenant_id, hr_category_key | '*'` — which HR categories the parish delegates |
+| `org_hr_templates` | `id, org_id, key, version, definition jsonb` — pushed into parishes' `hr_categories` (`template_id, template_version` columns) |
+
+`staff_profiles` gets `employer(parish/org)`; employees of the diocese serving in a parish are stored in the parish tenant with `employer = org`.
+
+**Access enforcement (RLS)**
+
+```sql
+-- HR tables only; e.g. hr_tickets
+CREATE POLICY hr_tenant_or_delegated ON hr_tickets USING (
+  tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid
+  OR EXISTS (
+    SELECT 1 FROM org_links l
+    JOIN org_delegations d ON d.org_id = l.org_id AND d.tenant_id = l.tenant_id
+    JOIN hr_categories c   ON c.id = hr_tickets.category_id
+    WHERE l.org_id = nullif(current_setting('app.org_id', true), '')::uuid
+      AND l.tenant_id = hr_tickets.tenant_id AND l.status = 'active'
+      AND (d.hr_category_key = '*' OR d.hr_category_key = c.key)
+  )
+);
+```
+
+- A diocesan request sets `app.org_id` and **no** `app.tenant_id`; therefore every non-HR table returns zero rows by construction.
+- Confidential categories additionally require the `org_confidential_handler` role (application policy) and a read reason, as in §25.4.
+- Encryption: ticket data stays encrypted with the **parish's** tenant data key; the portal decrypts per row after the policy check. Revoking a link takes effect immediately (no copies are made).
+- Every diocesan read and action is written to the parish's `audit_log` with `actor_org_id`, so the parish owner can see what the diocese accessed.
+
+**Linking flow**
+
+1. Diocesan admin invites a parish (or the parish requests linking) → `org_links.status = requested`.
+2. Parish owner approves and chooses delegated categories (default: all HR categories created from diocesan templates).
+3. Diocesan templates are applied to the parish; the parish can't edit template-owned fields, only add its own categories.
+4. Unlinking by either side → `revoked`; open delegated tickets are returned to the parish HR handler with a notification.
+
+**Portal UI** — served at `https://<org-slug>.churchy.hu/egyhazmegye` (own domain possible):
+
+- *Áttekintés*: tickets by parish/category/status, overdue list, median resolution time, approvals waiting.
+- *Kérések*: unified inbox across parishes with a *Plébánia* filter; same ticket UI as §25.2.
+- *Távollétek*: absence calendar across parishes (no reasons shown except to handlers of that category).
+- *Sablonok*: HR category templates with versioning.
+- *Jelentések*: leave balances, SLA, payroll CSV across parishes (extra `Plébánia` column).
+- *Plébániák*: link status and delegated categories per parish.
+
+Diocesan users authenticate with mandatory 2FA; one login can also hold normal tenant memberships (e.g. a diocesan HR officer who sings in their own parish's choir), but sessions are context-switched explicitly (*Egyházmegye ↔ Plébánia*) and never combine `app.org_id` and `app.tenant_id`.
+
 ## 26. Notifications & PWA
 
 ### 26.1 Notification service
@@ -962,6 +1019,11 @@ erDiagram
     HR_TICKETS |o--o{ ABSENCES : creates
     PEOPLE ||--o| STAFF_PROFILES : has
     PEOPLE ||--o{ COMPLIANCE_ITEMS : has
+    ORGANIZATIONS ||--o{ ORG_LINKS : links
+    TENANTS ||--o{ ORG_LINKS : linked_by
+    ORG_LINKS ||--o{ ORG_DELEGATIONS : delegates
+    ORGANIZATIONS ||--o{ ORG_HR_TEMPLATES : defines
+    ORG_HR_TEMPLATES ||--o{ HR_CATEGORIES : instantiates
 ```
 
 All tables carry `tenant_id` and RLS policies (§4.2); the isolation suite (D-03) automatically covers them.
@@ -975,6 +1037,7 @@ All tables carry `tenant_id` and RLS policies (§4.2); the isolation suite (D-03
 | Encryption | App-level encryption (§8.3) for HR ticket content, messages, approval comments, HR attachments, staff documents, external rental requester data. |
 | Retention | Per HR category `retention_days` after closure; staff documents and profiles: configurable period after `end_date`; volunteer compliance facts: deleted on deactivation + configurable period; purge job as in §8.3. Defaults reviewed by a lawyer (C-08). |
 | Support access | Platform impersonation excluded from `ws.hr*` routes and data entirely. |
+| Diocesan access | RLS branch for HR tables only (§25.7); two-sided linking approval; reads logged into the parish audit log; mandatory 2FA; isolation suite extended with diocesan sessions (must read 0 rows from every non-HR table and from non-delegated categories). |
 | Audit | Confidential reads (with reason), HR approvals, role changes, staff-document downloads, attachment takedowns. |
 | Copyright | §24.5: internal-only attachments, rights confirmation, takedown, usage reports. |
 | Privacy notices | Templates for the employee and volunteer privacy notices (C-09) generated like the public notice (§14), shown at first workspace login with acknowledgement stored. |
@@ -989,6 +1052,7 @@ churchy/
 │     ├─ app/(public)/…
 │     ├─ app/admin/…
 │     ├─ app/munkater/…       # workspace (R2): ma, naptar, szolgalatok, termek, keresek…
+│     ├─ app/egyhazmegye/…    # diocesan HR portal (R2)
 │     ├─ app/platform/…
 │     └─ middleware.ts        # tenant resolution
 ├─ packages/
@@ -1029,3 +1093,5 @@ churchy/
 | ADR-12 | No payroll or accounting; CSV exports | Build payroll | Hungarian payroll is a regulated, specialized domain; churches already use providers/accountants. |
 | ADR-13 | PWA instead of native apps | iOS/Android apps | One codebase, no store reviews; offline and push are sufficient for volunteers and musicians. |
 | ADR-14 | Store only verification facts for compliance documents | Store scanned certificates | Data minimization (C-12); the certificate itself is not needed once verified. |
+| ADR-15 | Diocesan HR via RLS policy branch on HR tables only | Copy delegated tickets into a diocese tenant; give the diocese full tenant memberships | No data copies, instant revocation, and non-HR data unreachable by construction. |
+| ADR-16 | Unified `people` and `events` (with `calendar_id`, `visibility`) in the **initial** schema | Add workspace fields by migration later | R1 and R2 are built in parallel; a shared schema from day one avoids conflicting migrations between the two streams. |
