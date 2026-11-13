@@ -1,0 +1,47 @@
+/*
+ * Admin / workspace variant (SDD 11.2): high contrast, sans-serif headings, bigger touch targets
+ * (every control >= 44 px). Applied with data-ui="admin" on a wrapper (see AdminScope in
+ * @churchy/ui); it deliberately ignores the tenant's colour choices.
+ */
+[data-ui="admin"] {
+  --c-surface: #ffffff;
+  --c-surface-raised: #ffffff;
+  --c-surface-sunken: #f1eee8;
+  --c-text: #14110d;
+  --c-muted: #403a30;
+  --c-primary: #5a1020;
+  --c-primary-contrast: #ffffff;
+  --c-accent: #7a5b14;
+  --c-accent-contrast: #ffffff;
+  --c-accent-text: #6b4e0f;
+  --c-primary-hover: color-mix(in oklab, var(--c-primary) 82%, black);
+  --c-primary-soft: color-mix(in oklab, var(--c-primary) 8%, white);
+  --c-accent-soft: color-mix(in oklab, var(--c-accent) 14%, white);
+  --c-border: #8a8274;
+  --c-border-strong: #5f5648;
+  --c-focus: #0a3f8f;
+  --c-danger: #8a1414;
+  --c-danger-soft: #fdecea;
+  --c-success: #1f5a2c;
+  --c-success-soft: #e4f2e3;
+  --c-warning: #6b4200;
+  --c-warning-soft: #fdf0cc;
+  --c-info: #174a78;
+  --c-info-soft: #e3edf8;
+  --font-heading: var(--font-body);
+  --fw-heading: 700;
+  --heading-tracking: 0;
+  --shadow-card: 0 0 0 1px var(--c-border);
+  --shadow-raised: 0 0 0 1px var(--c-border-strong), 0 12px 32px rgb(0 0 0 / 0.22);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Touch targets: every control is at least 44 px tall. */
+  --control-h-sm: 2.75rem;
+  --control-h-md: 3rem;
+  --control-h-lg: 3.5rem;
+  --control-px: 1.25rem;
+  --fs-1: 0.875rem;
+  --lh-body: 1.55;
+}

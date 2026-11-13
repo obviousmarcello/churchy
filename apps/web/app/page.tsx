@@ -1,11 +1,11 @@
+import { Hero, PageShell } from "@churchy/ui";
 import messages from "@messages/hu.json";
 
 export default function HomePage() {
   const t = messages.public.home;
   return (
-    <>
-      <h1>{t.placeholderTitle}</h1>
-      <p>{t.placeholderLead}</p>
-    </>
+    <PageShell skipLinkLabel={messages.common.skipToContent}>
+      <Hero variant="text-only" title={t.placeholderTitle} lead={t.placeholderLead} />
+    </PageShell>
   );
 }

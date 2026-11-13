@@ -1,0 +1,60 @@
+/*
+ * Structural design tokens shared by every theme and by the admin variant.
+ * Colours and fonts live in the theme files (klasszikus.css, admin.css) and in the runtime
+ * ThemeConfig (see ../css.ts). Spacing is a 4 px grid; the type scale is anchored at 17 px.
+ */
+:root {
+  /* Spacing: 4 px grid (SDD 5.4). Tailwind's own spacing utilities (p-4 = 16 px) use the same grid. */
+  --space-1: 0.25rem; /*  4 */
+  --space-2: 0.5rem; /*  8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-5: 1.25rem; /* 20 */
+  --space-6: 1.5rem; /* 24 */
+  --space-7: 2rem; /* 32 */
+  --space-8: 2.5rem; /* 40 */
+  --space-9: 3rem; /* 48 */
+  --space-10: 4rem; /* 64 */
+  --space-11: 5rem; /* 80 */
+  --space-12: 6rem; /* 96 */
+
+  /* Type scale: the base (--fs-3) is 17 px. Steps 6-7 are fluid so headings fit 360 px screens. */
+  --fs-1: 0.8125rem; /* 13: eyebrows and badges only */
+  --fs-2: 0.9375rem; /* 15: captions, help text */
+  --fs-3: 1.0625rem; /* 17: body */
+  --fs-4: 1.25rem; /* 20: lead, h4 */
+  --fs-5: 1.625rem; /* 26: h3 */
+  --fs-6: clamp(1.875rem, 1.45rem + 1.7vw, 2.5rem); /* 30-40: h2 */
+  --fs-7: clamp(2.375rem, 1.6rem + 3.4vw, 3.75rem); /* 38-60: h1 / hero */
+  --lh-tight: 1.12;
+  --lh-snug: 1.3;
+  --lh-body: 1.6;
+  --measure: 68ch;
+
+  /* Layout */
+  --content-max: 75rem; /* 1200 px (SDD 7.1) */
+  --gutter: 1rem;
+  --header-h: 3.5rem; /* 56 px mobile sticky header */
+
+  /* Interaction */
+  --control-h-sm: 2.5rem;
+  --control-h-md: 2.75rem; /* 44 px */
+  --control-h-lg: 3.25rem;
+  --control-px: 1.125rem;
+  --focus-width: 3px;
+  --duration: 160ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --gutter: 1.5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: 2rem;
+    --header-h: 4.5rem;
+  }
+}

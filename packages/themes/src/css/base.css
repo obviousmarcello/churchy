@@ -1,0 +1,66 @@
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--c-surface);
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: var(--fs-3);
+    line-height: var(--lh-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Re-evaluate inherited text properties inside a nested theme / admin scope. */
+  :where([data-theme]:not(html), [data-ui]) {
+    color: var(--c-text);
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--fw-heading, 600);
+    letter-spacing: var(--heading-tracking, 0);
+    line-height: var(--lh-tight);
+    text-wrap: balance;
+  }
+
+  /* Bare links (inside prose) are underlined so they never rely on colour alone. */
+  a:not([class]) {
+    color: var(--c-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  a:not([class]):hover {
+    text-decoration-thickness: 2px;
+  }
+
+  :focus-visible {
+    outline: var(--focus-width) solid var(--c-focus);
+    outline-offset: 2px;
+  }
+
+  [data-surface="inverse"] {
+    --c-focus: var(--c-inverse-accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
