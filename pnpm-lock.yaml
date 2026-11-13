@@ -93,7 +93,11 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
 
-  packages/data-mock: {}
+  packages/data-mock:
+    dependencies:
+      '@churchy/contracts':
+        specifier: workspace:*
+        version: link:../contracts
 
   packages/hu: {}
 
