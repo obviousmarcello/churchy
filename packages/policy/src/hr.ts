@@ -73,8 +73,12 @@ export function evaluateHrTenant(actor: TenantActor, action: string, resource: R
       if (action !== "hr.ticket.read" && ticket.handedOver === true) {
         return deny("ticket was handed over and is read-only");
       }
-      if (action !== "hr.ticket.handle" && isRequester(actor, ticket)) {
-        return allow("requester of the ticket");
+      if (isRequester(actor, ticket)) {
+        // Requesters read and reply to their own ticket but never handle it: a handler may not
+        // process their own request (separation of duties, same rule as manager approval).
+        return action === "hr.ticket.handle"
+          ? deny("may not handle own request")
+          : allow("requester of the ticket");
       }
       return tenantHandles(actor, ticket.category);
     }
