@@ -65,16 +65,17 @@ Rules:
 
 ## Components
 
-| Group      | Components                                                                                            |
-| ---------- | ----------------------------------------------------------------------------------------------------- |
-| Page       | `PageShell` (skip link, header, `main#tartalom`, footer), `SkipLink`, `Container`                     |
-| Navigation | `Header` (responsive disclosure menu, one level of sub-items, CTA), `Footer`, `FooterLink`            |
-| Content    | `Hero` (`image-full` / `image-split` / `text-only`), `Card`, `SectionHeading`, `Ornament`             |
-| Actions    | `Button` (`primary`, `secondary`, `ghost`, `danger`; `sm`/`md`/`lg`), `ButtonLink`, `buttonClasses()` |
-| Forms      | `Input`, `Textarea`, `Select`, `Checkbox`, `DateInput`, `TimeInput`: each with label, help, error     |
-| Feedback   | `Badge`, `Alert` (`inline` / `banner`)                                                                |
-| Overlays   | `Tabs`, `Dialog` + `DialogClose` (Radix)                                                              |
-| Scope      | `AdminScope`                                                                                          |
+| Group      | Components                                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------------------------- |
+| Page       | `PageShell` (skip link, header, `main#tartalom`, footer), `SkipLink`, `Container`                             |
+| Navigation | `Header` (responsive disclosure menu, one level of sub-items, CTA), `Footer`, `FooterLink`                    |
+| Content    | `Hero` (`image-full` / `image-split` / `text-only`), `Card`, `SectionHeading`, `Ornament`                     |
+| Actions    | `Button` (`primary`, `secondary`, `ghost`, `danger`; `sm`/`md`/`lg`), `ButtonLink`, `buttonClasses()`         |
+| Forms      | `Input`, `Textarea`, `Select`, `Checkbox`, `DateInput`, `TimeInput`: each with label, help, error             |
+| Feedback   | `Badge`, `Alert` (`inline` / `banner`)                                                                        |
+| Overlays   | `Tabs`, `Dialog` + `DialogClose` (Radix)                                                                      |
+| Scope      | `AdminScope`                                                                                                  |
+| Formatted  | `FormattedDate`, `FormattedTime`, `PersonName`, `Address`, `Phone`, `BankAccount` (props only, `@churchy/hu`) |
 
 Server components unless marked: `Header`, `Tabs`, `Dialog` and `AdminScope` are client components.
 

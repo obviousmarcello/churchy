@@ -6,12 +6,19 @@
     "closeMenu": "Menü bezárása",
     "mainNavigation": "Főmenü",
     "closeDialog": "Bezárás",
-    "legalNavigation": "Jogi tájékoztatók"
+    "legalNavigation": "Jogi tájékoztatók",
+    "nav": {
+      "workspace": "Munkatér",
+      "admin": "Weboldal kezelése",
+      "organization": "Egyházmegyei portál"
+    }
   },
   "public": {
     "home": {
       "placeholderTitle": "Isten hozta!",
-      "placeholderLead": "A Churchy prototípus hamarosan itt lesz."
+      "placeholderLead": "A Churchy prototípus hamarosan itt lesz.",
+      "nextServices": "Következő {service.plural}",
+      "welcome": "Üdvözöljük {community.article} {community.lower} oldalán!"
     }
   },
   "dev": {
@@ -33,6 +40,7 @@
         "feedback": "Jelzések",
         "tabs": "Fülek és párbeszédablak",
         "admin": "Admin változat",
+        "formatting": "Formátumok",
         "footer": "Lábléc"
       },
       "theme": {
@@ -248,8 +256,6 @@
         "brandName": "Belvárosi Plébánia",
         "description": "Római katolikus plébánia a főváros szívében. Mindenkit szeretettel várunk.",
         "contactHeading": "Elérhetőség",
-        "address": "1056 Budapest, Március 15. tér 3.",
-        "phone": "+36 30 123 4567",
         "email": "iroda@minta-plebania.example",
         "hoursHeading": "Hivatali órák",
         "hours1": "Hétfő–péntek: 9:00–16:00",
@@ -264,12 +270,51 @@
         "legalPrivacy": "Adatkezelés",
         "legalAccessibility": "Akadálymentesség",
         "note": "© 2026 Belvárosi Plébánia. Minden jog fenntartva."
+      },
+      "formatting": {
+        "title": "Magyar formátumok és terminológia",
+        "lead": "A dátumok, nevek, címek és telefonszámok a közös megjelenítő komponensekből jönnek; a fogalmak az egyház hagyományához igazodnak.",
+        "dateLong": "Hosszú dátum",
+        "dateShort": "Rövid dátum",
+        "dateMonthDay": "Hónap és nap",
+        "dateWeek": "Hét",
+        "dateRelative": "Relatív nap",
+        "time": "Időpont",
+        "timeSpoken": "Kimondott időpont",
+        "timeRange": "Időszak",
+        "personName": "Név",
+        "address": "Cím",
+        "phone": "Telefonszám",
+        "bankAccount": "Bankszámlaszám",
+        "iban": "IBAN",
+        "termsHeading": "Fogalmak hagyományonként",
+        "termsLead": "Ugyanaz a felület háromféle egyháznál: a szavakat az előbeállítás adja, a toldalékolás nem futásidőben történik.",
+        "termsLive": "Az aktuális egyház szövegei",
+        "termsColumnService": "Alkalom",
+        "termsColumnSchedule": "Rend",
+        "termsColumnLead": "Vezető",
+        "termsColumnCommunity": "Közösség",
+        "traditionRk": "Római katolikus",
+        "traditionRef": "Református",
+        "traditionBapt": "Baptista",
+        "demoGivenName": "Katalin",
+        "demoFamilyName": "Minta"
       }
     }
   },
-  "nav": {
-    "workspace": "Munkatér",
-    "admin": "Weboldal kezelése",
-    "organization": "Egyházmegyei portál"
+  "admin": {
+    "dashboard": {
+      "title": "Vezérlőpult"
+    }
+  },
+  "munkater": {
+    "home": {
+      "title": "Munkatér"
+    }
+  },
+  "portal": {
+    "home": {
+      "title": "Egyházmegyei portál"
+    }
   }
 }

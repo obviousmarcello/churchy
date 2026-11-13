@@ -4,6 +4,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 import globals from "globals";
 import { permissionRulesConfig } from "./eslint.permissions.mjs";
+import i18nPlugin from "./packages/eslint-plugin-i18n/src/index.mjs";
 
 export default tseslint.config(
   {
@@ -72,4 +73,15 @@ export default tseslint.config(
   },
   // D-05: no ad-hoc role checks in UI code (see eslint.permissions.mjs).
   ...permissionRulesConfig,
+  // --- D-06 [UI]: no hard-coded user-visible text (PRD L-01) ---------------------------------
+  {
+    // All UI text lives in messages/hu.json and is read through next-intl. Tests, e2e specs and the
+    // showcase-free packages are exempt; the rule and its allowlist are documented in
+    // packages/eslint-plugin-i18n/src/no-hardcoded-text.mjs.
+    files: ["apps/web/**/*.{ts,tsx}", "packages/ui/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}", "apps/web/e2e/**", "**/test-setup.ts"],
+    plugins: { i18n: i18nPlugin },
+    rules: { "i18n/no-hardcoded-text": "error" },
+  },
+  // --- end D-06 [UI] ---------------------------------------------------------------------------
 );

@@ -41,3 +41,18 @@ export { Badge, type BadgeProps, type BadgeTone } from "./components/badge";
 export { Alert, type AlertProps, type AlertTone } from "./components/alert";
 export { Tabs, type TabItem, type TabsProps } from "./components/tabs";
 export { Dialog, DialogClose, type DialogProps } from "./components/dialog";
+export {
+  Address,
+  BankAccount,
+  FormattedDate,
+  FormattedTime,
+  PersonName,
+  Phone,
+  type AddressProps,
+  type BankAccountProps,
+  type FormattedDateProps,
+  type FormattedDateStyle,
+  type FormattedTimeProps,
+  type PersonNameProps,
+  type PhoneProps,
+} from "./components/formatted";
