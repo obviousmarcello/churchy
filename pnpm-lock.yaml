@@ -121,7 +121,20 @@ importers:
 
   packages/policy: {}
 
-  packages/presets: {}
+  packages/presets:
+    dependencies:
+      '@churchy/calendar':
+        specifier: workspace:*
+        version: link:../calendar
+      '@churchy/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@churchy/hu':
+        specifier: workspace:*
+        version: link:../hu
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
 
   packages/schedule:
     dependencies:

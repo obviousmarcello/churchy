@@ -9,6 +9,13 @@
   "scripts": {
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
     "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
+    "review-doc": "UPDATE_REVIEW_DOC=1 TZ=Europe/Budapest vitest run src/review-doc.test.ts",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@churchy/calendar": "workspace:*",
+    "@churchy/contracts": "workspace:*",
+    "@churchy/hu": "workspace:*",
+    "zod": "^4.6.7"
   }
 }
