@@ -1,0 +1,10 @@
+/*
+ * @churchy/themes stylesheet: fonts, tokens, themes, admin variant, Tailwind mapping, base styles.
+ * Import it after Tailwind: `@import "tailwindcss"; @import "@churchy/themes/styles.css";`
+ */
+@import "./css/fonts.css";
+@import "./css/tokens.css";
+@import "./css/klasszikus.css";
+@import "./css/admin.css";
+@import "./css/tailwind.css";
+@import "./css/base.css";
