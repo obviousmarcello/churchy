@@ -47,6 +47,9 @@ importers:
       '@churchy/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@churchy/data-mock':
+        specifier: workspace:*
+        version: link:../../packages/data-mock
       '@churchy/hu':
         specifier: workspace:*
         version: link:../../packages/hu
@@ -131,6 +134,9 @@ importers:
       '@churchy/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@churchy/schedule':
+        specifier: workspace:*
+        version: link:../schedule
 
   packages/eslint-plugin-i18n:
     devDependencies:

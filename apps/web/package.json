@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@churchy/contracts": "workspace:*",
+    "@churchy/data-mock": "workspace:*",
     "@churchy/hu": "workspace:*",
     "@churchy/i18n": "workspace:*",
     "@churchy/presets": "workspace:*",
