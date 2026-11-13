@@ -101,7 +101,8 @@ pnpm lint             # ESLint (custom rules for hard-coded strings and adapter 
 pnpm format           # Prettier write; `pnpm format:check` in CI
 pnpm typecheck        # tsc --noEmit in every package
 pnpm test             # unit tests (Vitest) in every package, TZ=Europe/Budapest
-pnpm test:coverage    # unit tests with coverage thresholds (80 %, 90 % for schedule/calendar)
+pnpm test:coverage    # unit tests with coverage thresholds (80 %; 90 % schedule/calendar; 95 % hu/policy)
+pnpm --filter @churchy/policy matrix   # regenerate packages/policy/MATRIX.md (a test fails if it is stale)
 pnpm test:contract    # contract suites (*.contract.test.ts) against mock (and DB when DATABASE_URL is set)
 pnpm e2e              # Playwright against `next start` on :3100 — run `pnpm build` first; pass --trace off unless debugging
 ```
@@ -116,7 +117,7 @@ Workspace packages are consumed as TypeScript source (`exports` → `./src/index
 2. **Read first.** Read the deliverable in `docs/03-DELIVERABLES.md` and the SDD sections it traces to.
 3. **Copy the acceptance criteria** from the issue into the PR description as a checklist. Tick only what is verified, and say how (test name, screenshot, measurement).
 4. **Keep the PR focused.** Split work bigger than about 2–3 days into several PRs.
-5. **Write tests with the code.** Domain logic needs unit tests (coverage ≥ 80 % overall, ≥ 90 % for `schedule`/`calendar`). New routes pass axe-core with 0 serious/critical violations.
+5. **Write tests with the code.** Domain logic needs unit tests (coverage ≥ 80 % overall, ≥ 90 % for `schedule`/`calendar`, ≥ 95 % for `hu`/`policy`). New routes pass axe-core with 0 serious/critical violations.
 6. **CI must be green.** An agent never merges its own PR. The QA agent reviews first, and a human approves every merge.
 7. **Flag security-sensitive changes** with the `security-review` label: auth, RLS, encryption, HR, diocesan access, payments. These need a second human reviewer.
 8. **If the docs are ambiguous or wrong**, don't guess silently. Note it in the PR and propose a doc change in the same PR or a follow-up.
