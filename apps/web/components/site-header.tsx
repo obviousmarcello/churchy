@@ -1,7 +1,7 @@
 import { Header } from "@churchy/ui";
-import messages from "@messages/hu.json";
-import { APP_NAV } from "@/lib/app-nav";
+import { buildAppNav } from "@/lib/app-nav";
 import { filterNav } from "@/lib/permissions/nav";
+import { getT } from "@/i18n/server";
 import { getActor, getRequestContext } from "@/server/session";
 
 /**
@@ -9,21 +9,26 @@ import { getActor, getRequestContext } from "@/server/session";
  * visitor has no navigation item (anonymous visitors, until public nav items exist).
  */
 export async function SiteHeader() {
-  const [actor, ctx] = await Promise.all([getActor(), getRequestContext()]);
-  const items = filterNav(APP_NAV, actor, ctx);
+  const [actor, ctx, t, nav] = await Promise.all([
+    getActor(),
+    getRequestContext(),
+    getT("common"),
+    getT("common.nav"),
+  ]);
+  const items = filterNav(buildAppNav(nav), actor, ctx);
   if (items.length === 0) return null;
   return (
     <Header
-      brand={{ name: messages.common.appName, href: "/" }}
+      brand={{ name: t("appName"), href: "/" }}
       nav={items.map(({ label, href, children }) => ({
         label,
         href,
         children: children?.map((c) => ({ label: c.label, href: c.href })),
       }))}
       labels={{
-        navigation: messages.common.mainNavigation,
-        openMenu: messages.common.openMenu,
-        closeMenu: messages.common.closeMenu,
+        navigation: t("mainNavigation"),
+        openMenu: t("openMenu"),
+        closeMenu: t("closeMenu"),
       }}
     />
   );

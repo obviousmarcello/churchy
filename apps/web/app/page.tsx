@@ -1,12 +1,13 @@
 import { Hero, PageShell } from "@churchy/ui";
-import messages from "@messages/hu.json";
 import { SiteHeader } from "@/components/site-header";
+import { getT } from "@/i18n/server";
 
-export default function HomePage() {
-  const t = messages.public.home;
+export default async function HomePage() {
+  const t = await getT("public.home");
+  const common = await getT("common");
   return (
-    <PageShell skipLinkLabel={messages.common.skipToContent} header={<SiteHeader />}>
-      <Hero variant="text-only" title={t.placeholderTitle} lead={t.placeholderLead} />
+    <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader />}>
+      <Hero variant="text-only" title={t("placeholderTitle")} lead={t("placeholderLead")} />
     </PageShell>
   );
 }

@@ -12,10 +12,15 @@
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@churchy/contracts": "workspace:*",
+    "@churchy/hu": "workspace:*",
+    "@churchy/i18n": "workspace:*",
+    "@churchy/presets": "workspace:*",
     "@churchy/themes": "workspace:*",
     "@churchy/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.5",
     "next": "16.4.6",
+    "next-intl": "^4.15.1",
     "postcss": "^8.5.32",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
