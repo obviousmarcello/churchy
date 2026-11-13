@@ -3,9 +3,10 @@
 | | |
 |---|---|
 | **Document** | Deliverables breakdown & acceptance criteria |
-| **Version** | 1.0 (draft) |
-| **Date** | 2026-11-12 |
+| **Version** | 1.1 (draft) |
+| **Date** | 2026-11-13 |
 | **Inputs** | [01-PRD.md](./01-PRD.md), [02-SDD.md](./02-SDD.md) |
+| **Changes in 1.1** | Added Release 2 (internal workspace, *Munkatér*): milestones M5–M8 and M10, deliverables D-51 … D-83; former M5 renamed **M9**; traceability and quality gates extended. |
 
 This document splits the PRD requirements into **deliverables** — units of work that can be demonstrated and verified against objective, measurable acceptance criteria. Each deliverable traces back to PRD requirement IDs and SDD sections.
 
@@ -17,7 +18,8 @@ This document splits the PRD requirements into **deliverables** — units of wor
 - **Traces** — PRD requirement IDs covered (`FR`, `NFR`, `L`, `C`) and SDD section.
 - **Acceptance criteria (AC)** — every criterion is binary (pass/fail) and checked by the stated **verification** method. A deliverable is done only when **all** its AC pass and the global Definition of Done (§2) is met.
 - **Estimate** — ideal person-days (pd) for one full-stack engineer; for planning only.
-- **Priority** — inherited from the PRD (P0 = MVP, P1 = GA, P2 = post-GA).
+- **Priority** — inherited from the PRD, relative to its release (P0 = launch must-have, P1 = GA, P2 = post-GA).
+- **Release** — **R1** public website (M0–M4, M9), **R2** internal workspace *Munkatér* (M5–M8, M10).
 
 ## 2. Global Definition of Done
 
@@ -25,11 +27,12 @@ Applies to every deliverable in addition to its own AC:
 
 1. Code merged to `main` via reviewed PR; CI green (lint, typecheck, unit, integration, E2E).
 2. All user-visible strings in `messages/hu.json`; no hard-coded Hungarian or English UI text in components (checked by lint rule).
-3. New public/admin routes pass axe-core with **0 serious/critical** violations.
+3. New public/admin/workspace routes pass axe-core with **0 serious/critical** violations.
 4. New domain logic has unit tests; overall domain coverage stays **≥ 80 %**.
 5. No new high/critical vulnerabilities in dependency or image scans.
-6. Feature works on the three demo tenants (Catholic, Reformed, Baptist) where applicable.
+6. Feature works on the three demo tenants (Catholic, Reformed, Baptist) where applicable — for R2 including their seeded workspace data (staff, volunteers, teams, rooms, songs, plans, HR categories).
 7. Docs updated (README/ADR/runbook) when behavior, config or operations change.
+8. (R2) New tenant-owned tables have RLS policies and are covered by the isolation suite (D-03); new sensitive fields are encrypted per SDD §8.3 / §28.
 
 ## 3. Milestone overview
 
@@ -40,9 +43,15 @@ Applies to every deliverable in addition to its own AC:
 | **M2 — Admin & customization** | Non-technical editors can run and brand a site | D-18 … D-27 | Editor E2E suite passes; one church configured from zero using only the admin | 50 pd |
 | **M3 — Requests & compliance** | Pastoral requests, legal pages, privacy | D-28 … D-33 | Security & privacy review signed off | 25 pd |
 | **M4 — Hardening & pilot (GA)** | Quality bars met; real churches live | D-34 … D-41 | 5 pilot churches live ≥ 4 weeks; GA quality gates green | 28 pd |
-| **M5 — v1.x enhancements** | P1/P2 scope | D-42 … D-50 | Per deliverable | 45 pd |
+| **M5 — Workspace foundation** (R2) | People, teams, roles, Munkatér shell, notifications, PWA | D-51 … D-56 | Staff and volunteers of a demo tenant sign in, see *Ma*, receive push | 25 pd |
+| **M6 — Calendars & rooms** (R2) | Shared internal calendars; conflict-free room booking | D-57 … D-62 | Calendar & booking E2E suites pass; concurrency test green | 30 pd |
+| **M7 — Worship & rotas** (R2) | Music plans, song library, attachments, scheduling, stage view | D-63 … D-70 | A full month of plans built, approved and played from stage view on a demo tenant | 40 pd |
+| **M8 — HR & R2 GA** (R2) | HR tickets, leave, confidential handling; R2 quality gates; pilot | D-71 … D-78 | 3 pilot churches using the workspace ≥ 6 weeks; R2 gates green | 37 pd |
+| **M9 — Website v1.x enhancements** (R1) | R1 P1/P2 scope (formerly M5) | D-42 … D-50 | Per deliverable | 45 pd |
+| **M10 — Workspace v1.x enhancements** (R2) | R2 P1/P2 scope not needed for R2 GA | D-79 … D-83 | Per deliverable | 20 pd |
 
-**Total to GA (M0–M4): ≈ 174 pd** (≈ 4.5 months for 2 engineers incl. ~10 % buffer, plus design & QA support).
+- **Total to R1 GA (M0–M4): ≈ 174 pd** (≈ 4.5 months for 2 engineers incl. ~10 % buffer, plus design & QA support).
+- **Total to R2 GA (M5–M8): ≈ 132 pd** (≈ 3.5 months for 2 engineers incl. buffer), starting after R1 GA. M9 runs in parallel with a third (part-time) engineer or is interleaved.
 
 ```mermaid
 gantt
@@ -59,8 +68,14 @@ gantt
     Requests & compliance :m3, after m1, 3w
     section M4
     Hardening & pilot     :m4, after m2, 5w
-    section M5
-    v1.x enhancements     :m5, after m4, 6w
+    section R2 Workspace
+    M5 Workspace foundation :m5, after m4, 3w
+    M6 Calendars & rooms    :m6, after m5, 4w
+    M7 Worship & rotas      :m7, after m5, 5w
+    M8 HR & R2 GA (pilot)   :m8, after m7, 6w
+    M10 Workspace v1.x      :m10, after m8, 3w
+    section R1 follow-up
+    M9 Website v1.x         :m9, after m4, 8w
 ```
 
 ---
@@ -68,7 +83,7 @@ gantt
 ## 4. M0 — Foundations
 
 ### D-01 Repository, tooling & CI pipeline
-- **Traces:** NFR-05, NFR-11 · SDD §3, §18, §20 · **Priority:** P0 · **Est.:** 3 pd
+- **Traces:** NFR-05, NFR-11 · SDD §3, §18, §29 · **Priority:** P0 · **Est.:** 3 pd
 - **AC:**
   1. Monorepo with the structure in SDD §20; `pnpm install && pnpm dev` starts the full local stack (app, Postgres, MinIO, Mailpit, Caddy) in **≤ 5 minutes** on a clean machine.
   2. CI runs lint, typecheck, unit, integration, build and dependency/image scans on every PR; median CI duration **≤ 10 minutes**.
@@ -430,7 +445,262 @@ gantt
 
 ---
 
-## 9. M5 — v1.x enhancements (post-GA)
+## 9. M5 — Workspace foundation (R2)
+
+### D-51 Unified people & teams model, directory
+- **Traces:** FR-502, FR-503, FR-009, G10 · SDD §21.1 · **Priority:** P0 · **Est.:** 5 pd
+- **AC:**
+  1. `people` extended (login link, public flag, contact visibility, skills); existing public staff page keeps working unchanged (R1 E2E suite green).
+  2. Teams, positions and memberships manageable in the workspace; a person can belong to multiple teams with multiple positions.
+  3. Directory search & filter by team/position/skill in Hungarian collation order; each contact field obeys the person's visibility setting (tested for 4 visibility levels).
+  4. Seed data: each demo tenant has ≥ 6 employees, ≥ 30 volunteers (incl. 3 without login, 2 minors), ≥ 5 teams.
+- **Verification:** E2E + unit tests.
+
+### D-52 Workspace roles & policy extension
+- **Traces:** FR-504 · SDD §21.2 · **Priority:** P0 · **Est.:** 4 pd
+- **AC:**
+  1. 8 workspace roles with team/room/category scopes implemented in `can()`.
+  2. Unit test for **every cell** of the SDD §21.2 matrix, including scope boundaries (other team, other room, other HR category).
+  3. Website and workspace roles combine additively (tests for 5 representative combinations).
+- **Verification:** unit tests.
+
+### D-53 Munkatér shell & „Ma” home
+- **Traces:** FR-501, FR-506, NFR-13 · SDD §20 · **Priority:** P0 · **Est.:** 5 pd
+- **AC:**
+  1. `/munkater` with bottom bar (mobile) / sidebar (desktop); hidden items for disabled modules or missing permissions.
+  2. *Ma* shows to-dos (pending assignments, reviews, approvals), today, this week, my requests — each block appears only when non-empty.
+  3. Workspace pages are `private, no-store` and `noindex` (header test).
+  4. *Ma* interactive **≤ 1 s** p75 on mid-range phone profile; axe 0 serious/critical.
+- **Verification:** E2E + Lighthouse (authenticated) + header tests.
+
+### D-54 Notification service (in-app, email, web push)
+- **Traces:** FR-505, NFR-16 · SDD §26.1 · **Priority:** P0 · **Est.:** 5 pd
+- **AC:**
+  1. Notification center with unread count; per-kind channel preferences; daily digest option; quiet hours 22:00–07:00 hold non-urgent pushes.
+  2. Web push delivered on Android Chrome, desktop Chrome/Firefox/Edge and installed iOS PWA (manual matrix recorded).
+  3. Fan-out to a 40-person team completes in **≤ 2 min**; batching collapses ≥ 5 plan edits within 10 min into **1** notification.
+  4. No notification payload or email contains HR/pastoral content (automated assertion on all templates).
+- **Verification:** integration tests + device matrix.
+
+### D-55 Installable PWA
+- **Traces:** FR-506 · SDD §26.2 · **Priority:** P0 · **Est.:** 3 pd
+- **AC:**
+  1. Per-tenant manifest (name, icons from logo, theme colour) — Lighthouse PWA installability checks pass.
+  2. App shell and *Ma* / *Naptár* open offline with last cached data and an *„Offline vagy”* banner.
+  3. Hungarian iOS install guide shown on iOS Safari when not installed.
+- **Verification:** Lighthouse + Playwright offline emulation.
+
+### D-56 Volunteer invitations & account lifecycle
+- **Traces:** FR-509, FR-510 · **Priority:** P1 · **Est.:** 3 pd
+- **AC:**
+  1. CSV import (name, email, phone, teams) with validation report; 200 rows imported in ≤ 30 s.
+  2. Team invite link with leader approval; people without login manageable by their leader.
+  3. Deactivation removes access within 1 minute (sessions revoked), keeps history, and removes the person from future suggestions.
+  4. First workspace login shows the employee/volunteer privacy notice with stored acknowledgement (C-09).
+- **Verification:** E2E.
+
+---
+
+## 10. M6 — Calendars & rooms (R2)
+
+### D-57 Unified events with calendars & visibility
+- **Traces:** FR-601, FR-602, FR-609 · SDD §22.1 · **Priority:** P0 · **Est.:** 5 pd
+- **AC:**
+  1. `events` migrated to `calendar_id` + `visibility`; all existing public events preserved (migration test).
+  2. Shared, team, personal and absence calendars; editor permissions per calendar.
+  3. **Negative tests**: events with visibility `private`, `team`, `staff` never appear on any public route, iCal feed, sitemap or search (all 4 surfaces tested).
+  4. Changing visibility to `public` makes the event appear on the website within ≤ 60 s.
+- **Verification:** integration + E2E.
+
+### D-58 Calendar views & computed layers
+- **Traces:** FR-601, FR-603, FR-608, NFR-13 · SDD §22.1 · **Priority:** P0 · **Est.:** 6 pd
+- **AC:**
+  1. Day/week/month/agenda views (agenda default < 768 px) with Hungarian locale, Monday week start.
+  2. Layers toggleable: events, services, bookings, my assignments, absences; services shown with plan status and team.
+  3. Absences show *Távol* only; type/reason visible only to HR handlers (policy test).
+  4. Month view with 500 entries renders **≤ 500 ms**.
+- **Verification:** E2E + performance test.
+
+### D-59 Invitations, RSVP, reminders, personal iCal feed
+- **Traces:** FR-604, FR-606, FR-607 · SDD §22.2 · **Priority:** P0 (feed) / P1 (RSVP, reminders) · **Est.:** 4 pd
+- **AC:**
+  1. Invite people/teams; RSVP from app and from email; organiser sees response counts.
+  2. Reminders delivered within ±1 min of the configured offset (mocked clock test); rescheduled on event change.
+  3. Personal feed imports into Google, Apple and Outlook calendars; regenerated token invalidates the old URL immediately; feed contains only events the user may see.
+- **Verification:** integration + manual calendar import record.
+
+### D-60 Rooms catalog & conflict-free booking
+- **Traces:** FR-701 … FR-704, FR-710, NFR-15, G8 · SDD §23.1–23.2 · **Priority:** P0 · **Est.:** 7 pd
+- **AC:**
+  1. Rooms and resources with capacity, features, photos, managers, approval policy.
+  2. Exclusion constraint in place; **100 parallel conflicting requests → exactly 1 succeeds** (integration test).
+  3. On conflict, ≥ 1 alternative (room or time) offered when one exists (10 scripted scenarios).
+  4. Approval flow with tentative holds that expire after `holdHours` (mocked clock test).
+  5. Booking a free room from the phone takes **≤ 1 minute** for ≥ 4/5 test users.
+- **Verification:** integration + usability test.
+
+### D-61 Recurring bookings, rules, service auto-block, event-linked booking
+- **Traces:** FR-605, FR-705 … FR-707 · SDD §23.3–23.4 · **Priority:** P0 (P1 rules) · **Est.:** 6 pd
+- **AC:**
+  1. Weekly series expanded 12 months ahead; creation reports conflicts per occurrence (*„52 alkalomból 3 ütközik”*); "this / this and following / all" edits work.
+  2. Rules enforced: bookable hours, minimum notice, max duration, horizon, blackout periods (one test per rule).
+  3. Services block mapped rooms with buffers; schedule changes update blocks within ≤ 5 min; clashes recorded and room manager notified — nothing auto-cancelled.
+  4. Room can be booked from the event form in the same save.
+- **Verification:** integration + E2E.
+
+### D-62 Facility daily list & usage reports
+- **Traces:** FR-708, FR-711 · SDD §23.5 · **Priority:** P1 · **Est.:** 2 pd
+- **AC:**
+  1. Daily list emailed at 06:30 Europe/Budapest with all of today's bookings and setup notes.
+  2. CSV usage report per room/team/month opens correctly in Hungarian Excel (UTF-8 BOM, `;`), totals match DB aggregates.
+- **Verification:** integration tests.
+
+---
+
+## 11. M7 — Worship & rotas (R2)
+
+### D-63 Service occurrence materialization
+- **Traces:** FR-801, FR-603 · SDD §24.1 · **Priority:** P0 · **Est.:** 3 pd
+- **AC:**
+  1. Occurrences created lazily and by nightly job for 8 weeks; unique key prevents duplicates (concurrency test).
+  2. Cancelling or moving a service via schedule exception updates occurrence status and notifies plan owner + team within ≤ 5 min; *Áthelyezés* moves plan and assignments in one action.
+- **Verification:** integration tests.
+
+### D-64 Song library, hymnals & arrangements
+- **Traces:** FR-803, FR-804, L-11 · SDD §24.2, §24.6 · **Priority:** P0 (P1 arrangements) · **Est.:** 7 pd
+- **AC:**
+  1. Songs with all PRD FR-803 fields; hymnal refs (platform catalog + church-defined songbooks); search by title, first line, hymnal number (*„RÉ 42”*), theme, season — accent-insensitive.
+  2. Arrangements with ChordPro; transposition to all 12 keys correct for a 20-song reference set; capo display; H/B naming per user setting (*B♭* ↔ *B*, *B* ↔ *H* tested).
+  3. Import from CSV (title, hymnal, number, key) for ≥ 500 songs in ≤ 60 s.
+- **Verification:** unit + E2E.
+
+### D-65 Attachments: upload, versioning, preview, access control
+- **Traces:** FR-805, C-10 · SDD §24.5 · **Priority:** P0 · **Est.:** 5 pd
+- **AC:**
+  1. Upload PDF/audio/MusicXML/image/link to song, arrangement, plan or item; rights-confirmation checkbox required.
+  2. New version supersedes old; history viewable; plan shows newest.
+  3. Inline preview: PDF (pdf.js), audio streaming with seek (range requests), ChordPro, images.
+  4. Access: unauthorized users and anonymous requests get 403/404; signed URLs expire after 5 min; attachments never appear in sitemaps/search/public pages (negative tests).
+  5. Takedown by hash disables the file across the tenant.
+- **Verification:** integration + E2E + security tests.
+
+### D-66 Service plans, templates & item editor
+- **Traces:** FR-801, FR-802 · SDD §24.2–24.3 · **Priority:** P0 · **Est.:** 6 pd
+- **AC:**
+  1. Templates for every preset's main service types (≥ 2 per preset family); new plan from template in 1 action.
+  2. Item editor: add/reorder (drag & keyboard), song picker with last-used info, key override, duration totals (*„Összesen: 58 perc”*), responsible person.
+  3. A typical 12-item plan can be built from template in **≤ 5 minutes** by ≥ 2/3 worship leaders in usability test.
+- **Verification:** E2E + usability test.
+
+### D-67 Team scheduling, one-tap responses, swaps & generic rotas
+- **Traces:** FR-806, FR-812, G7 · SDD §24.4 · **Priority:** P0 (P1 generic rota) · **Est.:** 7 pd
+- **AC:**
+  1. Candidate ranking applies hard filters (absence, availability, overlapping assignment) — **0 suggestions violating a hard filter** across a 200-case generated test set; reasons shown.
+  2. Bulk-assign a month; accept/decline via signed one-tap email link without login (token single-purpose, 14-day expiry, tamper test).
+  3. Swap requests: first eligible acceptance wins (concurrency test); leader notified.
+  4. Reminders 3 days and 1 day before; generic rota for ≥ 3 non-music teams on demo tenants.
+- **Verification:** unit + integration + E2E.
+
+### D-68 Review & approval workflow, comments, change notifications
+- **Traces:** FR-807 · SDD §24.3 · **Priority:** P0 · **Est.:** 4 pd
+- **AC:**
+  1. State machine per SDD §24.3: every allowed transition works, every forbidden transition rejected (table-driven tests).
+  2. Comments on plan/items with @mentions notifying the mentioned person; resolve/unresolve.
+  3. Post-approval edits produce **one** batched change summary listing added/removed/reordered items and key changes (diff test fixtures).
+  4. Auto-lock 6 h after service writes song usages.
+- **Verification:** unit + E2E.
+
+### D-69 Stage/rehearsal view & offline plans
+- **Traces:** FR-808, NFR-14, G7 · SDD §24.7 · **Priority:** P1 · **Est.:** 5 pd
+- **AC:**
+  1. Full-screen view, swipe/arrow/Bluetooth-pedal navigation, next-item preview, attachment switcher.
+  2. From a notification, the plan with attachments is reached in **≤ 2 taps**.
+  3. Downloaded plan + attachments (test plan: 8 PDFs, 4 MP3s, ≈ 60 MB) open with network fully offline; storage warning above 200 MB; on reconnect, changes are shown.
+- **Verification:** Playwright offline tests + manual tablet test.
+
+### D-70 Plan PDF export & song usage reports
+- **Traces:** FR-809, FR-810 · **Priority:** P1 · **Est.:** 3 pd
+- **AC:**
+  1. Team PDF (items, keys, people, notes) and congregation *énekszám-tábla* PDF, A4, Hungarian formatting.
+  2. Usage report per period: count, last used, per song; CSV export opens in Hungarian Excel; numbers match `song_usages`.
+- **Verification:** snapshot tests + integration.
+
+---
+
+## 12. M8 — HR & R2 GA (R2)
+
+### D-71 HR categories, submission & ticket lifecycle
+- **Traces:** FR-901 … FR-903, G9 · SDD §25.1–25.2 · **Priority:** P0 · **Est.:** 7 pd
+- **AC:**
+  1. 8 default categories seeded and configurable (fields, who can submit, handlers, confidentiality, retention).
+  2. Lifecycle per SDD §25.2 with reference numbers; threaded messages; internal notes never visible to requester (policy + UI test).
+  3. Ticket content, messages and attachments encrypted; DB dump contains no plaintext of a seeded marker (automated test).
+  4. Emails contain only reference, category and link (template assertion).
+- **Verification:** integration + E2E.
+
+### D-72 Approval chains & SLA tracking
+- **Traces:** FR-902, FR-907 · SDD §25.2, §25.5 · **Priority:** P0 (P1 SLA dashboard) · **Est.:** 4 pd
+- **AC:**
+  1. Chains with manager/person/role steps; self-approval skipped; absent approver auto-delegated to deputy (logged); unresolved step routed to HR — each rule unit-tested.
+  2. `due_at` in working hours using the Hungarian working-day calendar; reminders at 75 % and overdue (mocked clock).
+  3. HR dashboard: open by category/status, overdue list, median resolution time — figures match DB queries.
+- **Verification:** unit + integration.
+
+### D-73 Leave requests, working-day calculation, absences & conflicts
+- **Traces:** FR-904, FR-905, FR-608, L-12 · SDD §25.3 · **Priority:** P0 (P1 balances) · **Est.:** 6 pd
+- **AC:**
+  1. Working days computed per person work pattern, holidays and swapped working days — **≥ 40 test cases** incl. half days, Tue–Sun patterns, year boundary, swapped Saturdays.
+  2. `workday_calendar` loaded for current and next year; CI test fails if next year's data is missing after 1 December.
+  3. Approval creates absence, calendars show *Távol*, overlapping accepted assignments are listed to team leaders with *Helyettes keresése* within ≤ 5 min.
+  4. Balances: entitlement + carry-over + adjustments − used; employee sees own balance only.
+- **Verification:** unit + E2E.
+
+### D-74 Confidential tickets & safeguarding
+- **Traces:** FR-906, C-11, NFR-17 · SDD §25.4 · **Priority:** P0 · **Est.:** 4 pd
+- **AC:**
+  1. Confidential categories visible only to scoped handlers + requester; *Vezető*, other HR handlers and platform impersonation get 404 (tests for each).
+  2. Every open requires a reason; 100 % of reads present in audit log (test).
+  3. Anonymous mode stores no requester identity (DB inspection test) and supports replies via one-time access code.
+  4. Handover makes ticket read-only and records recipient and date.
+- **Verification:** integration + security review.
+
+### D-75 Staff records, documents, onboarding/offboarding
+- **Traces:** FR-908, FR-909 · SDD §25.1 · **Priority:** P1 · **Est.:** 5 pd
+- **AC:**
+  1. Staff profile with employment type, manager, work pattern; restricted documents encrypted, downloads audit-logged.
+  2. Checklist templates; instance creation on hire/leave with assignees and due dates; overdue tasks highlighted.
+  3. Offboarding completion triggers account deactivation prompt (D-56).
+- **Verification:** E2E.
+
+### D-76 Volunteer compliance tracking
+- **Traces:** FR-910, C-12 · SDD §25.1 · **Priority:** P1 · **Est.:** 3 pd
+- **AC:**
+  1. Compliance kinds configurable; required per team (e.g. youth team requires *Erkölcsi bizonyítvány*).
+  2. Only verification fact, verifier, date and expiry stored — **no file upload possible** for these items.
+  3. Reminders 30 days before expiry; people missing a required item are flagged (not auto-blocked) in scheduling suggestions.
+- **Verification:** unit + E2E.
+
+### D-77 Payroll export
+- **Traces:** FR-911 · SDD §25.6 · **Priority:** P1 · **Est.:** 2 pd
+- **AC:**
+  1. Monthly CSV of approved absences per employee; column mapping configurable; opens correctly in Hungarian Excel.
+  2. Export totals equal the sum of approved working days per employee (test).
+- **Verification:** integration.
+
+### D-78 R2 quality, privacy & security gate + workspace pilot
+- **Traces:** C-08, C-09, NFR-13 … NFR-17, PRD §10 workspace metrics · SDD §28 · **Priority:** P0 · **Est.:** 6 pd (+ pilot support)
+- **AC:**
+  1. 2FA enforced for privileged workspace roles; HR screens idle timeout 30 min.
+  2. Retention defaults and employee/volunteer privacy notices reviewed by a Hungarian employment/data-protection lawyer (record).
+  3. External penetration test of the workspace: 0 open critical/high.
+  4. axe 0 serious/critical on all workspace routes; NFR-13 performance met.
+  5. Usability: ≥ 4/5 volunteers accept an assignment and open the plan attachments unassisted in ≤ 1 min; ≥ 2/3 HR handlers process a leave request end-to-end in ≤ 3 min.
+  6. **3 pilot churches** (≥ 2 denominations) use calendars, rooms, worship planning and HR for **≥ 6 weeks** with 0 double bookings, 0 data-exposure incidents, ≥ 80 % plans approved ≥ 48 h before services.
+- **Verification:** reports, review records, pilot report.
+
+---
+
+## 13. M9 — Website v1.x enhancements (R1, post-GA)
 
 | ID | Deliverable | Traces | Pri. | Est. | Key measurable acceptance criteria |
 |---|---|---|---|---|---|
@@ -446,7 +716,19 @@ gantt
 
 ---
 
-## 10. Traceability matrix (PRD → deliverables)
+## 14. M10 — Workspace v1.x enhancements (R2, post-GA)
+
+| ID | Deliverable | Traces | Pri. | Est. | Key measurable acceptance criteria |
+|---|---|---|---|---|---|
+| D-79 | Internal documents library | FR-507 | P1 | 3 pd | Folders with team/role access; unauthorized access returns 404 (policy tests); full-text search over PDF text. |
+| D-80 | Internal notice board | FR-508 | P2 | 2 pd | Posts targeted to roles/teams; read confirmation report shows % read per post; push on publish. |
+| D-81 | External room rental requests | FR-709 | P2 | 4 pd | Public form creates pending booking; requester data encrypted; requester notified of decision within ≤ 60 s of approval; spam protection as D-28. |
+| D-82 | Public song numbers & lyrics export | FR-811, FR-813 | P2 | 3 pd | Only titles/hymnal numbers published on the service detail (no attachments — negative test); lyrics export only for songs whose licence field allows it. |
+| D-83 | Two-way calendar sync | FR-606 (P2 part) | P2 | 8 pd | Google & Microsoft 365 two-way sync for personal calendars; changes propagate ≤ 5 min both ways; no internal-only data leaves without user opt-in. |
+
+---
+
+## 15. Traceability matrix (PRD → deliverables)
 
 | PRD requirement(s) | Deliverable(s) |
 |---|---|
@@ -492,8 +774,51 @@ gantt
 | C-01, C-02, C-05, C-07 | D-31 |
 | C-03 | D-30 |
 | C-06 | D-19 |
+| **R2 — Workspace** | |
+| FR-501, FR-506 | D-53, D-55 |
+| FR-502, FR-503 | D-51 |
+| FR-504 | D-52 |
+| FR-505 | D-54 |
+| FR-507, FR-508 | D-79, D-80 |
+| FR-509, FR-510 | D-56 |
+| FR-601, FR-602, FR-609 | D-57 |
+| FR-603, FR-608 | D-58, D-63, D-73 |
+| FR-604, FR-606, FR-607 | D-59, D-83 |
+| FR-605 | D-61 |
+| FR-701 … FR-704, FR-710 | D-60 |
+| FR-705 … FR-707 | D-61 |
+| FR-708, FR-711 | D-62 |
+| FR-709 | D-81 |
+| FR-801, FR-802 | D-63, D-66 |
+| FR-803, FR-804 | D-64 |
+| FR-805 | D-65 |
+| FR-806, FR-812 | D-67 |
+| FR-807 | D-68 |
+| FR-808 | D-69 |
+| FR-809, FR-810 | D-70 |
+| FR-811, FR-813 | D-82 |
+| FR-901 … FR-903 | D-71 |
+| FR-904, FR-905 | D-73 |
+| FR-906 | D-74 |
+| FR-907 | D-72 |
+| FR-908, FR-909 | D-75 |
+| FR-910 | D-76 |
+| FR-911 | D-77 |
+| L-11 | D-64 |
+| L-12 | D-72, D-73 |
+| NFR-13 | D-53, D-58, D-78 |
+| NFR-14 | D-55, D-69 |
+| NFR-15 | D-60 |
+| NFR-16 | D-54 |
+| NFR-17 | D-74, D-78 |
+| C-08, C-09 | D-56, D-71, D-78 |
+| C-10 | D-65, D-82 |
+| C-11 | D-74 |
+| C-12 | D-76 |
 
-## 11. GA quality gates (summary checklist)
+## 16. Quality gates (summary checklist)
+
+### 16.1 R1 GA — public website
 
 | Gate | Threshold | Source |
 |---|---|---|
@@ -507,3 +832,20 @@ gantt
 | Onboarding | 3/3 churches live in ≤ 2 h active work | D-34 |
 | Pilot | 5 churches, ≥ 4 weeks, uptime ≥ 99.9 % | D-41 |
 | Reviews | Preset sign-offs + legal review complete | D-23, D-31 |
+
+### 16.2 R2 GA — internal workspace (*Munkatér*)
+
+| Gate | Threshold | Source |
+|---|---|---|
+| Tenant isolation suite incl. all workspace tables | 100 % pass | D-03, DoD #8 |
+| Booking concurrency | 100 parallel conflicting requests → exactly 1 succeeds | D-60 |
+| Visibility leakage | 0 non-public events / attachments on public surfaces | D-57, D-65 |
+| HR encryption & email hygiene | 0 plaintext markers in DB dump; 0 sensitive content in emails/pushes | D-54, D-71 |
+| Confidential access | 100 % of reads audit-logged; impersonation blocked | D-74 |
+| Workspace performance | Interactive ≤ 1 s p75; month view ≤ 500 ms | D-53, D-58 |
+| Offline | Downloaded plan + attachments open offline | D-69 |
+| Accessibility | axe 0 serious/critical on all workspace routes | D-78 |
+| Pentest (workspace) | 0 open critical/high | D-78 |
+| Legal review | Retention defaults + employee/volunteer notices signed off | D-78 |
+| Usability | Volunteer, worship-leader, HR-handler targets met | D-60, D-66, D-78 |
+| Pilot | 3 churches, ≥ 6 weeks, 0 double bookings, ≥ 80 % plans approved ≥ 48 h ahead | D-78 |

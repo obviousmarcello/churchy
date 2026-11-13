@@ -2,10 +2,11 @@
 
 | | |
 |---|---|
-| **Product** | Churchy — customizable website platform for Hungarian churches |
+| **Product** | Churchy — customizable website & internal workspace platform for Hungarian churches |
 | **Document** | Product Requirements Document |
-| **Version** | 1.0 (draft) |
-| **Date** | 2026-11-12 |
+| **Version** | 1.1 (draft) |
+| **Date** | 2026-11-13 |
+| **Changes in 1.1** | Added Release 2: the internal workspace (*Munkatér*) — internal calendars, room & resource booking, worship/music planning with attachments, volunteer rotas, HR request management (§6.6–6.10 and related sections). |
 | **Status** | For review |
 | **Related** | [02-SDD.md](./02-SDD.md) (Solution Design), [03-DELIVERABLES.md](./03-DELIVERABLES.md) (Deliverables) |
 
@@ -21,6 +22,18 @@ Today these sites are typically (a) outdated hand-built sites maintained by one 
 
 **Churchy** is a hosted, multi-church platform. Each church gets its own Hungarian-language website, on its own domain, configured — not coded — to match its denomination, its vocabulary, its look and the features it actually uses. Content is maintained by non-technical volunteers and office staff through a simple Hungarian admin interface.
 
+Behind the public website, a church is run by people: clergy, employees (office manager, sacristan, cantor, catechists, caretaker) and often dozens of volunteers (readers, altar servers, choir members, musicians, sound/projection technicians, cleaners). Today they coordinate through phone calls, paper rotas on the sacristy door, Messenger/WhatsApp groups and spreadsheets: *who plays on Sunday, which songs, where is the sheet music, is the community hall free on Thursday, who approved the office manager's leave?*
+
+**Churchy Munkatér** (*workspace*) is the signed-in, internal side of the same platform — a lightweight, church-shaped ERP:
+
+- **Internal calendars** shared by staff, teams and volunteers;
+- **Room & resource booking** with guaranteed conflict-free schedules;
+- **Worship & music planning** — the order of service, songs, keys, team assignments and all attachments (sheet music, chord charts, reference recordings) in one place, reviewable and approvable, usable on stage from a phone or tablet;
+- **Volunteer rotas** (*szolgálati beosztás*) for any team;
+- **HR request management** — leave, sick-leave notices, certificates, equipment, confidential matters — as tracked tickets with approvals and SLAs.
+
+Workspace and website share one login, one people directory, one calendar and the same service schedule, so information is entered once.
+
 ## 2. Problem statement
 
 1. **Stale critical information.** Service times change seasonally (summer schedule, Advent, Holy Week, feast days) and are rarely updated reliably.
@@ -28,6 +41,7 @@ Today these sites are typically (a) outdated hand-built sites maintained by one 
 3. **One-size-fits-none tooling.** Generic site builders use the wrong vocabulary (a Reformed congregation has no *szentmise*, a Catholic parish has no *presbitérium*) and lack church-specific content types (weekly announcements, service schedule, sacrament requests).
 4. **Compliance burden.** GDPR, cookie consent, the Hungarian *Impresszum* obligation and accessibility are poorly understood and usually unmet. Sacrament/pastoral requests involve special-category (religious) personal data.
 5. **Cost and maintenance.** Each church pays separately for hosting, a theme, plugins and occasional "website fixes", and security updates are neglected.
+6. **Scattered internal coordination.** Rotas, music plans, sheet music, room reservations and HR requests live in chat groups, private mailboxes and paper. Last-minute changes don't reach everyone, files get lost, double bookings happen, and sensitive HR information (e.g. medical certificates) is shared through unsuitable channels.
 
 ## 3. Vision & goals
 
@@ -43,12 +57,18 @@ Today these sites are typically (a) outdated hand-built sites maintained by one 
 | G4 | One codebase serves all denominations through configuration (terminology, modules, theme), with **zero per-church code forks**. |
 | G5 | Sites are compliant out of the box with GDPR, Hungarian legal notices (*Impresszum*, *Adatkezelési tájékoztató*) and WCAG 2.1 AA. |
 | G6 | Sites are fast and usable on low-end phones and slow mobile connections. |
+| G7 | A worship-team member reaches the complete plan for their next service — order, songs, keys and all attachments — in **≤ 2 taps** from a notification, also **offline**. |
+| G8 | Room double bookings are **impossible**; booking a room takes **≤ 1 minute**. |
+| G9 | Every HR request has an owner, a status and an SLA; **no HR data needs to travel through personal mailboxes or chat groups**. |
+| G10 | **One login, one people directory, one calendar** across website and workspace — no duplicate data entry. |
 
-### 3.2 Non-goals (v1)
+### 3.2 Non-goals
 
-- Full church-management system (member registry, *anyakönyv* / parish registers, accounting, *egyházi hozzájárulás* bookkeeping). Churchy is a public website with light pastoral request handling, not an ERP.
+- Payroll calculation, accounting/bookkeeping, *egyházi hozzájárulás* bookkeeping, donor CRM and parish registers (*anyakönyv*). The workspace is a lightweight, church-shaped ERP for **coordination** (calendars, rooms, teams, music, HR requests); payroll and accounting stay in specialized software, fed by CSV exports.
+- Time & attendance tracking (clock-in/clock-out) and employee monitoring of any kind.
+- Real-time chat. Teams keep their chat tools; Churchy provides comments on plans and messages on tickets, not a messenger.
 - Multi-language public sites (the public site is Hungarian; minority-language *services* are supported as data, e.g. a German-language Mass, but the UI is Hungarian only in v1).
-- Native mobile apps.
+- Native mobile apps (the workspace is an installable, offline-capable PWA).
 - A free-form drag-and-drop page builder (customization is structured, see §6.2 — this protects quality and accessibility).
 - Online sacrament booking with automatic calendar allocation (v1 collects requests; the office confirms manually).
 - Hosting of diocesan / district-level (*egyházmegye*, *egyházkerület*) multi-site portals (possible later, see §12).
@@ -74,6 +94,18 @@ Today these sites are typically (a) outdated hand-built sites maintained by one 
 | **A3 — Volunteer editor** (*önkéntes szerkesztő*) | Often the "tech-savvy" member. | Post news, events, photos; customize look. |
 | **A4 — Group leader** (*csoportvezető*) | Leads youth group, choir, Bible study. | Edit own group's page and events only. |
 | **A5 — Platform operator** (*üzemeltető*) | Runs the Churchy service. | Provision churches, domains, support, monitoring, billing. |
+
+### 4.3 Internal workspace (*Munkatér*)
+
+| Persona | Description | Top needs |
+|---|---|---|
+| **W1 — Employee** (*munkatárs*: irodavezető, sekrestyés, kántor, hitoktató, gondnok) | Paid staff, part- or full-time; works with the office PC and a phone. | Own calendar & duties, book rooms, submit leave and other HR requests, see request status. |
+| **W2 — Volunteer** (*önkéntes*: lektor, ministráns, kórustag, zenész, technikus, takarító) | Ages 14–80, phone only, uses the system a few times a month. | See *my* next assignments, accept/decline in one tap, get the files, know where and when to be. |
+| **W3 — Worship leader / cantor** (*zenei vezető, kántor, karnagy*) | Plans the music for services; often a volunteer in free churches, staff in Catholic/Protestant parishes. | Build the music plan from templates and the song library, schedule musicians, upload sheet music, get approval. |
+| **W4 — Musician / singer** (*zenész, énekes*) | Member of a choir or worship band. | Review the plan, practise with sheet music and reference audio, transposed chords, a stage view on the day. |
+| **W5 — Facility manager** (*gondnok, teremfelelős*) | Responsible for rooms, keys, setup, cleaning. | Approve bookings, avoid conflicts, daily setup list. |
+| **W6 — HR handler** (*HR-felelős*) | Often the office manager, the pastor, or an external diocesan/district HR office. | Handle requests confidentially, run approvals, track leave balances and deadlines. |
+| **W7 — Leader / approver** (*plébános, vezető lelkész, igazgató*) | Approves leave, music plans, exceptions. | One-tap approvals, overview of who is available, no surprises on Sunday. |
 
 ## 5. Denominational adaptability
 
@@ -102,12 +134,20 @@ Churchy must adapt to any Hungarian Christian community. Adaptation happens thro
 | `layCouncil` | Képviselő-testület | Képviselő-testület | Presbitérium | Presbitérium | Gyülekezetvezetés |
 | `rites` (requestable) | Keresztelő, Elsőáldozás, Bérmálás, Házasság, Temetés, Betegek kenete | Keresztelő (krizmálással), Házasság, Temetés | Keresztelő, Konfirmáció, Házasságkötés, Temetés | Keresztelő, Konfirmáció, Esküvő, Temetés | Bemerítés, Házasságkötés, Temetés, Gyermekbemutatás |
 | `support` | Egyházi hozzájárulás | Egyházi hozzájárulás | Egyházfenntartói járulék | Egyházfenntartói járulék | Adomány |
+| `worshipTeam` | Zenei szolgálat / Kórus | Kántori szolgálat / Kórus | Kántori szolgálat / Kórus | Kántori szolgálat / Kórus | Dicsőítő csapat |
+| `musicPlan` | Énekrend | Énekrend | Énekrend | Énekrend | Dicsőítési terv |
+| `serviceRota` | Szolgálati beosztás (lektorok, ministránsok…) | Szolgálati beosztás | Szolgálati beosztás (presbiteri szolgálat, perselyezés…) | Szolgálati beosztás | Szolgálati beosztás |
 
 The preset also selects: default modules, default service types, which liturgical calendar to show, and the home-page section order.
 
 ## 6. Functional requirements
 
-Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availability, **P2** = later / nice-to-have.
+Requirements are grouped by release:
+
+- **R1 — Public website** (§6.1–6.5)
+- **R2 — Internal workspace, *Munkatér*** (§6.6–6.10)
+
+Priority is relative to its release: **P0** = must-have for that release's launch, **P1** = should-have for that release's general availability, **P2** = later / nice-to-have.
 
 ### 6.1 Public website — core content
 
@@ -191,6 +231,85 @@ Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availabi
 | FR-405 | Plans/quotas (storage, users, custom domain) to support a sustainable pricing model. | P2 |
 | FR-406 | **Import** helper from an existing site (paste URLs / upload WordPress export) for news and pages. | P2 |
 
+### 6.6 Workspace core (R2)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-501 | **Munkatér**: a signed-in area on the church's own domain (`/munkater`) for clergy, employees and volunteers, with a personal **„Ma”** (Today) home: my events and assignments today and this week, plans awaiting my review, my open requests, approvals waiting for me, room bookings. | P0 |
+| FR-502 | **People directory** (*Névjegyzék*): one record per person (clergy, employee, volunteer) with photo, roles, teams, skills (instruments, voice part), contact details whose visibility each person controls, and availability / blackout dates. The same record powers the public staff page (FR-009) when marked public. | P0 |
+| FR-503 | **Teams** (*Csapatok / szolgálati csoportok*), e.g. kórus, dicsőítő csapat, lektorok, ministránsok, sekrestyések, technikusok, takarítók; each with leaders and **positions** (e.g. ének, gitár, orgona, hangtechnika). | P0 |
+| FR-504 | **Workspace roles**, additive and combinable with website roles: *Vezető* (leader/approver), *Munkatárs* (employee), *Önkéntes* (volunteer), *Csapatvezető* (team-scoped), *Zenei vezető*, *Teremfelelős*, *HR-felelős*, *Bizalmas ügyek kezelője*. | P0 |
+| FR-505 | **Notifications**: in-app notification center, email and web push; per-user preferences per notification type; optional daily digest; quiet hours. | P0 |
+| FR-506 | Workspace is a **mobile-first, installable PWA**; all volunteer tasks are fully doable on a phone. | P0 |
+| FR-507 | **Internal documents** (*Belső dokumentumtár*): policies, job descriptions, templates, with team/role-based access. | P1 |
+| FR-508 | **Internal notice board** (*Belső hírek*) for staff/volunteers with optional read confirmation. | P2 |
+| FR-509 | **Volunteer onboarding**: bulk invite (CSV), invite link with leader approval; people **without a login** (e.g. children, elderly) can be listed and assigned by their team leader. | P1 |
+| FR-510 | **Account lifecycle**: deactivation when someone leaves keeps history but removes access; linked to offboarding (FR-909). | P1 |
+
+### 6.7 Internal calendars (R2)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-601 | **Shared calendars** (e.g. *Plébániai naptár, Lelkészek, Iroda, Ifjúság, Zenei szolgálat, Távollétek*) plus a personal calendar per user; colour-coded overlay; day / week / month / agenda views (agenda default on phones). | P0 |
+| FR-602 | Per-event **visibility**: *Privát, Csapat, Minden munkatárs, Nyilvános*. *Nyilvános* events appear on the public website events module (FR-006) — one source of truth, no double entry. | P0 |
+| FR-603 | **Services** from the schedule engine (FR-002) appear automatically on internal calendars, together with their music plan and assigned team. | P0 |
+| FR-604 | **Invitations & RSVP** to people or whole teams (*Részt veszek / Nem tudok / Talán*). | P1 |
+| FR-605 | An event can **book a room** directly from the event form (FR-702). | P0 |
+| FR-606 | **Personal calendar feed** (secret iCal URL) for Google/Apple/Outlook, one-way, revocable. Two-way sync is P2. | P0 |
+| FR-607 | **Reminders** (email/push) per event and per user default. | P1 |
+| FR-608 | Approved absences (FR-904) appear on calendars as *Távol* — **without the reason** — for everyone except HR handlers. | P0 |
+| FR-609 | Recurring internal events use the same recurrence capabilities as public events (FR-006). | P0 |
+
+### 6.8 Room & resource booking (R2)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-701 | **Rooms & resources catalog** (*Termek és eszközök*): name, building/location (FR-003), capacity, equipment, photos, accessibility, house rules, responsible person. | P0 |
+| FR-702 | **Booking**: per-room day/week availability view; book with title, purpose, expected attendees, setup/teardown buffer, linked event or team. | P0 |
+| FR-703 | **No double booking — guaranteed**, including recurring series and simultaneous requests; on conflict the user is offered alternatives (other suitable rooms, nearby times). | P0 |
+| FR-704 | **Approval policies** per room: auto-approve for selected roles/teams, otherwise approval by the room manager; statuses *Kérelmezett, Jóváhagyva, Elutasítva, Lemondva*; tentative holds expire if not approved within a configurable time. | P0 |
+| FR-705 | **Booking rules**: bookable hours, minimum notice, maximum duration, booking horizon, blackout periods (e.g. *Nagyhét*). | P1 |
+| FR-706 | **Services auto-block** the rooms they use (e.g. the nave during Mass) based on the service schedule; conflicts with existing bookings are flagged to the room manager. | P0 |
+| FR-707 | **Recurring bookings** (e.g. weekly choir rehearsal) with per-occurrence cancellation/changes. | P0 |
+| FR-708 | **Usage report**: hours per room / team / month, CSV export. | P1 |
+| FR-709 | **External rental requests** via the public website (e.g. community hall for a family event) with fee/donation info, handled through the approval flow. | P2 |
+| FR-710 | **Resource booking** (projector, sound system, church van, keys) with the same rules. | P1 |
+| FR-711 | **Facility daily list** for the caretaker: today's bookings with setup notes (chairs, heating, unlock times), emailed each morning. | P1 |
+
+### 6.9 Worship & music planning, service rotas (R2)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-801 | **Service plan** (*Énekrend / Dicsőítési terv*) for any service occurrence (FR-002) or event: an ordered list of items — song, liturgical part, reading, prayer, sermon, announcement, other — each with title, duration, key, notes and responsible person. | P0 |
+| FR-802 | **Plan templates** per service type and denomination preset (e.g. Catholic Mass: *Bevonulás, Kyrie, Glória, Válaszos zsoltár, Alleluja, Felajánlás, Sanctus, Agnus Dei, Áldozás, Kivonulás*; Reformed: *Fennálló ének, Lekció, Igehirdetés előtti ének, Igehirdetés, Igehirdetés utáni ének, Áldás*; free church: *Dicsőítés blokk, Igehirdetés, Válaszének*). | P0 |
+| FR-803 | **Song library** (*Énektár*): title, alternative titles, first line, hymnal references (e.g. *Éneklő Egyház*, *Református énekeskönyv*, *Evangélikus énekeskönyv*, or church-defined songbooks) with numbers, authors/composers/translators, copyright & licence information, themes and liturgical-season tags, default key, tempo, time signature. | P0 |
+| FR-804 | **Arrangements** per song (key, tempo, structure such as V1 R V2 R B R) with a **ChordPro chord chart**; automatic **transposition**, capo display and choice of Hungarian/German (*H*) or English (*B*) note naming. | P1 |
+| FR-805 | **Attachments** on songs, arrangements, plans and plan items: PDF sheet music, chord charts, lyrics, audio reference recordings, MusicXML, images, external links (YouTube, Spotify); versioned; in-app preview (PDF viewer, audio player) and download. Attachments are **internal only**, never public. | P0 |
+| FR-806 | **Team scheduling**: assign people to positions per plan; suggestions aware of availability, approved absences, other assignments the same day and fair rotation; **accept/decline in one tap** (also from email); swap requests; reminders. | P0 |
+| FR-807 | **Review & approval**: *Piszkozat → Véleményezésre küldve → Jóváhagyva → Lezárt*; comments on the plan and on individual items, @mentions; after approval, any change notifies the assigned team with a summary of what changed. | P0 |
+| FR-808 | **Rehearsal & stage view** (*Próba / Színpadi nézet*): tablet/phone full-screen view of the plan with attachments in order, large text, swipe between items; **available offline** once downloaded. | P1 |
+| FR-809 | **Song usage history & reports**: last used, frequency, per period; CSV export for licence reporting and variety. | P1 |
+| FR-810 | **PDF export** of the plan for the team and a simplified song-number sheet (*énekszám-tábla*) for the congregation. | P1 |
+| FR-811 | Optional publication of **song numbers/titles only** for a service on the public website (e.g. *„Énekek: RÉ 42, 150, 390”*). | P2 |
+| FR-812 | **Generic rota** (*Szolgálati beosztás*) for non-music roles — readers, altar servers, collection, bread & wine preparation, flowers, technicians — using the same assignment engine as FR-806. | P1 |
+| FR-813 | **Lyrics export** for projection software (plain text and common projection formats), subject to licence. | P2 |
+
+### 6.10 HR request management (R2)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-901 | **HR requests** (*HR-kérések*) submitted from the workspace by employees (and volunteers for categories enabled for them). Default categories: *Szabadságkérelem, Betegség / keresőképtelenség bejelentése, Igazolás kérése* (employer/income certificate), *Személyes adatok változása, Munkaeszköz / hozzáférés igénylése, Képzési kérelem, Bizalmas ügy / panasz, Egyéb*. | P0 |
+| FR-902 | **Category configuration**: form fields, handler(s), **approval chain** (e.g. direct manager → pastor/HR), SLA target, confidentiality, who may submit, retention period, whether approval creates an absence. | P0 |
+| FR-903 | **Ticket lifecycle** *Új → Folyamatban → Jóváhagyásra vár → Jóváhagyva / Elutasítva → Lezárt*; threaded messages between requester and handlers; internal notes invisible to the requester; attachments (e.g. medical certificate); human-readable reference number. | P0 |
+| FR-904 | **Leave requests**: date range, half days, type (*rendes szabadság, betegszabadság, fizetés nélküli, egyéb*); working days computed with the Hungarian working-day calendar and the person's work pattern; approval creates an absence (FR-608) and **flags conflicts** with existing assignments (e.g. scheduled to play on Sunday). | P0 |
+| FR-905 | **Leave balances**: yearly entitlement entered by HR, used/remaining computed; employees see their own balance. | P1 |
+| FR-906 | **Confidential categories** (complaints, safeguarding/abuse reports) visible only to designated handlers; documented handover to an external body (e.g. diocesan safeguarding contact); **every access logged**; excluded from platform support access. | P0 |
+| FR-907 | **SLA tracking**: due dates, reminders before/at overdue; HR dashboard (open per category, overdue, average resolution time). | P1 |
+| FR-908 | **Staff records (light)** (*Munkatársi adatlap*): position, employment type (*munkaviszony, egyházi szolgálati viszony, megbízási jogviszony, önkéntes*), start/end date, manager, weekly hours/work pattern; restricted documents (contract, job description). | P1 |
+| FR-909 | **Onboarding / offboarding checklists** (keys, accounts, trainings, equipment) with assigned tasks and due dates. | P1 |
+| FR-910 | **Volunteer compliance tracking**: e.g. criminal-record certificate (*erkölcsi bizonyítvány*) required for work with minors, signed volunteer agreements, trainings — storing **only the fact of verification, date and expiry**, with expiry reminders. | P1 |
+| FR-911 | **Payroll export**: monthly CSV of approved absences per employee for the external payroll provider/accountant. No payroll calculation. | P1 |
+
 ## 7. Hungarian localization requirements
 
 | ID | Requirement |
@@ -205,6 +324,8 @@ Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availabi
 | L-08 | Correct Hungarian grammar in generated text: article *a/az* before words and numbers (*az 5. vasárnap*, *a 10 órai mise*), suffix harmony where templates insert names (avoid suffixing user-provided names; use constructions that don't require it). |
 | L-09 | Search tolerates missing accents (`miserend` matches `Miserend`, `ujev` matches `újév`) and uses Hungarian stemming. |
 | L-10 | Hungarian public holidays and moveable feasts (Easter, Pentecost, Ascension, etc.) are known to the schedule engine. |
+| L-11 | Music notation follows Hungarian practice by default: **H** for B-natural and **B** for B-flat, with a per-user switch to English naming; Hungarian hymnal abbreviations (*ÉE, RÉ, EÉ*…) supported. |
+| L-12 | Leave and SLA calculations use the **Hungarian working-day calendar**, including public holidays and the annually announced swapped working days (*áthelyezett munkanapok*). |
 
 ## 8. Non-functional requirements
 
@@ -222,6 +343,11 @@ Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availabi
 | NFR-10 | Usability | A first-time editor completes "upload weekly announcements" unassisted in ≤ 3 minutes (usability test, ≥ 4 of 5 participants aged 55+). |
 | NFR-11 | Maintainability | Single codebase; ≥ 80 % unit test coverage of domain logic (schedule engine, permissions, terminology); typed end-to-end. |
 | NFR-12 | Observability | Error tracking, uptime checks per tenant domain, structured logs without personal data. |
+| NFR-13 | Workspace performance | Workspace screens interactive ≤ 1 s at p75 on a mid-range phone over 4G; calendar month view with 500 entries renders ≤ 500 ms. |
+| NFR-14 | Offline | Downloaded service plans with their attachments (up to 200 MB per device) open offline in the PWA; changes made since download are shown on reconnect. |
+| NFR-15 | Data integrity | Room/resource double bookings are prevented at the database level, also under concurrent requests. |
+| NFR-16 | Workspace scale | Up to 300 workspace users and 50 GB of attachments per church (plan-dependent); assignment notifications for a 40-person team delivered ≤ 2 min. |
+| NFR-17 | Auditability | Every read of a confidential HR ticket, every HR approval and every permission change is audit-logged and retained ≥ 5 years (configurable). |
 
 ## 9. Legal & compliance requirements
 
@@ -234,6 +360,11 @@ Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availabi
 | C-05 | Data processing agreement (*adatfeldolgozási szerződés*) between platform operator and each church. |
 | C-06 | Photo publication guidance in admin (consent for identifiable people, especially minors) and a per-image "consent obtained" flag for gallery uploads. |
 | C-07 | Accessibility statement (*Akadálymentességi nyilatkozat*) page template. |
+| C-08 | **HR data**: employment data is processed under GDPR and the Hungarian Labour Code (*Mt.*, 2012. évi I. törvény) or the relevant church service rules; sick-leave and medical documents are **health data** (GDPR Art. 9) — need-to-know access, encryption, retention per category; default retention periods validated by a Hungarian employment/data-protection lawyer. |
+| C-09 | **Employee & volunteer privacy notice** (*munkavállalói / önkéntes adatkezelési tájékoztató*) generated from a template; no monitoring or tracking features. |
+| C-10 | **Music copyright**: attachments are internal-only and never publicly accessible; per-song copyright/licence fields; uploader confirms the right to share within the team; usage reports support licence reporting; takedown process for rights holders. |
+| C-11 | **Safeguarding**: confidential reporting workflow consistent with the church's safeguarding policy; minimal access, full access logging, documented handover to the competent church or state authority. |
+| C-12 | **Volunteer data minimization**: volunteers' data limited to what coordination needs; compliance documents not stored — only verification facts (FR-910). |
 
 ## 10. Success metrics
 
@@ -249,6 +380,17 @@ Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availabi
 | Security incidents with data exposure | 0 |
 | Support tickets per church per month | ≤ 0.5 after first month |
 
+**Workspace (R2), 6 months after R2 launch:**
+
+| Metric | Target |
+|---|---|
+| Churches with workspace enabled where ≥ 80 % of listed staff & volunteers sign in monthly | ≥ 60 % |
+| Service plans approved ≥ 48 h before the service | ≥ 80 % |
+| Assignment requests answered (accept/decline) within 72 h | ≥ 85 % |
+| Room double bookings | 0 |
+| HR requests resolved within SLA | ≥ 90 % |
+| Musicians who used attachments / stage view at least once a month (where music planning is enabled) | ≥ 70 % |
+
 ## 11. Assumptions & constraints
 
 - **Hosted multi-tenant platform** (SaaS) is the delivery model; self-hosting is not supported in v1.
@@ -256,14 +398,19 @@ Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availabi
 - No integration with official church registries is required; outbound links to diocesan/district sites and to national schedule directories are sufficient in v1.
 - Daily readings and Bible texts are copyrighted by their Hungarian publishers; v1 links out rather than republishing.
 - Budget favours open-source, EU-hosted components.
+- Workspace users sign in with their own email address; people without email (children, some elderly volunteers) are represented in the directory and rotas and managed by their team leader.
+- HR may be handled outside the parish (e.g. by a diocesan or district office); such handlers get scoped access to a church's HR categories.
+- The workspace (R2) is sold as an optional add-on plan on top of the website.
 
 ## 12. Future scope (post-v1)
 
 - Diocesan / district **multi-site networks** (shared news, central administration of several parishes, *lelkipásztori körzet*).
 - Synchronization of service schedules to national Mass/service directories where an API is available.
 - Online booking of appointments with the office.
-- Volunteer scheduling (lectors, ministrants, *perselyezés*, flower rota).
-- Member-only area (prayer requests, internal documents).
+- Member-only area for congregants (prayer requests, small-group materials).
+- Two-way sync with Google Workspace / Microsoft 365 calendars.
+- Expense claims with approval and accounting export; inventory/asset register.
+- Diocese/district-level shared HR service and shared song library across parishes.
 - Additional public languages (German, Slovak, Romani, English) for minority and tourist audiences.
 
 ## 13. Risks
@@ -275,6 +422,11 @@ Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availabi
 | Special-category data breach | High | Minimal fields, encryption, access controls, no sensitive data in emails, retention auto-delete, security review before GA. |
 | Over-customization requests | Medium | Structured customization only; feature requests feed the roadmap rather than per-church code. |
 | Copyright on liturgical texts | Medium | Link-out by default; license-dependent integrations later. |
+| Workspace scope creep into a full ERP (payroll, accounting) | High | Explicit non-goals; CSV exports to specialized tools; roadmap review per quarter. |
+| HR / health data breach | High | App-level encryption, confidential categories, access logging, no content in emails, excluded from support access, lawyer review before R2 launch. |
+| Volunteers don't adopt another login | High | Magic links, one-tap accept/decline from email, PWA push, people without login handled by leaders. |
+| Sheet-music copyright infringement via attachments | Medium | Internal-only storage, licence fields, uploader confirmation, takedown process, usage reports. |
+| Wrong leave calculations (special work patterns, swapped work days) | Medium | Per-person work patterns, maintained working-day calendar, HR can override with audit trail. |
 
 ## 14. Open questions
 
@@ -283,3 +435,8 @@ Priority: **P0** = MVP must-have, **P1** = should-have for v1.0 general availabi
 3. Which payment provider (Barion vs SimplePay) is preferred by target churches for P2 giving?
 4. Do we provide a shared `churchy.hu` subdomain brand, or white-label the default subdomain?
 5. Which clergy advisors validate each denomination preset?
+6. Is the workspace a paid add-on, and is it priced per church or per active user?
+7. Which hymnal indexes (titles + numbers) may we pre-load, and under what licence?
+8. Which payroll providers/accounting tools do target churches use (defines the CSV export format)?
+9. How common is diocesan/district-level HR handling — does it justify cross-tenant HR handlers in R2?
+10. Is two-way Google/Microsoft calendar sync a must-have for staff, or is the one-way feed enough?

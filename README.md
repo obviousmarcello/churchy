@@ -1,8 +1,11 @@
 # Churchy
 
-Testreszabható, magyar nyelvű weboldal-platform magyarországi egyházközségek, plébániák és gyülekezetek számára.
+Testreszabható, magyar nyelvű weboldal- és belső munkatér-platform magyarországi egyházközségek, plébániák és gyülekezetek számára.
 
-A customizable, Hungarian-language website platform that adapts to any Hungarian church (Catholic, Greek Catholic, Reformed, Lutheran, Baptist/free church, Unitarian).
+A customizable, Hungarian-language platform for any Hungarian church (Catholic, Greek Catholic, Reformed, Lutheran, Baptist/free church, Unitarian):
+
+- **R1 — Public website:** service schedule, announcements, news, events, rites & requests, giving, full customization.
+- **R2 — Internal workspace (*Munkatér*):** internal calendars, room & resource booking, worship/music planning with attachments, volunteer rotas, HR request management.
 
 ## Documentation
 
