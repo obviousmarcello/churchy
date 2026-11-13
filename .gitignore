@@ -11,3 +11,6 @@ playwright-report/
 test-results/
 .DS_Store
 .turbo/
+
+# Agent worktrees (temporary, never committed)
+.claude/worktrees/
