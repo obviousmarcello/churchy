@@ -109,7 +109,8 @@ HR = hrHandler, CH = confidentialHandler.
 Further rules:
 
 - Requesters may always `read` and `reply` to their own ticket, confidential or not, but never
-  `handle` it. Managers cannot approve their own request.
+  `handle` it, not even as a scoped HR or confidential handler (separation of duties). Managers
+  cannot approve their own request.
 - Rooms default to `whoCanRequest: "all_staff"`, which excludes volunteers. Volunteers can book
   only rooms set to `"all_workspace"` or rooms whose role list includes `volunteer`. A role list
   restricts every role.
@@ -139,6 +140,16 @@ these:
 
 Tenant-level reporting actions additionally require that the parish delegates at least one
 category.
+
+## Role matrix tests and `MATRIX.md` (D-52)
+
+`src/role-matrix.fixtures.ts` holds the hand-transcribed expectation tables: every cell of the SDD
+§21.2 workspace matrix (15 rows x 8 roles), the README-resolved cells, scope boundaries, the
+organization matrix (7 rows x 3 roles), and five additive role combinations.
+`src/role-matrix.test.ts` runs them against `can()` (one test per cell) and checks the hard
+exclusions by iterating the whole action vocabulary. [MATRIX.md](MATRIX.md) is rendered from the
+same tables for reviewers. After changing the tables or the policy, regenerate it with
+`pnpm --filter @churchy/policy matrix`; the test fails when the file is stale.
 
 ## Extending
 
