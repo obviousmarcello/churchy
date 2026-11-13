@@ -10,5 +10,9 @@
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
     "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@date-fns/tz": "^1.5.0",
+    "date-fns": "^4.4.0"
   }
 }
