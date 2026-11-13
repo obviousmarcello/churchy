@@ -266,5 +266,10 @@
         "note": "© 2026 Belvárosi Plébánia. Minden jog fenntartva."
       }
     }
+  },
+  "nav": {
+    "workspace": "Munkatér",
+    "admin": "Weboldal kezelése",
+    "organization": "Egyházmegyei portál"
   }
 }

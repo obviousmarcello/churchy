@@ -41,6 +41,17 @@ The plan is in `docs/03-DELIVERABLES.md` §3.
 5. **Security before real data.** Don't open a module to real users until its BE part, tenant isolation, auth and (for requests, HR, diocesan access) encryption and access logging pass. See DoD #10.
 6. **"Demo-complete" is not "done".** Report progress per part. Don't tick acceptance criteria that only work against the mock when they belong to the BE part.
 
+## Permissions in UI (pattern)
+
+Visibility is always decided by `can()` from `@churchy/policy`; the UI never inspects roles.
+
+- **Who is acting:** `getActor()` from `apps/web/server/session.ts` (anonymous in Phase A). It is the only file allowed to read role lists; the demo role switcher plugs in there (`setActorResolver()` / replacing `defaultResolver`).
+- **Server components:** `canServer(action, resource)` or `can(await getActor(), …)` from `apps/web/lib/permissions/server.ts`.
+- **Client components:** wrap the tree in `<PermissionsProvider actor={await getActor()}>`, then use `useCan(action, resource)` or `<Can action resource fallback>` from `apps/web/lib/permissions/client.tsx`. Resource types come from `ResourceByAction`; without a provider everything is denied.
+- **Navigation:** declare `requires: { action }` (plus optional `module` / `entitlement`, stubbed until D-25 / D-87) on each `PermissionNavItem` and filter with `filterNav(items, actor, ctx)`. See `apps/web/lib/app-nav.ts`.
+- **Hiding is not enforcing:** server mutations still go through the policy wrapper.
+- **Lint:** `eslint.permissions.mjs` forbids role-string comparisons/`includes`/`switch` and `.websiteRoles` / `.workspaceRoles` / `.orgRoles` access in `apps/web` and `packages/ui` (except `server/session.ts`). If you need a new check, add a policy action, not a role test.
+
 ## Language & locale
 
 - **Product UI is Hungarian only.**
