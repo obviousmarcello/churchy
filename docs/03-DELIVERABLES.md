@@ -3,8 +3,9 @@
 | | |
 |---|---|
 | **Document** | Deliverables breakdown & acceptance criteria |
-| **Version** | 1.2 (draft) |
+| **Version** | 1.3 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.3** | Commercial deliverables for R1 GA: plans & free tier (D-87), billing with Barion & online invoicing (D-88), diocesan bulk deals (D-89); domain split in D-03/D-27; pilot clergy review presets (D-23, D-41); effort and agent allocation updated. |
 | **Changes in 1.2** | Parallel delivery of R1 and R2 by Claude Code agents (§3: streams, dependencies, agent team, timeline, scenarios, human roles); diocesan HR portal deliverables D-84 … D-86; workspace plan tiers; resolved PRD questions reflected in D-02, D-51, D-53, D-57, D-64, D-77, D-78. |
 | **Inputs** | [01-PRD.md](./01-PRD.md), [02-SDD.md](./02-SDD.md) |
 | **Changes in 1.1** | Added Release 2 (internal workspace, *Munkatér*): milestones M5–M8 and M10, deliverables D-51 … D-83; former M5 renamed **M9**; traceability and quality gates extended. |
@@ -46,7 +47,7 @@ The website (R1) and the workspace (R2) are built **in parallel** by **Claude Co
 | Shared | **M0 — Foundations** | Multi-tenant skeleton, CI/CD, **shared schema incl. unified `people` and `events`** | D-01 … D-07 | Two tenants served from one deployment on staging with isolated data | 24 pd |
 | Website (R1) | **M1 — Public MVP** | A visitor can use a complete church site | D-08 … D-17 | Demo tenants pass the visitor E2E suite | 47 pd |
 | Website (R1) | **M2 — Admin & customization** | Non-technical editors can run and brand a site | D-18 … D-27 | Editor E2E suite passes; one church configured from zero via the admin | 50 pd |
-| Website (R1) | **M3 — Requests & compliance** | Pastoral requests, legal pages, privacy | D-28 … D-33 | Security & privacy review signed off | 25 pd |
+| Website (R1) | **M3 — Requests, compliance & commercial** | Pastoral requests, legal pages, privacy; plans, billing, diocesan bulk deals | D-28 … D-33, D-87 … D-89 | Security & privacy review signed off; a test church and a test diocese subscribe and pay end-to-end in sandbox | 40 pd |
 | Website (R1) | **M4 — Hardening & pilot (R1 GA)** | Quality bars met; real churches live | D-34 … D-41 | 5 pilot churches live ≥ 4 weeks; R1 gates green | 28 pd |
 | Workspace (R2) | **M5 — Workspace foundation** | People, teams, roles, Munkatér shell, notifications, PWA, plan tiers | D-51 … D-56 | Staff and volunteers of a demo tenant sign in, see *Ma*, receive push | 25 pd |
 | Workspace (R2) | **M6 — Calendars & rooms** | Shared internal calendars; conflict-free room booking | D-57 … D-62 | Calendar & booking E2E suites pass; concurrency test green | 30 pd |
@@ -58,9 +59,9 @@ The website (R1) and the workspace (R2) are built **in parallel** by **Claude Co
 | Total | Effort |
 |---|---|
 | Shared foundation (M0) | 24 pd |
-| Website stream to R1 GA (M1–M4) | 150 pd |
+| Website stream to R1 GA (M1–M4) | 165 pd |
 | Workspace stream to R2 GA (M5–M8) | 146 pd |
-| **Both releases to GA** | **≈ 320 pd** |
+| **Both releases to GA** | **≈ 335 pd** |
 | Post-GA enhancements (M9, M10) | 65 pd |
 
 ### 3.2 Cross-stream dependencies
@@ -81,13 +82,17 @@ flowchart LR
     D19 --> D65[D-65 Attachments]
     D30 --> D71[D-71 HR tickets]
     D71 --> D84[D-84…D-86 Diocesan portal]
+    M0 --> D89[D-89 Organizations & bulk deals]
+    D89 --> D84
+    D87[D-87 Plans & entitlements] --> D53[D-53 Workspace tiers]
+    M0 --> D87
     D15 --> D57[D-57 Event visibility]
     D51 --> D16[D-16 Public staff page]
 ```
 
 Scheduling rules that follow from this:
 
-1. In the website stream, **D-09 (schedule engine)**, **D-19 (media)** and **D-30 (encryption)** are pulled to the front, because the workspace stream depends on them. D-30 is built right after M0, ahead of the rest of M3.
+1. In the website stream, **D-09 (schedule engine)**, **D-19 (media)**, **D-30 (encryption)** and **D-87 (plans & entitlements)** are pulled to the front, because the workspace stream depends on them. D-30 and D-87 are built right after M0, ahead of the rest of M3. **D-89** (organizations) must be merged before D-84 starts.
 2. In the workspace stream, M5 starts first (no website dependencies); M6/M7 start once D-09 is merged.
 3. `packages/ui` components for the admin shell (D-18) and the workspace shell (D-53) are owned by the website stream; the workspace stream consumes them and contributes additions through reviewed PRs.
 
@@ -97,7 +102,7 @@ Scheduling rules that follow from this:
 |---|:-:|---|
 | **Lead / orchestrator** | 1 | Keeps the backlog from this document, assigns deliverables following §3.2, owns `CLAUDE.md` conventions and shared packages, merges and resolves conflicts on `main`, re-estimates after each milestone. |
 | **Website stream** | 2 | M1–M4, then M9. |
-| **Workspace stream** | 3 | M5–M8 incl. the diocesan portal, then M10. |
+| **Workspace stream** | 3 | M5–M8 incl. the diocesan portal, then M10. In W8–W9 one workspace agent moves to the website stream to build D-88/D-89 (the workspace stream has slack). |
 | **QA & review** | 1 | First-pass review of every PR against its acceptance criteria, owns E2E/visual/a11y/performance/load suites, seed data and test fixtures. |
 | **Peak total** | **7** | 3 during M0 (lead + 2 builders), 7 during the parallel build, 3–4 during pilots and enhancements. |
 
@@ -114,12 +119,17 @@ Scheduling rules that follow from this:
 
 ### 3.4 Timeline
 
-Expected case (2 pd per agent-day); week 1 = project start. Capacity check: website stream 122 pd of build (M1–M3) ÷ (2 agents × 2 pd) ≈ 31 working days; workspace stream ≈ 140 pd of build (M5–M8 without the gate deliverable D-78) ÷ (3 agents × 2 pd) ≈ 23 working days. Both fit in weeks 3–9 with ~15 % slack for integration and rework.
+Expected case (2 pd per agent-day); week 1 = project start. Capacity check for weeks 3–9 (35 working days):
+
+- **Workspace stream:** ≈ 140 pd of build (M5–M8 without the gate deliverable D-78). 3 agents for W3–W7 give 150 pd and 2 agents for W8–W9 give 40 pd, so 190 pd of capacity.
+- **Website stream:** 137 pd of build (M1–M3). 2 agents for W3–W9 give 140 pd, plus 1 borrowed agent for W8–W9 gives 20 pd, so 160 pd of capacity.
+
+Both streams fit, with roughly 15–35 % slack for integration and rework.
 
 | Weeks | Phase | Agents | Human & external work (critical path) |
 |---|---|:-:|---|
-| W1–W2 | **M0** shared foundation | 3 | Hosting (EU), domains/DNS, email provider, GitHub & secrets; approve schema; **book** lawyer, pentest firm, clergy advisors; recruit pilot churches and a pilot diocese |
-| W3–W9 | **Parallel build** — website M1–M3; workspace M5–M7 and M8 build items (D-71…D-77, D-84…D-86) | 7 | Daily PR approval; theme design sign-off (W4–W6); lawyer reviews legal, employee and volunteer privacy templates and retention defaults (W4–W8); clergy advisors review presets (W5–W8) |
+| W1–W2 | **M0** shared foundation | 3 | Hosting (EU), **choose & register the neutral public domain**, `churchy.hu` DNS, email provider, GitHub & secrets; open Barion and invoicing-service accounts; set indicative prices; approve schema; **book** lawyer and pentest firm; recruit pilot churches covering **Roman Catholic, Reformed, Lutheran and a free church** (their clergy review the presets) and a pilot diocese for the bulk deal |
+| W3–W9 | **Parallel build** — website M1–M3 (incl. commercial D-87…D-89); workspace M5–M7 and M8 build items (D-71…D-77, D-84…D-86) | 7 | Daily PR approval; theme design sign-off (W4–W6); lawyer reviews legal, employee and volunteer privacy templates, retention defaults and terms of service (W4–W8); pilot clergy review presets (W5–W8) |
 | W10–W11 | **Hardening** — D-34…D-40 and D-78's automated parts; fixes | 5–7 | Usability studies for both releases; external pentest of website + workspace + diocesan portal; restore drill sign-off |
 | W12–W15 | **R1 pilot** (5 churches, 4 weeks) → **R1 GA end of W15** | 3–4 | Pilot support, go/no-go decision |
 | W12–W17 | **R2 pilot** (3 churches incl. one diocese link, 6 weeks) → **R2 GA end of W17** | (same) | Pilot support, go/no-go decision |
@@ -156,7 +166,7 @@ gantt
 | **Expected** | **2 pd / agent-day** | **~7 weeks** | **~W15 (≈ 3.5 months)** | **~W17 (≈ 4 months)** |
 | Conservative | 1 pd / agent-day | ~13 weeks | ~W21 (≈ 5 months) | ~W23 (≈ 5.5 months) |
 
-Even in the optimistic case, **about half the calendar time is not coding**: reviews by the lawyer and clergy advisors, usability studies, the pentest and the 4- and 6-week pilots. Booking those early (W1–W2) is what keeps the dates.
+Even in the optimistic case, **about half the calendar time is not coding**: reviews by the lawyer and the pilot clergy, usability studies, the pentest and the 4- and 6-week pilots. Booking those early (W1–W2) is what keeps the dates.
 
 ### 3.5 Human roles still required
 
@@ -165,11 +175,12 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 | **Product owner (you)** | Prioritization, answers to product questions, acceptance of milestones, approval of PRs — about 2–3 hours per working day during the build phase. |
 | **Second technical reviewer** (strongly recommended) | Reviews security-sensitive PRs (auth, RLS, encryption, HR, diocesan access); a few hours per week. |
 | **Hungarian data-protection / employment lawyer** | Privacy notices, Impresszum template, HR retention defaults, processing agreement (D-31, D-78). |
-| **Clergy advisors** (one per denomination family) | Preset terminology, rites and plan templates (D-23, D-66). |
+| **Pilot churches' clergy** (Roman Catholic, Reformed, Lutheran, free church) | Review their denomination's preset terminology, rites and plan templates (D-23, D-66). Greek Catholic, Unitarian and general presets ship as *béta* until a reviewer is found. |
 | **Penetration testing firm** | One combined test of website, workspace and diocesan portal (D-37, D-78). |
 | **Usability participants** | 5 editors (55+), 5 visitors, 5 volunteers, 3 worship leaders, 3 HR handlers (D-38, D-78). |
-| **Pilot partners** | 5 churches for R1, 3 of them also for R2, and 1 diocese/district office (D-41, D-78). |
-| **Accounts & credentials** | EU hosting, managed Postgres, object storage, email provider, domain/DNS, error tracking; payment-provider sandbox for P2. |
+| **Pilot partners** | 5 churches for R1, 3 of them also for R2, and 1 diocese/district office that also tests the bulk deal (D-41, D-78, D-89). |
+| **Business decisions** | Indicative prices for *Teljes*, workspace tiers and diocesan deals; terms of service; the neutral domain name. |
+| **Accounts & credentials** | EU hosting, managed Postgres, object storage, email provider, neutral domain + `churchy.hu` DNS, error tracking, **Barion** (sandbox + live), **online invoicing service** (test + live, connected to NAV). |
 
 ---
 
@@ -197,7 +208,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 - **AC:**
   1. Every tenant-owned table has RLS enabled and a policy keyed on `app.tenant_id`; a CI check fails if a new tenant table lacks a policy.
   2. Automated isolation suite: for **100 %** of tenant tables, cross-tenant SELECT/INSERT/UPDATE/DELETE attempts return 0 rows / are rejected.
-  3. Host → tenant resolution works for subdomain, custom domain, `www.` variant (301 to primary) and unknown host (404); resolution overhead **≤ 5 ms p95** with warm cache.
+  3. Host → tenant resolution works for the neutral public subdomain, custom domain, `www.` variant (301 to primary), app domain `<slug>.churchy.hu` and unknown host (404); public hosts serve only public routes and set **no cookies**, app hosts serve only app routes (tests per host type); resolution overhead **≤ 5 ms p95** with warm cache.
 - **Verification:** integration tests; middleware benchmark.
 
 ### D-04 Authentication & sessions
@@ -379,7 +390,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
   1. 7 presets defined (rk, gk, ref, ev, bapt, unit, general) with the terminology table from PRD §5.2, rites, service types, default modules and home layout.
   2. Changing a term updates nav, headings, page titles, admin labels and URL slug; the old URL returns **301** to the new one.
   3. Changing denomination shows a diff preview (terms, modules, rites) before applying.
-  4. Each preset reviewed and signed off by a clergy advisor of that denomination (sign-off record in `docs/presets-review.md`) — required for GA (M4).
+  4. The Roman Catholic, Reformed, Lutheran and Baptist/free-church presets are reviewed and signed off by the **clergy of the pilot churches** of that denomination (record in `docs/presets-review.md`) — required for R1 GA (M4). Presets without a reviewer (Greek Catholic, Unitarian, general) are labelled *béta* in the setup wizard.
 - **Verification:** unit + E2E; review records.
 
 ### D-24 Appearance: branding, themes, home composer, navigation, footer
@@ -406,17 +417,19 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
   3. Role changes are audit-logged (after D-40; until then logged to application log).
 - **Verification:** E2E + unit.
 
-### D-27 Custom domains with automatic HTTPS
+### D-27 Domains: neutral default address, custom domains, app domain
 - **Traces:** FR-108 · SDD §4.1, §13 · **Priority:** P0 · **Est.:** 2 pd
 - **AC:**
-  1. Admin adds a domain, gets Hungarian DNS instructions, verification runs automatically; certificate issued within **≤ 5 minutes** after DNS propagates.
-  2. Unverified domains are refused by the TLS ask-endpoint (test).
-  3. Non-primary domains and `www.` redirect 301 to the primary domain.
+  1. Every tenant is reachable at `<slug>.<PUBLIC_BASE_DOMAIN>` (configurable value) with HTTPS; no product branding on public pages except the free-tier footer credit (D-87).
+  2. On the paid plan, admin adds a custom domain, gets Hungarian DNS instructions, verification runs automatically; certificate issued within **≤ 5 minutes** after DNS propagates. On the free plan the option is shown as an upgrade.
+  3. Unverified domains are refused by the TLS ask-endpoint (test).
+  4. Non-primary domains and `www.` redirect 301 to the primary domain; the app domain's `/` redirects to the public domain.
+  5. Preview from the admin to the public domain works via signed short-lived token (expired/tampered token → 404).
 - **Verification:** staging test with a real test domain.
 
 ---
 
-## 7. M3 — Pastoral requests & compliance
+## 7. M3 — Pastoral requests, compliance & commercial
 
 ### D-28 Request forms (form definitions)
 - **Traces:** FR-201, FR-205 · SDD §7.4, §12 · **Priority:** P0 · **Est.:** 5 pd
@@ -469,6 +482,34 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
   3. Upload validation (MIME sniffing, size limits) and separate media host in place.
   4. External penetration test scheduled/completed in M4 (D-37).
 - **Verification:** scan reports; checklist.
+
+### D-87 Plans, entitlements & free tier
+- **Traces:** FR-405 · SDD §19.1 · **Priority:** P0 · **Est.:** 4 pd
+- **AC:**
+  1. Plans *Ingyenes*, *Teljes* and workspace tiers defined as data; a single `entitlements(tenant)` function is the only feature check (lint/test rule: no direct plan-key checks elsewhere).
+  2. Free tier limits enforced: neutral address only, core modules, 1 GB storage, 3 editors, footer credit — one test per limit, with Hungarian warning at 90 % and block at 100 %.
+  3. Downgrade test: a paid tenant with all modules, custom domain and 5 GB media moves to *Ingyenes* → **0 content rows deleted**, paid modules hidden, custom domain redirects, uploads blocked.
+  4. Upgrade takes effect within ≤ 60 s of payment confirmation.
+- **Verification:** unit + integration tests.
+
+### D-88 Billing: Barion payments & online invoicing
+- **Traces:** FR-408, C-13 · SDD §19.2 · **Priority:** P0 · **Est.:** 6 pd
+- **AC:**
+  1. Monthly/yearly subscription by card via Barion (sandbox E2E: first payment, recurring token charge, failed charge) and by bank transfer against a pro-forma.
+  2. Paid → invoice issued through the invoicing service's test environment with correct buyer data, HUF amounts and VAT; invoice PDF emailed and listed in the admin.
+  3. Barion callbacks are idempotent: replaying the same callback 10× produces 1 payment and 1 invoice (test).
+  4. Dunning: reminders at due, +7, +14 days; downgrade after 30-day grace (mocked clock).
+  5. No card data stored anywhere in Churchy (code review + DB schema check).
+- **Verification:** sandbox E2E + integration tests.
+
+### D-89 Diocesan organizations & bulk deals
+- **Traces:** FR-407 · SDD §19.3 · **Priority:** P0 · **Est.:** 5 pd
+- **AC:**
+  1. Organizations, deals and organization billing accounts; subscriptions for many parishes billed to one account on one invoice (sandbox test with 20 parishes).
+  2. Bulk provisioning from CSV: 50 parishes created with presets and owner invitations in **≤ 5 minutes**, with a Hungarian validation report (duplicates, slug clashes, bad emails).
+  3. Onboarding overview shows per-parish status; an organization user can open **no parish content** (policy + RLS tests).
+  4. Deal end → parishes fall back to *Ingyenes* with 30 days' notice; no content deleted.
+- **Verification:** integration + E2E.
 
 ---
 
@@ -531,9 +572,9 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 ### D-41 Pilot with 5 churches & GA readiness
 - **Traces:** PRD §10 success metrics · **Priority:** P0 · **Est.:** 2 pd (+ support time)
 - **AC:**
-  1. **5 pilot churches** covering ≥ 3 denominations live on production for **≥ 4 weeks**.
+  1. **5 pilot churches** covering at least **Roman Catholic, Reformed, Lutheran and one free church**, at least 2 of them onboarded through the pilot diocese's bulk deal, live on production for **≥ 4 weeks**; ≥ 2 pilots on the paid plan with real (or 100 % discounted) invoices issued.
   2. During the pilot: uptime ≥ 99.9 %, 0 data-exposure incidents, ≥ 4 of 5 churches update announcements/schedule weekly, editor CSAT ≥ 4.3/5.
-  3. All preset sign-offs (D-23 AC4) and legal review (D-31 AC2) complete.
+  3. Preset sign-offs by pilot clergy (D-23 AC4) and legal review (D-31 AC2, terms of service) complete.
   4. GA go/no-go meeting held with documented decision.
 - **Verification:** pilot report with metrics.
 
@@ -834,7 +875,7 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 | D-47 | Liturgical calendar widget & holiday templates | FR-018, FR-312 | P1 | 5 pd | Today's liturgical day correct for 50 reference dates per preset family; holiday templates (*Nagyhét, Karácsony, Szilveszter/Újév, Mindenszentek*) generate editable exceptions with preview. |
 | D-48 | 2FA, version history, mobile admin, platform console, export | FR-305, FR-309, FR-313, FR-403, FR-404 | P1 | 12 pd | TOTP mandatory for owner/admin; restore any of last 50 versions; core editor tasks pass E2E on 390 px viewport; full tenant export ZIP re-importable into an empty tenant with 100 % content parity. |
 | D-49 | Newsletter, funeral notices, mass intentions | FR-020, FR-021, FR-017 | P2 | 6 pd | Double opt-in with 1-click unsubscribe; digest sent to 1,000 test subscribers in ≤ 10 min; funeral notices auto-expire; mass intentions attached to resolved services. |
-| D-50 | Online giving, plans/quotas, import | FR-016, FR-405, FR-406 | P2 | 4 pd + provider integration | Barion or SimplePay sandbox one-off & recurring donations end-to-end; quotas enforced with Hungarian warning at 80 % / block at 100 %; WordPress WXR import of posts/pages with ≥ 95 % items imported. |
+| D-50 | Online giving (Barion) & import | FR-016, FR-406 | P2 | 4 pd | Each church connects its own Barion account; sandbox one-off & recurring donations end-to-end with purpose selection; WordPress WXR import of posts/pages with ≥ 95 % items imported. |
 
 ---
 
@@ -866,7 +907,10 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 | FR-013 | D-45 |
 | FR-014, FR-022 | D-46 |
 | FR-015, FR-023, FR-109 | D-13, D-17 |
-| FR-016, FR-405, FR-406 | D-50 |
+| FR-016, FR-406 | D-50 |
+| FR-405 | D-87 |
+| FR-407 | D-89 |
+| FR-408, C-13 | D-88 |
 | FR-017, FR-020, FR-021 | D-49 |
 | FR-018, FR-312 | D-47 |
 | FR-019 | D-43 |
@@ -956,7 +1000,8 @@ Even in the optimistic case, **about half the calendar time is not coding**: rev
 | Restore drill | RTO ≤ 4 h, RPO ≤ 24 h | D-39 |
 | Onboarding | 3/3 churches live in ≤ 2 h active work | D-34 |
 | Pilot | 5 churches, ≥ 4 weeks, uptime ≥ 99.9 % | D-41 |
-| Reviews | Preset sign-offs + legal review complete | D-23, D-31 |
+| Reviews | Pilot-clergy preset sign-offs + legal review complete | D-23, D-31 |
+| Commercial | Card + transfer payment and invoice issuance pass in sandbox; diocesan bulk deal with ≥ 2 pilot parishes live | D-88, D-89, D-41 |
 
 ### 16.2 R2 GA — internal workspace (*Munkatér*)
 

@@ -4,8 +4,9 @@
 |---|---|
 | **Product** | Churchy — customizable website & internal workspace platform for Hungarian churches |
 | **Document** | Solution Design Document |
-| **Version** | 1.2 (draft) |
+| **Version** | 1.3 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.3** | Domain split: neutral public domain vs. `churchy.hu` app domain (§4.1, §11, §20); plans, billing (Barion + online invoicing) and diocesan bulk deals (§19.1–19.3); ADR-17, ADR-18. |
 | **Changes in 1.2** | Diocesan HR portal (§25.7, RLS extension in §4.2); workspace plan tiers (§20.1); hymnal catalog without content (§24.2); parallel build: unified `people`/`events` schema from day one (ADR-16). |
 | **Changes in 1.1** | Added Part B — internal workspace (*Munkatér*): §20–§28. Updated §1–§3, §8, §11, §17, §29 (repo), §30 (ADRs). |
 | **Inputs** | [01-PRD.md](./01-PRD.md) |
@@ -46,7 +47,8 @@ flowchart LR
     Q --> S3
     Q --> PUSH[Web Push services<br/>VAPID]
     PUSH -.-> W
-    APP -.->|optional P2| PAY[Barion / SimplePay]
+    APP -->|subscriptions; donations P2| PAY[Barion]
+    Q --> INV[Online invoicing service<br/>NAV reporting]
     APP -.->|embed, click-to-load| YT[YouTube / Facebook live]
     APP -.->|embed, click-to-load| MAP[OpenStreetMap tiles]
 ```
@@ -79,6 +81,8 @@ flowchart LR
 | Documents & media (workspace) | **pdf.js** viewer, HTML5 audio with HTTP range requests | Inline preview of sheet music and reference recordings. |
 | Chord charts | **ChordPro** format parsed with `chordsheetjs` | Transposition, capo, H/B note naming (L-11). |
 | Booking integrity | PostgreSQL `btree_gist` **exclusion constraints** on `tstzrange` | Database-guaranteed no double booking (NFR-15). |
+| Payments | **Barion** (card, recurring token payments) | Hungarian provider; subscriptions (FR-408) and, per church account, online giving (FR-016). |
+| Invoicing | Hungarian online invoicing service via API (provider chosen at implementation, e.g. Számlázz.hu or Billingo) | Legally compliant invoices with automatic NAV *Online Számla* reporting (C-13); Churchy doesn't build an invoicing engine. |
 | CI/CD | GitHub Actions → container registry → staged rollout | |
 
 ## 4. Multi-tenancy
@@ -87,13 +91,26 @@ flowchart LR
 
 Every request is resolved to exactly one tenant (church) by host name:
 
+Two kinds of host serve each church (FR-108):
+
+| Host | Serves | Example |
+|---|---|---|
+| **Public domain** — neutral default `<slug>.<semleges-domain>.hu`, or the church's custom domain (paid plan) | Public website only | `szentistvan.<semleges-domain>.hu`, `szentistvan-plebania.hu` |
+| **App domain** — `<slug>.churchy.hu` | `/admin`, `/munkater`, `/belepes` (login); `/` redirects to the public domain | `szentistvan.churchy.hu/munkater` |
+| **Organization app domain** — `<org-slug>.churchy.hu` | Diocesan portal (§19.3, §25.7) | `veszpremi-egyhazmegye.churchy.hu/egyhazmegye` |
+| `platform.churchy.hu` | Platform console | — |
+
 ```
 request.host
-  ├─ "<slug>.churchy.hu"           → tenant by slug
-  ├─ custom domain (domains table) → tenant by domain (www. normalized, redirect to primary)
-  ├─ "admin.churchy.hu"/... none    → platform routes only
+  ├─ "<slug>.<semleges-domain>.hu"   → tenant by slug, PUBLIC routes only
+  ├─ custom domain (domains table)  → tenant by domain, PUBLIC routes only (www. → primary)
+  ├─ "<slug>.churchy.hu"            → tenant by slug, APP routes only (/admin, /munkater…)
+  ├─ "<org-slug>.churchy.hu"        → organization, portal routes only
+  ├─ "platform.churchy.hu"          → platform console
   └─ unknown                        → 404 "Ez az oldal nem található"
 ```
+
+Consequences: public hosts set **no cookies at all** (C-04 is enforced by construction); sessions live only on `*.churchy.hu` with host-only cookies; the neutral domain carries no product branding. The neutral domain name is a business decision (to be registered before M0 ends); it is a single configuration value (`PUBLIC_BASE_DOMAIN`).
 
 Implemented in Next.js middleware: host → `tenantId` lookup (cached in-memory LRU, 60 s TTL, invalidated on domain change). The tenant id is placed in a request header consumed by server components and route handlers.
 
@@ -427,7 +444,7 @@ resolve(tenant, from, to, locationFilter?) -> Service[]:
 
 ### 11.1 Structure
 
-Served at `/admin` on each church's own domain (so cookies are first-party and scoped per domain), plus a platform console at `platform.churchy.hu`. Once the workspace (R2) is enabled, `/admin` appears as the **„Weboldal”** section inside the Munkatér navigation (§20) — same login and session.
+Served at `https://<slug>.churchy.hu/admin` (app domain, §4.1; host-only cookies per church), plus a platform console at `platform.churchy.hu`. The public site shows no admin link; a discreet *„Belépés”* link in the footer can be enabled. Once the workspace (R2) is enabled, `/admin` appears as the **„Weboldal”** section inside the Munkatér navigation (§20) — same login and session.
 
 ```
 Vezérlőpult (dashboard)
@@ -453,7 +470,7 @@ Beállítások
 - One primary action per screen; destructive actions require confirmation with the item name.
 - Plain Hungarian labels (*„Közzététel”*, *„Mentés piszkozatként”*, *„Időzítés”*), contextual help text under each field, no technical terms (no "slug": *„Webcím”* with auto-generation).
 - Autosave every 10 s with *„Mentve 12:04-kor”* indicator; leaving with unsaved changes warns.
-- "Preview as visitor" opens the real page in draft mode (signed preview cookie).
+- "Preview as visitor" opens the real page on the public domain in draft mode via a **signed, short-lived preview token** in the URL (no cookie on the public domain).
 - Weekly announcement flow: **3 steps** — (1) choose the week (defaults to the coming Sunday), (2) paste text or upload PDF, (3) Közzététel. PDF text is extracted to make it searchable.
 - Schedule exception flow: pick date(s) → pick affected services from a list (generated by the engine) → *Elmarad / Időpont változik / Új alkalom* → note → preview of the week → save.
 
@@ -587,6 +604,36 @@ flowchart LR
    9. Domain beállítása (optional; DNS instructions in Hungarian with registrar-specific tips)
 3. Checklist progress shown on dashboard; the site shows a discreet *„Hamarosan”* banner until the owner presses **Oldal élesítése**.
 
+### 19.1 Plans & entitlements
+
+- `plans` (platform-defined): `key (ingyenes / teljes / ws_s50 / ws_m150 / ws_l300), name, price_monthly, price_yearly, entitlements jsonb`.
+- `entitlements` example: `{ customDomain: false, storageGb: 1, maxEditors: 3, modules: [...core], footerCredit: true, workspaceAllowed: false }`.
+- One `entitlements(tenant)` function merges the tenant's active plan + add-ons (+ diocesan deal overrides) and is the **only** place features are checked: module registry (§5.5), domain settings, media upload quota, user invitations, workspace tiers (§20.1).
+- Downgrade (e.g. unpaid → *Ingyenes*): paid-only modules are hidden (content kept), custom domain redirects to the neutral address, uploads blocked above quota — nothing is deleted.
+
+### 19.2 Billing & invoicing
+
+| Table | Key columns |
+|---|---|
+| `billing_accounts` | `id, owner_type(tenant/organization), owner_id, name, tax_number?, address, email, payment_method(card/transfer), barion_token_ref?` |
+| `subscriptions` | `id, billing_account_id, plan_key, tenant_id?, quantity, period(monthly/yearly), status(trialing/active/past_due/cancelled), current_period_end, deal_id?` |
+| `invoices` | `id, billing_account_id, provider_invoice_id, number, amount, currency(HUF), status(proforma/issued/paid/void), issued_at, paid_at, pdf_url` |
+| `payment_events` | `id, provider(barion), external_id, kind, payload_hash, received_at` — idempotency for callbacks |
+
+Flows:
+- **Card**: Barion payment with token for recurring charges; Barion callback → verify → mark paid → issue invoice through the invoicing service (which reports to NAV) → email invoice PDF.
+- **Bank transfer** (common for parishes): pro-forma (*díjbekérő*) issued → transfer with reference → payment marked manually or by bank-statement import → final invoice issued.
+- **Dunning**: reminders at due date, +7 and +14 days; after a 30-day grace period the tenant moves to *Ingyenes* (§19.1).
+- Churchy never sees or stores card data; `payment_events` stores only hashes of payloads.
+
+### 19.3 Diocesan bulk deals
+
+- `organizations` (defined in §25.7) is introduced in **R1** for billing and bulk provisioning; HR delegation is added in R2.
+- `deals`: `id, organization_id, plan_keys, parish_limit, price_terms, valid_from, valid_to`; subscriptions created under the organization's `billing_account` with `deal_id`.
+- **Bulk provisioning**: the diocesan admin uploads a parish list (CSV: name, denomination, town/address, owner email, desired slug) → tenants created with preset and sample content, owners invited; validation report for duplicates/slug clashes.
+- **Onboarding overview** at `<org-slug>.churchy.hu/egyhazmegye/plebaniak`: per parish — invited / owner signed in / checklist progress / live, plus the link status of R2. The organization sees **status only, no content**, until a parish links HR (§25.7).
+- Parishes stay owners of their sites; if a deal ends, parishes fall back to *Ingyenes* or can subscribe individually.
+
 ---
 
 # Part B — Internal workspace (*Munkatér*, R2)
@@ -595,7 +642,7 @@ flowchart LR
 
 ### 20.1 Placement
 
-- Same Next.js app, same tenant resolution (§4) and same login, at **`https://<church-domain>/munkater`**. The website CMS (`/admin`) becomes the *Weboldal* section inside it for users with website roles.
+- Same Next.js app, same tenant resolution (§4) and same login, at **`https://<slug>.churchy.hu/munkater`** (app domain). The website CMS (`/admin`) becomes the *Weboldal* section inside it for users with website roles.
 - Workspace modules are tenant-level flags (plan-dependent), parallel to the website modules in §5.5:
 
 ```ts
@@ -914,7 +961,7 @@ Monthly CSV (UTF-8 with BOM for Excel, `;` separator — Hungarian Excel default
 
 | Table | Key columns |
 |---|---|
-| `organizations` | `id, kind(egyhazmegye/egyhazkerulet/egyeb), name, slug, denomination, settings jsonb` — platform-level, not a tenant |
+| `organizations` | `id, kind(egyhazmegye/egyhazkerulet/egyeb), name, slug, denomination, settings jsonb` — platform-level, not a tenant; created in R1 for bulk deals (§19.3) |
 | `org_memberships` | `org_id, user_id, roles(org_hr_admin/org_hr_handler/org_confidential_handler), category_scopes text[]?, parish_scopes uuid[]?` |
 | `org_links` | `org_id, tenant_id, status(requested/active/revoked), requested_by, approved_by_parish, approved_by_org, linked_at, revoked_at` |
 | `org_delegations` | `org_id, tenant_id, hr_category_key | '*'` — which HR categories the parish delegates |
@@ -1095,3 +1142,5 @@ churchy/
 | ADR-14 | Store only verification facts for compliance documents | Store scanned certificates | Data minimization (C-12); the certificate itself is not needed once verified. |
 | ADR-15 | Diocesan HR via RLS policy branch on HR tables only | Copy delegated tickets into a diocese tenant; give the diocese full tenant memberships | No data copies, instant revocation, and non-HR data unreachable by construction. |
 | ADR-16 | Unified `people` and `events` (with `calendar_id`, `visibility`) in the **initial** schema | Add workspace fields by migration later | R1 and R2 are built in parallel; a shared schema from day one avoids conflicting migrations between the two streams. |
+| ADR-17 | Neutral public domain for church sites; branded `churchy.hu` app domain for admin, workspace and portals | Branded subdomains for everything; white-label everything | Public sites look official and unbranded; public hosts are cookie-free by construction; one recognizable login domain for staff. |
+| ADR-18 | External Hungarian online-invoicing service + Barion | Build invoicing in-house; international billing SaaS | NAV reporting and Hungarian VAT rules handled by a specialist; Barion is local and also used for donations. |

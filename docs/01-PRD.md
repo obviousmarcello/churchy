@@ -4,8 +4,9 @@
 |---|---|
 | **Product** | Churchy — customizable website & internal workspace platform for Hungarian churches |
 | **Document** | Product Requirements Document |
-| **Version** | 1.2 (draft) |
+| **Version** | 1.3 (draft) |
 | **Date** | 2026-11-13 |
+| **Changes in 1.3** | All open questions resolved (§14): free tier + paid website plans with billing at launch (FR-405, FR-408), diocesan bulk deals at launch (FR-407), Barion for payments, neutral public domain + `churchy.hu` app domain (FR-108), presets reviewed by pilot churches' clergy. |
 | **Changes in 1.2** | Website (R1) and workspace (R2) are built **in parallel**. Resolved open questions (§14.1): flat per-church workspace pricing, no pre-loaded hymnal content, configurable payroll CSV, **diocesan HR portal in R2** (§6.11), one-way calendar feed at launch. |
 | **Changes in 1.1** | Added Release 2: the internal workspace (*Munkatér*) — internal calendars, room & resource booking, worship/music planning with attachments, volunteer rotas, HR request management (§6.6–6.10 and related sections). |
 | **Status** | For review |
@@ -172,7 +173,7 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 | FR-013 | **Livestream** (*Élő közvetítés*): configured YouTube/Facebook live URL or embed; "ÉLŐ" badge on the home page when a scheduled livestream is in progress. | P1 |
 | FR-014 | **Gallery** (*Galéria*): albums with images, captions, cover image; responsive lightbox. | P1 |
 | FR-015 | **Support / donation page** (*Támogatás*): bank account (formatted), beneficiary name, suggested payment reference (*közlemény*), 1% SZJA designation info (church's technical number and/or foundation tax number), optional HCT/instant-payment QR code. | P0 |
-| FR-016 | **Online giving** via a Hungarian payment provider (e.g. Barion or SimplePay): one-off and recurring donations with purpose selection. | P2 |
+| FR-016 | **Online giving** via **Barion**: one-off and recurring donations with purpose selection; each church connects its own Barion account so donations go directly to the church. | P2 |
 | FR-017 | **Mass intentions** (*Miseszándékok*): published list attached to services; request form for a new intention. (Catholic/Greek Catholic presets.) | P2 |
 | FR-018 | **Liturgical calendar widget**: today's liturgical day/feast (computed), with an outbound link to daily readings / the daily Bible reading guide (no third-party copyrighted text copied without a license). | P1 |
 | FR-019 | **Site search** (*Keresés*) across news, events, pages, announcements, sermons with Hungarian-aware matching (accents, stemming). | P1 |
@@ -192,7 +193,7 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 | FR-105 | **Module toggles**: each feature module (news, events, sermons, gallery, groups, giving, livestream, newsletter, mass intentions, funeral notices, documents) can be switched on/off; navigation and home sections adapt automatically. | P0 |
 | FR-106 | **Navigation editor**: reorder, rename, nest (max 2 levels), add external links. | P0 |
 | FR-107 | **Home page composer**: ordered list of predefined sections (hero, next services, announcements, news, events, livestream, quote/verse, map, CTA, custom text) with per-section settings. | P0 |
-| FR-108 | **Custom domain** (e.g. `szentistvan-plebania.hu`) with automatic HTTPS; default subdomain (e.g. `szentistvan.churchy.hu`) always available. | P0 |
+| FR-108 | **Addresses**: every public site gets a free default address on a **neutral, unbranded domain** (e.g. `szentistvan.<semleges-domain>.hu`; domain name to be chosen); paid plans can add a **custom domain** (e.g. `szentistvan-plebania.hu`) with automatic HTTPS. Admin, workspace and diocesan portal live on the branded app domain (`<church>.churchy.hu`, `<diocese>.churchy.hu`). | P0 |
 | FR-109 | **Footer** content: address, contact, *Impresszum* link, privacy link, social icons, diocese/district link. | P0 |
 
 ### 6.3 Pastoral request handling
@@ -232,7 +233,9 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 | FR-402 | **Onboarding checklist** for the church owner (logo, schedule, contact, office hours, Impresszum data, privacy data, first announcement). | P0 |
 | FR-403 | Platform admin console: list/search tenants, suspend, impersonate (with audit + consent), view usage/quotas. | P1 |
 | FR-404 | Data **export** per church (all content + media as a ZIP with JSON/Markdown) and full **deletion** on request. | P1 |
-| FR-405 | Plans/quotas (storage, users, custom domain) to support a sustainable pricing model. | P2 |
+| FR-405 | **Plans & entitlements**: *Ingyenes* (free) and *Teljes* (paid) website plans, plus the workspace add-on tiers (§14.1). Indicative split — free: neutral default address only, core modules (home, schedule, announcements, news, events, pages, staff, rites & request forms, contact, support info, legal pages), 1 GB storage, up to 3 editors, small *„Készült a Churchy-vel”* footer credit; paid: custom domain, all modules, 20 GB storage, unlimited editors, no credit, workspace add-on available. Limits enforced with Hungarian warnings; downgrades never delete content. | P0 |
+| FR-407 | **Diocesan bulk deals**: a diocese/district (organization) buys plans for many of its parishes at once; bulk provisioning of parish sites from a list; central billing to the organization; the diocese sees each parish's onboarding status (not its content); parishes keep ownership of their sites. | P0 |
+| FR-408 | **Billing & invoicing**: monthly or yearly subscriptions paid by card via **Barion** or by bank transfer against a pro-forma invoice (*díjbekérő*); invoices issued through a Hungarian online invoicing service with NAV reporting; billing details, invoice history and plan changes in the admin; dunning with grace period before downgrade to the free plan. | P0 |
 | FR-406 | **Import** helper from an existing site (paste URLs / upload WordPress export) for news and pages. | P2 |
 
 ### 6.6 Workspace core (R2)
@@ -379,6 +382,7 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 | C-10 | **Music copyright**: attachments are internal-only and never publicly accessible; per-song copyright/licence fields; uploader confirms the right to share within the team; usage reports support licence reporting; takedown process for rights holders. |
 | C-11 | **Safeguarding**: confidential reporting workflow consistent with the church's safeguarding policy; minimal access, full access logging, documented handover to the competent church or state authority. |
 | C-12 | **Volunteer data minimization**: volunteers' data limited to what coordination needs; compliance documents not stored — only verification facts (FR-910). |
+| C-13 | **Invoicing**: invoices comply with Hungarian VAT rules and are reported to NAV (*Online Számla*) through the invoicing service; payment data is handled by Barion — Churchy never stores card data. |
 
 ## 10. Success metrics
 
@@ -393,6 +397,8 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 | Uptime | ≥ 99.9 % |
 | Security incidents with data exposure | 0 |
 | Support tickets per church per month | ≤ 0.5 after first month |
+| Free → paid conversion | ≥ 20 % of churches on a paid plan |
+| Diocesan bulk deals | ≥ 1 diocese/district with ≥ 10 parishes onboarded |
 
 **Workspace (R2), 6 months after R2 launch:**
 
@@ -414,7 +420,8 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 - Budget favours open-source, EU-hosted components.
 - Workspace users sign in with their own email address; people without email (children, some elderly volunteers) are represented in the directory and rotas and managed by their team leader.
 - HR may be handled outside the parish by a diocesan or district office through the diocesan HR portal (§6.11).
-- The workspace (R2) is sold as an optional **flat-priced add-on per church**, tiered by number of workspace users (indicatively up to 50 / 150 / 300). Diocesan portal pricing is agreed with the diocese.
+- The website has a **free tier** and a **paid plan** (FR-405). The workspace (R2) is an optional **flat-priced add-on per church** on the paid plan, tiered by number of workspace users (indicatively up to 50 / 150 / 300). Dioceses can buy **bulk deals** for their parishes (FR-407); diocesan HR portal pricing is part of that deal. Exact prices are a business decision outside this document.
+- Denomination presets are reviewed by the **clergy of the pilot churches**; pilots are recruited to cover Roman Catholic, Reformed, Lutheran and one free church.
 - Development is done by **Claude Code agents** under human product ownership and review (see deliverables §3.3).
 
 ## 12. Future scope (post-v1)
@@ -433,7 +440,8 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Editors abandon updating → stale schedule | High | Dashboard warnings, weekly reminder email, schedule-by-rules (fewer manual edits), "last updated" visible to admins. |
-| Denominational nuance wrong / offensive | Medium | Presets reviewed by a clergy advisor from each denomination before GA; all terms overridable. |
+| Denominational nuance wrong / offensive | Medium | Presets reviewed by the pilot churches' clergy before GA; presets without a reviewer (Greek Catholic, Unitarian, general) are marked *béta* until one signs off; all terms overridable. |
+| Free tier costs outgrow revenue | Medium | Storage/editor quotas on the free plan, neutral-domain only, monitoring of cost per free tenant; diocesan bulk deals as revenue anchor. |
 | Special-category data breach | High | Minimal fields, encryption, access controls, no sensitive data in emails, retention auto-delete, security review before GA. |
 | Over-customization requests | Medium | Structured customization only; feature requests feed the roadmap rather than per-church code. |
 | Copyright on liturgical texts | Medium | Link-out by default; license-dependent integrations later. |
@@ -445,17 +453,18 @@ R1 and R2 are **built in parallel** on a shared foundation (tenancy, auth, peopl
 | Diocesan access leaks parish data beyond delegated HR | High | Delegation enforced in database row-level security for HR tables only; two-sided linking approval; automated cross-tenant tests; audit of every diocesan read. |
 | Agent-built code quality / review bottleneck | Medium | Objective CI gates per deliverable, first-pass automated review, human approval of every merge, velocity re-estimated after the foundation milestone. |
 
-## 14. Open questions
+## 14. Decisions
 
-1. Pricing model: free tier for small congregations funded by larger ones / a sponsor, or per-church subscription?
-2. Should diocese/district-level customers be a v1 sales channel (influences multi-site priority)?
-3. Which payment provider (Barion vs SimplePay) is preferred by target churches for P2 giving?
-4. Do we provide a shared `churchy.hu` subdomain brand, or white-label the default subdomain?
-5. Which clergy advisors validate each denomination preset?
+All open questions have been resolved. Remaining business inputs (exact prices, the neutral domain name, pilot partners) are tracked in the deliverables plan.
 ### 14.1 Resolved decisions
 
 | # | Question | Decision (2026-11-13) |
 |---|---|---|
+| 1 | Website pricing model | **Free tier + paid plan** (FR-405), billing at launch (FR-408). |
+| 2 | Dioceses as a sales channel | **Yes — bulk deals at launch** (FR-407). |
+| 3 | Payment provider | **Barion** for subscriptions and for online giving (FR-016, FR-408). |
+| 4 | Default web address | **Neutral, unbranded public domain** for church sites; admin, workspace and diocesan portal on **`churchy.hu`** (FR-108). Neutral domain name to be chosen and registered. |
+| 5 | Preset reviewers | **Clergy of the pilot churches**; pilots must cover Roman Catholic, Reformed, Lutheran and one free church. |
 | 6 | Workspace pricing | Paid add-on, **flat price per church**, tiered by workspace user count. |
 | 7 | Pre-loaded hymnals | **None.** Ship only the hymnal name catalog; churches enter or **CSV-import** their songs. Licensed indexes may come later. |
 | 8 | Payroll export format | **Configurable CSV** with column mapping, Excel-friendly. |
