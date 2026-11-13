@@ -39,4 +39,34 @@ export default tseslint.config(
       "@next/next/no-html-link-for-pages": "off",
     },
   },
+  {
+    // D-90: application code talks to repository interfaces from @churchy/contracts only.
+    // Adapters register themselves with the contracts registry; the single composition root
+    // `apps/web/server/data-adapters.ts` is the only app file allowed to import them.
+    files: ["apps/web/**/*.{ts,tsx,js,jsx,mjs,cjs}", "packages/ui/**/*.{ts,tsx,js,jsx,mjs,cjs}"],
+    ignores: ["apps/web/server/data-adapters.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "@churchy/data-mock",
+                "@churchy/data-mock/*",
+                "@churchy/db",
+                "@churchy/db/*",
+                "**/packages/data-mock",
+                "**/packages/data-mock/**",
+                "**/packages/db",
+                "**/packages/db/**",
+              ],
+              message:
+                "Import repository interfaces from @churchy/contracts and resolve them with getRepositories(); never import a data adapter directly (D-90).",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

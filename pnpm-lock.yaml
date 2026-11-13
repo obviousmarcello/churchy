@@ -87,7 +87,11 @@ importers:
 
   packages/calendar: {}
 
-  packages/contracts: {}
+  packages/contracts:
+    dependencies:
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
 
   packages/data-mock: {}
 

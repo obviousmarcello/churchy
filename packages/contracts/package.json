@@ -4,11 +4,15 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./testing": "./src/testing/index.ts"
   },
   "scripts": {
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
     "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
   }
 }
