@@ -3,6 +3,7 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 import globals from "globals";
+import { permissionRulesConfig } from "./eslint.permissions.mjs";
 
 export default tseslint.config(
   {
@@ -69,4 +70,6 @@ export default tseslint.config(
       ],
     },
   },
+  // D-05: no ad-hoc role checks in UI code (see eslint.permissions.mjs).
+  ...permissionRulesConfig,
 );
