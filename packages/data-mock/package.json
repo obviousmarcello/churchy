@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./testing": "./src/testing/index.ts"
   },
   "scripts": {
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
@@ -12,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@churchy/contracts": "workspace:*"
+    "@churchy/contracts": "workspace:*",
+    "@churchy/schedule": "workspace:*"
   }
 }

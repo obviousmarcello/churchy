@@ -44,6 +44,12 @@ importers:
 
   apps/web:
     dependencies:
+      '@churchy/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@churchy/data-mock':
+        specifier: workspace:*
+        version: link:../../packages/data-mock
       '@churchy/themes':
         specifier: workspace:*
         version: link:../../packages/themes
@@ -98,6 +104,9 @@ importers:
       '@churchy/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@churchy/schedule':
+        specifier: workspace:*
+        version: link:../schedule
 
   packages/hu: {}
 

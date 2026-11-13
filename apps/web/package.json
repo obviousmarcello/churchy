@@ -11,6 +11,8 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@churchy/contracts": "workspace:*",
+    "@churchy/data-mock": "workspace:*",
     "@churchy/themes": "workspace:*",
     "@churchy/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.5",
