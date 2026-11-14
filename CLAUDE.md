@@ -85,7 +85,7 @@ Don't add new runtime dependencies without saying why in the PR. Prefer what's a
 
 ## Messages & terminology in UI (pattern)
 
-- **Strings:** `messages/hu.json`, namespaces `common`, `public`, `admin`, `munkater`, `portal`, `dev`. Keys are typed (`apps/web/global.d.ts`), so a wrong key fails `pnpm typecheck`.
+- **Strings:** `messages/hu.json`, namespaces `common`, `public`, `admin`, `munkater`, `portal`, `dev`, `email` (notification templates, `packages/email`). Keys are typed (`apps/web/global.d.ts`), so a wrong key fails `pnpm typecheck`.
 - **Server components:** `const t = await getT("public.home")` from `apps/web/i18n/server.ts`. **Client components:** `useT("…")` from `apps/web/i18n/client.tsx`. Both are next-intl translators plus `t.term(key)`.
 - **Terminology:** write `{service.plural}`, `{serviceSchedule.nom}`, `{community.article}` … (forms `nom`, `lower`, `slug`, `plural`, `article`) in a message; they are resolved from the tenant's `TermForms` before ICU formatting (`apps/web/i18n/request.ts`). Use `t.term("serviceSchedule").slug` in code. Term data comes through `TermSource` (`apps/web/i18n/terms.ts`, built on `effectiveConfig()` from `@churchy/presets`).
 - **Dates, times, names, addresses, phones, bank accounts:** `<FormattedDate>`, `<FormattedTime>`, `<PersonName>`, `<Address>`, `<Phone>`, `<BankAccount>` from `@churchy/ui` (props only, built on `@churchy/hu`).
@@ -107,6 +107,7 @@ packages/presets/    denomination presets
 packages/themes/     design tokens + component variants
 packages/ui/         shared accessible components + display components (dates, names, …)
 packages/i18n/       terminology (`t.term()`), message term placeholders, Hungarian Zod errors
+packages/email/      notification templates (React Email) rendered to HTML + text + push; used by the outbox viewer
 packages/eslint-plugin-i18n/  `i18n/no-hardcoded-text` lint rule
 messages/hu.json     all UI strings
 docs/                PRD, SDD, deliverables, ADRs, runbooks

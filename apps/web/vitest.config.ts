@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: { alias: { "@/": root("./"), "@messages/": root("../../messages/") } },
   test: {
     environment: "jsdom",
-    include: ["{lib,server,components,lint}/**/*.test.{ts,tsx}"],
+    include: ["{app,lib,server,components,lint}/**/*.test.{ts,tsx}"],
     setupFiles: ["./vitest.setup.ts"],
   },
 });

@@ -78,8 +78,8 @@ export default tseslint.config(
     // All UI text lives in messages/hu.json and is read through next-intl. Tests, e2e specs and the
     // showcase-free packages are exempt; the rule and its allowlist are documented in
     // packages/eslint-plugin-i18n/src/no-hardcoded-text.mjs.
-    files: ["apps/web/**/*.{ts,tsx}", "packages/ui/**/*.{ts,tsx}"],
-    ignores: ["**/*.test.{ts,tsx}", "apps/web/e2e/**", "**/test-setup.ts"],
+    files: ["apps/web/**/*.{ts,tsx}", "packages/ui/**/*.{ts,tsx}", "packages/email/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}", "apps/web/e2e/**", "**/test-setup.ts", "**/testing.ts"],
     plugins: { i18n: i18nPlugin },
     rules: { "i18n/no-hardcoded-text": "error" },
   },
