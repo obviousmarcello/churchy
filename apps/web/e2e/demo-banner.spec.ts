@@ -13,7 +13,10 @@ import { BANNER_TEXT, banner, switchPersona, type PersonaKey } from "./demo-help
 const APP_DIR = fileURLToPath(new URL("../app", import.meta.url));
 
 /** Sample values for dynamic segments (`[slug]` → a real demo slug). */
-const SAMPLE_PARAMS: Record<string, string> = {};
+const SAMPLE_PARAMS: Record<string, string> = {
+  // A location of the default demo church (D-12).
+  slug: "szent-tivadar-templom",
+};
 
 function pagesIn(dir: string): string[] {
   const found: string[] = [];

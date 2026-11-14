@@ -54,8 +54,10 @@ export function buildTenant(b: Build): void {
   const { spec, c, ds, tid } = b;
   const t = spec.tenant;
   const stamp = c.ago(118, "09:00");
+  // The office's Christmas break that is in progress or comes next (Dec 24 – Jan 1), so the
+  // contact page always has a current or upcoming exception to show (D-12).
   const christmasYear =
-    Number(c.today.slice(0, 4)) + (c.today >= `${c.today.slice(0, 4)}-12-25` ? 1 : 0);
+    Number(c.today.slice(0, 4)) + (c.today > `${c.today.slice(0, 4)}-01-01` ? 1 : 0);
   const workspaceModules: Partial<Record<WorkspaceModuleKey, boolean>> = {};
   for (const m of WS_MODULES[t.wsTier] ?? []) workspaceModules[m] = true;
 

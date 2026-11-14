@@ -45,6 +45,14 @@ const PARAMS: Record<EmailTemplateKey, EmailParams> = {
   "plan.mention": { planId: "pl-1", link: "/munkater/szolgalatok/pl-1" },
   "member.invitation": { link: "/belepes" },
   "billing.paymentFailed": { link: "/admin/elofizetes" },
+  "contact.message": {
+    reference: "KAP-2026-0007",
+    name: "Minta Mária",
+    email: "minta.maria@example.test",
+    phone: "+36301234567",
+    subject: "Érdeklődés",
+    message: "Első sor.\nMásodik sor.",
+  },
 };
 
 const MESSAGE_PARTS = ["subject", "preheader", "heading", "body", "cta", "pushTitle", "pushBody"];
@@ -161,6 +169,51 @@ describe("rendering through React Email", () => {
       expect(reformed.html.toLowerCase()).not.toContain("szentmise");
       expect(reformed.text.toLowerCase()).not.toContain("szentmise");
     }
+  });
+});
+
+describe("contact.message", () => {
+  const params = PARAMS["contact.message"];
+
+  it("delivers the visitor's message to the office, with the sender's details", async () => {
+    const mail = await renderEmail("contact.message", params, contextFor());
+    const text = visibleText(mail.html);
+    for (const expected of [
+      "KAP-2026-0007",
+      "Minta Mária",
+      "minta.maria@example.test",
+      "+36 30 123 4567",
+      "Érdeklődés",
+      "Első sor.",
+      "Második sor.",
+    ]) {
+      expect(text, expected).toContain(expected);
+      expect(mail.text, expected).toContain(expected);
+    }
+    // Line breaks of the message survive in the HTML.
+    expect(mail.html).toContain("white-space:pre-line");
+    expect(mail.link).toBeNull();
+  });
+
+  it("keeps the subject line and the push notification free of the message content", async () => {
+    const ctx = contextFor();
+    const mail = await renderEmail("contact.message", params, ctx);
+    const push = renderPush("contact.message", params, ctx);
+    expect(mail.subject).toBe("Új üzenet a honlapról: KAP-2026-0007");
+    for (const field of [mail.subject, push.title, push.body]) {
+      for (const secret of ["Minta Mária", "minta.maria", "Érdeklődés", "Első sor"]) {
+        expect(field).not.toContain(secret);
+      }
+    }
+  });
+
+  it("omits the phone row when no phone was given", async () => {
+    const mail = await renderEmail("contact.message", { ...params, phone: null }, contextFor());
+    expect(visibleText(mail.html)).not.toContain("Telefonszám");
+  });
+
+  it("is not a reference-only template", () => {
+    expect(REFERENCE_ONLY_TEMPLATES as readonly string[]).not.toContain("contact.message");
   });
 });
 

@@ -32,7 +32,8 @@
         "orgLinks": "Kapcsolt {community.plural}",
         "orgTemplates": "HR-sablonok",
         "orgMembers": "Portál munkatársai"
-      }
+      },
+      "contact": "{contactPage.nom}"
     },
     "area": {
       "sectionsHeading": "Az Ön számára elérhető részek",
@@ -116,6 +117,97 @@
         "until": "Érvényesség vége: {to}"
       },
       "nthWeek": "a hónap {nth, select, 1 {első} 2 {második} 3 {harmadik} 4 {negyedik} 5 {ötödik} other {utolsó}} {weekday, select, 1 {hétfőjén} 2 {keddjén} 3 {szerdáján} 4 {csütörtökjén} 5 {péntekjén} 6 {szombatján} other {vasárnapján}}"
+    },
+    "hours": {
+      "openNow": "Most nyitva",
+      "closedNow": "Most zárva",
+      "openUntil": "{time}-ig",
+      "opensToday": "Ma {time}-kor nyit",
+      "opensOn": "Legközelebb: {date}, {time}",
+      "noUpcoming": "A közeljövőben nincs nyitvatartás.",
+      "statusLoading": "Nyitvatartási állapot betöltése…",
+      "today": "Ma",
+      "closed": "Zárva",
+      "dayColumn": "Nap",
+      "hoursColumn": "Nyitvatartás",
+      "exceptionsHeading": "Eltérő nyitvatartás",
+      "exceptionClosed": "Zárva: {range}",
+      "exceptionChanged": "Eltérő nyitvatartás: {range}",
+      "exceptionToday": "Ma eltérő nyitvatartás érvényes.",
+      "noHours": "Nincs megadott nyitvatartás."
+    },
+    "map": {
+      "heading": "Térkép",
+      "placeholderLabel": "Térkép helye: {name}",
+      "notice": "A térkép az OpenStreetMap szolgáltatásból töltődik be. A betöltéskor böngészője kapcsolatba lép az OpenStreetMap kiszolgálóival.",
+      "load": "Térkép betöltése",
+      "frameTitle": "Térkép: {name}",
+      "route": "Útvonaltervezés",
+      "routeHint": "Megnyílik a térképalkalmazásban",
+      "openOsm": "Megnyitás az OpenStreetMapen"
+    },
+    "locations": {
+      "title": "{locationsSection.nom}",
+      "lead": "Címek, nyitvatartás, megközelítés és akadálymentesség.",
+      "empty": "Még nincs megadott helyszín.",
+      "details": "Részletek",
+      "kind": {
+        "templom": "Templom",
+        "kapolna": "Kápolna",
+        "filia": "Fíliatemplom",
+        "egyeb": "Helyszín"
+      },
+      "addressHeading": "Cím",
+      "noAddress": "Nincs megadott cím.",
+      "hoursHeading": "Nyitvatartás",
+      "accessibilityHeading": "Akadálymentesség",
+      "accessibility": {
+        "wheelchair": "Kerekesszékkel megközelíthető",
+        "accessibleToilet": "Akadálymentes mosdó",
+        "hearingLoop": "Indukciós hurok",
+        "parking": "Parkolási lehetőség",
+        "available": "Van",
+        "unavailable": "Nincs"
+      },
+      "backToList": "Vissza: {locationsSection.nom}",
+      "notFoundTitle": "A helyszín nem található"
+    },
+    "contact": {
+      "title": "{contactPage.nom}",
+      "lead": "Kérdése van? Keressen minket személyesen, telefonon vagy az alábbi űrlapon.",
+      "detailsHeading": "Elérhetőségeink",
+      "address": "Cím",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "officeHoursHeading": "{office.nom} nyitvatartása",
+      "locationsHeading": "{locationsSection.nom}",
+      "form": {
+        "heading": "Írjon nekünk",
+        "intro": "Üzenetét e-mailben továbbítjuk {office.article} {office.lower} számára. Kérjük, ne írjon bele egészségügyi vagy más különleges személyes adatot.",
+        "name": "Név",
+        "email": "E-mail-cím",
+        "emailHelp": "Erre a címre válaszolunk.",
+        "phone": "Telefonszám",
+        "optional": "(nem kötelező)",
+        "subject": "Tárgy",
+        "message": "Üzenet",
+        "consent": "Elolvastam az adatkezelési tájékoztatót, és hozzájárulok, hogy adataimat az üzenet megválaszolásához kezeljék.",
+        "privacyLink": "Adatkezelési tájékoztató",
+        "honeypot": "Ezt a mezőt hagyja üresen",
+        "submit": "Üzenet küldése",
+        "sending": "Küldés…",
+        "errorSummary": "Kérjük, javítsa a megjelölt mezőket.",
+        "failed": "Az üzenetet most nem sikerült elküldeni. Kérjük, próbálja újra később.",
+        "successTitle": "Köszönjük, üzenetét megkaptuk!",
+        "successBody": "Munkatársunk hamarosan válaszol a megadott e-mail-címen.",
+        "successReference": "Hivatkozási szám: {reference}",
+        "sendAnother": "Új üzenet írása",
+        "errors": {
+          "required": "Ez a mező kötelező.",
+          "phone": "Adjon meg érvényes telefonszámot, például +36 30 123 4567.",
+          "consent": "Az üzenet elküldéséhez el kell fogadnia az adatkezelési tájékoztatót."
+        }
+      }
     }
   },
   "dev": {
@@ -487,6 +579,9 @@
         },
         "billing": {
           "paymentFailed": "Számlázás: sikertelen fizetés"
+        },
+        "contact": {
+          "message": "Kapcsolat: üzenet az irodának"
         }
       }
     }
@@ -506,7 +601,12 @@
       "when": "Időpont",
       "decision": "Döntés",
       "approved": "Jóváhagyva",
-      "rejected": "Elutasítva"
+      "rejected": "Elutasítva",
+      "senderName": "Feladó",
+      "senderEmail": "E-mail-cím",
+      "senderPhone": "Telefonszám",
+      "subject": "Tárgy",
+      "message": "Üzenet"
     },
     "request": {
       "officeNotification": {
@@ -655,6 +755,17 @@
         "cta": "Előfizetés megnyitása",
         "pushTitle": "A fizetés nem sikerült",
         "pushBody": "Kérjük, ellenőrizze az előfizetés fizetési adatait."
+      }
+    },
+    "contact": {
+      "message": {
+        "subject": "Új üzenet a honlapról: {reference}",
+        "preheader": "Új üzenet érkezett a honlap kapcsolatfelvételi űrlapján.",
+        "heading": "Új üzenet érkezett a honlapról",
+        "body": "A honlap kapcsolatfelvételi űrlapján új üzenet érkezett. A feladónak a megadott e-mail-címen válaszolhat.",
+        "cta": "Megnyitás",
+        "pushTitle": "Új üzenet a honlapról",
+        "pushBody": "Új üzenet érkezett: {reference}."
       }
     }
   },
