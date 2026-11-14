@@ -2206,7 +2206,7 @@ export const rkSpec: ChurchSpec = {
   ],
   forms: [
     riteForm(
-      "kereszteles",
+      "keresztelo",
       "Keresztelő bejelentése",
       "KER",
       [
@@ -2290,7 +2290,7 @@ export const rkSpec: ChurchSpec = {
   ],
   requests: [
     {
-      form: "kereszteles",
+      form: "keresztelo",
       status: "uj",
       daysAgo: 1,
       data: {
@@ -2305,7 +2305,7 @@ export const rkSpec: ChurchSpec = {
       },
     },
     {
-      form: "kereszteles",
+      form: "keresztelo",
       status: "folyamatban",
       daysAgo: 6,
       data: {
@@ -2455,6 +2455,20 @@ export const rkSpec: ChurchSpec = {
           ],
         },
         { type: "image", caption: "A templom belseje" },
+        { type: "heading", text: "Képek a templomról" },
+        { type: "gallery", count: 4 },
+        { type: "heading", text: "Videós templombejárás" },
+        // A Creative Commons sample video; it is only loaded after the visitor's click.
+        { type: "embed", provider: "youtube", url: "https://www.youtube.com/watch?v=aqz-KE-bpKQ" },
+        // Facebook is not an allowed embed provider of the public renderer: dropped on the page.
+        { type: "embed", provider: "facebook", url: "https://www.facebook.com/video.php?v=1" },
+        {
+          type: "quote",
+          text: "Ez a hely Isten háza és az ég kapuja.",
+          source: "Teremtés könyve 28,17",
+        },
+        { type: "file", label: "A templom építéstörténete (PDF)" },
+        { type: "cta", label: "Látogatás bejelentése", href: "/kapcsolat" },
       ],
     },
     {
@@ -2472,10 +2486,11 @@ export const rkSpec: ChurchSpec = {
       ],
     },
     ritePage({
-      slug: "kereszteles",
+      slug: "keresztelo",
       title: "Keresztelő",
-      rite: "kereszteles",
+      rite: "keresztelo",
       parent: "szertartasok",
+      section: "szentsegek",
       sort: 11,
       intro: [
         "Gyermekük megkeresztelését szeretettel várjuk. A keresztelőt általában vasárnap délután vagy hónap első szombatján tartjuk.",
@@ -2504,6 +2519,7 @@ export const rkSpec: ChurchSpec = {
       title: "Elsőáldozás",
       rite: "elsoaldozas",
       parent: "szertartasok",
+      section: "szentsegek",
       sort: 12,
       intro: [
         "Az elsőáldozásra a harmadik osztályos gyermekeket készítjük fel a hittanórákon és a családi alkalmakon.",
@@ -2530,6 +2546,7 @@ export const rkSpec: ChurchSpec = {
       title: "Bérmálás",
       rite: "bermalas",
       parent: "szertartasok",
+      section: "szentsegek",
       sort: 13,
       intro: [
         "A bérmálás szentségére a tizenéves fiatalokat és a felnőtteket is szeretettel várjuk.",
@@ -2554,6 +2571,7 @@ export const rkSpec: ChurchSpec = {
       title: "Házasság",
       rite: "hazassag",
       parent: "szertartasok",
+      section: "szentsegek",
       sort: 14,
       intro: ["Szeretettel segítjük a jegyespárokat az egyházi házasságkötés előkészítésében."],
       steps: [
@@ -2580,6 +2598,7 @@ export const rkSpec: ChurchSpec = {
       title: "Temetés",
       rite: "temetes",
       parent: "szertartasok",
+      section: "szentsegek",
       sort: 15,
       intro: [
         "Fájdalmas időszakban is mellettük állunk. A temetés rendjéről irodánk készséggel tájékoztatja.",
@@ -2604,6 +2623,7 @@ export const rkSpec: ChurchSpec = {
       title: "Betegek kenete",
       rite: "betegek-kenete",
       parent: "szertartasok",
+      section: "szentsegek",
       sort: 16,
       intro: [
         "A betegek kenetét kérésre otthon vagy kórházban is kiszolgáltatjuk, szükség esetén azonnal.",

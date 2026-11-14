@@ -20,6 +20,9 @@ const SAMPLE_PARAMS: Record<string, string> = {
   eventSlug: "hittanora",
   // A visible news post of the default demo church (D-13).
   postSlug: "adventi-lelkinap",
+  // A static page and a preset rite of the default demo church (D-16).
+  pageSlug: "rolunk",
+  rite: "keresztelo",
 };
 
 function pagesIn(dir: string): string[] {

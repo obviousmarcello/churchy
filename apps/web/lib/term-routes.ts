@@ -14,12 +14,27 @@ export const TERM_ROUTES = {
   serviceSchedule: "/term/service-schedule",
   // Weekly announcements (D-14): `/hirdetesek` unless the church renames the section.
   announcementsSection: "/term/announcements",
+  // Clergy & staff (D-16): `/munkatarsaink` unless the church renames the section.
+  staffSection: "/term/staff",
 } as const;
 
-export type TermRouteKey = keyof typeof TERM_ROUTES;
+/**
+ * Term-driven sections with sub-pages (SDD §6): the section slug and everything below it are
+ * rewritten, e.g. `/szentsegek/keresztelo/bejelentes` → `/term/rites/keresztelo/bejelentes`
+ * (Reformed: `/alkalmak/…`).
+ */
+export const TERM_SECTION_ROUTES = {
+  // Rite information pages and request forms (D-16, D-28).
+  ritesSection: "/term/rites",
+} as const;
+
+export type TermRouteKey = keyof typeof TERM_ROUTES | keyof typeof TERM_SECTION_ROUTES;
 
 export function isTermRouteKey(value: unknown): value is TermRouteKey {
-  return typeof value === "string" && Object.hasOwn(TERM_ROUTES, value);
+  return (
+    typeof value === "string" &&
+    (Object.hasOwn(TERM_ROUTES, value) || Object.hasOwn(TERM_SECTION_ROUTES, value))
+  );
 }
 
 /** What the proxy needs from the tenant's terminology. */
@@ -32,8 +47,11 @@ export function termRoutePath(terms: TermSlugs, key: TermRouteKey): string {
   return `/${terms.term(key).slug}`;
 }
 
-/** Term slugs are one lowercase kebab-case segment (`SlugSchema`); nothing else can match. */
-const TERM_ROUTE_CANDIDATE = /^\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
+/**
+ * Term slugs are one lowercase kebab-case segment (`SlugSchema`); a section route adds at most two
+ * more such segments. Nothing else can match.
+ */
+const TERM_ROUTE_CANDIDATE = /^(?:\/[a-z0-9]+(?:-[a-z0-9]+)*){1,3}$/;
 
 /** Whether `pathname` could be a term route at all (lets the proxy skip the tenant lookup). */
 export function isTermRouteCandidate(pathname: string): boolean {
@@ -42,15 +60,24 @@ export function isTermRouteCandidate(pathname: string): boolean {
 
 /**
  * The internal rewrite target of a public path, or null when the path is not a term route of this
- * terminology. Only exact matches count (no prefix or case folding): `/miserend` matches,
- * `/miserend/x` and `/Miserend` do not.
+ * terminology. Term routes match exactly (no prefix or case folding): `/miserend` matches,
+ * `/miserend/x` and `/Miserend` do not. Section routes also match their sub-paths
+ * (`/szentsegek/keresztelo`).
  */
 export function termRouteTarget(
   pathname: string,
   terms: TermSlugs,
 ): { key: TermRouteKey; target: string } | null {
-  for (const key of Object.keys(TERM_ROUTES) as TermRouteKey[]) {
+  if (!isTermRouteCandidate(pathname)) return null;
+  for (const key of Object.keys(TERM_ROUTES) as (keyof typeof TERM_ROUTES)[]) {
     if (pathname === termRoutePath(terms, key)) return { key, target: TERM_ROUTES[key] };
+  }
+  for (const key of Object.keys(TERM_SECTION_ROUTES) as (keyof typeof TERM_SECTION_ROUTES)[]) {
+    const base = termRoutePath(terms, key);
+    if (pathname === base) return { key, target: TERM_SECTION_ROUTES[key] };
+    if (pathname.startsWith(`${base}/`)) {
+      return { key, target: `${TERM_SECTION_ROUTES[key]}${pathname.slice(base.length)}` };
+    }
   }
   return null;
 }

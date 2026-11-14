@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { termsForDenomination } from "@/i18n/terms";
 import {
   TERM_ROUTES,
+  TERM_SECTION_ROUTES,
   isTermRouteCandidate,
   isTermRouteKey,
   termRoutePath,
@@ -51,17 +52,71 @@ describe("term routes", () => {
     expect(termRouteTarget("/miserend", custom)).toBeNull();
   });
 
-  it("only single-segment slug paths are candidates (the proxy skips the lookup otherwise)", () => {
-    for (const path of ["/miserend", "/istentiszteleti-rend", "/alkalmaink", "/a1"]) {
+  it("routes the staff section term (D-16)", () => {
+    for (const terms of [rk, ref, termsForDenomination("bapt")]) {
+      expect(termRouteTarget("/munkatarsaink", terms)).toEqual({
+        key: "staffSection",
+        target: TERM_ROUTES.staffSection,
+      });
+    }
+    expect(termRouteTarget("/munkatarsaink/x", rk)).toBeNull();
+  });
+
+  it("routes the rites section and its sub-pages per denomination (D-16)", () => {
+    const bapt = termsForDenomination("bapt");
+    expect(termRoutePath(rk, "ritesSection")).toBe("/szentsegek");
+    expect(termRoutePath(ref, "ritesSection")).toBe("/alkalmak");
+    expect(termRoutePath(bapt, "ritesSection")).toBe("/eletesemenyek");
+    expect(termRouteTarget("/szentsegek", rk)).toEqual({
+      key: "ritesSection",
+      target: TERM_SECTION_ROUTES.ritesSection,
+    });
+    expect(termRouteTarget("/szentsegek/keresztelo", rk)?.target).toBe("/term/rites/keresztelo");
+    expect(termRouteTarget("/alkalmak/keresztelo/bejelentes", ref)?.target).toBe(
+      "/term/rites/keresztelo/bejelentes",
+    );
+    expect(termRouteTarget("/eletesemenyek/bemerites", bapt)?.key).toBe("ritesSection");
+    // Another denomination's section, look-alike prefixes and deeper paths are not rewritten.
+    for (const path of [
+      "/alkalmak/keresztelo",
+      "/szentsegekx",
+      "/szentsegek-x/keresztelo",
+      "/szentsegek/",
+      "/szentsegek/a/b/c",
+      "/szentsegek/Keresztelo",
+    ]) {
+      expect(termRouteTarget(path, rk), path).toBeNull();
+    }
+  });
+
+  it("only slug paths of up to three segments are candidates (the proxy skips the lookup otherwise)", () => {
+    for (const path of [
+      "/miserend",
+      "/istentiszteleti-rend",
+      "/alkalmaink",
+      "/a1",
+      "/admin/rend",
+      "/szentsegek/keresztelo/bejelentes",
+    ]) {
       expect(isTermRouteCandidate(path), path).toBe(true);
     }
-    for (const path of ["/", "/miserend/", "/admin/rend", "/Miserend", "/-x", "/a--b", "/a.png"]) {
+    for (const path of [
+      "/",
+      "/miserend/",
+      "/Miserend",
+      "/-x",
+      "/a--b",
+      "/a.png",
+      "/a/b/c/d",
+      "/a//b",
+    ]) {
       expect(isTermRouteCandidate(path), path).toBe(false);
     }
   });
 
   it("recognises term route keys", () => {
     expect(isTermRouteKey("serviceSchedule")).toBe(true);
+    expect(isTermRouteKey("ritesSection")).toBe(true);
     for (const value of [null, "", "toString", "x"]) expect(isTermRouteKey(value)).toBe(false);
   });
 });

@@ -9,6 +9,9 @@ export type NavKey =
   | "public.announcements"
   | "public.events"
   | "public.news"
+  | "public.rites"
+  | "public.about"
+  | "public.staff"
   | "contact"
   | "workspace"
   | "admin"
@@ -31,11 +34,33 @@ export type NavKey =
   | "sections.orgTemplates"
   | "sections.orgMembers";
 
+/** A static page listed in the *Rólunk* menu (D-16). */
+export interface NavPage {
+  readonly slug: string;
+  readonly title: string;
+}
+
 /**
  * Public main navigation (SDD §6): always visible, labels and term-driven paths from the tenant's
- * terminology. Items carry their module (stub until D-25 supplies module settings).
+ * terminology. Items carry their module (stub until D-25 supplies module settings). `aboutPages`
+ * (the church's top-level static pages) and the staff page are grouped under *Rólunk ▾*.
  */
-export function buildPublicNav(t: NavTranslator, terms: TermSlugs): readonly PermissionNavItem[] {
+export function buildPublicNav(
+  t: NavTranslator,
+  terms: TermSlugs,
+  aboutPages: readonly NavPage[] = [],
+): readonly PermissionNavItem[] {
+  const staff: PermissionNavItem = {
+    id: "publicStaff",
+    label: t("public.staff"),
+    href: termRoutePath(terms, "staffSection"),
+    module: "staff",
+  };
+  const about: PermissionNavItem[] = aboutPages.map((p) => ({
+    id: `page-${p.slug}`,
+    label: p.title,
+    href: `/${p.slug}`,
+  }));
   return [
     {
       id: "publicSchedule",
@@ -51,6 +76,19 @@ export function buildPublicNav(t: NavTranslator, terms: TermSlugs): readonly Per
     },
     { id: "events", label: t("public.events"), href: "/esemenyek", module: "events" },
     { id: "news", label: t("public.news"), href: "/hirek", module: "news" },
+    {
+      id: "publicRites",
+      label: t("public.rites"),
+      href: termRoutePath(terms, "ritesSection"),
+      module: "rites",
+    },
+    // *Rólunk ▾* (D-16): the church's static pages and the staff page.
+    {
+      id: "publicAbout",
+      label: t("public.about"),
+      href: about[0]?.href ?? staff.href,
+      children: [...about, staff],
+    },
     // *Kapcsolat* is part of the core module (SDD §6).
     { id: "contact", label: t("contact"), href: "/kapcsolat" },
   ];

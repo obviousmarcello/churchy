@@ -1996,7 +1996,7 @@ export const refSpec: ChurchSpec = {
   ],
   forms: [
     riteForm(
-      "kereszteles",
+      "keresztelo",
       "Keresztelő bejelentése",
       "KER",
       [
@@ -2056,7 +2056,7 @@ export const refSpec: ChurchSpec = {
   ],
   requests: [
     {
-      form: "kereszteles",
+      form: "keresztelo",
       status: "uj",
       daysAgo: 1,
       data: {
@@ -2070,7 +2070,7 @@ export const refSpec: ChurchSpec = {
       },
     },
     {
-      form: "kereszteles",
+      form: "keresztelo",
       status: "folyamatban",
       daysAgo: 7,
       data: {
@@ -2206,6 +2206,9 @@ export const refSpec: ChurchSpec = {
           ],
         },
         { type: "image", caption: "A templom belseje" },
+        { type: "gallery", count: 3 },
+        // Vimeo sample video; only loaded after the visitor's click.
+        { type: "embed", provider: "vimeo", url: "https://vimeo.com/76979871" },
       ],
     },
     {
@@ -2223,10 +2226,11 @@ export const refSpec: ChurchSpec = {
       ],
     },
     ritePage({
-      slug: "kereszteles",
+      slug: "keresztelo",
       title: "Keresztelő",
-      rite: "kereszteles",
+      rite: "keresztelo",
       parent: "szertartasok",
+      section: "alkalmak",
       sort: 11,
       intro: [
         "A gyermekkeresztelő az Isten kegyelméről szóló ígéretet hirdeti. Szeretettel hívjuk a családokat a gyülekezet közösségébe.",
@@ -2257,6 +2261,7 @@ export const refSpec: ChurchSpec = {
       title: "Konfirmáció",
       rite: "konfirmacio",
       parent: "szertartasok",
+      section: "alkalmak",
       sort: 12,
       intro: [
         "A konfirmáció a keresztséghez kapcsolódó hitvallás; felkészítő oktatás előzi meg. Szeretettel várjuk a tizennégy éves és idősebb fiatalokat.",
@@ -2283,6 +2288,7 @@ export const refSpec: ChurchSpec = {
       title: "Házasságkötés",
       rite: "hazassagkotes",
       parent: "szertartasok",
+      section: "alkalmak",
       sort: 13,
       intro: ["Szívesen segítünk a jegyespároknak a templomi esküvő előkészítésében."],
       steps: [
@@ -2309,6 +2315,7 @@ export const refSpec: ChurchSpec = {
       title: "Temetés",
       rite: "temetes",
       parent: "szertartasok",
+      section: "alkalmak",
       sort: 14,
       intro: [
         "Gyászolóknak is ajtót nyit gyülekezetünk. A temetés rendjéről a hivatal készséggel tájékoztat.",

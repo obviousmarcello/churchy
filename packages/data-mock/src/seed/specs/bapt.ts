@@ -2116,6 +2116,7 @@ export const baptSpec: ChurchSpec = {
           ],
         },
         { type: "image", caption: "Az imaterem" },
+        { type: "gallery", count: 3 },
       ],
     },
     {
@@ -2138,6 +2139,7 @@ export const baptSpec: ChurchSpec = {
       title: "Bemerítés",
       rite: "bemerites",
       parent: "szertartasok",
+      section: "eletesemenyek",
       sort: 11,
       intro: [
         "A bemerítés a hit nyilvános megvallása. Szeretettel hívjuk mindazokat, akik szeretnék megvallani hitüket.",
@@ -2164,6 +2166,7 @@ export const baptSpec: ChurchSpec = {
       title: "Házasságkötés",
       rite: "hazassagkotes",
       parent: "szertartasok",
+      section: "eletesemenyek",
       sort: 12,
       intro: [
         "Szívesen segítünk a jegyespároknak az istentiszteleti keretben történő házasságkötés előkészítésében.",
@@ -2188,6 +2191,7 @@ export const baptSpec: ChurchSpec = {
       title: "Temetés",
       rite: "temetes",
       parent: "szertartasok",
+      section: "eletesemenyek",
       sort: 13,
       intro: [
         "Gyászolóknak is ajtót nyit a gyülekezet. A temetés rendjéről az iroda készséggel tájékoztat.",
@@ -2212,6 +2216,7 @@ export const baptSpec: ChurchSpec = {
       title: "Gyermekbemutatás",
       rite: "gyermekbemutatas",
       parent: "szertartasok",
+      section: "eletesemenyek",
       sort: 14,
       intro: [
         "A gyermekbemutatás alkalmával a szülők hálát adnak a gyermekért, a gyülekezet pedig áldást kér rá.",

@@ -12,7 +12,10 @@
         "serviceSchedule": "{serviceSchedule.nom}",
         "announcements": "{announcementsSection.nom}",
         "events": "Események",
-        "news": "Hírek"
+        "news": "Hírek",
+        "rites": "{ritesSection.nom}",
+        "about": "{aboutPage.nom}",
+        "staff": "{staffSection.nom}"
       },
       "workspace": "Munkatér",
       "admin": "Weboldal kezelése",
@@ -308,6 +311,53 @@
       "copyFailed": "A másolás nem sikerült. A hivatkozást innen jelölheti ki: {url}",
       "opensInNewTab": "(új lapon nyílik meg)",
       "relatedHeading": "Kapcsolódó hírek"
+    },
+    "blocks": {
+      "gallery": "Képgaléria",
+      "fileInfo": "PDF, {kilobytes} kB",
+      "embedNotice": "A videó külső szolgáltatótól ({provider}) töltődik be. A betöltéskor böngészője kapcsolatba lép a szolgáltató kiszolgálóival.",
+      "embedLoad": "Videó betöltése",
+      "embedFrameTitle": "Videó ({provider})"
+    },
+    "pages": {
+      "metaTitle": "{title} · {church}"
+    },
+    "staff": {
+      "title": "{staffSection.nom}",
+      "metaTitle": "{staffSection.nom} · {church}",
+      "lead": "Lelkipásztoraink, munkatársaink és {layCouncil.article} {layCouncil.lower} tagjai. Keressék őket bizalommal.",
+      "groups": {
+        "clergy": "Lelkipásztori szolgálat",
+        "staff": "Munkatársak",
+        "council": "{layCouncil.nom}",
+        "volunteer": "Önkéntesek"
+      },
+      "email": "E-mail",
+      "phone": "Telefon",
+      "emailAt": "kukac",
+      "emailDot": "pont",
+      "empty": "Munkatársaink adatai hamarosan felkerülnek erre az oldalra.",
+      "officeHint": "Általános ügyekben kérjük, keresse {office.article} {office.lower} munkatársait.",
+      "contactLink": "Elérhetőségeink"
+    },
+    "rites": {
+      "title": "{ritesSection.nom}",
+      "metaTitle": "{ritesSection.nom} · {church}",
+      "metaDescription": "Tudnivalók, szükséges dokumentumok és bejelentés.",
+      "listHeading": "Válasszon az alábbiak közül",
+      "readMore": "Tudnivalók",
+      "back": "Vissza: {ritesSection.nom}",
+      "riteMetaTitle": "{rite} · {church}",
+      "fallbackIntro": "Részletes tájékoztatásért kérjük, keresse {office.article} {office.lower} munkatársait.",
+      "requestButton": "Bejelentés indítása",
+      "contactHeading": "Kapcsolat",
+      "contactBody": "Kérdés esetén {office.article} {office.lower} munkatársai szívesen segítenek.",
+      "contactLink": "Elérhetőségeink",
+      "requestTitle": "{rite} — bejelentés",
+      "requestMetaTitle": "{rite} — bejelentés · {church}",
+      "requestComingTitle": "Az online bejelentés hamarosan elérhető",
+      "requestComingBody": "Addig kérjük, keresse {office.article} {office.lower} munkatársait telefonon, e-mailben vagy személyesen.",
+      "requestBack": "Vissza a tudnivalókhoz"
     }
   },
   "dev": {

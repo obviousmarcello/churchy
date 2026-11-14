@@ -62,3 +62,14 @@ export {
   safeImageSrc,
   type RichTextContentProps,
 } from "./components/rich-text";
+export {
+  PageBlocks,
+  type BlockFile,
+  type BlockImage,
+  type PageBlocksLabels,
+  type PageBlocksProps,
+} from "./components/page-blocks";
+export { embedSource, type AllowedEmbedProvider, type EmbedSource } from "./components/embed";
+export { EmbedFacade, type EmbedFacadeProps } from "./components/embed-facade";
+export { decodeEmail, encodeEmail, spokenEmail } from "./components/email-obfuscation";
+export { ObfuscatedEmail, type ObfuscatedEmailProps } from "./components/obfuscated-email";

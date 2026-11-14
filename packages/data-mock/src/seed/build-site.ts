@@ -563,8 +563,12 @@ function block(b: Build, pb: PageBlockSpec): PageBlock {
       };
     case "image":
       return { type: "image", mediaId: b.imageIds[0] as string, caption: pb.caption ?? null };
+    case "gallery":
+      return { type: "gallery", mediaIds: b.imageIds.slice(0, Math.max(1, pb.count)) };
     case "quote":
       return { type: "quote", text: pb.text, source: pb.source ?? null };
+    case "embed":
+      return { type: "embed", provider: pb.provider, url: pb.url };
     case "cta":
       return { type: "cta", label: pb.label, href: pb.href };
     case "file":

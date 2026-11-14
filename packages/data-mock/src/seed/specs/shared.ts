@@ -70,6 +70,8 @@ export function ritePage(opts: {
   title: string;
   rite: string;
   parent: string;
+  /** Slug of the preset's rites section term (`szentsegek`, `alkalmak`, …), for the request link. */
+  section: string;
   sort: number;
   intro: string[];
   steps: string[];
@@ -94,7 +96,7 @@ export function ritePage(opts: {
       { type: "text", paragraphs: [], bullets: opts.documents },
       { type: "heading", text: opts.texts.preparation },
       { type: "text", paragraphs: opts.preparation },
-      { type: "cta", label: opts.cta, href: `/szertartasok/${opts.slug}/bejelentes` },
+      { type: "cta", label: opts.cta, href: `/${opts.section}/${opts.rite}/bejelentes` },
     ],
   };
 }
