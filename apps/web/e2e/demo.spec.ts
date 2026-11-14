@@ -198,6 +198,8 @@ test.describe("demo bar accessibility", () => {
 
     await page.getByTestId("demo-reset").click();
     await expect(page.getByTestId("demo-reset-status")).toContainText("visszaálltak");
+    // The refresh after a reset briefly drops <title>; wait for it before running axe.
+    await expect(page).toHaveTitle(/.+/);
     expect(await axeSeriousOrCritical(page)).toEqual([]);
 
     await switchPersona(page, "tulajdonos");
