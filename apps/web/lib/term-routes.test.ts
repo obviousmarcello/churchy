@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { termsForDenomination } from "@/i18n/terms";
-import { TERM_ROUTES, termRoutePath, termRouteTarget } from "./term-routes";
+import {
+  TERM_ROUTES,
+  isTermRouteCandidate,
+  isTermRouteKey,
+  termRoutePath,
+  termRouteTarget,
+} from "./term-routes";
 
 describe("term routes", () => {
   const rk = termsForDenomination("rk");
@@ -31,5 +37,19 @@ describe("term routes", () => {
     };
     expect(termRouteTarget("/alkalmaink", custom)?.key).toBe("serviceSchedule");
     expect(termRouteTarget("/miserend", custom)).toBeNull();
+  });
+
+  it("only single-segment slug paths are candidates (the proxy skips the lookup otherwise)", () => {
+    for (const path of ["/miserend", "/istentiszteleti-rend", "/alkalmaink", "/a1"]) {
+      expect(isTermRouteCandidate(path), path).toBe(true);
+    }
+    for (const path of ["/", "/miserend/", "/admin/rend", "/Miserend", "/-x", "/a--b", "/a.png"]) {
+      expect(isTermRouteCandidate(path), path).toBe(false);
+    }
+  });
+
+  it("recognises term route keys", () => {
+    expect(isTermRouteKey("serviceSchedule")).toBe(true);
+    for (const value of [null, "", "toString", "x"]) expect(isTermRouteKey(value)).toBe(false);
   });
 });

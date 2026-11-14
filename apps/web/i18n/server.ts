@@ -16,5 +16,6 @@ type AppMessages = typeof huMessages;
 export async function getT<
   Namespace extends NamespaceKeys<AppMessages, NestedKeyOf<AppMessages>> = never,
 >(namespace?: Namespace) {
-  return withTerms(await getTranslations<Namespace>(namespace), getTerms());
+  const [t, terms] = await Promise.all([getTranslations<Namespace>(namespace), getTerms()]);
+  return withTerms(t, terms);
 }

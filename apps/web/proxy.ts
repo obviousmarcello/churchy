@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getTerms } from "@/i18n/terms";
+import { termsForSiteConfig } from "@/i18n/terms";
 import {
   DEMO_SESSION_COOKIE,
   demoCookieOptions,
@@ -7,31 +7,33 @@ import {
   newDemoSessionId,
 } from "@/lib/demo/cookies";
 import { demoModeEnabled } from "@/lib/demo/flag";
-import { TERM_ROUTE_HEADER, termRouteTarget } from "@/lib/term-routes";
+import { TERM_ROUTE_HEADER, isTermRouteCandidate, termRouteTarget } from "@/lib/term-routes";
+import { siteConfigForRequest } from "@/server/site-config";
 
 /**
  * Runs before every page request:
  *
- * - Term routes (SDD §6, `lib/term-routes.ts`): the tenant's term slug (`/miserend`,
- *   `/istentiszteleti-rend`, …) is rewritten to the one internal page that renders it, and the
- *   request is marked so that page knows it was reached through its public URL.
+ * - Term routes (SDD §6, `lib/term-routes.ts`): the request church's term slug (`/miserend` for
+ *   the Catholic parish, `/istentiszteleti-rend` for the Reformed church, …) is rewritten to the
+ *   one internal page that renders it, and the request is marked so that page knows it was
+ *   reached through its public URL. Another denomination's slug is not rewritten, so it is a 404.
  * - Demo mode (D-92): gives every visitor a demo session id before the first render, so each
  *   visitor works on their own in-memory copy of the demo data from the first request on. The id
  *   is also put on the forwarded request, so that very request already uses it. Without demo mode
  *   no cookie is ever set.
  */
-export function proxy(request: NextRequest): NextResponse {
-  // The mark is only ever set here, never taken from the client.
-  const hadMark = request.headers.has(TERM_ROUTE_HEADER);
-  request.headers.delete(TERM_ROUTE_HEADER);
-  const termRoute = termRouteTarget(request.nextUrl.pathname, getTerms());
-  if (termRoute) request.headers.set(TERM_ROUTE_HEADER, termRoute.key);
-
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   let newSessionId: string | null = null;
   if (demoModeEnabled() && !isDemoSessionId(request.cookies.get(DEMO_SESSION_COOKIE)?.value)) {
     newSessionId = newDemoSessionId();
     request.cookies.set(DEMO_SESSION_COOKIE, newSessionId);
   }
+
+  // The mark is only ever set here, never taken from the client.
+  const hadMark = request.headers.has(TERM_ROUTE_HEADER);
+  request.headers.delete(TERM_ROUTE_HEADER);
+  const termRoute = await requestTermRoute(request);
+  if (termRoute) request.headers.set(TERM_ROUTE_HEADER, termRoute.key);
 
   const forward = { request: { headers: request.headers } };
   let response: NextResponse;
@@ -53,6 +55,19 @@ export function proxy(request: NextRequest): NextResponse {
     );
   }
   return response;
+}
+
+/**
+ * The term route of this request for its own church: the tenant comes from the same seam as
+ * `getRequestContext()` (the demo selection cookie today, the host from D-03), its terms from
+ * `tenants.current`. Only single-segment paths can be a term slug, so every other request skips
+ * the lookup; the lookup itself is in memory (mock store) and parses one small config.
+ */
+async function requestTermRoute(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (!isTermRouteCandidate(pathname)) return null;
+  const config = await siteConfigForRequest((name) => request.cookies.get(name)?.value);
+  return termRouteTarget(pathname, termsForSiteConfig(config));
 }
 
 export const config = {

@@ -31,14 +31,26 @@ export interface DemoState {
 export const getDemoState = cache(async (): Promise<DemoState | null> => {
   if (!demoModeEnabled()) return null;
   const jar = await cookies();
+  return demoStateFrom((name) => jar.get(name)?.value);
+});
+
+/** Reads one request cookie by name. */
+export type CookieReader = (name: string) => string | undefined;
+
+/**
+ * The demo state for a request's cookies, or `null` when demo mode is off. `getDemoState()` reads
+ * them through `next/headers`; the proxy, which runs before that is available, passes its own.
+ */
+export function demoStateFrom(cookie: CookieReader): DemoState | null {
+  if (!demoModeEnabled()) return null;
   const directory = demoDirectory();
-  const sessionId = jar.get(DEMO_SESSION_COOKIE)?.value;
+  const sessionId = cookie(DEMO_SESSION_COOKIE);
   return {
     sessionId: isDemoSessionId(sessionId) ? sessionId : null,
-    selection: decodeSelection(directory, jar.get(DEMO_SELECTION_COOKIE)?.value),
+    selection: decodeSelection(directory, cookie(DEMO_SELECTION_COOKIE)),
     directory,
   };
-});
+}
 
 /** Stores the selection in the demo cookie (server actions only). */
 export async function saveDemoSelection(selection: DemoSelection): Promise<void> {

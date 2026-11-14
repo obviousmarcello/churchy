@@ -10,7 +10,7 @@ export const TIME_ZONE = "Europe/Budapest";
 export default getRequestConfig(async () => ({
   locale: LOCALE,
   timeZone: TIME_ZONE,
-  // Term placeholders ({service.plural}) are resolved from the tenant's terminology before
+  // Term placeholders ({service.plural}) are resolved from the request tenant's terminology before
   // next-intl formats the message, on the server and for client components alike.
-  messages: catalogFor(huMessages as MessageTree, getTerms()),
+  messages: catalogFor(huMessages as MessageTree, await getTerms()),
 }));

@@ -181,9 +181,14 @@ test.describe("service schedule page", () => {
 
   test("works on the 3 demo churches", async ({ page }) => {
     await page.goto(PATH);
-    for (const church of [CHURCHES.reformed, CHURCHES.baptist, CHURCHES.catholic]) {
+    // Each church at its own term slug (the others are a 404 for it, tenant-terms.spec.ts).
+    for (const [church, path] of [
+      [CHURCHES.reformed, "/istentiszteleti-rend"],
+      [CHURCHES.baptist, "/alkalmaink"],
+      [CHURCHES.catholic, PATH],
+    ] as const) {
       await switchContext(page, church);
-      await page.goto(PATH);
+      await page.goto(path);
       await expect(page.getByTestId("schedule-church")).toHaveText(church);
       await expect(days(page).locator("> li")).toHaveCount(7);
       await expect(page.getByTestId("schedule-regular").locator("[data-location]")).not.toHaveCount(

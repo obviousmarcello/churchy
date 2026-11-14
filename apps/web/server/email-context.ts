@@ -2,8 +2,8 @@ import { createTranslator } from "next-intl";
 import type { EmailContext, Translate } from "@churchy/email";
 import type { MessageTree, Terms } from "@churchy/i18n";
 import huMessages from "@messages/hu.json";
-import { catalogFor, getTerms, termsForTenant } from "@/i18n/terms";
-import { getSiteConfig } from "@/lib/site-config";
+import { catalogFor, termsForSiteConfig, termsForTenant } from "@/i18n/terms";
+import { FALLBACK_SITE_CONFIG } from "@/lib/site-config";
 import type { OutboxMessage } from "@/server/data-adapters";
 
 const translators = new Map<string, Translate>();
@@ -28,10 +28,12 @@ function translatorFor(terms: Terms): Translate {
 /** What the sending worker would render this message with: the tenant's terms, name and origin. */
 export function emailContextFor(message: OutboxMessage, baseUrl: string): EmailContext {
   const { tenant } = message;
-  const terms = tenant ? termsForTenant(tenant) : getTerms();
+  // Messages carry their own tenant; one without (an organization-level message) gets the
+  // platform fallback, never whichever church the viewer happens to have selected.
+  const terms = tenant ? termsForTenant(tenant) : termsForSiteConfig(FALLBACK_SITE_CONFIG);
   return {
     t: translatorFor(terms),
-    churchName: tenant?.name ?? getSiteConfig().name,
+    churchName: tenant?.name ?? FALLBACK_SITE_CONFIG.name,
     baseUrl,
   };
 }

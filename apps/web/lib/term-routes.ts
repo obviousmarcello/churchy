@@ -16,6 +16,10 @@ export const TERM_ROUTES = {
 
 export type TermRouteKey = keyof typeof TERM_ROUTES;
 
+export function isTermRouteKey(value: unknown): value is TermRouteKey {
+  return typeof value === "string" && Object.hasOwn(TERM_ROUTES, value);
+}
+
 /** What the proxy needs from the tenant's terminology. */
 export interface TermSlugs {
   term(key: string): { slug: string };
@@ -24,6 +28,14 @@ export interface TermSlugs {
 /** The public path of a term route for this terminology, e.g. `/miserend`. */
 export function termRoutePath(terms: TermSlugs, key: TermRouteKey): string {
   return `/${terms.term(key).slug}`;
+}
+
+/** Term slugs are one lowercase kebab-case segment (`SlugSchema`); nothing else can match. */
+const TERM_ROUTE_CANDIDATE = /^\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** Whether `pathname` could be a term route at all (lets the proxy skip the tenant lookup). */
+export function isTermRouteCandidate(pathname: string): boolean {
+  return TERM_ROUTE_CANDIDATE.test(pathname);
 }
 
 /**

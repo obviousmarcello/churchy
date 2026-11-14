@@ -8,7 +8,7 @@ import { DemoBar } from "@/components/demo-bar";
 import { TermsProvider } from "@/i18n/client";
 import { getTerms } from "@/i18n/terms";
 import { demoModeEnabled } from "@/lib/demo/flag";
-import { getSiteConfig } from "@/lib/site-config";
+import { getSiteConfig } from "@/server/site-config";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,9 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   // DEMO_MODE and the demo cookies are read at runtime, so every page renders per request.
   await connection();
-  const { theme } = getSiteConfig();
-  const locale = await getLocale();
-  const terms = getTerms();
+  // Theme and terminology follow the request's church (`getRequestContext()`).
+  const [{ theme }, locale, terms] = await Promise.all([getSiteConfig(), getLocale(), getTerms()]);
   return (
     <html lang={locale} {...themeAttributes(theme)}>
       <body>

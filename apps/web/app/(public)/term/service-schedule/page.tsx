@@ -9,7 +9,6 @@ import type { DayContextFn } from "@churchy/schedule";
 import { Alert, PageShell } from "@churchy/ui";
 import { SiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
-import { getTerms } from "@/i18n/terms";
 import {
   DATE_PARAM,
   LOCATION_PARAM,
@@ -78,7 +77,7 @@ export default async function ServiceSchedulePage({
   });
   if (!config.modules.schedule) notFound();
 
-  const basePath = termRoutePath(getTerms(), "serviceSchedule");
+  const basePath = termRoutePath(t, "serviceSchedule");
   const now = new Date();
   const today = todayInBudapest(now);
 
