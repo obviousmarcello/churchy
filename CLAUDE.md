@@ -101,6 +101,7 @@ packages/data-mock/  mock adapter, demo data, simulation switches
 packages/db/         Drizzle schema, migrations, RLS policies, DB adapters
 packages/schedule/   schedule engine (pure)
 packages/calendar/   Easter, feasts, Hungarian holidays, liturgical days (pure)
+packages/events/     event recurrence (RRULE), Hungarian rule text, iCalendar (pure)
 packages/hu/         Hungarian formatting (pure)
 packages/policy/     can() permission policy (pure)
 packages/presets/    denomination presets
@@ -126,7 +127,7 @@ pnpm lint             # ESLint incl. custom rules: i18n/no-hardcoded-text (D-06)
 pnpm format           # Prettier write; `pnpm format:check` in CI
 pnpm typecheck        # tsc --noEmit in every package
 pnpm test             # unit tests (Vitest) in every package, TZ=Europe/Budapest
-pnpm test:coverage    # unit tests with coverage thresholds (80 %; 90 % schedule/calendar; 95 % hu/policy)
+pnpm test:coverage    # unit tests with coverage thresholds (80 %; 90 % schedule/calendar/events; 95 % hu/policy)
 pnpm --filter @churchy/policy matrix   # regenerate packages/policy/MATRIX.md (a test fails if it is stale)
 pnpm test:contract    # contract suites (*.contract.test.ts) against mock (and DB when DATABASE_URL is set)
 pnpm e2e              # Playwright against `next start` on :3100 — run `pnpm build` first; pass --trace off unless debugging

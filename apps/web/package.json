@@ -16,6 +16,7 @@
     "@churchy/contracts": "workspace:*",
     "@churchy/data-mock": "workspace:*",
     "@churchy/email": "workspace:*",
+    "@churchy/events": "workspace:*",
     "@churchy/hu": "workspace:*",
     "@churchy/i18n": "workspace:*",
     "@churchy/policy": "workspace:*",

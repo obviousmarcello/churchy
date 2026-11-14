@@ -16,6 +16,8 @@ const APP_DIR = fileURLToPath(new URL("../app", import.meta.url));
 const SAMPLE_PARAMS: Record<string, string> = {
   // A location of the default demo church (D-12).
   slug: "szent-tivadar-templom",
+  // A public event of the default demo church (D-15).
+  eventSlug: "hittanora",
 };
 
 function pagesIn(dir: string): string[] {

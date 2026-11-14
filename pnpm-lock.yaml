@@ -56,6 +56,9 @@ importers:
       '@churchy/email':
         specifier: workspace:*
         version: link:../../packages/email
+      '@churchy/events':
+        specifier: workspace:*
+        version: link:../../packages/events
       '@churchy/hu':
         specifier: workspace:*
         version: link:../../packages/hu
@@ -207,6 +210,16 @@ importers:
       vitest:
         specifier: 5.1.0
         version: 5.1.0(@types/node@22.20.5)(@vitest/coverage-v8@5.1.0)(jsdom@31.0.1)(vite@8.3.8(@types/node@22.20.5)(jiti@2.7.0))
+
+  packages/events:
+    dependencies:
+      '@churchy/hu':
+        specifier: workspace:*
+        version: link:../hu
+    devDependencies:
+      ical.js:
+        specifier: 2.2.1
+        version: 2.2.1
 
   packages/hu: {}
 
@@ -2058,6 +2071,9 @@ packages:
 
   htmlparser2@8.0.2:
     resolution: {integrity: sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==}
+
+  ical.js@2.2.1:
+    resolution: {integrity: sha512-yK/UlPbEs316igb/tjRgbFA8ZV75rCsBJp/hWOatpyaPNlgw0dGDmU+FoicOcwX4xXkeXOkYiOmCqNPFpNPkQg==}
 
   icu-minify@4.15.2:
     resolution: {integrity: sha512-IsgBR7/1RBkYWUqP2wS+vE9BBBfH4HjNjDbSPF3uK2Jjlzlsd7R+loUhjEEUySU6tjGmUIuft7w3qp7PI0KkXA==}
@@ -4394,6 +4410,8 @@ snapshots:
       domhandler: 5.0.3
       domutils: 3.2.2
       entities: 4.5.0
+
+  ical.js@2.2.1: {}
 
   icu-minify@4.15.2:
     dependencies:
