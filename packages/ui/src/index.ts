@@ -56,3 +56,9 @@ export {
   type PersonNameProps,
   type PhoneProps,
 } from "./components/formatted";
+export {
+  RichTextContent,
+  safeHref,
+  safeImageSrc,
+  type RichTextContentProps,
+} from "./components/rich-text";

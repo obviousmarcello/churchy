@@ -1,5 +1,5 @@
 import type { Repositories } from "@churchy/contracts";
-import { repositoriesFor } from "@/server/data-adapters";
+import { repositoriesFor, setDemoSessionNow } from "@/server/data-adapters";
 import { getDemoState, type DemoState } from "@/server/demo";
 
 /**
@@ -8,7 +8,10 @@ import { getDemoState, type DemoState } from "@/server/demo";
  * instead of `getRepositories()` so demo visitors never see each other's changes.
  */
 export async function getRequestRepositories(): Promise<Repositories> {
-  return repositoriesForDemo(await getDemoState());
+  const demo = await getDemoState();
+  // Demo time travel (D-13) applies to the visitor's own session only, never to the shared store.
+  if (demo && demo.sessionId !== null) setDemoSessionNow(demo.sessionId, demo.nowOverride);
+  return repositoriesForDemo(demo);
 }
 
 /** The repositories for a request's demo state (`null`: no demo mode); used by the proxy. */

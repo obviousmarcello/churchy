@@ -63,6 +63,19 @@ describe("createMockStore", () => {
     expect(store.nowIso()).toBe("2026-11-13T09:00:00.000Z");
   });
 
+  it("pins the clock with a now override until cleared or reset", () => {
+    const now = new Date("2026-11-13T09:00:00Z");
+    const store = createMockStore(emptyDataset(), { now: () => now });
+    store.setNowOverride(new Date("2026-12-24T18:00:00Z"));
+    expect(store.nowIso()).toBe("2026-12-24T18:00:00.000Z");
+    store.setNowOverride(null);
+    expect(store.now()).toBe(now);
+    store.setNowOverride(new Date("2027-01-01T00:00:00Z"));
+    store.reset();
+    expect(store.now()).toBe(now);
+    expect(() => store.setNowOverride(new Date("nope"))).toThrow(RangeError);
+  });
+
   it("validates switch values", () => {
     const store = createMockStore(emptyDataset());
     expect(store.setSwitches({ latencyMs: 2000 }).latencyMs).toBe(2000);

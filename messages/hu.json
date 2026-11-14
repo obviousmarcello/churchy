@@ -11,7 +11,8 @@
       "public": {
         "serviceSchedule": "{serviceSchedule.nom}",
         "announcements": "{announcementsSection.nom}",
-        "events": "Események"
+        "events": "Események",
+        "news": "Hírek"
       },
       "workspace": "Munkatér",
       "admin": "Weboldal kezelése",
@@ -282,6 +283,31 @@
       "listPages": "Lapozás az események között",
       "earlier": "Korábbi hetek",
       "later": "Későbbi események"
+    },
+    "news": {
+      "title": "Hírek",
+      "lead": "Beszámolók, meghívók és hírek {community.article} {community.lower} életéből.",
+      "metaTitle": "Hírek – {church}",
+      "metaTitlePaged": "Hírek, {page}. oldal – {church}",
+      "empty": "Jelenleg nincs megjelent hír.",
+      "listHeading": "Legfrissebb hírek",
+      "publishedOn": "Megjelent:",
+      "categories": "Kategóriák",
+      "pagination": "Lapozás a hírek között",
+      "pageStatus": "{page}. oldal / {pages}",
+      "prevPage": "Előző oldal",
+      "nextPage": "Következő oldal",
+      "pageLink": "{page}. oldal",
+      "back": "Vissza a hírekhez",
+      "postMetaTitle": "{title} – {church}",
+      "share": "Megosztás",
+      "shareFacebook": "Megosztás Facebookon",
+      "shareMessenger": "Küldés Messengeren",
+      "copyLink": "Hivatkozás másolása",
+      "copied": "A hivatkozást a vágólapra másoltuk.",
+      "copyFailed": "A másolás nem sikerült. A hivatkozást innen jelölheti ki: {url}",
+      "opensInNewTab": "(új lapon nyílik meg)",
+      "relatedHeading": "Kapcsolódó hírek"
     }
   },
   "dev": {

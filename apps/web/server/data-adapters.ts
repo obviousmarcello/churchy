@@ -99,6 +99,14 @@ export function repositoriesFor(sessionId: string | null): Repositories {
   return repos;
 }
 
+/**
+ * Demo time travel (D-13): pins the clock of a demo session's store (`null`: real time). The mock
+ * repositories evaluate scheduled/expired visibility against it.
+ */
+export function setDemoSessionNow(sessionId: string, at: Date | null): void {
+  storeFor(sessionId).setNowOverride(at);
+}
+
 /** *Visszaállítás*: restores a demo session's seed data, outbox and simulation switches. */
 export function resetDemoSession(sessionId: string): void {
   demoSessions().reset(sessionId);

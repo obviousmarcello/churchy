@@ -767,6 +767,16 @@ export const refSpec: ChurchSpec = {
       categories: ["Közösség"],
       daysAgo: 21,
     },
+    {
+      // Expired: the registration closed, so the post is no longer shown publicly.
+      slug: "csendesnap-jelentkezes",
+      title: "Jelentkezés az őszi csendesnapra",
+      lead: "A jelentkezés lezárult.",
+      paragraphs: ["Az őszi csendesnapra a megadott határidőig lehetett jelentkezni."],
+      categories: ["Lelkiség"],
+      daysAgo: 20,
+      expiresInDays: -1,
+    },
   ],
   events: [
     {
