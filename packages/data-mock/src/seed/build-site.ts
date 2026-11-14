@@ -15,7 +15,7 @@ import type {
   SiteConfigOverrides,
   WorkspaceModuleKey,
 } from "@churchy/contracts";
-import { feastsInRange } from "@churchy/calendar";
+import { easter, feastsInRange } from "@churchy/calendar";
 import { addDays, slugify } from "@churchy/hu";
 import { isPeriodActive, resolve, type ScheduleInput } from "@churchy/schedule";
 import type { Build } from "./context";
@@ -199,6 +199,7 @@ export function buildMedia(b: Build): void {
     createdAt: c.ago(60, "12:00"),
   });
   ds.media.push(pdf(`med-${k}-pdf-1`, "szertartasrend-minta.pdf", "public"));
+  ds.media.push(pdf(`med-${k}-hirdetes-pdf`, "heti-hirdetesek-minta.pdf", "public"));
   ds.media.push(pdf(`med-${k}-kotta-1`, "kotta-minta-1.pdf", "private"));
   ds.media.push(pdf(`med-${k}-kotta-2`, "kotta-minta-2.pdf", "private"));
   ds.media.push(pdf(`med-${k}-kotta-3`, "akkordtabla-minta.pdf", "private"));
@@ -386,8 +387,11 @@ export function buildSchedule(b: Build): void {
 
 export function buildAnnouncements(b: Build): void {
   const { spec, c, ds, tid, k } = b;
+  const oldest = c.sundayPlus(
+    Math.min(...spec.announcements.filter((w) => !w.feast).map((w) => w.week)),
+  );
   for (const w of spec.announcements) {
-    const weekSunday = c.sundayPlus(w.week);
+    const weekSunday = w.feast === "easter" ? easterBefore(oldest) : c.sundayPlus(w.week);
     const content = [p(w.intro), ul(w.items)];
     if (w.closing) content.push(p(w.closing));
     const published = w.state === "published";
@@ -402,13 +406,20 @@ export function buildAnnouncements(b: Build): void {
       tenantId: tid,
       weekSunday,
       body: doc(...content),
-      pdfMediaId: w.pdf ? `med-${k}-pdf-1` : null,
+      pdfMediaId: w.pdf ? `med-${k}-hirdetes-pdf` : null,
       status: w.state === "draft" ? "draft" : "published",
       publishedAt,
       createdAt: c.at(addDays(weekSunday, -8), "19:00"),
       updatedAt: c.at(addDays(weekSunday, -5), "10:30"),
     });
   }
+}
+
+/** The latest Easter Sunday strictly before `date`. */
+function easterBefore(date: string): string {
+  const year = Number(date.slice(0, 4));
+  const thisYear = easter(year);
+  return thisYear < date ? thisYear : easter(year - 1);
 }
 
 export function buildNews(b: Build): void {

@@ -6,6 +6,7 @@ export type NavTranslator = (key: NavKey) => string;
 
 export type NavKey =
   | "public.serviceSchedule"
+  | "public.announcements"
   | "public.events"
   | "contact"
   | "workspace"
@@ -40,6 +41,12 @@ export function buildPublicNav(t: NavTranslator, terms: TermSlugs): readonly Per
       label: t("public.serviceSchedule"),
       href: termRoutePath(terms, "serviceSchedule"),
       module: "schedule",
+    },
+    {
+      id: "publicAnnouncements",
+      label: t("public.announcements"),
+      href: termRoutePath(terms, "announcementsSection"),
+      module: "announcements",
     },
     { id: "events", label: t("public.events"), href: "/esemenyek", module: "events" },
     // *Kapcsolat* is part of the core module (SDD §6).

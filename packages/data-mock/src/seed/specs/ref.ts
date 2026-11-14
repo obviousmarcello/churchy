@@ -1026,6 +1026,41 @@ export const refSpec: ChurchSpec = {
   ],
   announcements: [
     {
+      week: 0,
+      feast: "easter",
+      state: "published",
+      pdf: true,
+      intro: "Kedves Testvérek! Krisztus feltámadt! Húsvét hetének hirdetései:",
+      items: [
+        "Húsvéthétfőn 10 órakor ünnepi istentisztelet lesz úrvacsoraosztással.",
+        "Kedden 18 órakor imaóra a gyülekezeti házban.",
+        "Csütörtökön az idősek délutánján a húsvéti ünnepkörről beszélgetünk.",
+        "A beteg testvéreket a lelkipásztor a hét folyamán otthonukban keresi fel — kérjük, jelezzék a hivatalban.",
+      ],
+      closing: "Áldott húsvéti időt kívánunk minden kedves Testvérnek!",
+    },
+    {
+      week: -4,
+      state: "published",
+      intro: "Kedves Testvérek! A hét alkalmai:",
+      items: [
+        "Kedden 18 órakor imaóra a templomban.",
+        "Csütörtökön 19 órakor a presbitérium ülése a gyülekezeti házban.",
+        "Szombaton 9 órakor kertrendezés a templom körül — szeretettel várjuk a segítőket.",
+      ],
+    },
+    {
+      week: -3,
+      state: "published",
+      intro: "Kedves Testvérek! Ezen a héten:",
+      items: [
+        "Vasárnap az istentiszteleten úrvacsoraosztás is lesz.",
+        "Szerdán 18 órakor bibliaóra a gyülekezeti házban.",
+        "Pénteken 19 órakor ifjúsági bibliakör.",
+      ],
+      closing: "Hordozzuk egymást imáinkban!",
+    },
+    {
       week: -2,
       state: "published",
       intro: "Kedves Testvérek! A hét alkalmai:",
@@ -1052,6 +1087,7 @@ export const refSpec: ChurchSpec = {
     {
       week: 0,
       state: "published",
+      pdf: true,
       intro: "Kedves Testvérek! A következő hét:",
       items: [
         "Vasárnap az istentiszteleten úrvacsorát veszünk, kérjük, érkezzenek időben.",

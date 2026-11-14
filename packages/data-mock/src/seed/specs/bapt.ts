@@ -916,6 +916,41 @@ export const baptSpec: ChurchSpec = {
   ],
   announcements: [
     {
+      week: 0,
+      feast: "easter",
+      state: "published",
+      pdf: true,
+      intro: "Kedves Testvérek! Krisztus feltámadt! Húsvét hetének alkalmai:",
+      items: [
+        "Húsvéthétfőn 10 órakor ünnepi istentisztelet lesz az imaházban.",
+        "Kedden 18:30-kor hálaadó imaest.",
+        "Szerdán 18:30-kor bibliaóra a feltámadás történeteiről.",
+        "Pénteken 19 órakor ifjúsági alkalom közös vacsorával.",
+      ],
+      closing: "Áldott húsvéti időt kívánunk mindenkinek!",
+    },
+    {
+      week: -4,
+      state: "published",
+      intro: "Kedves Testvérek! A hét alkalmai:",
+      items: [
+        "Kedden 18:30-kor imaest.",
+        "Csütörtökön 19 órakor a gyülekezeti vezetőség ülése.",
+        "Szombaton 10 órakor kerti munka az imaház körül.",
+      ],
+    },
+    {
+      week: -3,
+      state: "published",
+      intro: "Kedves Testvérek! Ezen a héten:",
+      items: [
+        "Szerdán 18:30-kor bibliaóra a Római levélről.",
+        "Pénteken 19 órakor ifjúsági alkalom.",
+        "A hálaadó délutánra a süteményeket szombaton délelőtt lehet behozni.",
+      ],
+      closing: "Imádkozzunk egymásért!",
+    },
+    {
       week: -2,
       state: "published",
       intro: "Kedves Testvérek! A hét alkalmai:",
@@ -942,6 +977,7 @@ export const baptSpec: ChurchSpec = {
     {
       week: 0,
       state: "published",
+      pdf: true,
       intro: "Kedves Testvérek! A következő hét:",
       items: [
         "Vasárnap az istentiszteleten az úrvacsora szolgálata is lesz.",

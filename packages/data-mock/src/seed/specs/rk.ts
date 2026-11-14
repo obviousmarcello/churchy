@@ -1152,6 +1152,41 @@ export const rkSpec: ChurchSpec = {
   ],
   announcements: [
     {
+      week: 0,
+      feast: "easter",
+      state: "published",
+      pdf: true,
+      intro: "Kedves Testvérek! Krisztus feltámadt! Húsvét hetének hirdetései:",
+      items: [
+        "Húsvéthétfőn a szentmisék a vasárnapi rend szerint lesznek.",
+        "Kedden 18 órakor hálaadó szentségimádás a nagyhét szolgálattevőiért.",
+        "Pénteken a betegeket otthonukban keressük fel a húsvéti szentáldozással — kérjük, jelezzék az irodában.",
+        "Fehérvasárnap az isteni irgalmasság ünnepe, délután 15 órakor irgalmasság-órát tartunk.",
+      ],
+      closing: "Áldott, békés húsvéti időt kívánunk minden kedves Testvérnek!",
+    },
+    {
+      week: -4,
+      state: "published",
+      intro: "Kedves Testvérek! A hét hirdetései:",
+      items: [
+        "Kedden 18 órakor imaóra a hivatásokért a kápolnában.",
+        "Csütörtökön 19 órakor a jegyesoktatás következő alkalma lesz.",
+        "Szombaton 9 órakor templomtakarítás — minden segítő kezet szívesen látunk.",
+      ],
+    },
+    {
+      week: -3,
+      state: "published",
+      intro: "Kedves Testvérek! Ezen a héten:",
+      items: [
+        "Hétfőn 17 órakor ministránspróba a sekrestyében.",
+        "Szerdán 19 órakor felnőtt hittan a nagyteremben.",
+        "A plébániai könyvtár csütörtökön 16 és 18 óra között tart nyitva.",
+      ],
+      closing: "Imádkozzunk elhunyt szeretteinkért!",
+    },
+    {
       week: -2,
       state: "published",
       intro: "Kedves Testvérek! A hét közösségi programjai:",
@@ -1178,6 +1213,7 @@ export const rkSpec: ChurchSpec = {
     {
       week: 0,
       state: "published",
+      pdf: true,
       intro: "Kedves Testvérek! A következő hét eseményei:",
       items: [
         "Jövő vasárnap a 10 órai szentmisét a püspöki látogatás miatt később ismertetett időpontban tartjuk — kérjük, kövessék a miserendet.",

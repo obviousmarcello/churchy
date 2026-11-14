@@ -1,0 +1,48 @@
+/*
+ * Print view of the weekly announcements (D-14 AC4): the week's heading and text on A4, for the
+ * notice board, without navigation. Same approach as the service schedule (D-11): the page's own
+ * elements use Tailwind `print:` variants; these rules cover the shared page chrome and only apply
+ * while the announcements page is on screen (`:has`).
+ */
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  body:has([data-print-page="announcements"]) {
+    background: #fff;
+    color: #000;
+    font-size: 10pt;
+  }
+
+  /* Site header and skip link: navigation is useless on paper. */
+  body:has([data-print-page="announcements"]) header,
+  body:has([data-print-page="announcements"]) a[href="#tartalom"] {
+    display: none !important;
+  }
+
+  /* The demo banner stays (printed demo data must say so), as plain text without its controls. */
+  body:has([data-print-page="announcements"]) [data-testid="demo-banner"] {
+    background: none;
+    color: #000;
+    border-bottom: 1px solid #000;
+  }
+  body:has([data-print-page="announcements"]) [data-testid="demo-banner"] > div {
+    padding: 0 0 2mm;
+  }
+  body:has([data-print-page="announcements"]) [data-testid="demo-banner"] > div > :not(p) {
+    display: none !important;
+  }
+  body:has([data-print-page="announcements"]) [data-testid="demo-banner"] p span {
+    color: #000;
+  }
+
+  body:has([data-print-page="announcements"]) main {
+    min-height: 0;
+  }
+  body:has([data-print-page="announcements"]) > div,
+  body:has([data-print-page="announcements"]) .min-h-dvh {
+    min-height: 0 !important;
+  }
+}

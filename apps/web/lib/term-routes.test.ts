@@ -31,6 +31,18 @@ describe("term routes", () => {
     }
   });
 
+  it("routes the announcements section term (D-14)", () => {
+    for (const terms of [rk, ref, termsForDenomination("bapt")]) {
+      expect(termRoutePath(terms, "announcementsSection")).toBe("/hirdetesek");
+      expect(termRouteTarget("/hirdetesek", terms)).toEqual({
+        key: "announcementsSection",
+        target: TERM_ROUTES.announcementsSection,
+      });
+    }
+    expect(termRouteTarget("/hirdetesek/archivum", rk)).toBeNull();
+    expect(termRouteTarget("/term/announcements", rk)).toBeNull();
+  });
+
   it("follows a church's own term override", () => {
     const custom = {
       term: (key: string) => (key === "serviceSchedule" ? { slug: "alkalmaink" } : rk.term(key)),
