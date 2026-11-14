@@ -4,6 +4,7 @@ import type { NavContext, PermissionNavItem } from "./permissions/nav";
 export type NavTranslator = (key: NavKey) => string;
 
 export type NavKey =
+  | "contact"
   | "workspace"
   | "admin"
   | "organization"
@@ -34,11 +35,13 @@ export type AppArea = "workspace" | "admin" | "organization";
  * is. The header shows the areas, each area's landing page its sections. Section pages arrive
  * with their modules; until then the landing pages list them as upcoming.
  *
- * Public items (always visible) arrive with the public site modules; until then anonymous visitors
- * see no navigation.
+ * Public items have no requirement (always visible) and come first; more arrive with the public
+ * site modules (SDD §6 default main navigation).
  */
 export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
   return [
+    // Public site (SDD §6): *Kapcsolat* is part of the core module.
+    { id: "contact", label: t("contact"), href: "/kapcsolat" },
     {
       id: "workspace",
       label: t("workspace"),

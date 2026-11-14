@@ -4,6 +4,7 @@ import type { AssignmentRepo } from "./modules/assignments";
 import type { AttachmentRepo } from "./modules/attachments";
 import type { BillingRepo } from "./modules/billing";
 import type { BookingRepo } from "./modules/bookings";
+import type { ContactRepo } from "./modules/contact";
 import type { EventRepo } from "./modules/events";
 import type { HrRepo } from "./modules/hr";
 import type { LocationRepo } from "./modules/locations";
@@ -47,6 +48,7 @@ export interface Repositories {
   hr: HrRepo;
   absences: AbsenceRepo;
   notifications: NotificationRepo;
+  contact: ContactRepo;
 }
 
 export type DataModule = keyof Repositories;
@@ -75,6 +77,7 @@ export const DATA_MODULES = [
   "hr",
   "absences",
   "notifications",
+  "contact",
 ] as const satisfies readonly DataModule[];
 
 // Compile-time check that DATA_MODULES lists every key of Repositories.

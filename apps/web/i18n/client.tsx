@@ -36,7 +36,10 @@ export function useTerms(): Terms {
 /** `useTranslations()` plus `t.term()` for client components (and sync server components). */
 export function useT<
   Namespace extends NamespaceKeys<AppMessages, NestedKeyOf<AppMessages>> = never,
->(namespace?: Namespace) {
+>(
+  namespace?: Namespace,
+  // Spelled out: inferred through `withTerms`, the key type of a namespaced translator was lost.
+): ReturnType<typeof useTranslations<Namespace>> & { term: Terms["term"] } {
   const t = useTranslations<Namespace>(namespace);
   const terms = useTerms();
   return useMemo(() => withTerms(t, terms), [t, terms]);

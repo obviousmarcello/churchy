@@ -76,6 +76,16 @@ const styles = {
     padding: "12px 24px",
     textDecoration: "none",
   },
+  quoteLabel: { color: color.muted, fontSize: "15px", lineHeight: "22px", margin: "0 0 4px" },
+  quote: {
+    borderLeft: `4px solid ${color.border}`,
+    color: color.text,
+    fontSize: "16px",
+    lineHeight: "24px",
+    margin: "0 0 20px",
+    padding: "4px 0 4px 16px",
+    whiteSpace: "pre-line",
+  },
   fallback: { color: color.muted, fontSize: "14px", lineHeight: "21px", margin: "20px 0 0" },
   rule: { borderColor: color.border, margin: "28px 0 16px" },
   footer: { color: color.muted, fontSize: "13px", lineHeight: "20px", margin: "0 0 4px" },
@@ -94,6 +104,8 @@ export interface EmailFrameProps {
   heading: string;
   paragraphs: readonly string[];
   facts?: readonly Fact[];
+  /** Quoted free text (line breaks kept), e.g. a contact form message. */
+  quote?: { label: string; text: string } | null;
   /** Call to action; rendered only when there is a link. */
   action?: { label: string; url: string } | null;
   linkFallbackLabel: string;
@@ -109,6 +121,7 @@ export function EmailFrame({
   heading,
   paragraphs,
   facts = [],
+  quote = null,
   action = null,
   linkFallbackLabel,
   churchLabel,
@@ -139,6 +152,12 @@ export function EmailFrame({
                 </Row>
               ))}
             </Section>
+          ) : null}
+          {quote ? (
+            <>
+              <Text style={styles.quoteLabel}>{quote.label}</Text>
+              <Text style={styles.quote}>{quote.text}</Text>
+            </>
           ) : null}
           {action ? (
             <>

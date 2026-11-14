@@ -18,7 +18,7 @@ const ctxA = { tenantId: CONTRACT_ENV.tenantA, actor: CONTRACT_ENV.actorA };
 afterEach(() => adapterRegistry.clear());
 
 describe("registerMockAdapter", () => {
-  it("registers all 23 modules with the process-wide registry", async () => {
+  it("registers all 24 modules with the process-wide registry", async () => {
     const store = createMockStore(contractDataset());
     registerMockAdapter(() => store);
     expect(adapterRegistry.registeredModules("mock")).toEqual([...DATA_MODULES]);

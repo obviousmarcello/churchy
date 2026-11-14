@@ -20,7 +20,12 @@ test.describe("DEMO_MODE off", () => {
   test("the visitor is anonymous: no area is open", async ({ page }) => {
     await page.goto(`${NO_DEMO}/admin`);
     await expect(page.getByTestId("area-no-access")).toBeVisible();
-    await expect(page.getByRole("navigation", { name: "Főmenü" })).toHaveCount(0);
+    // The main menu holds only public items (Kapcsolat, D-12), never an app area.
+    const nav = page.getByRole("navigation", { name: "Főmenü" });
+    await expect(nav.getByRole("link", { name: "Kapcsolat" })).toBeAttached();
+    for (const area of ["Munkatér", "Weboldal kezelése", "Egyházmegyei portál"]) {
+      await expect(nav.getByRole("link", { name: area })).toHaveCount(0);
+    }
   });
 
   test("dev and demo tools are not served by a production server without demo mode", async ({

@@ -59,6 +59,44 @@ describe("outbox", () => {
     expect(allText()).not.toContain("szulo@example.test");
   });
 
+  it("contact.submit → one message to the office carrying the message, nothing to the sender", async () => {
+    const message = "Szeretnék érdeklődni.\n".repeat(20).trim();
+    const receipt = await repos.contact.submit(anonA, {
+      name: "Minta Mária",
+      email: "minta.maria@example.test",
+      phone: "",
+      subject: "Érdeklődés",
+      message,
+      consent: true,
+    });
+    expect(receipt.reference).toMatch(/^KAP-\d{4}-\d{4}$/);
+    const entries = store.listOutbox();
+    expect(templates(entries)).toEqual(["email:contact.message"]);
+    expect(entries[0]).toMatchObject({
+      tenantId: env.tenantA,
+      recipient: { kind: "persona", persona: "office" },
+      params: {
+        reference: receipt.reference,
+        name: "Minta Mária",
+        email: "minta.maria@example.test",
+        phone: null,
+        subject: "Érdeklődés",
+        message,
+      },
+    });
+    // Longer than ordinary params (200), allowed only for this template's message.
+    expect(message.length).toBeGreaterThan(200);
+    expect(() =>
+      store.appendOutbox({
+        channel: "email",
+        template: "request.officeNotification",
+        recipient: { kind: "persona", persona: "office" },
+        tenantId: env.tenantA,
+        params: { message },
+      }),
+    ).toThrow(TypeError);
+  });
+
   it("hr.createTicket / updateTicket / addMessage → handler + requester messages, reference only", async () => {
     const handler = await person("Kezelő");
     const category = await repos.hr.upsertCategory(ctxA, {

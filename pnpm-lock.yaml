@@ -65,6 +65,9 @@ importers:
       '@churchy/presets':
         specifier: workspace:*
         version: link:../../packages/presets
+      '@churchy/schedule':
+        specifier: workspace:*
+        version: link:../../packages/schedule
       '@churchy/themes':
         specifier: workspace:*
         version: link:../../packages/themes

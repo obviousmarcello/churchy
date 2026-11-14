@@ -8,7 +8,7 @@ import { getActor, getRequestContext } from "@/server/session";
  * App-shell header whose navigation is filtered with `can()` (D-05). It links the app areas the
  * actor may use (an area is visible when one of its sections is); the sections themselves are
  * listed on each area's landing page. Renders nothing while the visitor has no navigation item
- * (anonymous visitors, until public nav items exist).
+ * (public items are always visible, so in practice it always renders).
  */
 export async function SiteHeader() {
   const [actor, ctx, t, nav] = await Promise.all([

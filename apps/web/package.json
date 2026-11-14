@@ -19,6 +19,7 @@
     "@churchy/i18n": "workspace:*",
     "@churchy/policy": "workspace:*",
     "@churchy/presets": "workspace:*",
+    "@churchy/schedule": "workspace:*",
     "@churchy/themes": "workspace:*",
     "@churchy/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.5",

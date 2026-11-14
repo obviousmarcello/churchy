@@ -20,6 +20,12 @@ export interface TemplateSpec {
   facts?: (params: EmailParams, t: Translate) => Fact[];
   /** Whether `params.link` becomes a button (default true). */
   link?: boolean;
+  /**
+   * A quoted block of free text under the facts, line breaks kept. Only the contact form uses it
+   * (its email delivers the visitor's message to the office, D-12); never set for request or HR
+   * templates.
+   */
+  quote?: (params: EmailParams, t: Translate) => { label: string; text: string } | null;
 }
 
 export interface EmailTemplate {
@@ -45,6 +51,7 @@ export function defineTemplate(key: EmailTemplateKey, spec: TemplateSpec = {}): 
         heading={t(`${key}.heading`, values)}
         paragraphs={[t(`${key}.body`, values)]}
         facts={spec.facts?.(params, t)}
+        quote={spec.quote?.(params, t) ?? null}
         action={url ? { label: t(`${key}.cta`, values), url } : null}
         linkFallbackLabel={t("layout.linkFallback")}
         churchLabel={t("layout.churchLabel")}

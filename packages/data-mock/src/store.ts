@@ -5,7 +5,7 @@
  */
 import type { MockDataset } from "./dataset";
 import type { OutboxDraft, OutboxEntry, OutboxFilter } from "./outbox";
-import { assertSafeParams } from "./outbox";
+import { LONG_TEXT_PARAMS, assertSafeParams } from "./outbox";
 import type { SimulationSwitches } from "./simulation";
 import { DEFAULT_SWITCHES, MockOfflineError, mergeSwitches } from "./simulation";
 
@@ -99,7 +99,7 @@ export function createMockStore(dataset: MockDataset, options: MockStoreOptions 
     },
 
     appendOutbox(draft) {
-      assertSafeParams(draft.params);
+      assertSafeParams(draft.params, LONG_TEXT_PARAMS[draft.template]);
       const entry: OutboxEntry = {
         ...structuredClone(draft),
         id: store.nextId("out"),

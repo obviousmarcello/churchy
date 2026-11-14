@@ -12,6 +12,7 @@ import { assignmentsContract } from "./suites/assignments";
 import { attachmentsContract } from "./suites/attachments";
 import { billingContract } from "./suites/billing";
 import { bookingsContract } from "./suites/bookings";
+import { contactContract } from "./suites/contact";
 import { eventsContract } from "./suites/events";
 import { hrContract } from "./suites/hr";
 import { locationsContract } from "./suites/locations";
@@ -38,6 +39,7 @@ export {
   attachmentsContract,
   billingContract,
   bookingsContract,
+  contactContract,
   eventsContract,
   hrContract,
   locationsContract,
@@ -82,6 +84,7 @@ export const CONTRACT_SUITES: { [M in DataModule]: ContractSuite<M> } = {
   hr: hrContract,
   absences: absencesContract,
   notifications: notificationsContract,
+  contact: contactContract,
 };
 
 /**

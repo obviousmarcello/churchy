@@ -22,6 +22,7 @@ import { mockPeople, mockRequests, mockTeams } from "./repos/community";
 import { mockBookings, mockRooms } from "./repos/rooms";
 import { mockAssignments, mockAttachments, mockServicePlans, mockSongs } from "./repos/worship";
 import { mockAbsences, mockHr, mockNotifications } from "./repos/hr";
+import { mockContact } from "./repos/contact";
 
 type Builders = { [M in DataModule]: (deps: RepoDeps) => Repositories[M] };
 
@@ -49,6 +50,7 @@ const BUILDERS: Builders = {
   hr: mockHr,
   absences: mockAbsences,
   notifications: mockNotifications,
+  contact: mockContact,
 };
 
 /** Wraps every method: simulation switches first, then deep copies in and out. */
@@ -76,7 +78,7 @@ export function createMockRepository<M extends DataModule>(
   return instrument(store, build({ store }));
 }
 
-/** All 23 repositories bound to `store`. */
+/** All 24 repositories bound to `store`. */
 export function createMockRepositories(store: MockStore): Repositories {
   const repos = {} as Record<DataModule, unknown>;
   for (const module of DATA_MODULES) repos[module] = createMockRepository(store, module);
