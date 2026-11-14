@@ -57,7 +57,7 @@ test.describe("demo-mode startup check", () => {
   FORBIDDEN.forEach(([name, env, mentions], i) => {
     test(`refuses to start with DEMO_MODE and a ${name}`, async () => {
       test.setTimeout(60_000);
-      const { code, output } = await start(3150 + i, env);
+      const { code, output } = await start(Number(process.env.PORT ?? 3100) + 50 + i, env);
       expect(code, output).toBe(1);
       expect(output).toContain("Refusing to start with DEMO_MODE");
       expect(output).toContain(mentions);
