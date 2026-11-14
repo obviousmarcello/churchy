@@ -365,9 +365,16 @@ export type PageBlockSpec =
   | { type: "heading"; text: string; level?: 2 | 3 }
   | { type: "text"; paragraphs: string[]; bullets?: string[] }
   | { type: "image"; caption?: string }
+  /** The first `count` demo images. */
+  | { type: "gallery"; count: number }
   | { type: "quote"; text: string; source?: string }
   | { type: "cta"; label: string; href: string }
-  | { type: "file"; label: string };
+  | { type: "file"; label: string }
+  | {
+      type: "embed";
+      provider: "youtube" | "vimeo" | "facebook" | "soundcloud" | "openstreetmap";
+      url: string;
+    };
 
 export interface ChurchSpec {
   key: string;
