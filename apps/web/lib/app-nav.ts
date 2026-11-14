@@ -1,9 +1,11 @@
 import type { NavContext, PermissionNavItem } from "./permissions/nav";
+import { termRoutePath, type TermSlugs } from "./term-routes";
 
 /** Translator scoped to `common.nav` (labels come from messages/hu.json). */
 export type NavTranslator = (key: NavKey) => string;
 
 export type NavKey =
+  | "public.serviceSchedule"
   | "workspace"
   | "admin"
   | "organization"
@@ -24,6 +26,21 @@ export type NavKey =
   | "sections.orgLinks"
   | "sections.orgTemplates"
   | "sections.orgMembers";
+
+/**
+ * Public main navigation (SDD §6): always visible, labels and term-driven paths from the tenant's
+ * terminology. Items carry their module (stub until D-25 supplies module settings).
+ */
+export function buildPublicNav(t: NavTranslator, terms: TermSlugs): readonly PermissionNavItem[] {
+  return [
+    {
+      id: "publicSchedule",
+      label: t("public.serviceSchedule"),
+      href: termRoutePath(terms, "serviceSchedule"),
+      module: "schedule",
+    },
+  ];
+}
 
 /** The three app areas; their landing pages list the sections the actor may use. */
 export type AppArea = "workspace" | "admin" | "organization";

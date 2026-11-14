@@ -12,6 +12,7 @@
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@churchy/calendar": "workspace:*",
     "@churchy/contracts": "workspace:*",
     "@churchy/data-mock": "workspace:*",
     "@churchy/email": "workspace:*",
@@ -19,6 +20,7 @@
     "@churchy/i18n": "workspace:*",
     "@churchy/policy": "workspace:*",
     "@churchy/presets": "workspace:*",
+    "@churchy/schedule": "workspace:*",
     "@churchy/themes": "workspace:*",
     "@churchy/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.5",

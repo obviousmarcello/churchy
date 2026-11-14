@@ -465,6 +465,33 @@ export const rkSpec: ChurchSpec = {
       },
       sort: 2,
     },
+    {
+      // Third location (D-11): the print test needs a 3-location tenant; the German-language
+      // mass gives the schedule page a language badge.
+      key: "filia",
+      name: "Felsőligeti Szent Kelemen-templom",
+      slug: "felsoligeti-szent-kelemen-templom",
+      kind: "filia",
+      address: {
+        postalCode: "2998",
+        city: "Dunaliget",
+        line1: "Fenyves utca 7.",
+        line2: "Felsőliget",
+      },
+      geo: { lat: 47.6633, lng: 19.0489 },
+      hours: [
+        [5, "16:30", "18:00"],
+        [7, "10:30", "12:30"],
+      ],
+      accessibility: {
+        wheelchair: true,
+        accessibleToilet: false,
+        hearingLoop: false,
+        parking: false,
+        note: null,
+      },
+      sort: 3,
+    },
   ],
   periodNames: { normal: "Rendes miserend", summer: "Nyári miserend" },
   summerFrom: "2026-06-15",
@@ -591,6 +618,26 @@ export const rkSpec: ChurchSpec = {
       durationMin: 45,
       type: "szentmise",
     },
+    {
+      key: "filia-nemet",
+      period: "normal",
+      loc: "filia",
+      weekday: 7,
+      time: "11:15",
+      durationMin: 60,
+      type: "szentmise",
+      language: "de",
+      note: "Német nyelvű szentmise a nemzetiségi közösséggel.",
+    },
+    {
+      key: "filia-pentek",
+      period: "normal",
+      loc: "filia",
+      weekday: 5,
+      time: "17:00",
+      durationMin: 40,
+      type: "szentmise",
+    },
     // Nyári miserend (június 15. – augusztus 31.)
     {
       key: "nyar-v0830",
@@ -700,6 +747,13 @@ export const rkSpec: ChurchSpec = {
       type: "szentmise",
       note: "Kápolnabúcsú — ünnepi szentmise",
       reason: "Kápolnabúcsú",
+    },
+    {
+      // The filia has no summer rules, so this cancellation shows all year round.
+      date: { weekday: 7, week: 1 },
+      kind: "cancel",
+      rule: "filia-nemet",
+      reason: "A templom festése miatt ezen a vasárnapon elmarad.",
     },
   ],
   news: [
