@@ -2,7 +2,7 @@ import type { Actor } from "@churchy/policy";
 import { orgActor, tenantActor } from "@churchy/policy";
 import { contextOf } from "@/lib/demo/personas";
 import { demoDirectory, demoIdentity, type DemoIdentity } from "@/server/data-adapters";
-import { getDemoState } from "@/server/demo";
+import { getDemoState, type DemoState } from "@/server/demo";
 
 /**
  * Session / actor access — THE single seam through which the app learns who is acting.
@@ -104,7 +104,17 @@ export type RequestContext =
   | { readonly orgId: string; readonly tenantId?: undefined };
 
 export async function getRequestContext(): Promise<RequestContext> {
-  const demo = await getDemoState();
+  return requestContextFrom(await getDemoState());
+}
+
+/**
+ * The request context for a request's demo state — the one place that decides which church a
+ * request is for, shared by `getRequestContext()` and the proxy (`siteConfigForRequest()`). Host-based
+ * resolution (D-03) replaces this; its callers do not change.
+ */
+export function requestContextFrom(
+  demo: Pick<DemoState, "directory" | "selection"> | null,
+): RequestContext {
   if (demo === null) return { tenantId: demoDirectory().defaultTenantId };
   const context = contextOf(demo.directory, demo.selection.contextId);
   return context.kind === "org" ? { orgId: context.id } : { tenantId: context.id };

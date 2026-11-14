@@ -1,6 +1,6 @@
 import type { Repositories } from "@churchy/contracts";
 import { repositoriesFor } from "@/server/data-adapters";
-import { getDemoState } from "@/server/demo";
+import { getDemoState, type DemoState } from "@/server/demo";
 
 /**
  * The repositories of the current request: in demo mode bound to the visitor's own demo session
@@ -8,7 +8,12 @@ import { getDemoState } from "@/server/demo";
  * instead of `getRepositories()` so demo visitors never see each other's changes.
  */
 export async function getRequestRepositories(): Promise<Repositories> {
-  return repositoriesFor((await getDemoState())?.sessionId ?? null);
+  return repositoriesForDemo(await getDemoState());
+}
+
+/** The repositories for a request's demo state (`null`: no demo mode); used by the proxy. */
+export function repositoriesForDemo(demo: Pick<DemoState, "sessionId"> | null): Repositories {
+  return repositoriesFor(demo?.sessionId ?? null);
 }
 
 /** The demo session of the current request, or null (no demo mode / no session cookie). */
