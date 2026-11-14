@@ -13,7 +13,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@churchy/calendar": "workspace:*",
     "@churchy/contracts": "workspace:*",
+    "@churchy/hu": "workspace:*",
     "@churchy/schedule": "workspace:*"
   }
 }

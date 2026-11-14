@@ -131,9 +131,15 @@ importers:
 
   packages/data-mock:
     dependencies:
+      '@churchy/calendar':
+        specifier: workspace:*
+        version: link:../calendar
       '@churchy/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@churchy/hu':
+        specifier: workspace:*
+        version: link:../hu
       '@churchy/schedule':
         specifier: workspace:*
         version: link:../schedule
