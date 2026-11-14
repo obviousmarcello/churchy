@@ -5,8 +5,10 @@ import { getT } from "@/i18n/server";
 import { getActor, getRequestContext } from "@/server/session";
 
 /**
- * App-shell header whose navigation is filtered with `can()` (D-05). Renders nothing while the
- * visitor has no navigation item (anonymous visitors, until public nav items exist).
+ * App-shell header whose navigation is filtered with `can()` (D-05). It links the app areas the
+ * actor may use (an area is visible when one of its sections is); the sections themselves are
+ * listed on each area's landing page. Renders nothing while the visitor has no navigation item
+ * (anonymous visitors, until public nav items exist).
  */
 export async function SiteHeader() {
   const [actor, ctx, t, nav] = await Promise.all([
@@ -20,11 +22,7 @@ export async function SiteHeader() {
   return (
     <Header
       brand={{ name: t("appName"), href: "/" }}
-      nav={items.map(({ label, href, children }) => ({
-        label,
-        href,
-        children: children?.map((c) => ({ label: c.label, href: c.href })),
-      }))}
+      nav={items.map(({ label, href }) => ({ label, href }))}
       labels={{
         navigation: t("mainNavigation"),
         openMenu: t("openMenu"),

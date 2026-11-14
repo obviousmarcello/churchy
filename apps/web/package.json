@@ -17,6 +17,7 @@
     "@churchy/email": "workspace:*",
     "@churchy/hu": "workspace:*",
     "@churchy/i18n": "workspace:*",
+    "@churchy/policy": "workspace:*",
     "@churchy/presets": "workspace:*",
     "@churchy/themes": "workspace:*",
     "@churchy/ui": "workspace:*",
@@ -27,7 +28,7 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tailwindcss": "^4.3.5",
-    "@churchy/policy": "workspace:*"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

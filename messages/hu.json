@@ -10,7 +10,61 @@
     "nav": {
       "workspace": "Munkatér",
       "admin": "Weboldal kezelése",
-      "organization": "Egyházmegyei portál"
+      "organization": "Egyházmegyei portál",
+      "sections": {
+        "directory": "Névjegyzék",
+        "calendar": "Naptár",
+        "rooms": "Teremfoglalás",
+        "songs": "Énektár",
+        "absences": "Távollétek",
+        "hr": "HR-ügyintézés",
+        "news": "Hírek",
+        "announcements": "Hirdetések",
+        "schedule": "{serviceSchedule.nom}",
+        "requests": "Kérelmek",
+        "appearance": "Megjelenés",
+        "users": "Felhasználók és szerepkörök",
+        "domain": "Domain és jogi adatok",
+        "orgOverview": "Delegált HR-ügyek",
+        "orgLinks": "Kapcsolt {community.plural}",
+        "orgTemplates": "HR-sablonok",
+        "orgMembers": "Portál munkatársai"
+      }
+    },
+    "area": {
+      "sectionsHeading": "Az Ön számára elérhető részek",
+      "upcoming": "Hamarosan",
+      "upcomingNote": "Ezek a részek a következő fejlesztési lépésekben készülnek el.",
+      "noAccessTitle": "Ehhez a felülethez nincs jogosultsága",
+      "noAccessBody": "A jelenlegi szerepkörrel nem érhető el ez a rész.",
+      "noAccessDemoHint": "Bemutató módban a fenti sávban válthat szerepet vagy egyházat."
+    },
+    "demo": {
+      "regionLabel": "Bemutató mód",
+      "banner": "Bemutató — nem valós adatok",
+      "bannerNote": "Minden név és adat kitalált.",
+      "persona": "Szerep",
+      "context": "Egyház",
+      "choosePersona": "Szerep kiválasztása",
+      "chooseContext": "Egyház kiválasztása",
+      "current": "(jelenlegi)",
+      "orgContext": "{name} – egyházmegyei portál",
+      "reset": "Visszaállítás",
+      "resetDone": "A bemutató adatai visszaálltak az eredeti állapotra.",
+      "resetFailed": "A visszaállítás nem sikerült. Kérjük, töltse újra az oldalt, majd próbálja újra.",
+      "personas": {
+        "latogato": "Látogató",
+        "tulajdonos": "Tulajdonos",
+        "szerkeszto": "Szerkesztő",
+        "iroda": "Iroda",
+        "vezeto": "{leadClergy.nom}/Vezető",
+        "onkentes": "Önkéntes",
+        "zenei": "Zenei vezető",
+        "terem": "Teremfelelős",
+        "hr": "HR-felelős",
+        "bizalmas": "Bizalmas ügyek felelőse",
+        "egyhazmegyeiHr": "Egyházmegyei HR"
+      }
     }
   },
   "public": {
@@ -563,17 +617,20 @@
   },
   "admin": {
     "dashboard": {
-      "title": "Vezérlőpult"
+      "title": "Vezérlőpult",
+      "lead": "A weboldal tartalmát és beállításait itt kezelheti."
     }
   },
   "munkater": {
     "home": {
-      "title": "Munkatér"
+      "title": "Munkatér",
+      "lead": "Naptár, teremfoglalás, szolgálatok és HR-ügyek egy helyen."
     }
   },
   "portal": {
     "home": {
-      "title": "Egyházmegyei portál"
+      "title": "Egyházmegyei portál",
+      "lead": "A kapcsolt {community.plural} által delegált HR-ügyek kezelése."
     }
   }
 }

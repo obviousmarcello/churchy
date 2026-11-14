@@ -162,7 +162,8 @@ The schedule engine, calendar, Hungarian formatting, permission policy `can()`, 
 - In-memory store per demo session, seeded with fictitious Hungarian demo data (3 churches, 1 diocese); *Visszaállítás* resets it.
 - Simulation switches: latency, booking conflicts, upload failures, offline, payment failure — so screens are built for real behaviour.
 - **Outbox viewer** (*Kimenő levelek*) renders emails and pushes with the real templates instead of sending them.
-- **Role switcher** with ≥ 10 personas (visitor to diocesan HR) replaces login in demo mode only; the build flag that enables it is **impossible to set in staging/production** (startup check).
+- **Role switcher** with ≥ 10 personas (visitor to diocesan HR) replaces login in demo mode only; the flag that enables it is **impossible to set in staging/production** (startup check).
+- **Implementation (D-92):** the runtime flag `DEMO_MODE=1`. At server start (`apps/web/instrumentation.ts`) the app refuses to run in demo mode when `APP_ENV` is `staging`/`production`, when any database, storage, email, push or payment credential from the list in `apps/web/lib/demo/safety.ts` is configured, or when a module is set to the DB adapter. The persona is turned into a real `Actor` from its demo membership in `server/session.ts`; each visitor gets a demo-session cookie (own in-memory store, reset by *Visszaállítás*) and a demo-only cookie for the chosen persona and church.
 - Demo banner *„Bemutató — nem valós adatok”*, password protection, `noindex`, own domain, and **no** database, storage, email, push or payment credentials in the demo environment.
 
 **Security before real data:** a module may serve real users only after its DB adapter passes the contract tests *and* its security acceptance criteria: tenant isolation (§4.2), authentication (§13), and for requests, HR and diocesan access the encryption and access logging of §8.3, §25 and §28.

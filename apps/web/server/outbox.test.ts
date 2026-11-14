@@ -26,7 +26,7 @@ async function submitRequest() {
   });
 }
 
-beforeEach(clearOutbox);
+beforeEach(() => clearOutbox());
 
 describe("demo outbox (composition root accessor)", () => {
   it("lists what a repository action would have sent, oldest first, with only reference and link", async () => {
