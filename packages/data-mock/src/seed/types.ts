@@ -122,12 +122,18 @@ export interface EventSpec {
 }
 
 export interface AnnouncementWeek {
-  /** Weeks after the coming Sunday (-2 … +1). */
+  /** Weeks after the coming Sunday (-4 … +1); ignored when `feast` anchors the week. */
   week: number;
+  /**
+   * Anchors the week on a feast instead: `"easter"` = the latest Easter Sunday before the oldest
+   * relative week, so the archive always holds one feast week (D-14).
+   */
+  feast?: "easter";
   intro: string;
   items: string[];
   closing?: string;
   state: "published" | "draft" | "scheduled";
+  /** Attach the fictitious announcements PDF (`demo/minta-dokumentum.pdf`). */
   pdf?: boolean;
 }
 

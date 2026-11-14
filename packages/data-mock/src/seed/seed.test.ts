@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import * as C from "@churchy/contracts";
 import { bookingsOverlap, isPubliclyVisible, validateFormData } from "@churchy/contracts";
-import { publicHolidays } from "@churchy/calendar";
+import { liturgicalDay, publicHolidays } from "@churchy/calendar";
 import { formatPhone } from "@churchy/hu";
 import { nextServices, resolve, upcomingExceptions, type ScheduleInput } from "@churchy/schedule";
 import { emptyDataset, type MockDataset } from "../dataset";
@@ -233,13 +233,19 @@ describe("demo dataset — volumes per church (AC1)", () => {
         expect(visible(of(DS.posts, tid)).length).toBeGreaterThanOrEqual(10);
         expect(of(DS.events, tid).length).toBeGreaterThanOrEqual(15);
         expect(of(DS.events, tid).filter((e) => e.rrule !== null).length).toBeGreaterThanOrEqual(5);
-        expect(of(DS.announcements, tid).length).toBe(4);
-        const weeks = of(DS.announcements, tid)
+        // Six consecutive weeks (-4 … +1) and an older Easter week (feast week, D-14).
+        expect(of(DS.announcements, tid).length).toBe(7);
+        const [easterWeek, ...weeks] = of(DS.announcements, tid)
           .map((a) => a.weekSunday)
           .sort();
+        expect(liturgicalDay(easterWeek!, "catholic").key).toBe("easterSunday");
+        expect(Date.parse(weeks[0]!) - Date.parse(easterWeek!)).toBeGreaterThanOrEqual(
+          7 * 86_400_000,
+        );
         for (let i = 1; i < weeks.length; i++) {
           expect(Date.parse(weeks[i]!) - Date.parse(weeks[i - 1]!)).toBe(7 * 86_400_000);
         }
+        expect(of(DS.announcements, tid).filter((a) => a.pdfMediaId !== null).length).toBe(2);
       });
 
       it("has people: ≥ 6 staff, ≥ 30 volunteers (3 without login, 2 minors with guardian), ≥ 5 teams with positions", () => {
@@ -479,16 +485,23 @@ describe("demo dataset — dates are relative to `now` (AC3)", () => {
       const ds = createDemoDataset(now);
       const clock = createClock(now);
 
-      it("the coming Sunday's announcement is public and four weeks are present", () => {
+      it("the coming Sunday's announcement is public; six weeks and an Easter week are present", () => {
         expect(clock.sunday).toBe(expectedSunday);
         for (const church of CHURCHES) {
           const announcements = of(ds.announcements, church.id);
           const upcoming = announcements.find((a) => a.weekSunday === expectedSunday);
           expect(upcoming, church.name).toBeDefined();
           expect(isPubliclyVisible(upcoming!, now), church.name).toBe(true);
-          expect(announcements.map((a) => a.weekSunday).sort()).toEqual(
-            [-2, -1, 0, 1].map((k) => clock.sundayPlus(k)),
-          );
+          const [easterWeek, ...weeks] = announcements.map((a) => a.weekSunday).sort();
+          expect(weeks).toEqual([-4, -3, -2, -1, 0, 1].map((k) => clock.sundayPlus(k)));
+          expect(liturgicalDay(easterWeek!, "catholic").key, church.name).toBe("easterSunday");
+          expect(easterWeek! < clock.sundayPlus(-4)).toBe(true);
+          expect(
+            isPubliclyVisible(
+              announcements.find((a) => a.weekSunday === easterWeek)!,
+              now,
+            ),
+          ).toBe(true);
         }
       });
 

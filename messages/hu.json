@@ -10,6 +10,7 @@
     "nav": {
       "public": {
         "serviceSchedule": "{serviceSchedule.nom}",
+        "announcements": "{announcementsSection.nom}",
         "events": "Események"
       },
       "workspace": "Munkatér",
@@ -209,6 +210,38 @@
           "consent": "Az üzenet elküldéséhez el kell fogadnia az adatkezelési tájékoztatót."
         }
       }
+    },
+    "announcements": {
+      "metaTitle": "{announcementsSection.nom} – {church}",
+      "metaDescription": "A heti {announcementsSection.lower} és a korábbi hetek archívuma.",
+      "weekHeading": "{announcementsSection.nom} — {date} ({day})",
+      "weekHeadingPlain": "{announcementsSection.nom} — {date}",
+      "weekRange": "A hét: {range}",
+      "latest": "Legfrissebb",
+      "weekNavigation": "Hetek közötti lapozás",
+      "previousWeek": "Előző hét",
+      "nextWeek": "Következő hét",
+      "archive": "Archívum",
+      "toLatest": "Legfrissebb {announcementsSection.lower}",
+      "attachmentTitle": "Csatolt dokumentum",
+      "openPdf": "Megnyitás a böngészőben",
+      "downloadPdf": "Letöltés",
+      "pdfMeta": "PDF, {size} kB",
+      "print": "Nyomtatás",
+      "empty": "Még nincsenek közzétett heti {announcementsSection.lower}.",
+      "weekMissing": "Erre a hétre ({range}) nincsenek közzétett {announcementsSection.lower}.",
+      "dateInvalid": "Ezt a dátumot nem tudtuk értelmezni, ezért a legfrissebb heti {announcementsSection.lower} láthatók.",
+      "archiveTitle": "{announcementsSection.nom} – archívum",
+      "archiveLead": "A korábbi heteket a legújabbal kezdve soroljuk fel.",
+      "archiveEmpty": "Az archívum még üres.",
+      "archiveItem": "{date} – {day}",
+      "withPdf": "PDF melléklettel",
+      "archivePages": "Lapozás az archívumban",
+      "archiveNewer": "Újabb hetek",
+      "archiveOlder": "Régebbi hetek",
+      "teaserTitle": "Heti {announcementsSection.lower}",
+      "teaserRead": "Elolvasom",
+      "teaserPdf": "PDF letöltése"
     },
     "events": {
       "title": "Események",

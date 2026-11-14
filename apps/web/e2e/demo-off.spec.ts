@@ -26,6 +26,7 @@ test.describe("DEMO_MODE off", () => {
       await expect(nav.locator(`a[href="${area}"]`), area).toHaveCount(0);
     }
     await expect(nav.locator('a[href="/miserend"]')).toHaveCount(1);
+    await expect(nav.locator('a[href="/hirdetesek"]')).toHaveCount(1);
     await expect(nav.locator('a[href="/kapcsolat"]')).toHaveCount(1);
     await expect(nav.locator('a[href="/esemenyek"]')).toHaveCount(1);
   });

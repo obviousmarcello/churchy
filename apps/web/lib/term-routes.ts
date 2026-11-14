@@ -12,6 +12,8 @@ export const TERM_ROUTE_HEADER = "x-churchy-term-route";
 /** Term key → internal route that renders it. */
 export const TERM_ROUTES = {
   serviceSchedule: "/term/service-schedule",
+  // Weekly announcements (D-14): `/hirdetesek` unless the church renames the section.
+  announcementsSection: "/term/announcements",
 } as const;
 
 export type TermRouteKey = keyof typeof TERM_ROUTES;
