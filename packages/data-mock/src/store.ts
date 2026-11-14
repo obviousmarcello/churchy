@@ -25,6 +25,12 @@ export interface MockStore {
   now(): Date;
   /** Current time as an ISO instant. */
   nowIso(): string;
+  /**
+   * Demo time travel: pins `now()` to an instant (`null` returns to the store clock). Lets the
+   * demo — and E2E tests through the demo-only clock cookie — see scheduled and expired content
+   * change visibility. Cleared by `reset()`.
+   */
+  setNowOverride(at: Date | null): void;
   /** A new id, unique within the store (`<prefix>-m<n>`; deterministic after `reset()`). */
   nextId(prefix: string): string;
 
@@ -64,13 +70,19 @@ export function createMockStore(dataset: MockDataset, options: MockStoreOptions 
   let switches: SimulationSwitches = { ...initialSwitches };
   let outbox: OutboxEntry[] = [];
   let seq = 0;
+  let nowOverride: Date | null = null;
+  const current = (): Date => (nowOverride === null ? clock() : new Date(nowOverride));
 
   const store: MockStore = {
     get data() {
       return data;
     },
-    now: () => clock(),
-    nowIso: () => clock().toISOString(),
+    now: () => current(),
+    nowIso: () => current().toISOString(),
+    setNowOverride(at) {
+      if (at !== null && Number.isNaN(at.getTime())) throw new RangeError("Invalid override date");
+      nowOverride = at === null ? null : new Date(at);
+    },
     nextId(prefix) {
       seq += 1;
       return `${prefix}-m${seq}`;
@@ -125,6 +137,7 @@ export function createMockStore(dataset: MockDataset, options: MockStoreOptions 
       switches = { ...initialSwitches };
       outbox = [];
       seq = 0;
+      nowOverride = null;
     },
   };
   return store;

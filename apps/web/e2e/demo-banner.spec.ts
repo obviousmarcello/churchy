@@ -18,6 +18,8 @@ const SAMPLE_PARAMS: Record<string, string> = {
   slug: "szent-tivadar-templom",
   // A public event of the default demo church (D-15).
   eventSlug: "hittanora",
+  // A visible news post of the default demo church (D-13).
+  postSlug: "adventi-lelkinap",
 };
 
 function pagesIn(dir: string): string[] {

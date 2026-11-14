@@ -892,6 +892,72 @@ export const rkSpec: ChurchSpec = {
       daysAgo: 0,
       draft: true,
     },
+    // Older posts so the news list has a second page (D-13: 12 per page).
+    {
+      slug: "kirandulas-mariaremetere",
+      title: "Közösségi kirándulás Máriaremetére",
+      lead: "Negyven hívő zarándokolt el együtt a kegyhelyre.",
+      paragraphs: [
+        "A zarándoklat reggel indult a templom elől. A kegytemplomban közösen imádkoztunk a plébánia szándékaiért.",
+        "Hazafelé a kirándulók rövid sétát tettek a környező erdőben.",
+      ],
+      categories: ["Közösség", "Lelkiség"],
+      daysAgo: 28,
+    },
+    {
+      slug: "uj-hittanevad",
+      title: "Elkezdődött az új hittanév",
+      lead: "Hat hittancsoport indult el óvodásoktól a középiskolásokig.",
+      paragraphs: [
+        "A hittanórák beosztását a plébánia irodájában és a hirdetésekben találják.",
+        "Új jelentkezőket év közben is szívesen fogadunk.",
+      ],
+      categories: ["Gyerekeknek"],
+      daysAgo: 35,
+    },
+    {
+      slug: "termenyhalaado-szentmise",
+      title: "Terményhálaadó szentmise",
+      lead: "Hálát adtunk az év terméséért és a munka gyümölcséért.",
+      paragraphs: [
+        "Az oltár elé a hívek által hozott terményeket helyeztük, amelyeket a szentmise után a karitász osztott szét.",
+        "Köszönjük a sok adományt!",
+      ],
+      categories: ["Liturgia", "Karitász"],
+      daysAgo: 42,
+    },
+    {
+      slug: "orgona-karbantartas",
+      title: "Elkészült az orgona karbantartása",
+      lead: "Az orgonaépítő mester két hét alatt hangolta újra a hangszert.",
+      paragraphs: [
+        "A karbantartás során a sípokat megtisztították és több regisztert újra intonáltak.",
+        "Köszönjük az adományozóknak, akik lehetővé tették a munkát.",
+      ],
+      categories: ["Zene", "Támogatás"],
+      daysAgo: 49,
+    },
+    {
+      slug: "nyari-tabor-beszamolo",
+      title: "Beszámoló a nyári hittantáborról",
+      lead: "Harminc gyermek töltött egy hetet a Balaton-felvidéken.",
+      paragraphs: [
+        "A tábor témája a teremtés csodája volt. A gyerekek kézműveskedtek, kirándultak és sokat énekeltek.",
+        "Köszönjük a kísérő hitoktatóknak és szülőknek a szolgálatot.",
+      ],
+      categories: ["Gyerekeknek", "Közösség"],
+      daysAgo: 60,
+    },
+    {
+      // Expired: its offer ended, so it is no longer shown publicly.
+      slug: "jelentkezes-a-hittantaborba",
+      title: "Jelentkezés a téli hittantáborba",
+      lead: "A jelentkezési határidő lejárt.",
+      paragraphs: ["A téli hittantáborba a megadott határidőig lehetett jelentkezni az irodában."],
+      categories: ["Gyerekeknek"],
+      daysAgo: 30,
+      expiresInDays: -2,
+    },
   ],
   events: [
     {

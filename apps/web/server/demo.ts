@@ -1,10 +1,12 @@
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import {
+  DEMO_NOW_COOKIE,
   DEMO_SELECTION_COOKIE,
   DEMO_SESSION_COOKIE,
   demoCookieOptions,
   isDemoSessionId,
+  parseDemoNow,
 } from "@/lib/demo/cookies";
 import { demoModeEnabled } from "@/lib/demo/flag";
 import {
@@ -21,6 +23,8 @@ export interface DemoState {
   readonly sessionId: string | null;
   readonly selection: DemoSelection;
   readonly directory: DemoDirectory;
+  /** Demo time travel (`churchy_demo_now` cookie), or null for the real time. */
+  readonly nowOverride: Date | null;
 }
 
 /**
@@ -49,6 +53,7 @@ export function demoStateFrom(cookie: CookieReader): DemoState | null {
     sessionId: isDemoSessionId(sessionId) ? sessionId : null,
     selection: decodeSelection(directory, cookie(DEMO_SELECTION_COOKIE)),
     directory,
+    nowOverride: parseDemoNow(cookie(DEMO_NOW_COOKIE)),
   };
 }
 

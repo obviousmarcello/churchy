@@ -7,6 +7,7 @@ export type NavTranslator = (key: NavKey) => string;
 export type NavKey =
   | "public.serviceSchedule"
   | "public.events"
+  | "public.news"
   | "contact"
   | "workspace"
   | "admin"
@@ -42,6 +43,7 @@ export function buildPublicNav(t: NavTranslator, terms: TermSlugs): readonly Per
       module: "schedule",
     },
     { id: "events", label: t("public.events"), href: "/esemenyek", module: "events" },
+    { id: "news", label: t("public.news"), href: "/hirek", module: "news" },
     // *Kapcsolat* is part of the core module (SDD §6).
     { id: "contact", label: t("contact"), href: "/kapcsolat" },
   ];
