@@ -16,7 +16,7 @@ const catalog = JSON.parse(
   readFileSync(new URL("../../../messages/hu.json", import.meta.url), "utf8"),
 ) as MessageTree;
 
-const NAMESPACES = ["common", "public", "admin", "munkater", "portal", "dev"];
+const NAMESPACES = ["common", "public", "admin", "munkater", "portal", "dev", "email"];
 
 function leaves(node: MessageTree, prefix = ""): Array<[string, unknown]> {
   return Object.entries(node).flatMap(([k, v]) =>

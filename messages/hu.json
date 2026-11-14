@@ -300,6 +300,265 @@
         "demoGivenName": "Katalin",
         "demoFamilyName": "Minta"
       }
+    },
+    "outbox": {
+      "metaTitle": "Kimenő levelek",
+      "title": "Kimenő levelek",
+      "lead": "Bemutató módban semmi nem megy ki: minden e-mail és értesítés, amelyet a rendszer elküldene, itt jelenik meg, a valódi sablonokkal megjelenítve.",
+      "devNotice": "Fejlesztői oldal: éles környezetben nem érhető el, és a keresők sem indexelik.",
+      "live": "Élő frissítés: az új üzenetek maguktól megjelennek a listában.",
+      "actionsLabel": "Műveletek",
+      "sample": "Mintakérelem beküldése",
+      "sampleHelp": "Egy fiktív kérelmet küld be; a rendszer két e-mailt készít róla: az irodának és a beküldőnek.",
+      "clear": "Kiürítés",
+      "clearHelp": "Az összes kimenő üzenetet törli.",
+      "filtersLabel": "Szűrők",
+      "filterChannel": "Csatorna",
+      "filterRecipient": "Címzett",
+      "filterAll": "Mind",
+      "apply": "Szűrés",
+      "resetFilters": "Szűrők törlése",
+      "channelEmail": "E-mail",
+      "channelPush": "Értesítés",
+      "listHeading": "Üzenetek",
+      "count": "{count} üzenet",
+      "listLabel": "Kimenő üzenetek listája",
+      "columnTime": "Időpont",
+      "columnChannel": "Csatorna",
+      "columnRecipient": "Címzett",
+      "columnSubject": "Tárgy",
+      "open": "Megnyitás",
+      "empty": "Még nem keletkezett kimenő üzenet. Hajtson végre egy műveletet, például küldjön be egy mintakérelmet.",
+      "emptyFiltered": "A szűrőnek egyetlen üzenet sem felel meg.",
+      "detailHeading": "Az üzenet részletei",
+      "detailNone": "Válasszon egy üzenetet a listából.",
+      "detailGone": "Ez az üzenet már nem található a kimenő levelek között.",
+      "fieldTime": "Időpont",
+      "fieldChannel": "Csatorna",
+      "fieldRecipient": "Címzett",
+      "fieldChurch": "Egyházközség",
+      "fieldTemplate": "Sablon",
+      "fieldSubject": "Tárgy",
+      "fieldLink": "Hivatkozás",
+      "fieldPushTitle": "Cím",
+      "fieldPushBody": "Szöveg",
+      "noLink": "Nincs",
+      "emailPreview": "E-mail előnézet",
+      "emailFrameTitle": "A kimenő e-mail tartalma",
+      "plainTextHeading": "Szöveges változat",
+      "pushPreview": "Értesítés előnézete",
+      "renderFailed": "Az üzenetet nem sikerült megjeleníteni.",
+      "unknownTemplate": "Ehhez a sablonhoz nincs megjelenítő.",
+      "noChurch": "Nincs megadva",
+      "recipientPerson": "Munkatárs ({id})",
+      "recipientUser": "Felhasználó ({id})",
+      "personas": {
+        "office": "Plébániai iroda",
+        "requester": "Kérelmező",
+        "hrHandlers": "HR-ügyintézők",
+        "roomManagers": "Teremfelelősök",
+        "planApprovers": "Tervjóváhagyók",
+        "team": "Csapat",
+        "billingContact": "Számlázási kapcsolattartó"
+      },
+      "templates": {
+        "request": {
+          "officeNotification": "Kérelem: értesítés az irodának",
+          "confirmation": "Kérelem: visszaigazolás"
+        },
+        "hr": {
+          "ticketCreated": "HR: új ügy",
+          "ticketReceived": "HR: ügy rögzítve",
+          "ticketUpdated": "HR: ügy frissítve"
+        },
+        "assignment": {
+          "requested": "Beosztás: új",
+          "swapRequested": "Beosztás: cserekérés",
+          "swapAccepted": "Beosztás: csere elfogadva"
+        },
+        "booking": {
+          "requested": "Foglalás: új kérés",
+          "decided": "Foglalás: döntés"
+        },
+        "plan": {
+          "reviewRequested": "Terv: jóváhagyásra vár",
+          "approved": "Terv: jóváhagyva",
+          "mention": "Terv: megemlítés"
+        },
+        "member": {
+          "invitation": "Meghívás a munkatérbe"
+        },
+        "billing": {
+          "paymentFailed": "Számlázás: sikertelen fizetés"
+        }
+      }
+    }
+  },
+  "email": {
+    "layout": {
+      "brand": "Churchy",
+      "linkFallback": "Ha a gomb nem működik, másolja be ezt a címet a böngészőjébe:",
+      "churchLabel": "Egyházközség",
+      "footerNotice": "Ezt az üzenetet a Churchy rendszer küldte automatikusan. Kérjük, ne válaszoljon rá."
+    },
+    "labels": {
+      "reference": "Hivatkozási szám",
+      "category": "Kategória",
+      "categoryRequest": "Lelkipásztori kérelem",
+      "categoryHr": "Munkatársi ügy",
+      "when": "Időpont",
+      "decision": "Döntés",
+      "approved": "Jóváhagyva",
+      "rejected": "Elutasítva"
+    },
+    "request": {
+      "officeNotification": {
+        "subject": "Új kérelem érkezett: {reference}",
+        "preheader": "Új kérelem érkezett az irodához. A részletek az adminisztrációs felületen olvashatók.",
+        "heading": "Új kérelem érkezett",
+        "body": "A weboldalon keresztül új kérelem érkezett. A tartalmát az adatvédelmi szabályok miatt nem küldjük el e-mailben; kérjük, nyissa meg a kérelmet az adminisztrációs felületen.",
+        "cta": "Kérelem megnyitása",
+        "pushTitle": "Új kérelem",
+        "pushBody": "Új kérelem érkezett: {reference}."
+      },
+      "confirmation": {
+        "subject": "Kérelmét megkaptuk: {reference}",
+        "preheader": "Köszönjük, kérelmét rögzítettük. Őrizze meg a hivatkozási számot.",
+        "heading": "Köszönjük, kérelmét megkaptuk",
+        "body": "Kérelmét rögzítettük, munkatársunk hamarosan felveszi Önnel a kapcsolatot. Ha érdeklődni szeretne, kérjük, hivatkozzon az alábbi azonosítóra.",
+        "cta": "Megnyitás",
+        "pushTitle": "Kérelem megérkezett",
+        "pushBody": "Kérelmét rögzítettük: {reference}."
+      }
+    },
+    "hr": {
+      "ticketCreated": {
+        "subject": "Új munkatársi ügy érkezett: {reference}",
+        "preheader": "Új ügy vár a kezelésére. A tartalma csak a Munkatérben olvasható.",
+        "heading": "Új munkatársi ügy érkezett",
+        "body": "Új ügy került a kezelésére váró ügyek közé. Az ügy tartalma az adatvédelmi szabályok miatt nem szerepel az üzenetben; kérjük, nyissa meg a Munkatérben.",
+        "cta": "Ügy megnyitása",
+        "pushTitle": "Új munkatársi ügy",
+        "pushBody": "Új ügy érkezett: {reference}."
+      },
+      "ticketReceived": {
+        "subject": "Ügyét rögzítettük: {reference}",
+        "preheader": "Köszönjük, a kérését megkaptuk. Az állapotát a Munkatérben követheti.",
+        "heading": "Ügyét rögzítettük",
+        "body": "Köszönjük, a kérését megkaptuk. Az ügy állapotáról a Munkatérben tájékozódhat; a tartalmát nem küldjük el e-mailben.",
+        "cta": "Ügy megnyitása",
+        "pushTitle": "Ügy rögzítve",
+        "pushBody": "Ügyét rögzítettük: {reference}."
+      },
+      "ticketUpdated": {
+        "subject": "Az ügye frissült: {reference}",
+        "preheader": "Változás történt az Ön ügyében. A részletek a Munkatérben olvashatók.",
+        "heading": "Az ügye frissült",
+        "body": "Az Ön ügyével kapcsolatban változás történt. A részleteket a Munkatérben tekintheti meg; a tartalmát nem küldjük el e-mailben.",
+        "cta": "Ügy megnyitása",
+        "pushTitle": "Frissült az ügye",
+        "pushBody": "Változás történt az ügyében: {reference}."
+      }
+    },
+    "assignment": {
+      "requested": {
+        "subject": "Új szolgálati beosztás: {when}",
+        "preheader": "Beosztották Önt egy szolgálatra. Kérjük, jelezze, hogy vállalja-e.",
+        "heading": "Új szolgálati beosztást kapott",
+        "body": "Beosztották Önt egy szolgálatra. Kérjük, a Munkatérben jelezze, hogy vállalja-e.",
+        "cta": "Beosztás megnyitása",
+        "pushTitle": "Új beosztás",
+        "pushBody": "Beosztották Önt: {when}."
+      },
+      "swapRequested": {
+        "subject": "Szolgálatcserét kértek Öntől: {when}",
+        "preheader": "Egy munkatárs szeretné átadni Önnek a szolgálatát.",
+        "heading": "Szolgálatcserét kértek Öntől",
+        "body": "Egy munkatárs szeretné, ha Ön átvenné a szolgálatát. Kérjük, a Munkatérben fogadja el vagy utasítsa el a kérést.",
+        "cta": "Kérés megnyitása",
+        "pushTitle": "Szolgálatcsere-kérés",
+        "pushBody": "Szolgálatcserét kértek Öntől: {when}."
+      },
+      "swapAccepted": {
+        "subject": "Szolgálatcsere elfogadva: {when}",
+        "preheader": "A szolgálatcserét elfogadták, a beosztás frissült.",
+        "heading": "A szolgálatcserét elfogadták",
+        "body": "A szolgálatcserét elfogadták, a beosztás ennek megfelelően frissült.",
+        "cta": "Beosztás megnyitása",
+        "pushTitle": "Szolgálatcsere elfogadva",
+        "pushBody": "A cserét elfogadták: {when}."
+      }
+    },
+    "booking": {
+      "requested": {
+        "subject": "Új teremfoglalási kérés",
+        "preheader": "Foglalási kérés vár a döntésére.",
+        "heading": "Új teremfoglalási kérés érkezett",
+        "body": "Új foglalási kérés érkezett a kezelése alá tartozó teremre. Kérjük, döntsön róla a Munkatérben.",
+        "cta": "Foglalás megnyitása",
+        "pushTitle": "Új foglalási kérés",
+        "pushBody": "Foglalási kérés vár a döntésére."
+      },
+      "decided": {
+        "subject": "Döntés született a foglalásáról: {decision}",
+        "preheader": "A teremfoglalási kérésével kapcsolatban döntés született.",
+        "heading": "Döntés született a foglalásáról",
+        "body": "A teremfoglalási kérésével kapcsolatban döntés született. A részleteket a Munkatérben tekintheti meg.",
+        "cta": "Foglalás megnyitása",
+        "pushTitle": "Döntés a foglalásról",
+        "pushBody": "A foglalási kérése: {decision}."
+      }
+    },
+    "plan": {
+      "reviewRequested": {
+        "subject": "Jóváhagyásra vár {service.article} {service.lower} terve",
+        "preheader": "Egy terv felülvizsgálatra vár a Munkatérben.",
+        "heading": "Jóváhagyásra vár {service.article} {service.lower} terve",
+        "body": "{service.article} {service.lower} terve felülvizsgálatra vár. Kérjük, tekintse át, és hagyja jóvá a Munkatérben.",
+        "cta": "Terv megnyitása",
+        "pushTitle": "Terv vár jóváhagyásra",
+        "pushBody": "Jóváhagyásra vár {service.article} {service.lower} terve."
+      },
+      "approved": {
+        "subject": "Jóváhagyták {service.article} {service.lower} tervét",
+        "preheader": "A terv jóváhagyása megtörtént.",
+        "heading": "A terv jóváhagyva",
+        "body": "Jóváhagyták {service.article} {service.lower} tervét. A jóváhagyott változatot a Munkatérben találja.",
+        "cta": "Terv megnyitása",
+        "pushTitle": "Terv jóváhagyva",
+        "pushBody": "Jóváhagyták {service.article} {service.lower} tervét."
+      },
+      "mention": {
+        "subject": "Megemlítették Önt {service.article} {service.lower} tervében",
+        "preheader": "Egy kolléga megemlítette Önt egy megjegyzésben.",
+        "heading": "Megemlítették Önt egy megjegyzésben",
+        "body": "Egy munkatárs megemlítette Önt {service.article} {service.lower} tervéhez fűzött megjegyzésben. A megjegyzés a Munkatérben olvasható.",
+        "cta": "Megjegyzés megnyitása",
+        "pushTitle": "Megemlítették",
+        "pushBody": "Megemlítették Önt {service.article} {service.lower} tervében."
+      }
+    },
+    "member": {
+      "invitation": {
+        "subject": "Meghívás a Churchy Munkatérbe",
+        "preheader": "Meghívást kapott a munkatérbe. A belépéshez nyissa meg az üzenetet.",
+        "heading": "Meghívást kapott a Munkatérbe",
+        "body": "Meghívást kapott a Churchy Munkatérbe, ahol a beosztásokat, a teremfoglalásokat és a szolgálati terveket kezelhetik. A belépéshez kérjük, használja az alábbi gombot.",
+        "cta": "Belépés",
+        "pushTitle": "Meghívás a Munkatérbe",
+        "pushBody": "Meghívást kapott a Churchy Munkatérbe."
+      }
+    },
+    "billing": {
+      "paymentFailed": {
+        "subject": "Az előfizetés díját nem sikerült levonni",
+        "preheader": "Kérjük, ellenőrizze a fizetési adatokat.",
+        "heading": "A fizetés nem sikerült",
+        "body": "Az előfizetés díját nem tudtuk levonni. Kérjük, ellenőrizze a fizetési adatokat az adminisztrációs felületen, hogy a szolgáltatás megszakítás nélkül működhessen.",
+        "cta": "Előfizetés megnyitása",
+        "pushTitle": "A fizetés nem sikerült",
+        "pushBody": "Kérjük, ellenőrizze az előfizetés fizetési adatait."
+      }
     }
   },
   "admin": {

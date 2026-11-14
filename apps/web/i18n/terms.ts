@@ -1,4 +1,4 @@
-import type { Denomination } from "@churchy/contracts";
+import type { Denomination, TermForms } from "@churchy/contracts";
 import { resolveCatalogTerms, termsFromConfig, type MessageTree, type Terms } from "@churchy/i18n";
 import { effectiveConfig } from "@churchy/presets";
 import { getSiteConfig } from "@/lib/site-config";
@@ -15,6 +15,21 @@ export function getTerms(): Terms {
 /** Preset terminology of a denomination, without tenant overrides (showcase, setup wizard). */
 export function termsForDenomination(denomination: Denomination): Terms {
   return termsFromConfig(effectiveConfig({ name: denomination, denomination }));
+}
+
+/** Effective terminology of any tenant (its denomination preset plus its own overrides). */
+export function termsForTenant(tenant: {
+  name: string;
+  denomination: Denomination;
+  terminology?: Record<string, TermForms>;
+}): Terms {
+  return termsFromConfig(
+    effectiveConfig({
+      name: tenant.name,
+      denomination: tenant.denomination,
+      siteConfig: { terminology: tenant.terminology ?? {} },
+    }),
+  );
 }
 
 const catalogs = new Map<string, MessageTree>();

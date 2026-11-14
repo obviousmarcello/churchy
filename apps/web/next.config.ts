@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   // Workspace packages are consumed as TypeScript source.
   transpilePackages: [
     "@churchy/contracts",
+    "@churchy/email",
     "@churchy/data-mock",
     "@churchy/policy",
     "@churchy/hu",

@@ -1,5 +1,4 @@
 import { Fragment, type CSSProperties, type ReactNode } from "react";
-import { notFound } from "next/navigation";
 import {
   RADIUS_STEPS,
   isHexColor,
@@ -38,6 +37,7 @@ import {
   type HeroImage,
 } from "@churchy/ui";
 import { getT } from "@/i18n/server";
+import { assertDevRoutesVisible } from "@/lib/dev-routes";
 import { termsForDenomination } from "@/i18n/terms";
 import { ThemePlayground } from "./theme-playground";
 
@@ -149,7 +149,7 @@ export default async function ShowcasePage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  if (process.env.HIDE_DEV_ROUTES === "1") notFound();
+  assertDevRoutesVisible();
 
   const params = await searchParams;
   const primary = first(params.primary);
