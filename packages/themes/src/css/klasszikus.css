@@ -1,0 +1,67 @@
+/*
+ * Klasszikus: traditional, serif headings, cream background, burgundy + gold accents.
+ * Also the fallback when <html> has no data-theme. Values for --c-primary, --c-accent (and their
+ * derived pairs), fonts and radii are normally written at runtime from the ThemeConfig as inline
+ * custom properties (they win over this file); the values below must stay equal to the defaults in
+ * registry.ts (a unit test enforces that).
+ */
+:root:not([data-theme]),
+[data-theme="klasszikus"] {
+  /* Surfaces */
+  --c-surface: #fbf6ea; /* cream page */
+  --c-surface-raised: #fffdf8; /* cards, inputs */
+  --c-surface-sunken: #f3ead6; /* bands, table headers */
+
+  /* Text */
+  --c-text: #2b2118;
+  --c-muted: #5c4f40;
+
+  /* Brand (configurable) */
+  --c-primary: #6e1f2e; /* burgundy */
+  --c-primary-contrast: #ffffff;
+  --c-accent: #c9a24b; /* gold: decoration and fills with dark text */
+  --c-accent-contrast: #2b2118;
+  --c-accent-text: #7f662f; /* gold dark enough for text on the surface */
+
+  /* Derived (pure CSS so they follow the configurable colours) */
+  --c-primary-hover: color-mix(in oklab, var(--c-primary) 82%, black);
+  --c-primary-soft: color-mix(in oklab, var(--c-primary) 8%, var(--c-surface-raised));
+  --c-accent-soft: color-mix(in oklab, var(--c-accent) 22%, var(--c-surface-raised));
+
+  /* Lines */
+  --c-border: #dccfae; /* decorative hairlines */
+  --c-border-strong: #8a7a5f; /* control borders: 3:1 against surfaces */
+  --c-focus: #1b4f9c;
+
+  /* Inverse (footer) */
+  --c-inverse: #3a0f19;
+  --c-inverse-text: #f3e8d2;
+  --c-inverse-muted: #d9c7a4;
+  --c-inverse-accent: #e2c27a;
+
+  /* Status: the strong colour is used for text and borders on the -soft background */
+  --c-danger: #9e2020;
+  --c-danger-soft: #fbe9e6;
+  --c-success: #2b6a3a;
+  --c-success-soft: #e8f3e6;
+  --c-warning: #7a4e00;
+  --c-warning-soft: #fbf0d2;
+  --c-info: #1f5282;
+  --c-info-soft: #e6eef7;
+
+  /* Typography */
+  --font-heading:
+    "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body:
+    "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --fw-heading: 600;
+  --heading-tracking: 0.005em;
+
+  /* Shape */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --shadow-card: 0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.07);
+  --shadow-raised: 0 2px 4px rgb(60 40 20 / 0.08), 0 16px 40px rgb(60 40 20 / 0.18);
+}

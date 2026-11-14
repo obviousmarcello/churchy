@@ -1,0 +1,30 @@
+{
+  "name": "@churchy/email",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
+    "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@churchy/hu": "workspace:*",
+    "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.3.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@churchy/i18n": "workspace:*",
+    "@churchy/presets": "workspace:*",
+    "@types/node": "^22.20.5",
+    "intl-messageformat": "^12.1.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "vitest": "5.1.0"
+  }
+}
