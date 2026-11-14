@@ -120,6 +120,7 @@ Keep this section in sync when you change scripts. Node ≥ 22 (`.nvmrc`), pnpm 
 ```bash
 pnpm install          # install workspace
 pnpm dev              # run the app on http://localhost:3000 (mock adapters by default in Phase A)
+DEMO_MODE=1 pnpm dev  # demo mode: role/church switcher, banner, reset (apps/web/lib/demo/)
 pnpm build            # production build of apps/web
 pnpm lint             # ESLint incl. custom rules: i18n/no-hardcoded-text (D-06), adapter imports (D-90), role checks (D-05)
 pnpm format           # Prettier write; `pnpm format:check` in CI
@@ -130,6 +131,8 @@ pnpm --filter @churchy/policy matrix   # regenerate packages/policy/MATRIX.md (a
 pnpm test:contract    # contract suites (*.contract.test.ts) against mock (and DB when DATABASE_URL is set)
 pnpm e2e              # Playwright against `next start` on :3100 — run `pnpm build` first; pass --trace off unless debugging
 ```
+
+Demo mode (D-92) refuses to start when `APP_ENV` is staging/production or any DB, storage, email, push or payment credential is set — the list is in `apps/web/lib/demo/safety.ts`. Deployments must set `APP_ENV`.
 
 Pinned toolchain notes: TypeScript is pinned to 5.9 and ESLint to 9 because lint tooling does not yet support the TypeScript 7 (Go) compiler. `@playwright/test` is pinned to the Playwright version installed in the environment.
 
