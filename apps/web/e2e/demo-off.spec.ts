@@ -20,7 +20,12 @@ test.describe("DEMO_MODE off", () => {
   test("the visitor is anonymous: no area is open", async ({ page }) => {
     await page.goto(`${NO_DEMO}/admin`);
     await expect(page.getByTestId("area-no-access")).toBeVisible();
-    await expect(page.getByRole("navigation", { name: "Főmenü" })).toHaveCount(0);
+    // The header only has the public main navigation (D-11), no app area.
+    const nav = page.locator("header nav");
+    for (const area of ["/munkater", "/admin", "/egyhazmegye"]) {
+      await expect(nav.locator(`a[href="${area}"]`), area).toHaveCount(0);
+    }
+    await expect(nav.locator('a[href="/miserend"]')).toHaveCount(1);
   });
 
   test("dev and demo tools are not served by a production server without demo mode", async ({

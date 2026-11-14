@@ -8,6 +8,9 @@
     "closeDialog": "Bezárás",
     "legalNavigation": "Jogi tájékoztatók",
     "nav": {
+      "public": {
+        "serviceSchedule": "{serviceSchedule.nom}"
+      },
       "workspace": "Munkatér",
       "admin": "Weboldal kezelése",
       "organization": "Egyházmegyei portál",
@@ -73,6 +76,46 @@
       "placeholderLead": "A Churchy prototípus hamarosan itt lesz.",
       "nextServices": "Következő {service.plural}",
       "welcome": "Üdvözöljük {community.article} {community.lower} oldalán!"
+    },
+    "schedule": {
+      "metaDescription": "Heti {serviceSchedule.lower} és általános {serviceSchedule.lower} helyszínenként, a változásokkal együtt.",
+      "weekNavigation": "Hetek közötti lapozás",
+      "previousWeek": "Előző hét",
+      "thisWeek": "Ez a hét",
+      "nextWeek": "Következő hét",
+      "dateLabel": "Ugrás egy napra",
+      "dateHelp": "Formátum: év. hónap. nap., például 2026. 12. 24.",
+      "dateSubmit": "Megjelenítés",
+      "dateInvalid": "Ezt a dátumot nem tudtuk értelmezni. Kérjük, így adja meg: 2026. 12. 24. Addig az aktuális hetet mutatjuk.",
+      "locationFilter": "Helyszín",
+      "allLocations": "Mind",
+      "unknownLocation": "Ilyen helyszínt nem találtunk, ezért minden helyszín alkalmait mutatjuk.",
+      "weekHeading": "A hét alkalmai: {range}",
+      "today": "Ma",
+      "noServices": "Ezen a napon nincs alkalom.",
+      "noLocations": "Még nincs megadva helyszín és {serviceSchedule.lower}.",
+      "badges": {
+        "cancelled": "Elmarad",
+        "modified": "Változás",
+        "added": "Rendkívüli"
+      },
+      "language": "{language} nyelvű",
+      "originalTime": "eredetileg {time}",
+      "regularTitle": "Általános {serviceSchedule.lower}",
+      "regularLead": "A rendszeres heti alkalmak helyszínenként és időszakonként. Az eltéréseket a fenti heti nézet mutatja.",
+      "regularCurrent": "Jelenleg érvényes",
+      "regularDay": "Nap",
+      "regularServices": "Alkalmak",
+      "regularCaption": "{location}: {period}",
+      "regularEmpty": "Ehhez a helyszínhez még nincs rendszeres alkalom megadva.",
+      "validity": {
+        "always": "Egész évben érvényes",
+        "yearly": "Érvényes minden évben: {from} – {to}",
+        "range": "Érvényes: {from} – {to}",
+        "from": "Érvényesség kezdete: {from}",
+        "until": "Érvényesség vége: {to}"
+      },
+      "nthWeek": "a hónap {nth, select, 1 {első} 2 {második} 3 {harmadik} 4 {negyedik} 5 {ötödik} other {utolsó}} {weekday, select, 1 {hétfőjén} 2 {keddjén} 3 {szerdáján} 4 {csütörtökjén} 5 {péntekjén} 6 {szombatján} other {vasárnapján}}"
     }
   },
   "dev": {

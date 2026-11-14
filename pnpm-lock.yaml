@@ -44,6 +44,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@churchy/calendar':
+        specifier: workspace:*
+        version: link:../../packages/calendar
       '@churchy/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -65,6 +68,9 @@ importers:
       '@churchy/presets':
         specifier: workspace:*
         version: link:../../packages/presets
+      '@churchy/schedule':
+        specifier: workspace:*
+        version: link:../../packages/schedule
       '@churchy/themes':
         specifier: workspace:*
         version: link:../../packages/themes
