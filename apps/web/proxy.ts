@@ -56,6 +56,9 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  // Pages, route handlers and server actions; not build assets or public files.
-  matcher: ["/((?!_next/|favicon\\.ico|demo/|.*\\.(?:svg|png|jpg|jpeg|webp|ico|pdf|woff2?)$).*)"],
+  // Pages, route handlers and server actions; not build assets or public files. iCalendar feeds
+  // (`.ics`) are skipped too: calendar clients keep no cookies and public hosts set none (D-15).
+  matcher: [
+    "/((?!_next/|favicon\\.ico|demo/|.*\\.(?:svg|png|jpg|jpeg|webp|ico|pdf|woff2?|ics)$).*)",
+  ],
 };

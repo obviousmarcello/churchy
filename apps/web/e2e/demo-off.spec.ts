@@ -27,6 +27,7 @@ test.describe("DEMO_MODE off", () => {
     }
     await expect(nav.locator('a[href="/miserend"]')).toHaveCount(1);
     await expect(nav.locator('a[href="/kapcsolat"]')).toHaveCount(1);
+    await expect(nav.locator('a[href="/esemenyek"]')).toHaveCount(1);
   });
 
   test("dev and demo tools are not served by a production server without demo mode", async ({

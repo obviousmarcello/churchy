@@ -9,7 +9,8 @@
     "legalNavigation": "Jogi tájékoztatók",
     "nav": {
       "public": {
-        "serviceSchedule": "{serviceSchedule.nom}"
+        "serviceSchedule": "{serviceSchedule.nom}",
+        "events": "Események"
       },
       "workspace": "Munkatér",
       "admin": "Weboldal kezelése",
@@ -208,6 +209,46 @@
           "consent": "Az üzenet elküldéséhez el kell fogadnia az adatkezelési tájékoztatót."
         }
       }
+    },
+    "events": {
+      "title": "Események",
+      "lead": "Közösségünk programjai, alkalmai és rendezvényei egy helyen.",
+      "metaTitle": "Események – {church}",
+      "monthMetaTitle": "Eseménynaptár, {month} – {church}",
+      "views": "Nézet",
+      "viewList": "Lista",
+      "viewMonth": "Havi naptár",
+      "subscribe": "Feliratkozás a naptárra (.ics)",
+      "subscribeHint": "A hivatkozást Google Naptárba, Apple Naptárba vagy Outlookba felvéve az események automatikusan frissülnek.",
+      "empty": "A következő időszakban nincs meghirdetett esemény.",
+      "allDay": "Egész nap",
+      "recurring": "Ismétlődő esemény",
+      "moved": "Módosított időpont",
+      "monthNavigation": "Lépés a hónapok között",
+      "prevMonth": "Előző hónap",
+      "nextMonth": "Következő hónap",
+      "today": "Aktuális hónap",
+      "monthEmpty": "Ebben a hónapban nincs meghirdetett esemény.",
+      "todayBadge": "Ma",
+      "back": "Vissza az eseményekhez",
+      "whenHeading": "Időpont",
+      "whereHeading": "Helyszín",
+      "aboutHeading": "Az eseményről",
+      "upcomingHeading": "Következő alkalmak",
+      "noUpcoming": "Ennek az eseménynek nincs több meghirdetett alkalma.",
+      "mapLink": "Megnyitás térképen",
+      "addToCalendar": "Hozzáadás a naptárhoz",
+      "downloadIcs": "Letöltés (.ics)",
+      "googleCalendar": "Google Naptár",
+      "opensInNewTab": "(új lapon nyílik meg)",
+      "icsCalendarName": "{church} – események",
+      "icsCalendarDescription": "{church} nyilvános eseményei",
+      "monthTitle": "{year}. {month}",
+      "weekdayShort": "{day, select, 1 {H} 2 {K} 3 {Sze} 4 {Cs} 5 {P} 6 {Szo} other {V}}",
+      "eventMetaTitle": "{title} – {church}",
+      "listPages": "Lapozás az események között",
+      "earlier": "Korábbi hetek",
+      "later": "Későbbi események"
     }
   },
   "dev": {
