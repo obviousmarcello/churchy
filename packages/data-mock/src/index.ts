@@ -3,6 +3,12 @@
 export type { MockCollection, MockDataset } from "./dataset";
 export { emptyDataset } from "./dataset";
 export { defaultDemoDataset } from "./default-dataset";
+export {
+  DEMO_ORG_ID,
+  DEMO_TENANT_IDS,
+  createDemoDataset,
+  createDemoDatasetWithPersonas,
+} from "./seed";
 
 export type { MockStore, MockStoreOptions } from "./store";
 export { createMockStore } from "./store";

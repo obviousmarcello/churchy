@@ -1,11 +1,10 @@
 /**
- * The dataset a demo session starts from. Indirection point for the demo seed (issue #16): until
- * `src/seed/` is merged this returns an empty dataset so the app builds and runs; the merge of
- * #16 replaces the body with the seed's `MockDataset` (one line), and nothing else changes.
+ * The dataset a demo session starts from: the fictitious Hungarian demo seed (#16), anchored on
+ * the current time so services, events and bookings are always "upcoming".
  */
 import type { MockDataset } from "./dataset";
-import { emptyDataset } from "./dataset";
+import { createDemoDataset } from "./seed";
 
-export function defaultDemoDataset(): MockDataset {
-  return emptyDataset();
+export function defaultDemoDataset(now: Date = new Date()): MockDataset {
+  return createDemoDataset(now);
 }

@@ -7,6 +7,7 @@ import {
 import { afterEach, describe, expect, it } from "vitest";
 import { defaultDemoDataset } from "./default-dataset";
 import { emptyDataset } from "./dataset";
+import { createDemoDataset } from "./seed";
 import { mockRepositoryFactories, registerMockAdapter } from "./register";
 import { createMockSessions } from "./sessions";
 import { createMockStore } from "./store";
@@ -42,7 +43,11 @@ describe("registerMockAdapter", () => {
     expect(await registry.getRepositories({}).locations.list(ctxA)).toHaveLength(1);
   });
 
-  it("starts demo sessions from the default dataset", () => {
-    expect(defaultDemoDataset()).toEqual(emptyDataset());
+  it("starts demo sessions from the demo seed", () => {
+    const now = new Date("2026-11-12T10:00:00+01:00");
+    const dataset = defaultDemoDataset(now);
+    expect(dataset).toEqual(createDemoDataset(now));
+    expect(dataset.tenants.length).toBeGreaterThan(0);
+    expect(Object.keys(dataset).sort()).toEqual(Object.keys(emptyDataset()).sort());
   });
 });
