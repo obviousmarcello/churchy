@@ -21,8 +21,15 @@ test.describe("component showcase", () => {
     await expect(page.getByRole("contentinfo")).toBeVisible();
     await expect(page.getByRole("heading", { level: 1, name: "Komponenstár" })).toBeVisible();
 
-    await page.keyboard.press("Tab");
+    // In demo mode (D-92) the demo bar's three controls come first; the skip link is the first
+    // focusable element of the page itself.
     const skip = page.getByRole("link", { name: "Ugrás a tartalomra" });
+    const demoControls = await page
+      .getByTestId("demo-banner")
+      .locator("summary, button")
+      .filter({ visible: true })
+      .count();
+    for (let i = 0; i <= demoControls; i++) await page.keyboard.press("Tab");
     await expect(skip).toBeFocused();
     await expect(skip).toBeInViewport();
     await page.keyboard.press("Enter");

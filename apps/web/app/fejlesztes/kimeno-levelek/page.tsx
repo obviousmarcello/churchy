@@ -23,6 +23,7 @@ import {
 } from "@/lib/outbox-view";
 import { listOutbox, type OutboxMessage, type OutboxRecipientView } from "@/server/data-adapters";
 import { emailContextFor } from "@/server/email-context";
+import { getRequestDemoSessionId } from "@/server/repositories";
 import { clearDemoOutbox, submitSampleRequest } from "./actions";
 import { LiveRefresh } from "./live-refresh";
 import { OutboxDetail } from "./outbox-detail";
@@ -61,7 +62,7 @@ export default async function OutboxPage({
   const baseUrl = baseUrlFrom(await headers());
 
   // Newest first.
-  const all = listOutbox().reverse();
+  const all = listOutbox(await getRequestDemoSessionId()).reverse();
   const visible = filterOutbox(all, { channel, recipient });
   const selected = selectedId === undefined ? undefined : all.find((m) => m.id === selectedId);
 

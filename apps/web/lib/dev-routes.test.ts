@@ -15,6 +15,17 @@ describe("dev routes gate", () => {
     expect(devRoutesHidden({ HIDE_DEV_ROUTES: "1" })).toBe(true);
   });
 
+  it("hides them in a production server unless demo mode is on (D-92)", () => {
+    expect(devRoutesHidden({ NODE_ENV: "development" })).toBe(false);
+    expect(devRoutesHidden({ NODE_ENV: "test" })).toBe(false);
+    expect(devRoutesHidden({ NODE_ENV: "production" })).toBe(true);
+    expect(devRoutesHidden({ NODE_ENV: "production", DEMO_MODE: "1" })).toBe(false);
+    expect(devRoutesHidden({ NODE_ENV: "production", DEMO_MODE: "0" })).toBe(true);
+    expect(devRoutesHidden({ NODE_ENV: "production", DEMO_MODE: "1", HIDE_DEV_ROUTES: "1" })).toBe(
+      true,
+    );
+  });
+
   it("assertDevRoutesVisible renders the 404 page when hidden (read per call)", () => {
     delete process.env.HIDE_DEV_ROUTES;
     expect(() => assertDevRoutesVisible()).not.toThrow();

@@ -1,8 +1,9 @@
 "use server";
 
-import { ANONYMOUS_ACTOR, getRepositories, type Ctx } from "@churchy/contracts";
+import { ANONYMOUS_ACTOR, type Ctx } from "@churchy/contracts";
 import { assertDevRoutesVisible } from "@/lib/dev-routes";
-import { clearOutbox } from "@/server/data-adapters";
+import { clearOutbox, demoDirectory } from "@/server/data-adapters";
+import { getRequestDemoSessionId, getRequestRepositories } from "@/server/repositories";
 import { getRequestContext } from "@/server/session";
 
 const SAMPLE_FORM_KEY = "dev-minta";
@@ -21,8 +22,9 @@ const SAMPLE_DATA = {
  */
 export async function submitSampleRequest(): Promise<void> {
   assertDevRoutesVisible();
-  const { tenantId } = await getRequestContext();
-  const { requests } = getRepositories();
+  // Requests belong to a church; in the diocese context the sample goes to the default church.
+  const tenantId = (await getRequestContext()).tenantId ?? demoDirectory().defaultTenantId;
+  const { requests } = await getRequestRepositories();
   const staff: Ctx = { tenantId, actor: { userId: "dev-user", personId: null } };
 
   if ((await requests.getForm(staff, SAMPLE_FORM_KEY)) === null) {
@@ -52,5 +54,5 @@ export async function submitSampleRequest(): Promise<void> {
 /** Dev tool: *Kiürítés*. */
 export async function clearDemoOutbox(): Promise<void> {
   assertDevRoutesVisible();
-  clearOutbox();
+  clearOutbox(await getRequestDemoSessionId());
 }
