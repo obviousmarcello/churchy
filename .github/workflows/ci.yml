@@ -53,6 +53,8 @@ jobs:
       # Disposable CI database only — never a Supabase project.
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/churchy_ci
       TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/churchy_ci
+      # The tenant isolation suite (D-03) fails instead of skipping when the database is missing.
+      REQUIRE_TEST_DATABASE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -69,7 +71,9 @@ jobs:
           test -z "$(git status --porcelain -- packages/db/migrations)"
       - name: Supabase auth stub (plain Postgres only)
         run: pnpm --filter @churchy/db db auth-stub
-      - name: Integration tests (up → down → up, schema checks, collation, search, seed)
+      # Runs on every PR. Includes the tenant isolation suite (`pnpm test:isolation`, D-03):
+      # RLS catalog check + cross-tenant SELECT/INSERT/UPDATE/DELETE on every tenant table.
+      - name: Integration tests (migrations, schema checks, seed, RLS & tenant isolation suite)
         run: pnpm --filter @churchy/db test:coverage
       - name: Migrate and seed via the CLI
         run: |

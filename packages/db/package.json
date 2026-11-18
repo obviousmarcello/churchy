@@ -14,6 +14,7 @@
     "db:check": "drizzle-kit check",
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
     "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
+    "test:isolation": "REQUIRE_TEST_DATABASE=1 TZ=Europe/Budapest vitest run src/isolation.db.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

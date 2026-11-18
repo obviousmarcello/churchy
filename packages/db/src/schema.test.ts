@@ -165,6 +165,7 @@ describe("migrations", () => {
       "0000_extensions",
       "0001_schema",
       "0002_constraints",
+      "0003_rls",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);
@@ -190,6 +191,58 @@ describe("migrations", () => {
     const sql = readFileSync(`${MIGRATIONS_FOLDER}/0002_constraints.sql`, "utf8");
     expect(sql).toMatch(/EXCLUDE USING gist \("room_id" WITH =, "blocked_period" WITH &&\)/);
     expect(sql).toContain(`REFERENCES "auth"."users"("id") ON DELETE CASCADE`);
+  });
+
+  describe("RLS policies (D-03; the live catalog is checked by isolation.db.test.ts)", () => {
+    const all = journal
+      .map((e) => readFileSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`, "utf8"))
+      .join("\n");
+    const down = readDownMigration("0003_rls").join("\n");
+    const tenantExpr = "tenant_id = (SELECT app.current_tenant_id())";
+
+    it("every tenant and catalog table gets the tenant_isolation policy and a grant", () => {
+      for (const t of [...tablesWithScope("tenant"), ...tablesWithScope("catalog")]) {
+        expect(all, t).toContain(
+          `CREATE POLICY "tenant_isolation" ON "${t}" AS PERMISSIVE FOR ALL TO churchy_app\n` +
+            `  USING (${tenantExpr})\n  WITH CHECK (${tenantExpr});`,
+        );
+        expect(all, t).toContain(
+          `GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "${t}" TO churchy_app;`,
+        );
+        expect(down, t).toContain(`DROP POLICY IF EXISTS "tenant_isolation" ON "${t}";`);
+      }
+      for (const t of tablesWithScope("catalog")) {
+        expect(all, t).toContain(`CREATE POLICY "catalog_read" ON "${t}"`);
+      }
+    });
+
+    it("forces RLS on every table", () => {
+      for (const t of tables) {
+        expect(all, t.name).toContain(`ALTER TABLE "${t.name}" FORCE ROW LEVEL SECURITY;`);
+        expect(down, t.name).toContain(`ALTER TABLE "${t.name}" NO FORCE ROW LEVEL SECURITY;`);
+      }
+    });
+
+    it("never grants a platform table to the app role", () => {
+      for (const t of tablesWithScope("platform")) {
+        expect(all, t).not.toMatch(new RegExp(`ON TABLE "${t}" TO churchy_app`));
+        expect(all, t).not.toMatch(new RegExp(`CREATE POLICY [^\\n]* ON "${t}"`));
+      }
+    });
+
+    it("creates the app role without BYPASSRLS and revokes the Supabase PostgREST grants", () => {
+      expect(all).toMatch(/CREATE ROLE churchy_app NOLOGIN NOSUPERUSER[^;]* NOBYPASSRLS;/);
+      expect(all).toContain("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM %I");
+      expect(all).toContain("ARRAY['anon', 'authenticated']");
+      const code = all.replace(/--[^\n]*/g, ""); // SQL without comments
+      expect(code).not.toMatch(/(?<!NO)BYPASSRLS/);
+      expect(code).not.toMatch(/(?<!NO)SUPERUSER/);
+    });
+
+    it("HR tables get the same tenant policy (the D-84 org branch is a separate policy)", () => {
+      for (const t of HR_TABLES)
+        expect(all, t).toContain(`CREATE POLICY "tenant_isolation" ON "${t}"`);
+    });
   });
 
   it("splitStatements drops comment-only chunks", () => {

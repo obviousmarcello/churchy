@@ -1,8 +1,8 @@
 /**
  * Database connection and the per-transaction tenant context (SDD §4.2, §25.7).
  *
- * The app connects through a dedicated, non-owner role without BYPASSRLS (created with the RLS
- * policies in D-03). Every repository call runs in a transaction that first sets
+ * The app connects as `churchy_app`: not the table owner, no BYPASSRLS (migration 0003_rls,
+ * D-03). Every repository call runs in a transaction that first sets
  * `app.tenant_id` / `app.org_id` with `set_config(…, true)` — transaction-local, so it is safe
  * behind the Supabase transaction pooler — and RLS policies read them.
  */

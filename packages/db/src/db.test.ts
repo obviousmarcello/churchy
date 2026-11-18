@@ -48,10 +48,7 @@ describe.skipIf(!url || unsafeEnv)("database (TEST_DATABASE_URL)", () => {
   beforeAll(async () => {
     pool = createPool(url);
     db = createDb(pool);
-    const [auth] = await q<{ ok: boolean }>(
-      "select exists (select 1 from pg_namespace where nspname = 'auth') as ok",
-    );
-    if (!auth?.ok) await pool.query(readFileSync(AUTH_STUB, "utf8"));
+    await pool.query(readFileSync(AUTH_STUB, "utf8")); // idempotent
     await migrateReset(pool);
   });
 
@@ -73,15 +70,21 @@ describe.skipIf(!url || unsafeEnv)("database (TEST_DATABASE_URL)", () => {
                   where n.nspname = 'public' and t.typtype = 'e') as types`,
       );
       expect(left).toEqual({ tables: "0", types: "0" });
+      const [rls] = await q<{ role: boolean; schema: boolean }>(
+        `select exists (select 1 from pg_roles where rolname = 'churchy_app') as role,
+                exists (select 1 from pg_namespace where nspname = 'app') as schema`,
+      );
+      expect(rls).toEqual({ role: false, schema: false });
 
       await migrateUp(pool);
       expect(await appliedMigrations(pool)).toEqual(tags);
     });
 
     it("reverts and re-applies a single step", async () => {
-      expect(await migrateDown(pool, 1)).toEqual(["0002_constraints"]);
+      const last = readJournal().at(-1)!.tag;
+      expect(await migrateDown(pool, 1)).toEqual([last]);
       await migrateUp(pool);
-      expect((await appliedMigrations(pool)).at(-1)).toBe("0002_constraints");
+      expect((await appliedMigrations(pool)).at(-1)).toBe(last);
     });
   });
 

@@ -135,7 +135,10 @@ pnpm --filter @churchy/db db:generate  # Drizzle schema → migrations/NNNN_*.sq
 pnpm --filter @churchy/db db up|down [n]|reset|status|seed  # migrations & D-91 demo seed (DATABASE_URL from env)
 pnpm --filter @churchy/db db auth-stub # plain Postgres only: minimal auth.users (Supabase owns it)
 TEST_DATABASE_URL=… pnpm --filter @churchy/db test  # DB integration tests — disposable database only, they reset it
+TEST_DATABASE_URL=… pnpm test:isolation  # D-03 RLS check + cross-tenant isolation suite (fails without a database)
 ```
+
+New tables need RLS: classify them in `packages/db/src/table-scopes.ts` and, for tenant/catalog tables, add the `tenant_isolation` policy + grant to `churchy_app` in the migration (see `packages/db/README.md`); the isolation suite fails otherwise.
 
 Demo mode (D-92) refuses to start when `APP_ENV` is staging/production or any DB, storage, email, push or payment credential is set — the list is in `apps/web/lib/demo/safety.ts`. Deployments must set `APP_ENV`.
 
