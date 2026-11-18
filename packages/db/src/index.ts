@@ -26,4 +26,17 @@ export {
   type TableName,
   type TableScope,
 } from "./table-scopes";
+export {
+  APP_ROLE,
+  CATALOG_READ_POLICY,
+  POSTGREST_ROLES,
+  TENANT_POLICY,
+  rlsViolations,
+} from "./rls";
+export {
+  StorageKeyError,
+  assertTenantStorageKey,
+  tenantStorageKey,
+  tenantStoragePrefix,
+} from "./storage-keys";
 // The demo seed (it imports the mock fixtures) is a separate entry: `@churchy/db/seed`.
