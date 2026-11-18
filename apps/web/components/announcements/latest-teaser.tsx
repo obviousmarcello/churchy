@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ButtonLink, SectionHeading } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { announcementWeek, teaserLines } from "@/lib/announcements/view";
@@ -10,11 +11,12 @@ const TEASER_LINES = 3;
 /**
  * Home-page card of the latest weekly announcement (SDD §7.1 *Heti hirdetések*, D-14 AC1): the
  * week, its first items and links to the full page (one click) and to the PDF. Renders nothing
- * while the church has no published announcement or the module is off. For the home page (D-10).
+ * while the church has no published announcement or the module is off, or `empty` when given (the
+ * home page's empty state, D-10).
  */
-export async function LatestAnnouncementTeaser() {
+export async function LatestAnnouncementTeaser({ empty }: { empty?: ReactNode } = {}) {
   const latest = await getLatestAnnouncement();
-  if (latest === null) return null;
+  if (latest === null) return empty ?? null;
   const t = await getT("public.announcements");
   const { announcement, file, config } = latest;
   const week = announcementWeek(announcement.weekSunday, config.calendarFamily);

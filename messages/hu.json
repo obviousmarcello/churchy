@@ -79,10 +79,26 @@
   },
   "public": {
     "home": {
-      "placeholderTitle": "Isten hozta!",
-      "placeholderLead": "A Churchy prototípus hamarosan itt lesz.",
+      "metaDescription": "{church} – {serviceSchedule.lower}, hirdetések, hírek és események egy helyen.",
       "nextServices": "Következő {service.plural}",
-      "welcome": "Üdvözöljük {community.article} {community.lower} oldalán!"
+      "welcome": "Üdvözöljük {community.article} {community.lower} oldalán!",
+      "nextServicesNone": "A következő két hétre még nincs megadva alkalom.",
+      "fullSchedule": "Teljes {serviceSchedule.lower}",
+      "inProgress": "Most zajlik",
+      "changesHeading": "Változások",
+      "changesMore": "és még {count} további változás",
+      "liveTitle": "Most közvetítünk",
+      "liveWatch": "Megnézem az élő közvetítést",
+      "announcementsEmpty": "Ezen a héten még nincs közzétett hirdetés.",
+      "newsTitle": "Hírek",
+      "newsAll": "Összes hír",
+      "newsEmpty": "Jelenleg nincs megjelent hír.",
+      "eventsTitle": "Események",
+      "eventsCalendar": "Naptár",
+      "eventsEmpty": "A következő időszakra nincs meghirdetett esemény.",
+      "mapTitle": "Hol talál meg minket?",
+      "mapAddressLabel": "Cím",
+      "quoteSource": "Forrás:"
     },
     "schedule": {
       "metaDescription": "Heti {serviceSchedule.lower} és általános {serviceSchedule.lower} helyszínenként, a változásokkal együtt.",
