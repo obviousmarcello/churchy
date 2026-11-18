@@ -6,10 +6,10 @@ import * as schema from "./schema";
 import { HU_COLLATION } from "./schema/columns";
 import { HR_TABLES, TABLE_SCOPES, tablesWithScope } from "./table-scopes";
 
-const tables = Object.values(schema)
+const tables = (Object.values(schema) as unknown[])
   .filter((v): v is PgTable => v instanceof PgTable)
   .map((t) => getTableConfig(t));
-const enums = Object.values(schema).filter(isPgEnum);
+const enums = (Object.values(schema) as unknown[]).filter(isPgEnum);
 const byName = new Map(tables.map((t) => [t.name, t]));
 
 /** Column keys are camelCase; the DB name is snake_case (`casing: "snake_case"`). */
