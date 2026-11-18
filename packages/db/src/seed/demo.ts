@@ -41,9 +41,16 @@ export type SeedReport = {
 
 /** Demo fixtures with every readable id replaced by its deterministic UUID, validated twice. */
 export function prepareDemoDataset(now: Date): MockDataset {
-  const fixtures = createDemoDataset(now);
+  return prepareDataset(createDemoDataset(now));
+}
+
+/**
+ * Any mock dataset (demo fixtures, contract fixtures) with every readable id replaced by its
+ * deterministic UUID, validated with the contract schemas before and after the mapping.
+ */
+export function prepareDataset(fixtures: MockDataset): MockDataset {
   const before = validateDataset(fixtures);
-  if (before.length > 0) throw new Error(`Demo fixtures fail the contracts: ${fmt(before)}`);
+  if (before.length > 0) throw new Error(`Fixtures fail the contracts: ${fmt(before)}`);
 
   const known = new Set<string>();
   for (const rows of Object.values(fixtures) as unknown[][]) {
@@ -54,7 +61,7 @@ export function prepareDemoDataset(now: Date): MockDataset {
   }
   const mapped = mapIds(fixtures, known);
   const after = validateDataset(mapped);
-  if (after.length > 0) throw new Error(`Mapped demo data fails the contracts: ${fmt(after)}`);
+  if (after.length > 0) throw new Error(`Mapped fixtures fail the contracts: ${fmt(after)}`);
   return mapped;
 }
 
@@ -114,10 +121,27 @@ async function insertRows<T extends PgTable>(
  * Must run as the schema owner (bypasses RLS); never as the app role.
  */
 export async function seedDemo(db: Db, options: SeedOptions = {}): Promise<SeedReport> {
+  refuseProduction(options);
+  return seedDataset(db, prepareDemoDataset(options.now ?? new Date()), options);
+}
+
+function refuseProduction(options: Pick<SeedOptions, "appEnv">): void {
   if ((options.appEnv ?? process.env.APP_ENV) === "production") {
     throw new Error("Refusing to seed demo data into production");
   }
-  const ds = prepareDemoDataset(options.now ?? new Date());
+}
+
+/**
+ * Writes an already prepared dataset (`prepareDataset`) exactly like `seedDemo` — used for the
+ * demo seed and for the fixtures of the DB adapter's contract suites (D-90). Re-runnable: the
+ * dataset's tenants, billing accounts and organizations are deleted (cascade) first.
+ */
+export async function seedDataset(
+  db: Db,
+  ds: MockDataset,
+  options: Omit<SeedOptions, "now"> = {},
+): Promise<SeedReport> {
+  refuseProduction(options);
   const enc = options.encryptor;
   const report: SeedReport = {
     counts: {},

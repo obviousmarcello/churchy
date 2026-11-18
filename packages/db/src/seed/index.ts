@@ -2,7 +2,9 @@
 export { demoUuid, isUuid, mapIds } from "./ids";
 export {
   parentsFirst,
+  prepareDataset,
   prepareDemoDataset,
+  seedDataset,
   seedDemo,
   seedId,
   type SeedEncryptor,

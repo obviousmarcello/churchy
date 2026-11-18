@@ -145,6 +145,26 @@ export class AdapterRegistry {
     return DATA_MODULES.filter((m) => forKind[m] !== undefined);
   }
 
+  /**
+   * Modules whose configured adapter (`DATA_ADAPTER_<MODULE>`) has no registered factory, e.g.
+   * `DATA_ADAPTER_NEWS=db` before the news DB adapter exists. The composition root checks this
+   * at start-up (`assertAvailable`) so a misconfiguration fails fast instead of on first use.
+   */
+  unavailableModules(env: Env = processEnv()): { module: DataModule; kind: AdapterKind }[] {
+    return DATA_MODULES.map((module) => ({ module, kind: selectAdapter(module, env) })).filter(
+      ({ module, kind }) => this.factories.get(kind)?.[module] === undefined,
+    );
+  }
+
+  /** Throws unless every module's configured adapter is registered (see `unavailableModules`). */
+  assertAvailable(env: Env = processEnv()): void {
+    const missing = this.unavailableModules(env);
+    if (missing.length > 0) {
+      const list = missing.map((m) => `${adapterEnvVar(m.module)}=${m.kind}`).join(", ");
+      throw new Error(`No adapter registered for: ${list}`);
+    }
+  }
+
   /** Builds the repository of one module with the adapter selected by `env`. */
   resolve<M extends DataModule>(module: M, env: Env = processEnv()): Repositories[M] {
     const kind = selectAdapter(module, env);

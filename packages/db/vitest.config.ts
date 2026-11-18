@@ -2,6 +2,9 @@ import { defineConfig } from "vitest/config";
 
 // `*.db.test.ts` need a disposable Postgres in TEST_DATABASE_URL (CI job "Database"); without it
 // they are skipped. Coverage thresholds therefore only apply when the database tests run.
+// `db.contract.test.ts` (DB adapter vs. the D-90 contract suites, DATABASE_URL or
+// TEST_DATABASE_URL) also runs here so the repositories count towards coverage; the root
+// `pnpm test:contract` runs it next to the mock adapter's suites.
 const withDb = Boolean(process.env.TEST_DATABASE_URL);
 
 export default defineConfig({
