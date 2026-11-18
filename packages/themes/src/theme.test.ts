@@ -124,14 +124,15 @@ describe("ThemeConfig -> CSS variables (runtime theming)", () => {
     expect(resolveThemeConfig(null)).toEqual(defaultThemeConfig());
   });
 
-  it("accepts every theme id, even those without styles yet", () => {
+  it("accepts every theme id; all three ship styles and fonts", () => {
     for (const id of THEME_IDS) {
       expect(resolveThemeConfig({ themeId: id }).themeId).toBe(id);
       expect(THEMES[id].id).toBe(id);
     }
-    expect(THEMES.klasszikus.available).toBe(true);
-    expect(THEMES.letisztult.available).toBe(false);
-    expect(FONT_PAIRINGS.klasszikus.shipped).toBe(true);
+    for (const id of THEME_IDS) {
+      expect(THEMES[id].available, id).toBe(true);
+      expect(FONT_PAIRINGS[THEMES[id].defaults.fontPairing].shipped, id).toBe(true);
+    }
   });
 });
 
@@ -149,9 +150,10 @@ describe("colour validation (FR-103)", () => {
   });
 });
 
-describe("Klasszikus stylesheet stays in sync with the registry", () => {
-  const klasszikus = declarations(css("klasszikus.css"));
-  const vars = themeToCssVars(defaultThemeConfig());
+describe.each(THEME_IDS)("%s stylesheet stays in sync with the registry", (themeId) => {
+  const klasszikus = declarations(css(`${themeId}.css`));
+  const theme = THEMES[themeId];
+  const vars = themeToCssVars(defaultThemeConfig(themeId));
   const normalise = (s: string) => s.replace(/\s*,\s*/g, ",").replace(/"/g, "'");
 
   it("has the same configurable defaults", () => {
@@ -169,8 +171,15 @@ describe("Klasszikus stylesheet stays in sync with the registry", () => {
     }
     expect(normalise(klasszikus["--font-heading"]!)).toBe(normalise(vars["--font-heading"]!));
     expect(normalise(klasszikus["--font-body"]!)).toBe(normalise(vars["--font-body"]!));
-    expect(klasszikus["--c-surface"]).toBe(THEMES.klasszikus.surface);
-    expect(klasszikus["--c-text"]).toBe(THEMES.klasszikus.text);
+    expect(klasszikus["--c-surface"]).toBe(theme.surface);
+    expect(klasszikus["--c-surface-sunken"]).toBe(theme.surfaceSunken);
+    expect(klasszikus["--c-text"]).toBe(theme.text);
+  });
+
+  it("styles its own selector and uses size-adjusted fallback fonts", () => {
+    expect(css(`${themeId}.css`)).toContain(`[data-theme="${themeId}"]`);
+    expect(vars["--font-heading"]).toContain(" Fallback");
+    expect(validateThemeConfig(defaultThemeConfig(themeId))).toEqual([]);
   });
 
   it("defines every SDD 5.4 token group", () => {
@@ -185,6 +194,7 @@ describe("Klasszikus stylesheet stays in sync with the registry", () => {
       "--c-text",
       "--c-muted",
       "--c-accent",
+      "--fw-heading",
     ]) {
       expect(klasszikus[name], name).toBeDefined();
     }
@@ -230,7 +240,9 @@ describe("Klasszikus stylesheet stays in sync with the registry", () => {
       expect(contrastRatio(klasszikus["--c-focus"]!, klasszikus[bg]!)).toBeGreaterThanOrEqual(3);
     }
   });
+});
 
+describe("shared stylesheet", () => {
   it("meets WCAG AA in the admin variant (higher contrast)", () => {
     const admin = declarations(css("admin.css"));
     for (const [fg, bg] of [
@@ -252,9 +264,45 @@ describe("Klasszikus stylesheet stays in sync with the registry", () => {
 
   it("ships latin and latin-ext faces with font-display: swap", () => {
     const fonts = css("fonts.css");
-    expect(fonts.match(/@font-face/g)).toHaveLength(12);
-    expect(fonts.match(/^\s+font-display: swap;/gm)).toHaveLength(12);
+    const faces = fonts.match(/@font-face \{[^}]*\}/g) ?? [];
+    const web = faces.filter((f) => f.includes("woff2"));
+    expect(web).toHaveLength(28);
+    expect(web.every((f) => /font-display: swap;/.test(f))).toBe(true);
     expect(fonts).toContain("latin-ext-600-normal.woff2");
     expect(fonts).not.toMatch(/cyrillic|greek|vietnamese/);
+    // Every family ships both subsets (ő/ű are latin-ext).
+    for (const family of [
+      "Cormorant Garamond",
+      "Source Sans 3",
+      "Inter",
+      "Nunito",
+      "Nunito Sans",
+    ]) {
+      const own = web.filter((f) => f.includes(`font-family: "${family}";`));
+      expect(
+        own.some((f) => f.includes("-latin-ext-")),
+        family,
+      ).toBe(true);
+      expect(
+        own.some((f) => /-latin-\d/.test(f)),
+        family,
+      ).toBe(true);
+    }
+  });
+
+  it("gives every web font a size-adjusted local fallback (no layout shift on swap)", () => {
+    const fonts = css("fonts.css");
+    for (const pairing of Object.values(FONT_PAIRINGS)) {
+      for (const stack of [pairing.heading, pairing.body]) {
+        const first = stack.match(/^"([^"]+)"/)![1]!;
+        expect(stack, first).toContain(`"${first} Fallback"`);
+        const face = fonts.match(new RegExp(`font-family: "${first} Fallback";[^}]*}`))?.[0];
+        expect(face, first).toBeDefined();
+        expect(face).toMatch(/src: local\(/);
+        expect(face).toMatch(/size-adjust: \d+(\.\d+)?%/);
+        expect(face).toMatch(/ascent-override: /);
+        expect(face).toMatch(/descent-override: /);
+      }
+    }
   });
 });

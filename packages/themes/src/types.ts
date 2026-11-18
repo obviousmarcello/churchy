@@ -1,5 +1,5 @@
 export const THEME_IDS = ["klasszikus", "letisztult", "kozossegi"] as const;
-/** The three themes of FR-104. Only `klasszikus` ships styles today; the others are a later issue. */
+/** The three themes of FR-104. */
 export type ThemeId = (typeof THEME_IDS)[number];
 
 export const HERO_STYLES = ["image-full", "image-split", "text-only"] as const;
