@@ -195,6 +195,7 @@ describe("demo dataset — referential integrity", () => {
     check(DS.announcements, (r) => r.pdfMediaId, DS.media, "announcement.pdf");
     check(DS.locations, (r) => r.photoMediaId, DS.media, "location.photo");
     check(DS.attachments, (r) => r.mediaId, DS.media, "attachment.media");
+    check(DS.attachments, (r) => r.rightsConfirmedBy, DS.people, "attachment.rightsConfirmedBy");
   });
 
   it("users, memberships and people line up", () => {
@@ -839,5 +840,22 @@ describe("demo dataset — Hungarian public holidays in the workday calendar", (
       publicHolidays(y).map((h) => h.date),
     );
     expect(DS.workdayCalendar.map((w) => w.date)).toEqual(expected);
+  });
+});
+
+describe("demo dataset — room bookings on every weekday", () => {
+  // Fixture dates are relative to `now`; a one-off booking must never land on a slot a weekly
+  // series already holds, whatever the weekday (the DB seed hits an exclusion constraint, D-02).
+  it.each([16, 17, 18, 19, 20, 21, 22])("never double-books a room when now = 2026-11-%i", (d) => {
+    const ds = createDemoDataset(new Date(`2026-11-${d}T10:00:00+01:00`));
+    const active = ds.bookings.filter((b) => b.status === "pending" || b.status === "approved");
+    for (let i = 0; i < active.length; i++) {
+      for (let j = i + 1; j < active.length; j++) {
+        const a = active[i]!;
+        const b = active[j]!;
+        if (a.roomId !== b.roomId) continue;
+        expect(bookingsOverlap(a, b), `${a.id} vs ${b.id}`).toBe(false);
+      }
+    }
   });
 });

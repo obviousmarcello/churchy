@@ -34,6 +34,49 @@ jobs:
       - run: pnpm test:coverage
       - run: pnpm test:contract
 
+  database:
+    name: Database migrations, schema checks & seed
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        # Same major version as Supabase (SDD §3); the official image is built with ICU.
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: churchy_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s
+          --health-retries 10
+    env:
+      # Disposable CI database only — never a Supabase project.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/churchy_ci
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/churchy_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Migrations are generated from the current schema (no drift)
+        run: |
+          pnpm --filter @churchy/db db:generate
+          pnpm --filter @churchy/db db:check
+          git diff --exit-code -- packages/db/migrations
+          test -z "$(git status --porcelain -- packages/db/migrations)"
+      - name: Supabase auth stub (plain Postgres only)
+        run: pnpm --filter @churchy/db db auth-stub
+      - name: Integration tests (up → down → up, schema checks, collation, search, seed)
+        run: pnpm --filter @churchy/db test:coverage
+      - name: Migrate and seed via the CLI
+        run: |
+          pnpm --filter @churchy/db db up
+          pnpm --filter @churchy/db db seed
+          pnpm --filter @churchy/db db status
+
   e2e:
     name: Build & E2E smoke
     runs-on: ubuntu-latest
