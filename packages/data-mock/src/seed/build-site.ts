@@ -111,13 +111,18 @@ export function buildTenant(b: Build): void {
     giving: {
       accountName: t.giving.accountName,
       accountNumber: t.giving.accountNumber,
+      bic: t.giving.bic,
       reference: t.giving.reference,
       szja1TechnicalNumber: t.giving.szja1,
+      ...(t.giving.foundationTaxNumber
+        ? { foundationTaxNumber: t.giving.foundationTaxNumber }
+        : {}),
       showQr: true,
     },
     integrations: {
       ...(t.integrations?.youtube ? { youtubeChannelUrl: t.integrations.youtube } : {}),
       ...(t.integrations?.facebook ? { facebookUrl: t.integrations.facebook } : {}),
+      ...(t.integrations?.instagram ? { instagramUrl: t.integrations.instagram } : {}),
     },
   };
 

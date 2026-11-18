@@ -3,6 +3,7 @@ import { PageShell } from "@churchy/ui";
 import { LocationList } from "@/components/public/location-list";
 import { SiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
+import { LOCATIONS_PATH } from "@/lib/locations";
 import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 
@@ -13,7 +14,10 @@ export async function generateMetadata(): Promise<Metadata> {
     getPublicCtx(),
   ]);
   const tenant = await tenants.current(ctx);
-  return { title: tenant ? `${t("title")} · ${tenant.name}` : t("title") };
+  return {
+    title: tenant ? `${t("title")} · ${tenant.name}` : t("title"),
+    alternates: { canonical: LOCATIONS_PATH },
+  };
 }
 
 /** *Templomaink* (title from the `locationsSection` term): all locations of the church. */

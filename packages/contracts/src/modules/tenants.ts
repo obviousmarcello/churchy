@@ -177,6 +177,14 @@ export const SiteConfigSchema = z.object({
       .string()
       .regex(/^HU\d{26}$/)
       .optional(),
+    /**
+     * BIC (SWIFT code) of the account's bank, 8 or 11 characters. Needed for the instant-payment
+     * QR code (MNB QR-kód szabvány, field 4); without it the support page shows no QR code.
+     */
+    bic: z
+      .string()
+      .regex(/^[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?$/)
+      .optional(),
     reference: z.string().max(140).optional(),
     szja1TechnicalNumber: z.string().max(10).optional(),
     foundationTaxNumber: z.string().max(20).optional(),

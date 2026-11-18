@@ -41,7 +41,11 @@ type SearchParams = Record<string, string | string[] | undefined>;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT("public.schedule");
-  return { title: t.term("serviceSchedule").nom, description: t("metaDescription") };
+  return {
+    title: t.term("serviceSchedule").nom,
+    description: t("metaDescription"),
+    alternates: { canonical: termRoutePath(t, "serviceSchedule") },
+  };
 }
 
 /** Public data is read as an anonymous visitor, whoever is signed in. */

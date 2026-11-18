@@ -43,7 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t("metaTitle", { church: await getPublicTenantName() }),
     description: t("lead"),
-    alternates: { types: { "text/calendar": "/esemenyek.ics" } },
+    alternates: { canonical: "/esemenyek", types: { "text/calendar": "/esemenyek.ics" } },
   };
 }
 

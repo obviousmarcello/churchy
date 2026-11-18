@@ -14,6 +14,8 @@ export const TERM_ROUTES = {
   serviceSchedule: "/term/service-schedule",
   // Weekly announcements (D-14): `/hirdetesek` unless the church renames the section.
   announcementsSection: "/term/announcements",
+  // Support / giving page (D-17): `/tamogatas` unless the church renames the section.
+  givingSection: "/term/giving",
   // Clergy & staff (D-16): `/munkatarsaink` unless the church renames the section.
   staffSection: "/term/staff",
 } as const;

@@ -212,6 +212,7 @@ type SiteConfig = {
   contact: { email?: string; phone?: string; officeHours: OfficeHours; };
   legal: ImpresszumData & PrivacyData;
   giving: { accountName?: string; accountNumber?: string; iban?: string;
+            bic?: string;                 // needed for the MNB instant-payment QR code
             reference?: string; szja1TechnicalNumber?: string; foundationTaxNumber?: string;
             showQr: boolean };
   integrations: { youtubeChannelUrl?: string; facebookUrl?: string; instagramUrl?: string;
@@ -367,7 +368,7 @@ Desktop (≥ 1024 px): two-column under the hero — left: next services + annou
 | News detail | Title, date (`2026. november 12.`), cover image with alt text, body, share buttons (Facebook, Messenger, copy link — no tracking scripts, plain share URLs), "Kapcsolódó hírek". |
 | Event detail | Date/time block, location card with map link, recurrence description in Hungarian (*„Minden hónap első péntekén 18:00-kor”*), add-to-calendar (.ics, Google). |
 | Staff | Grid of cards, grouped; email shown as obfuscated mailto, phone as `tel:` link. |
-| Support | Account number with copy button, payment reference, QR code (instant payment), 1% section with technical/tax number and short explanation. |
+| Support | Account number with copy button, payment reference, QR code (instant payment), 1% section with technical/tax number and short explanation. The QR code follows the MNB QR-kód standard (`HCT`, version 001, 17 LF-terminated fields, ECC level M; payload built by `mnbQrPayload()` in `packages/hu`, rendered server-side as inline SVG); it needs `giving.bic` and is valid for one year from rendering. |
 | Contact | Office hours table with today highlighted and *„Most nyitva / Most zárva”* status; exceptions (*„Az iroda júl. 15–31. között zárva tart.”*); contact form. |
 
 ## 8. Domain & data model

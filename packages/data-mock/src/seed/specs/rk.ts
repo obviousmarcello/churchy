@@ -385,8 +385,10 @@ export const rkSpec: ChurchSpec = {
     giving: {
       accountName: "Szent Tivadar Plébánia",
       accountNumber: "99999999-11111111-00000001",
+      bic: "DEMOHUHB",
       reference: "Egyházi hozzájárulás",
       szja1: "DEMO-0001",
+      foundationTaxNumber: "19999999-1-13",
     },
     domain: { hostname: "szenttivadar-plebania.example", verified: true },
     footerLinks: [

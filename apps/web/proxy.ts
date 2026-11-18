@@ -73,7 +73,8 @@ async function requestTermRoute(request: NextRequest) {
 export const config = {
   // Pages, route handlers and server actions; not build assets or public files. iCalendar feeds
   // (`.ics`) are skipped too: calendar clients keep no cookies and public hosts set none (D-15).
+  // So are `/sitemap.xml` and `/robots.txt`: crawlers keep no cookies either (D-17).
   matcher: [
-    "/((?!_next/|favicon\\.ico|demo/|.*\\.(?:svg|png|jpg|jpeg|webp|ico|pdf|woff2?|ics)$).*)",
+    "/((?!_next/|favicon\\.ico|demo/|sitemap\\.xml$|robots\\.txt$|.*\\.(?:svg|png|jpg|jpeg|webp|ico|pdf|woff2?|ics)$).*)",
   ],
 };

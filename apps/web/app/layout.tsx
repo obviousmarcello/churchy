@@ -8,13 +8,16 @@ import { DemoBar } from "@/components/demo-bar";
 import { TermsProvider } from "@/i18n/client";
 import { getTerms } from "@/i18n/terms";
 import { demoModeEnabled } from "@/lib/demo/flag";
+import { requestOrigin } from "@/server/public-events";
 import { getSiteConfig } from "@/server/site-config";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("common");
+  const [t, origin] = await Promise.all([getTranslations("common"), requestOrigin()]);
   return {
     title: t("appName"),
+    // Relative canonical / Open Graph URLs resolve against the request's own host (D-17).
+    metadataBase: new URL(origin),
     // The demo deployment is never indexed (D-92 AC3).
     ...(demoModeEnabled() ? { robots: { index: false, follow: false } } : {}),
   };

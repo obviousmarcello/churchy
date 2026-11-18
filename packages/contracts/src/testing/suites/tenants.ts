@@ -49,6 +49,25 @@ export const tenantsContract = defineContractSuite("tenants", (t) => {
     );
   });
 
+  it("stores the giving details of the support page, incl. the BIC for the QR code", async () => {
+    const giving = {
+      accountName: "Minta Egyházközség",
+      accountNumber: "11773016-11111018-00000000",
+      bic: "OTPVHUHB",
+      reference: "Adomány",
+      szja1TechnicalNumber: "0000",
+      foundationTaxNumber: "10000000-1-01",
+      showQr: true,
+    };
+    const updated = await t.repo.updateSiteConfig(t.ctx.a, { giving });
+    expect(updated.siteConfig.giving).toEqual(giving);
+    expect((await t.repo.current(t.ctx.a))?.siteConfig.giving).toEqual(giving);
+    await expectContractError(
+      t.repo.updateSiteConfig(t.ctx.a, { giving: { bic: "otp" } }),
+      "VALIDATION",
+    );
+  });
+
   it("manages domains; only verified ones resolve", async () => {
     const host = hostname();
     const domain = await t.repo.addDomain(t.ctx.a, { hostname: host });

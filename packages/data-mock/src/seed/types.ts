@@ -411,11 +411,20 @@ export interface ChurchSpec {
       taxNumber: string;
       registrationNumber: string;
     };
-    giving: { accountName: string; accountNumber: string; reference: string; szja1: string };
+    giving: {
+      accountName: string;
+      accountNumber: string;
+      /** Fictitious BIC (bank code 999 is not a real bank), for the instant-payment QR code. */
+      bic: string;
+      reference: string;
+      szja1: string;
+      /** Tax number of the church's (fictitious) foundation for the civil 1 %, if it has one. */
+      foundationTaxNumber?: string;
+    };
     domain: { hostname: string; verified: boolean } | null;
     footerLinks: { label: string; href: string }[];
     dioceseLink?: { label: string; url: string };
-    integrations?: { youtube?: string; facebook?: string };
+    integrations?: { youtube?: string; facebook?: string; instagram?: string };
     billing: {
       name: string;
       taxNumber: string;

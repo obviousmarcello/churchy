@@ -37,11 +37,27 @@ type SearchParams = Record<string, string | string[] | undefined>;
 /** Weeks the neighbour links look through (about four years). */
 const NEIGHBOUR_WINDOW = 200;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const [t, site] = await Promise.all([getT("public.announcements"), getPublicAnnouncementSite()]);
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+  const [t, site, params] = await Promise.all([
+    getT("public.announcements"),
+    getPublicAnnouncementSite(),
+    searchParams,
+  ]);
+  // Canonical (D-17): the latest week at the bare path, an earlier week at its `?het=<Sunday>`.
+  const week = parseWeekParam(params[WEEK_PARAM]);
+  const basePath = termRoutePath(t, "announcementsSection");
   return {
     title: t("metaTitle", { church: site?.tenant.name ?? "" }),
     description: t("metaDescription"),
+    alternates: {
+      canonical: isArchiveView(params[VIEW_PARAM])
+        ? announcementsHref(basePath, { archive: true, page: parsePageParam(params[PAGE_PARAM]) })
+        : announcementsHref(basePath, { week: week.kind === "week" ? week.sunday : null }),
+    },
   };
 }
 
