@@ -48,42 +48,47 @@ export const FALLBACK_SITE_CONFIG: SiteConfig = Object.freeze({
   terminology: {},
 });
 
-type StoredTheme = StoredSiteConfig["theme"];
+export type StoredTheme = StoredSiteConfig["theme"];
 
 /** Contract font pairings (SDD §5.2) → the pairing ids of `@churchy/themes`. */
-const FONT_PAIRING: Record<StoredTheme["fontPairing"], FontPairingId> = {
+export const FONT_PAIRING: Record<StoredTheme["fontPairing"], FontPairingId> = {
   "serif-classic": "klasszikus",
   humanist: "letisztult",
   "modern-sans": "kozossegi",
 };
 
 /** Contract radius steps → `@churchy/themes` radius steps. */
-const RADIUS: Record<StoredTheme["radius"], RadiusStep> = {
+export const RADIUS: Record<StoredTheme["radius"], RadiusStep> = {
   none: "square",
   small: "soft",
   large: "round",
 };
 
-/**
- * The stored site theme (`siteConfig.theme`, contract shape) as a `@churchy/themes` config:
- *
- * - `colors.secondary` (the decorative colour) is the themes' `accent`;
- * - a theme whose stylesheet has not shipped yet (`THEMES[id].available`) renders on the
- *   Klasszikus stylesheet, and an unshipped font pairing falls back to Klasszikus fonts, so a
- *   tenant never gets an unstyled page; its colours, radius and hero style still apply;
- * - a primary colour that fails contrast on the surface (FR-103) is replaced by its nearest
- *   accessible shade.
- */
-export function themeFromSiteTheme(theme: StoredTheme): ThemeConfig {
+/** The stored site theme as a `@churchy/themes` config, without any contrast correction. */
+export function storedThemeToConfig(theme: StoredTheme): ThemeConfig {
   const themeId = THEMES[theme.themeId].available ? theme.themeId : "klasszikus";
   const pairing = FONT_PAIRING[theme.fontPairing];
-  const resolved = resolveThemeConfig({
+  return resolveThemeConfig({
     themeId,
     colors: { primary: theme.colors.primary, accent: theme.colors.secondary },
     fontPairing: FONT_PAIRINGS[pairing].shipped ? pairing : defaultThemeConfig(themeId).fontPairing,
     heroStyle: theme.heroStyle,
     radius: RADIUS[theme.radius],
   });
+}
+
+/**
+ * The stored site theme (`siteConfig.theme`, contract shape) as a `@churchy/themes` config:
+ *
+ * - `colors.secondary` (the decorative colour) is the themes' `accent`;
+ * - a theme whose stylesheet has not shipped (`THEMES[id].available`) renders on the Klasszikus
+ *   stylesheet, and an unshipped font pairing falls back to the theme's own fonts, so a tenant never
+ *   gets an unstyled page (all three themes ship today);
+ * - a primary colour that fails contrast on the surface (FR-103) is replaced by its nearest
+ *   accessible shade.
+ */
+export function themeFromSiteTheme(theme: StoredTheme): ThemeConfig {
+  const resolved = storedThemeToConfig(theme);
   const [issue] = validateThemeConfig(resolved);
   return issue
     ? { ...resolved, colors: { ...resolved.colors, primary: issue.suggestion } }

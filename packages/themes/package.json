@@ -10,10 +10,14 @@
   "scripts": {
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
     "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "fonts": "node scripts/generate-fonts.mjs"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/nunito": "^5.3.0",
+    "@fontsource/nunito-sans": "^5.3.0",
     "@fontsource/source-sans-3": "^5.3.1"
   },
   "sideEffects": [

@@ -11,29 +11,31 @@ export interface FontPairing {
   /** CSS font stacks, including fallbacks. */
   heading: string;
   body: string;
-  /** False until the font files are self-hosted by the stylesheet (later issue for 2 of 3). */
+  /** False until the font files are self-hosted by the stylesheet. */
   shipped: boolean;
 }
 
 const SANS_FALLBACK =
   'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
+/** Each web font is followed by its size-adjusted local fallback face (css/fonts.css), so the font swap causes no layout shift. */
+
 export const FONT_PAIRINGS: Record<FontPairingId, FontPairing> = {
   klasszikus: {
     heading:
-      '"Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif',
-    body: `"Source Sans 3", ${SANS_FALLBACK}`,
+      '"Cormorant Garamond", "Cormorant Garamond Fallback", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif',
+    body: `"Source Sans 3", "Source Sans 3 Fallback", ${SANS_FALLBACK}`,
     shipped: true,
   },
   letisztult: {
-    heading: `"Inter", ${SANS_FALLBACK}`,
-    body: `"Inter", ${SANS_FALLBACK}`,
-    shipped: false,
+    heading: `"Inter", "Inter Fallback", ${SANS_FALLBACK}`,
+    body: `"Inter", "Inter Fallback", ${SANS_FALLBACK}`,
+    shipped: true,
   },
   kozossegi: {
-    heading: `"Nunito", ${SANS_FALLBACK}`,
-    body: `"Nunito Sans", ${SANS_FALLBACK}`,
-    shipped: false,
+    heading: `"Nunito", "Nunito Fallback", ${SANS_FALLBACK}`,
+    body: `"Nunito Sans", "Nunito Sans Fallback", ${SANS_FALLBACK}`,
+    shipped: true,
   },
 };
 
@@ -80,13 +82,12 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
       radius: "soft",
     },
   },
-  // Placeholders: structure is ready, styling lands with the later theme issue.
   letisztult: {
     id: "letisztult",
-    available: false,
-    surface: "#ffffff",
-    surfaceSunken: "#f4f4f4",
-    text: "#16181d",
+    available: true,
+    surface: "#fdfcfa",
+    surfaceSunken: "#f1eee8",
+    text: "#1c1b1a",
     defaults: {
       colors: { primary: "#1f3a5f", accent: "#e07a5f" },
       fontPairing: "letisztult",
@@ -96,7 +97,7 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   },
   kozossegi: {
     id: "kozossegi",
-    available: false,
+    available: true,
     surface: "#fffaf3",
     surfaceSunken: "#f6ecdd",
     text: "#2a2420",

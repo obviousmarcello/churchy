@@ -10,8 +10,8 @@
   --color-white: #ffffff;
   /* Structural tokens whose names double as Tailwind namespaces. The theme blocks and the runtime
      ThemeConfig override these defaults. */
-  --font-heading: "Cormorant Garamond", Georgia, serif;
-  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --font-heading: "Cormorant Garamond", "Cormorant Garamond Fallback", Georgia, serif;
+  --font-body: "Source Sans 3", "Source Sans 3 Fallback", system-ui, sans-serif;
   --radius-sm: 3px;
   --radius-md: 6px;
   --radius-lg: 10px;

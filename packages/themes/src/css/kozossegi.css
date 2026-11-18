@@ -1,0 +1,67 @@
+/*
+ * Közösségi: friendly and welcoming. Warm cream surfaces, rounded Nunito headings, generous
+ * rounded corners and soft shadows. Green brand colour with an amber accent.
+ * Runtime values (--c-primary, --c-accent and pairs, fonts, radii) are written from the ThemeConfig
+ * as inline custom properties; the values below must stay equal to the defaults in registry.ts (a
+ * unit test enforces that).
+ */
+[data-theme="kozossegi"] {
+  /* Surfaces */
+  --c-surface: #fffaf3; /* warm cream page */
+  --c-surface-raised: #fffdf9; /* cards, inputs */
+  --c-surface-sunken: #f6ecdd; /* bands, table headers */
+
+  /* Text */
+  --c-text: #2a2420;
+  --c-muted: #5a4e44;
+
+  /* Brand (configurable) */
+  --c-primary: #2f6f4e; /* leaf green */
+  --c-primary-contrast: #ffffff;
+  --c-accent: #f2a541; /* amber: decoration and fills with dark text */
+  --c-accent-contrast: #2a2420;
+  --c-accent-text: #8f6126; /* amber dark enough for text on the surface */
+
+  /* Derived (pure CSS so they follow the configurable colours) */
+  --c-primary-hover: color-mix(in oklab, var(--c-primary) 82%, black);
+  --c-primary-soft: color-mix(in oklab, var(--c-primary) 9%, var(--c-surface-raised));
+  --c-accent-soft: color-mix(in oklab, var(--c-accent) 24%, var(--c-surface-raised));
+
+  /* Lines */
+  --c-border: #e6d7bf; /* decorative hairlines */
+  --c-border-strong: #85705a; /* control borders: 3:1 against surfaces */
+  --c-focus: #1b4f9c;
+
+  /* Inverse (footer) */
+  --c-inverse: #1d3a2b;
+  --c-inverse-text: #f6efe1;
+  --c-inverse-muted: #cfd9c9;
+  --c-inverse-accent: #f5bd6b;
+
+  /* Status */
+  --c-danger: #9e2020;
+  --c-danger-soft: #fbe9e6;
+  --c-success: #2b6a3a;
+  --c-success-soft: #e8f3e6;
+  --c-warning: #7a4e00;
+  --c-warning-soft: #fbf0d2;
+  --c-info: #1f5282;
+  --c-info-soft: #e6eef7;
+
+  /* Typography */
+  --font-heading:
+    "Nunito", "Nunito Fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-body:
+    "Nunito Sans", "Nunito Sans Fallback", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --fw-heading: 800;
+  --heading-tracking: 0;
+
+  /* Shape */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --shadow-card: 0 2px 4px rgb(90 60 20 / 0.06), 0 10px 24px rgb(90 60 20 / 0.09);
+  --shadow-raised: 0 4px 8px rgb(90 60 20 / 0.08), 0 20px 44px rgb(90 60 20 / 0.2);
+}

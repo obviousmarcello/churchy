@@ -48,22 +48,32 @@ describe("themeFromSiteTheme", () => {
     });
   });
 
-  it("renders themes and fonts that have not shipped on Klasszikus, keeping colours and radius", () => {
-    expect(THEMES.letisztult.available).toBe(false);
-    const theme = themeFromSiteTheme({
+  it("renders each shipped theme on its own stylesheet with its own fonts", () => {
+    expect(THEMES.letisztult.available).toBe(true);
+    expect(
+      themeFromSiteTheme({
+        themeId: "letisztult",
+        colors: { primary: "#1f4e79", secondary: "#8a6d3b" },
+        fontPairing: "humanist",
+        heroStyle: "image-split",
+        radius: "none",
+      }),
+    ).toEqual({
       themeId: "letisztult",
-      colors: { primary: "#1f4e79", secondary: "#8a6d3b" },
-      fontPairing: "humanist",
-      heroStyle: "image-split",
-      radius: "none",
-    });
-    expect(theme).toEqual({
-      themeId: "klasszikus",
       colors: { primary: "#1f4e79", accent: "#8a6d3b" },
-      fontPairing: "klasszikus",
+      fontPairing: "letisztult",
       heroStyle: "image-split",
       radius: "square",
     });
+    expect(
+      themeFromSiteTheme({
+        themeId: "kozossegi",
+        colors: { primary: "#2a6f97", secondary: "#e07a1f" },
+        fontPairing: "modern-sans",
+        heroStyle: "text-only",
+        radius: "large",
+      }),
+    ).toMatchObject({ themeId: "kozossegi", fontPairing: "kozossegi", radius: "round" });
   });
 
   it("replaces a primary colour that fails contrast with its nearest accessible shade", () => {

@@ -40,10 +40,11 @@ test.describe("admin shell", () => {
     for (const [id] of SECTION_ROUTES) {
       await expect(nav.locator(`[data-nav-item="${id}"]`)).toHaveCount(1);
     }
-    for (const [, path] of SECTION_ROUTES) {
+    for (const [id, path] of SECTION_ROUTES) {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-      await expect(page.getByTestId("admin-placeholder")).toBeVisible();
+      // Sections that have been built (appearance, D-24) replace the placeholder body.
+      if (id !== "appearance") await expect(page.getByTestId("admin-placeholder")).toBeVisible();
       const crumbs = page.getByTestId("admin-breadcrumbs");
       await expect(crumbs.getByRole("link", { name: "Vezérlőpult" })).toBeVisible();
     }
