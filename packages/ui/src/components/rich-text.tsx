@@ -1,5 +1,7 @@
 import { Fragment, type ReactNode } from "react";
 import { cn } from "../cn";
+import { embedSource } from "./embed";
+import { EmbedFacade } from "./embed-facade";
 
 /**
  * Allow-list renderer for Tiptap/ProseMirror JSON (`RichText` of `@churchy/contracts`, SDD §7.5).
@@ -9,8 +11,9 @@ import { cn } from "../cn";
  * accept only safe URL schemes, so `javascript:`/`data:` URLs can never reach the page.
  *
  * Supported: paragraph, heading (h2–h4; the page title is the h1), text with bold/italic/link
- * marks, hard break, bullet and ordered lists, blockquote, horizontal rule and image. Page blocks
- * (D-16) extend this renderer.
+ * marks, hard break, bullet and ordered lists, blockquote, horizontal rule, image and `embed`
+ * (YouTube / OpenStreetMap only, via `embedSource()`, click-to-load; dropped unless `embedLabels`
+ * is given). Page blocks (D-16) extend this renderer.
  */
 
 interface Mark {
@@ -91,9 +94,9 @@ function renderText(node: Node, key: number): ReactNode {
   return <Fragment key={key}>{out}</Fragment>;
 }
 
-function children(node: Node): ReactNode[] {
+function children(node: Node, embedLabels?: RichTextEmbedLabels): ReactNode[] {
   if (!Array.isArray(node.content)) return [];
-  return (node.content as Node[]).map((child, i) => renderNode(child, i));
+  return (node.content as Node[]).map((child, i) => renderNode(child, i, embedLabels));
 }
 
 function headingLevel(value: unknown): 2 | 3 | 4 {
@@ -107,7 +110,18 @@ const HEADING_CLASS: Record<2 | 3 | 4, string> = {
   4: "text-fs-4 font-bold",
 };
 
-function renderNode(node: Node | null | undefined, key: number): ReactNode {
+/** Texts of the click-to-load embed placeholder (Hungarian, from the message catalog). */
+export interface RichTextEmbedLabels {
+  frameTitle: (provider: string) => string;
+  notice: (provider: string) => string;
+  load: string;
+}
+
+function renderNode(
+  node: Node | null | undefined,
+  key: number,
+  embedLabels?: RichTextEmbedLabels,
+): ReactNode {
   if (node === null || typeof node !== "object") return null;
   switch (node.type) {
     case "text":
@@ -115,20 +129,20 @@ function renderNode(node: Node | null | undefined, key: number): ReactNode {
     case "hardBreak":
       return <br key={key} />;
     case "paragraph":
-      return <p key={key}>{children(node)}</p>;
+      return <p key={key}>{children(node, embedLabels)}</p>;
     case "heading": {
       const level = headingLevel(attrsOf(node.attrs).level);
       const Tag = `h${level}` as const;
       return (
         <Tag key={key} className={HEADING_CLASS[level]}>
-          {children(node)}
+          {children(node, embedLabels)}
         </Tag>
       );
     }
     case "bulletList":
       return (
         <ul key={key} className="flex list-disc flex-col gap-1 pl-6">
-          {children(node)}
+          {children(node, embedLabels)}
         </ul>
       );
     case "orderedList": {
@@ -141,23 +155,39 @@ function renderNode(node: Node | null | undefined, key: number): ReactNode {
             ? { start }
             : {})}
         >
-          {children(node)}
+          {children(node, embedLabels)}
         </ol>
       );
     }
     case "listItem":
-      return <li key={key}>{children(node)}</li>;
+      return <li key={key}>{children(node, embedLabels)}</li>;
     case "blockquote":
       return (
         <blockquote
           key={key}
           className="flex flex-col gap-3 border-l-4 border-accent pl-4 text-muted italic"
         >
-          {children(node)}
+          {children(node, embedLabels)}
         </blockquote>
       );
     case "horizontalRule":
       return <hr key={key} className="border-border" />;
+    case "embed": {
+      if (embedLabels === undefined) return null;
+      const attrs = attrsOf(node.attrs);
+      const embed = embedSource(attrs.provider, attrs.url);
+      if (embed === null) return null;
+      return (
+        <div key={key} data-block="embed" data-provider={embed.provider}>
+          <EmbedFacade
+            src={embed.src}
+            frameTitle={embedLabels.frameTitle(embed.providerName)}
+            notice={embedLabels.notice(embed.providerName)}
+            loadLabel={embedLabels.load}
+          />
+        </div>
+      );
+    }
     case "image": {
       const attrs = attrsOf(node.attrs);
       const src = safeImageSrc(attrs.src);
@@ -188,15 +218,17 @@ export interface RichTextContentProps {
   /** A Tiptap JSON document (`{ type: "doc", content: [...] }`); anything else renders nothing. */
   doc: unknown;
   className?: string;
+  /** Enables `embed` nodes; without it they are dropped. */
+  embedLabels?: RichTextEmbedLabels;
 }
 
 /** Renders a rich-text document through the allow-list (see module comment). */
-export function RichTextContent({ doc, className }: RichTextContentProps) {
+export function RichTextContent({ doc, className, embedLabels }: RichTextContentProps) {
   const root = doc as Node | null;
   if (root === null || typeof root !== "object" || root.type !== "doc") return null;
   return (
     <div className={cn("flex flex-col gap-4 text-fs-4", className)} data-rich-text="">
-      {children(root)}
+      {children(root, embedLabels)}
     </div>
   );
 }

@@ -61,7 +61,24 @@ export {
   safeHref,
   safeImageSrc,
   type RichTextContentProps,
+  type RichTextEmbedLabels,
 } from "./components/rich-text";
+export {
+  RichTextEditor,
+  type RichTextDoc,
+  type RichTextEditorImage,
+  type RichTextEditorLabels,
+  type RichTextEditorProps,
+} from "./components/rich-text-editor";
+export {
+  MediaLibrary,
+  MediaPicker,
+  type MediaItem,
+  type MediaLibraryLabels,
+  type MediaLibraryProps,
+  type MediaPickerProps,
+  type MediaUploadInput,
+} from "./components/media-library";
 export {
   PageBlocks,
   type BlockFile,
@@ -73,4 +90,3 @@ export { embedSource, type AllowedEmbedProvider, type EmbedSource } from "./comp
 export { EmbedFacade, type EmbedFacadeProps } from "./components/embed-facade";
 export { decodeEmail, encodeEmail, spokenEmail } from "./components/email-obfuscation";
 export { ObfuscatedEmail, type ObfuscatedEmailProps } from "./components/obfuscated-email";
-export { CloseIcon, DangerIcon, MenuIcon } from "./icons";
