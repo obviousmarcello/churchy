@@ -10,12 +10,14 @@ import { TERM_ROUTE_HEADER, isTermRouteKey, termRoutePath } from "@/lib/term-rou
 import { resetDemoSession } from "@/server/data-adapters";
 import { getDemoState, saveDemoSelection, type DemoState } from "@/server/demo";
 import { repositoriesForDemo } from "@/server/repositories";
+import { demoAction } from "@/server/policy";
 import { requestContextFrom } from "@/server/session";
 import { resolveSiteConfig } from "@/server/site-config";
 
 /**
  * Demo switcher actions (D-92). Every input is validated with Zod against the known personas and
- * contexts; outside demo mode the actions do not exist (404).
+ * contexts; outside demo mode the actions do not exist (404). They change only the visitor's own
+ * demo store and cookies, so they are `demoAction()` exemptions of the policy wrapper (D-05).
  */
 
 async function requireDemo(): Promise<DemoState> {
@@ -25,16 +27,16 @@ async function requireDemo(): Promise<DemoState> {
 }
 
 /** Switches the demo persona (form field `persona`). */
-export async function switchPersona(formData: FormData): Promise<void> {
+export const switchPersona = demoAction(async (formData: FormData): Promise<void> => {
   const demo = await requireDemo();
   const persona = DemoPersonaKeySchema.safeParse(formData.get("persona"));
   if (!persona.success) return;
   await saveDemoSelection(selectPersona(demo.directory, demo.selection, persona.data));
   revalidatePath("/", "layout");
-}
+});
 
 /** Switches between the demo churches and the diocese (form field `context`). */
-export async function switchContext(formData: FormData): Promise<void> {
+export const switchContext = demoAction(async (formData: FormData): Promise<void> => {
   const demo = await requireDemo();
   const ids = demo.directory.contexts.map((c) => c.id) as [string, ...string[]];
   const contextId = z.enum(ids).safeParse(formData.get("context"));
@@ -50,7 +52,7 @@ export async function switchContext(formData: FormData): Promise<void> {
     const config = await resolveSiteConfig(repositoriesForDemo(next), requestContextFrom(next));
     redirect(config.tenantId === null ? "/" : termRoutePath(termsForSiteConfig(config), termRoute));
   }
-}
+});
 
 export interface ResetResult {
   readonly status: "idle" | "done" | "failed";
@@ -59,10 +61,10 @@ export interface ResetResult {
 }
 
 /** *Visszaállítás*: restores the visitor's demo data to the seed (any persona may do this). */
-export async function resetDemo(previous: ResetResult): Promise<ResetResult> {
+export const resetDemo = demoAction(async (previous: ResetResult): Promise<ResetResult> => {
   const demo = await requireDemo();
   if (demo.sessionId === null) return { status: "failed", count: previous.count };
   resetDemoSession(demo.sessionId);
   revalidatePath("/", "layout");
   return { status: "done", count: previous.count + 1 };
-}
+});

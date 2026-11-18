@@ -4,6 +4,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 import globals from "globals";
 import { permissionRulesConfig } from "./eslint.permissions.mjs";
+import { policyRulesConfig } from "./eslint.policy.mjs";
 import i18nPlugin from "./packages/eslint-plugin-i18n/src/index.mjs";
 
 export default tseslint.config(
@@ -73,6 +74,8 @@ export default tseslint.config(
   },
   // D-05: no ad-hoc role checks in UI code (see eslint.permissions.mjs).
   ...permissionRulesConfig,
+  // D-05 [BE]: every server action / mutating route handler goes through the policy wrapper.
+  ...policyRulesConfig,
   // --- D-06 [UI]: no hard-coded user-visible text (PRD L-01) ---------------------------------
   {
     // All UI text lives in messages/hu.json and is read through next-intl. Tests, e2e specs and the
