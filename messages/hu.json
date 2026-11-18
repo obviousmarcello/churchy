@@ -37,7 +37,11 @@
         "orgOverview": "Delegált HR-ügyek",
         "orgLinks": "Kapcsolt {community.plural}",
         "orgTemplates": "HR-sablonok",
-        "orgMembers": "Portál munkatársai"
+        "orgMembers": "Portál munkatársai",
+        "events": "Események",
+        "pages": "Oldalak",
+        "staff": "{staffSection.nom}",
+        "locations": "Helyszínek"
       },
       "contact": "{contactPage.nom}"
     },
