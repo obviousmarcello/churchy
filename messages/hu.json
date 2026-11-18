@@ -1224,6 +1224,284 @@
     "form": {
       "optional": "(nem kötelező)"
     },
+    "content": {
+      "form": {
+        "optional": "(nem kötelező)",
+        "cancel": "Mégse",
+        "save": "Mentés",
+        "create": "Létrehozás",
+        "invalidTitle": "A mentés nem sikerült",
+        "invalidBody": "Kérjük, javítsa a megjelölt mezőket.",
+        "deniedTitle": "Ehhez nincs jogosultsága",
+        "deniedBody": "A jelenlegi szerepkörrel a módosítás nem engedélyezett.",
+        "savedTitle": "Mentve",
+        "savedBody": "A módosítások elmentődtek."
+      },
+      "errors": {
+        "required": "Ez a mező kötelező.",
+        "slugTaken": "Ez a webcím már foglalt. Kérjük, válasszon másikat.",
+        "slugFormat": "A webcím csak kisbetűt, számot és kötőjelet tartalmazhat.",
+        "sunday": "A hirdetés vasárnaphoz tartozik. Kérjük, vasárnapi dátumot adjon meg.",
+        "weekTaken": "Erre a hétre már készült hirdetés.",
+        "announcementEmpty": "Kérjük, írja meg a hirdetés szövegét.",
+        "endBeforeStart": "A befejezés nem lehet korábbi a kezdésnél.",
+        "phone": "Adjon meg érvényes telefonszámot, például +36 30 123 4567.",
+        "postalCode": "Az irányítószám négy számjegyből áll.",
+        "address": "Kérjük, adja meg a teljes címet.",
+        "notFound": "A tartalom nem található, lehet, hogy közben törölték.",
+        "general": "A mentés nem sikerült."
+      },
+      "delete": {
+        "title": "Törlés megerősítése",
+        "question": "Biztosan törli a(z) „{name}” elemet?",
+        "warning": "A törlés nem vonható vissza.",
+        "button": "Törlés",
+        "trigger": "Törlés: {name}",
+        "cancel": "Mégse",
+        "confirm": "Végleges törlés",
+        "close": "Bezárás",
+        "failed": "A törlés nem sikerült."
+      },
+      "publish": {
+        "heading": "Közzététel",
+        "preview": "Előnézet",
+        "viewLive": "Megtekintés az oldalon",
+        "publishNow": "Közzététel most",
+        "republish": "Közzététel újra",
+        "cancelEvent": "Esemény lemondása",
+        "backToDraft": "Vissza piszkozatba",
+        "scheduleAt": "Időzített közzététel",
+        "scheduleHelp": "A megadott időpontban (budapesti idő szerint) válik láthatóvá.",
+        "schedule": "Időzítés",
+        "noRight": "A közzétételhez nincs jogosultsága.",
+        "done": "Az állapot frissült.",
+        "failed": "A művelet nem sikerült.",
+        "invalidDate": "Kérjük, érvényes időpontot adjon meg.",
+        "scheduledFor": "Megjelenik: {when}",
+        "publishedOn": "Közzétéve: {when}",
+        "expiredOn": "Lejárt: {when}"
+      },
+      "preview": {
+        "title": "Előnézet",
+        "body": "Így fog megjelenni a weboldalon. Az előnézetet csak a szerkesztők látják, a látogatók nem.",
+        "back": "Vissza a szerkesztéshez",
+        "heading": "{title} – előnézet"
+      },
+      "reorder": {
+        "hint": "Húzással vagy a nyilakkal módosíthatja a sorrendet; a változás azonnal mentődik.",
+        "disabledHint": "Szűrés közben a sorrend nem módosítható.",
+        "up": "Feljebb: {name}",
+        "down": "Lejjebb: {name}",
+        "saved": "A sorrend mentve.",
+        "failed": "A sorrend mentése nem sikerült."
+      },
+      "list": {
+        "search": "Keresés",
+        "searchLabel": "Keresés a névben vagy címben",
+        "status": "Állapot",
+        "allStatuses": "Mind",
+        "filter": "Szűrés",
+        "reset": "Szűrés törlése",
+        "edit": "Szerkesztés",
+        "editItem": "Szerkesztés: {name}",
+        "actions": "Műveletek",
+        "filters": "Szűrők"
+      },
+      "states": {
+        "draft": "Piszkozat",
+        "scheduled": "Időzítve",
+        "published": "Közzétéve",
+        "expired": "Lejárt",
+        "cancelled": "Lemondva"
+      },
+      "news": {
+        "caption": "Hírek",
+        "empty": "Még nincs hír. Az „Új hír” gombbal készíthet egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új hír",
+        "editTitle": "Hír szerkesztése",
+        "columns": {
+          "title": "Cím",
+          "state": "Állapot",
+          "date": "Közzététel",
+          "updated": "Módosítva"
+        },
+        "fields": {
+          "title": "Cím",
+          "slug": "Webcím",
+          "slugHelp": "Üresen hagyva a cím alapján automatikusan készül.",
+          "lead": "Bevezető",
+          "leadHelp": "Rövid összefoglaló a hírlistához, legfeljebb 600 karakter.",
+          "body": "Szöveg",
+          "bodyHelp": "A bekezdéseket üres sor választja el. A szövegszerkesztő hamarosan érkezik.",
+          "categories": "Kategóriák",
+          "categoriesHelp": "Vesszővel elválasztva.",
+          "expiresAt": "Lejárat",
+          "expiresHelp": "Ezután a hír már nem jelenik meg a weboldalon."
+        }
+      },
+      "announcements": {
+        "caption": "Heti hirdetések",
+        "empty": "Még nincs hirdetés. A „Heti hirdetés” gombbal készíthet egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Heti hirdetés",
+        "editTitle": "Heti hirdetés szerkesztése",
+        "columns": {
+          "week": "Hét (vasárnap)",
+          "state": "Állapot",
+          "date": "Közzététel",
+          "updated": "Módosítva"
+        },
+        "steps": {
+          "week": "1. Melyik hétre szól?",
+          "text": "2. A hirdetés szövege",
+          "publish": "3. Közzététel"
+        },
+        "existing": "Erre a hétre már van hirdetés, ezt szerkesztheti.",
+        "saveDraft": "Mentés piszkozatként",
+        "publish": "Közzététel",
+        "fields": {
+          "weekSunday": "Vasárnap",
+          "weekHelp": "Alapértelmezés: a közelgő vasárnap.",
+          "body": "Szöveg",
+          "bodyHelp": "A bekezdéseket üres sor választja el. A szövegszerkesztő hamarosan érkezik."
+        },
+        "heading": "Hirdetés – {date}"
+      },
+      "events": {
+        "caption": "Események",
+        "empty": "Még nincs esemény. Az „Új esemény” gombbal készíthet egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új esemény",
+        "editTitle": "Esemény szerkesztése",
+        "columns": {
+          "title": "Cím",
+          "when": "Időpont",
+          "state": "Állapot",
+          "visibility": "Láthatóság"
+        },
+        "recurring": "Ismétlődő esemény. Az ismétlődési szabály szerkesztése hamarosan érkezik, a meglévő szabály változatlan marad.",
+        "visibility": {
+          "public": "Nyilvános",
+          "staff": "Munkatársak",
+          "team": "Csapat",
+          "private": "Személyes"
+        },
+        "fields": {
+          "title": "Cím",
+          "slug": "Webcím",
+          "slugHelp": "Üresen hagyva a cím alapján automatikusan készül.",
+          "calendarId": "Naptár",
+          "visibility": "Láthatóság",
+          "visibilityHelp": "Csak a nyilvános, közzétett események jelennek meg a weboldalon.",
+          "startsAt": "Kezdés",
+          "endsAt": "Befejezés",
+          "locationId": "Helyszín",
+          "locationNone": "Nincs megadva",
+          "category": "Kategória",
+          "body": "Leírás",
+          "bodyHelp": "A bekezdéseket üres sor választja el. A szövegszerkesztő hamarosan érkezik."
+        }
+      },
+      "pages": {
+        "caption": "Oldalak",
+        "empty": "Még nincs oldal. Az „Új oldal” gombbal készíthet egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új oldal",
+        "newTitle": "Új oldal",
+        "editTitle": "Oldal szerkesztése",
+        "columns": {
+          "title": "Cím",
+          "slug": "Webcím",
+          "state": "Állapot",
+          "parent": "Szülőoldal"
+        },
+        "rite": "Szertartási oldal",
+        "fields": {
+          "title": "Cím",
+          "slug": "Webcím",
+          "slugHelp": "Üresen hagyva a cím alapján automatikusan készül.",
+          "parentId": "Szülőoldal",
+          "parentNone": "Nincs (főoldal)",
+          "body": "Tartalom",
+          "bodyHelp": "A „## ” kezdetű sor címsor, a bekezdéseket üres sor választja el. A képek és egyéb blokkok változatlanul maradnak.",
+          "seo": "Keresőoptimalizálás",
+          "seoTitle": "Keresőmotoros cím",
+          "seoDescription": "Keresőmotoros leírás"
+        }
+      },
+      "staff": {
+        "caption": "Munkatársak",
+        "empty": "Még nincs munkatárs. Az „Új munkatárs” gombbal vehet fel egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új munkatárs",
+        "newTitle": "Új munkatárs",
+        "editTitle": "Munkatárs szerkesztése",
+        "public": "Nyilvános",
+        "inactive": "Inaktív",
+        "groups": {
+          "clergy": "Lelkipásztorok",
+          "staff": "Munkatársak",
+          "council": "Képviselő-testület",
+          "volunteer": "Önkéntesek"
+        },
+        "visibility": {
+          "public": "Mindenki (nyilvános)",
+          "workspace": "A munkatér felhasználói",
+          "team": "Közös csapat tagjai",
+          "private": "Csak vezetők és HR"
+        },
+        "fields": {
+          "name": "Név",
+          "prefix": "Előtag",
+          "prefixHelp": "Például: dr.",
+          "familyName": "Családnév",
+          "givenName": "Utónév",
+          "suffix": "Utótag",
+          "roleTitle": "Beosztás",
+          "staffGroup": "Csoport",
+          "isPublic": "Megjelenik a nyilvános munkatársi oldalon",
+          "bio": "Bemutatkozás",
+          "contact": "Elérhetőség",
+          "email": "E-mail-cím",
+          "emailVisibility": "Ki láthatja az e-mail-címet?",
+          "phone": "Telefonszám",
+          "phoneVisibility": "Ki láthatja a telefonszámot?",
+          "active": "Aktív"
+        }
+      },
+      "locations": {
+        "caption": "Helyszínek",
+        "empty": "Még nincs helyszín. Az „Új helyszín” gombbal vehet fel egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új helyszín",
+        "newTitle": "Új helyszín",
+        "editTitle": "Helyszín szerkesztése",
+        "kinds": {
+          "templom": "Templom",
+          "kapolna": "Kápolna",
+          "filia": "Fiókegyház",
+          "egyeb": "Egyéb"
+        },
+        "hoursNote": "A nyitvatartás és a térképi pont szerkesztése hamarosan érkezik, a meglévő adatok változatlanok maradnak.",
+        "fields": {
+          "name": "Név",
+          "slug": "Webcím",
+          "slugHelp": "Üresen hagyva a név alapján automatikusan készül.",
+          "kind": "Típus",
+          "address": "Cím",
+          "postalCode": "Irányítószám",
+          "city": "Település",
+          "line1": "Utca, házszám",
+          "accessibility": "Megközelíthetőség",
+          "wheelchair": "Kerekesszékkel megközelíthető",
+          "accessibleToilet": "Akadálymentes mosdó",
+          "hearingLoop": "Indukciós hurok",
+          "parking": "Parkoló",
+          "accessNote": "Megjegyzés"
+        }
+      }
+    },
     "appearance": {
       "title": "Megjelenés",
       "lead": "Az oldal arculata, nyitóoldala, menüje és lábléce egy helyen.",

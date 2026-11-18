@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { richTextPlain } from "@churchy/events";
-import { Badge, Card, FormattedDate, PageShell, RichTextContent } from "@churchy/ui";
+import { Card, FormattedDate, PageShell } from "@churchy/ui";
 import { LINK_CLASS } from "@/components/events/event-parts";
+import { NewsArticleBody } from "@/components/news/news-article";
 import { ShareLinks } from "@/components/news/share-links";
 import { SiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
@@ -70,29 +71,7 @@ export default async function NewsPostPage({ params }: { params: Params }) {
             {t("back")}
           </a>
         </p>
-        <header className="flex max-w-prose flex-col gap-4">
-          {post.categories.length > 0 ? (
-            <ul aria-label={t("categories")} className="flex flex-wrap gap-2">
-              {post.categories.map((c) => (
-                <li key={c}>
-                  <Badge>{c}</Badge>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
-            {post.title}
-          </h1>
-          {post.publishedAt ? (
-            <p className="text-fs-3 text-muted">
-              {t("publishedOn")}{" "}
-              <FormattedDate value={post.publishedAt} data-testid="news-published" />
-            </p>
-          ) : null}
-          {post.lead ? <p className="text-fs-5 leading-snug">{post.lead}</p> : null}
-        </header>
-
-        <RichTextContent doc={post.body} className="max-w-prose" />
+        <NewsArticleBody post={post} />
 
         <div className="max-w-prose border-t border-border pt-6">
           <ShareLinks url={url} headingId="news-share" />

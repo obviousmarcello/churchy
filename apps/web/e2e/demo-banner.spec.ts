@@ -23,6 +23,8 @@ const SAMPLE_PARAMS: Record<string, string> = {
   // A static page and a preset rite of the default demo church (D-16).
   pageSlug: "rolunk",
   rite: "keresztelo",
+  // An admin item (D-21): unknown ids render the shell's not-found page, which has the banner too.
+  id: "nincs-ilyen",
 };
 
 function pagesIn(dir: string): string[] {
