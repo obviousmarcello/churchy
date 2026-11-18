@@ -10,7 +10,7 @@ type AppMessages = typeof huMessages;
  * `getTranslations()` plus `t.term()` for server components:
  *
  *   const t = await getT("public.home");
- *   t("placeholderTitle");
+ *   t("nextServices");
  *   t.term("serviceSchedule").nom; // "Miserend" / "Istentiszteleti rend"
  */
 export async function getT<

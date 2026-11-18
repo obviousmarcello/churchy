@@ -171,7 +171,9 @@ test.describe("demo role switcher", () => {
       await switchPersona(page, persona);
       if (persona === "latogato") {
         // Nothing is granted to an anonymous visitor; the public page is what they see.
-        await expect(page.getByRole("heading", { level: 1, name: "Isten hozta!" })).toBeVisible();
+        await expect(
+          page.getByRole("heading", { level: 1, name: CHURCHES.catholic }),
+        ).toBeVisible();
       }
       for (const id of visible) await expectItem(page, id, true);
       for (const id of hidden) await expectItem(page, id, false);
