@@ -70,7 +70,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title: t("eventMetaTitle", { title: family.event.title, church: await getPublicTenantName() }),
     ...(description ? { description } : {}),
-    alternates: { types: { "text/calendar": eventIcsPath(family.event) } },
+    alternates: {
+      canonical: eventPath(family.event),
+      types: { "text/calendar": eventIcsPath(family.event) },
+    },
   };
 }
 

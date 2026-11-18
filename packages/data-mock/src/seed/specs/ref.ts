@@ -419,6 +419,7 @@ export const refSpec: ChurchSpec = {
     giving: {
       accountName: "Dunaligeti Református Egyházközség",
       accountNumber: "99999999-22222222-00000002",
+      bic: "DEMOHUHB",
       reference: "Egyházfenntartói járulék",
       szja1: "DEMO-0002",
     },

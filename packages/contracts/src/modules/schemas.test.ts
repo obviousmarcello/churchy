@@ -196,6 +196,10 @@ describe("tenant and member schemas", () => {
     expect(ok(SiteConfigOverridesSchema, { giving: { accountNumber: "11773016-11111018" } })).toBe(
       true,
     );
+    expect(ok(SiteConfigOverridesSchema, { giving: { bic: "OTPVHUHB" } })).toBe(true);
+    expect(ok(SiteConfigOverridesSchema, { giving: { bic: "GIBAHUHBXXX" } })).toBe(true);
+    expect(ok(SiteConfigOverridesSchema, { giving: { bic: "otpvhuhb" } })).toBe(false);
+    expect(ok(SiteConfigOverridesSchema, { giving: { bic: "OTPVHU" } })).toBe(false);
     expect(DomainSchema.shape.hostname.parse("WWW.Minta-Plebania.HU")).toBe(
       "www.minta-plebania.hu",
     );

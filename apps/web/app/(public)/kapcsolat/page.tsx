@@ -8,7 +8,9 @@ import { MapFacade } from "@/components/public/map-facade";
 import { OpeningHours } from "@/components/public/opening-hours";
 import { SiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
-import { toHuAddress } from "@/lib/locations";
+import { jsonLdScript, toHuAddress } from "@/lib/locations";
+import { CONTACT_PATH } from "@/lib/seo";
+import { getChurchJsonLd } from "@/server/public-seo";
 import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 import { sendContactMessage } from "./actions";
@@ -27,15 +29,19 @@ async function load() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const [{ tenant }, t] = await Promise.all([load(), getT("public.contact")]);
-  return { title: tenant ? `${t("title")} · ${tenant.name}` : t("title") };
+  return {
+    title: tenant ? `${t("title")} · ${tenant.name}` : t("title"),
+    alternates: { canonical: CONTACT_PATH },
+  };
 }
 
 /** *Kapcsolat* (FR-008, SDD §7.5, D-12): contact details, office hours, map and contact form. */
 export default async function ContactPage() {
-  const [{ tenant, locations }, t, common] = await Promise.all([
+  const [{ tenant, locations }, t, common, churchJsonLd] = await Promise.all([
     load(),
     getT("public.contact"),
     getT("common"),
+    getChurchJsonLd(),
   ]);
   const contact = tenant?.siteConfig.contact ?? {};
   const officeHours = OpeningHoursSchema.parse(contact.officeHours ?? {});
@@ -43,6 +49,13 @@ export default async function ContactPage() {
 
   return (
     <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader />}>
+      {churchJsonLd ? (
+        <script
+          type="application/ld+json"
+          // The church's structured data (D-17); escaped JSON from our own data, see `jsonLdScript`.
+          dangerouslySetInnerHTML={{ __html: jsonLdScript(churchJsonLd) }}
+        />
+      ) : null}
       <div className="mx-auto grid w-full max-w-(--content-max) gap-12 px-(--gutter) py-10">
         <header className="grid gap-3">
           <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">

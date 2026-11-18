@@ -70,3 +70,13 @@ export { article, leadingNumberWord, withArticle } from "./article";
 export type { WithArticleOptions } from "./article";
 
 export { compareHu, sortHu } from "./collation";
+
+export {
+  MNB_QR_ERROR_CORRECTION,
+  MNB_QR_FIELD_COUNT,
+  MNB_QR_MAX_LENGTH,
+  isValidBic,
+  mnbQrPayload,
+  mnbQrValidity,
+} from "./mnb-qr";
+export type { MnbQrIdField, MnbQrInput } from "./mnb-qr";

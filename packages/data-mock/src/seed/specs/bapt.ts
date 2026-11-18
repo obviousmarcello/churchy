@@ -310,6 +310,7 @@ export const baptSpec: ChurchSpec = {
     giving: {
       accountName: "Dunaligeti Baptista Gyülekezet",
       accountNumber: "99999999-33333333-00000003",
+      bic: "DEMOHUHB",
       reference: "Adomány",
       szja1: "DEMO-0003",
     },
@@ -321,6 +322,7 @@ export const baptSpec: ChurchSpec = {
     integrations: {
       youtube: "https://www.youtube.com/@demo-dunaligeti-baptista",
       facebook: "https://www.facebook.com/demo.dunaligeti.baptista",
+      instagram: "https://www.instagram.com/demo.dunaligeti.baptista",
     },
     billing: {
       name: "Dunaligeti Baptista Gyülekezet",

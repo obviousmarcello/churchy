@@ -31,7 +31,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     getT("public.locations"),
   ]);
   const title = location?.name ?? t("notFoundTitle");
-  return { title: tenant ? `${title} · ${tenant.name}` : title };
+  return {
+    title: tenant ? `${title} · ${tenant.name}` : title,
+    ...(location ? { alternates: { canonical: `${LOCATIONS_PATH}/${location.slug}` } } : {}),
+  };
 }
 
 /** Location detail (FR-003, D-12): address, route link, map facade, hours, accessibility. */

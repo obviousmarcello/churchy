@@ -33,7 +33,7 @@ export async function generateMetadata({
   const month = t("monthTitle", { year: ym.year, month: monthName(ym.month) });
   return {
     title: t("monthMetaTitle", { month, church: await getPublicTenantName() }),
-    alternates: { types: { "text/calendar": "/esemenyek.ics" } },
+    alternates: { canonical: "/esemenyek/naptar", types: { "text/calendar": "/esemenyek.ics" } },
   };
 }
 
