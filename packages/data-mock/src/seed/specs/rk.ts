@@ -2460,8 +2460,6 @@ export const rkSpec: ChurchSpec = {
         { type: "heading", text: "Videós templombejárás" },
         // A Creative Commons sample video; it is only loaded after the visitor's click.
         { type: "embed", provider: "youtube", url: "https://www.youtube.com/watch?v=aqz-KE-bpKQ" },
-        // Facebook is not an allowed embed provider of the public renderer: dropped on the page.
-        { type: "embed", provider: "facebook", url: "https://www.facebook.com/video.php?v=1" },
         {
           type: "quote",
           text: "Ez a hely Isten háza és az ég kapuja.",

@@ -154,7 +154,7 @@ Workspace packages are consumed as TypeScript source (`exports` → `./src/index
 
 - **Tenant context.** Every repository call takes an explicit context (`tenantId` / `orgId` + actor). The DB adapter sets `app.tenant_id` / `app.org_id` per transaction. Never query tenant data without it.
 - **Secrets.** Never commit secrets or put them in the demo environment. Agents have no production credentials.
-- **No personal data or sensitive content** in logs, error reports, emails or push payloads. Emails about requests and HR contain only a reference number and a link.
+- **No personal data or sensitive content** in logs, error reports, emails or push payloads. Emails about requests and HR contain only a reference number and a link. One exception: the public contact form (D-12) sends the visitor's name, email, optional phone and message to the church office, because the message is the point; its subject line and push notification carry only the reference number, and no confirmation goes to the typed address.
 - **Rich text** is stored as JSON and rendered through the allow-list renderer. Never render raw HTML from users.
 - **Public hosts** (neutral domain or custom domains) set **no cookies**. Sessions exist only on `*.churchy.hu`.
 

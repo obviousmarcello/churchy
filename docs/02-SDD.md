@@ -558,7 +558,7 @@ sequenceDiagram
 |---|---|
 | Authentication | Magic-link email (15-min single-use token) or password (Argon2id, breached-password check offline list); TOTP 2FA, mandatory for owner/admin; session cookie `HttpOnly; Secure; SameSite=Lax`, 30-day sliding expiry, revocable server-side sessions. |
 | Authorization | Central policy module, server-side checks on every mutation; tenant enforced again by RLS (defense in depth). |
-| Input/output | Zod validation; rich text stored as ProseMirror JSON and rendered via an allow-list renderer (no raw HTML); embeds restricted to an allow-list of providers (YouTube, Facebook, Vimeo, SoundCloud, OpenStreetMap). |
+| Input/output | Zod validation; rich text stored as ProseMirror JSON and rendered via an allow-list renderer (no raw HTML); embeds restricted to an allow-list of two providers (YouTube via youtube-nocookie.com, OpenStreetMap), both click-to-load. |
 | Headers | Strict CSP with nonces, HSTS (preload for platform domain), `X-Content-Type-Options`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` minimal. |
 | CSRF | Server Actions with origin checks; SameSite cookies. |
 | Rate limiting | Login, magic link, forms, search (Postgres-backed token bucket keyed by hashed IP + tenant). |

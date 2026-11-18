@@ -372,7 +372,7 @@ export type PageBlockSpec =
   | { type: "file"; label: string }
   | {
       type: "embed";
-      provider: "youtube" | "vimeo" | "facebook" | "soundcloud" | "openstreetmap";
+      provider: "youtube" | "openstreetmap";
       url: string;
     };
 

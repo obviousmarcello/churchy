@@ -2207,8 +2207,12 @@ export const refSpec: ChurchSpec = {
         },
         { type: "image", caption: "A templom belseje" },
         { type: "gallery", count: 3 },
-        // Vimeo sample video; only loaded after the visitor's click.
-        { type: "embed", provider: "vimeo", url: "https://vimeo.com/76979871" },
+        // OpenStreetMap sample map (fictitious place); only loaded after the visitor's click.
+        {
+          type: "embed",
+          provider: "openstreetmap",
+          url: "https://www.openstreetmap.org/export/embed.html?bbox=19.05,47.49,19.07,47.50&marker=47.495,19.06",
+        },
       ],
     },
     {

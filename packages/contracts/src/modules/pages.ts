@@ -4,13 +4,7 @@ import type { Ctx } from "../ctx";
 import { IdSchema, RichTextSchema, SlugSchema, TextSchema, TimestampsShape } from "../primitives";
 
 /** Embeds are restricted to an allow-list of providers (SDD §13). */
-export const EmbedProviderSchema = z.enum([
-  "youtube",
-  "facebook",
-  "vimeo",
-  "soundcloud",
-  "openstreetmap",
-]);
+export const EmbedProviderSchema = z.enum(["youtube", "openstreetmap"]);
 
 /** Page blocks (FR-007, D-16). */
 export const PageBlockSchema = z.discriminatedUnion("type", [

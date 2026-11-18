@@ -79,7 +79,7 @@ describe("PageBlocks", () => {
       { type: "html", html: "<script>alert(1)</script>" },
       { type: "embed", provider: "facebook", url: "https://www.facebook.com/video.php?v=1" },
       { type: "embed", provider: "youtube", url: "https://evil.example/watch?v=aqz-KE-bpKQ" },
-      { type: "embed", provider: "vimeo", url: "javascript:alert(1)" },
+      { type: "embed", provider: "openstreetmap", url: "javascript:alert(1)" },
       { type: "cta", label: "Kattintson", href: "javascript:alert(1)" },
       { type: "image", mediaId: "img-bad", caption: null },
       { type: "image", mediaId: "nincs", caption: null },
@@ -119,12 +119,18 @@ describe("embedSource", () => {
     expect(embedSource("youtube", url)?.src).toBe(`https://www.youtube-nocookie.com/embed/${id}`);
   });
 
-  it.each(["https://vimeo.com/76979871", "https://player.vimeo.com/video/76979871?h=x"])(
-    "rebuilds Vimeo %s with dnt=1",
-    (url) => {
-      expect(embedSource("vimeo", url)?.src).toBe("https://player.vimeo.com/video/76979871?dnt=1");
-    },
-  );
+  it.each([
+    [
+      "https://www.openstreetmap.org/export/embed.html?bbox=19.05,47.49,19.07,47.50&marker=47.495,19.06&x=1",
+      "https://www.openstreetmap.org/export/embed.html?bbox=19.05%2C47.49%2C19.07%2C47.5&layer=mapnik&marker=47.495%2C19.06",
+    ],
+    [
+      "https://www.openstreetmap.org/?mlat=47.495&mlon=19.06#map=17/47.495/19.06",
+      "https://www.openstreetmap.org/export/embed.html?bbox=19.055%2C47.492%2C19.065%2C47.498&layer=mapnik&marker=47.495%2C19.06",
+    ],
+  ])("rebuilds the OpenStreetMap map %s from validated coordinates", (url, src) => {
+    expect(embedSource("openstreetmap", url)?.src).toBe(src);
+  });
 
   it.each([
     ["youtube", "http://www.youtube.com/watch?v=aqz-KE-bpKQ"],
@@ -133,11 +139,14 @@ describe("embedSource", () => {
     ["youtube", "https://www.youtube.com/watch?v=rövid"],
     ["youtube", "https://www.youtube.com/channel/abc"],
     ["youtube", "https://vimeo.com/76979871"],
-    ["vimeo", "https://www.youtube.com/watch?v=aqz-KE-bpKQ"],
-    ["vimeo", "https://vimeo.com/channels/staffpicks"],
+    ["vimeo", "https://vimeo.com/76979871"],
     ["facebook", "https://www.facebook.com/video.php?v=1"],
     ["soundcloud", "https://soundcloud.com/a/b"],
     ["openstreetmap", "https://www.openstreetmap.org/"],
+    ["openstreetmap", "https://www.openstreetmap.org/export/embed.html?bbox=1,2,3,999"],
+    ["openstreetmap", "https://www.openstreetmap.org.evil.example/?mlat=47&mlon=19"],
+    ["openstreetmap", "https://www.openstreetmap.org/?mlat=47&mlon=abc"],
+    ["openstreetmap", "https://www.youtube.com/watch?v=aqz-KE-bpKQ"],
     ["youtube", "nem url"],
     ["youtube", 42],
   ])("drops %s %s", (provider, url) => {
