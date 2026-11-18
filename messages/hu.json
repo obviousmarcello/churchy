@@ -37,7 +37,11 @@
         "orgOverview": "Delegált HR-ügyek",
         "orgLinks": "Kapcsolt {community.plural}",
         "orgTemplates": "HR-sablonok",
-        "orgMembers": "Portál munkatársai"
+        "orgMembers": "Portál munkatársai",
+        "events": "Események",
+        "pages": "Oldalak",
+        "staff": "{staffSection.nom}",
+        "locations": "Helyszínek"
       },
       "contact": "{contactPage.nom}"
     },
@@ -995,7 +999,140 @@
   "admin": {
     "dashboard": {
       "title": "Vezérlőpult",
-      "lead": "A weboldal tartalmát és beállításait itt kezelheti."
+      "lead": "A weboldal tartalmát és beállításait itt kezelheti.",
+      "sections": "Az Ön számára elérhető részek",
+      "warnings": {
+        "heading": "Figyelmeztetések",
+        "none": "Nincs teendő: minden rendben.",
+        "announcement": {
+          "title": "Még nincs hirdetés a közelgő vasárnapra",
+          "body": "A hirdetés a(z) {date} vasárnapra még nincs közzétéve.",
+          "action": "Hirdetés írása"
+        },
+        "holidays": {
+          "title": "Ünnepnap módosítás nélkül",
+          "body": "A következő 14 napban az alábbi napokra még nincs kivétel felvéve.",
+          "action": "Kivétel felvétele"
+        },
+        "onboarding": {
+          "title": "A weboldal beállítása még nem fejeződött be",
+          "body": "Hátra van még:",
+          "action": "Beállítás folytatása",
+          "steps": {
+            "location": "Helyszín megadása",
+            "schedule": "{serviceSchedule.nom} megadása",
+            "page": "Első oldal közzététele"
+          }
+        },
+        "requests": {
+          "title": "Új kérések érkeztek",
+          "body": "{count} új kérés vár feldolgozásra.",
+          "action": "Kérések megnyitása"
+        }
+      },
+      "quick": {
+        "heading": "Gyors feladatok",
+        "weeklyAnnouncement": "Heti hirdetés",
+        "scheduleChange": "{serviceSchedule.nom} módosítása",
+        "newNews": "Új hír",
+        "newEvent": "Új esemény"
+      },
+      "requests": {
+        "heading": "Új kérések",
+        "count": "{count} új kérés",
+        "none": "Nincs új kérés.",
+        "open": "Kérések megnyitása"
+      },
+      "drafts": {
+        "heading": "Piszkozatok",
+        "empty": "Nincs befejezetlen piszkozat.",
+        "caption": "Befejezetlen piszkozatok",
+        "title": "Cím",
+        "type": "Típus",
+        "changed": "Utoljára módosítva",
+        "announcementOf": "Heti hirdetés:",
+        "types": {
+          "news": "Hír",
+          "announcement": "Hirdetés",
+          "event": "Esemény",
+          "page": "Oldal"
+        }
+      },
+      "upcoming": {
+        "heading": "Közelgő események",
+        "empty": "A következő 30 napban nincs esemény.",
+        "caption": "Közelgő események"
+      }
+    },
+    "shell": {
+      "navigation": "Admin menü",
+      "openMenu": "Admin menü megnyitása",
+      "closeMenu": "Admin menü bezárása",
+      "dashboard": "Vezérlőpult",
+      "viewSite": "Weboldal megtekintése",
+      "breadcrumbs": "Morzsamenü",
+      "groups": {
+        "content": "Tartalom",
+        "church": "Egyház",
+        "inbox": "Kérések",
+        "appearance": "Megjelenés",
+        "settings": "Beállítások",
+        "other": "Egyéb"
+      }
+    },
+    "page": {
+      "noAccessTitle": "Ehhez a részhez nincs jogosultsága",
+      "noAccessBody": "A jelenlegi szerepkörrel nem érhető el ez a rész.",
+      "backToDashboard": "Vissza a vezérlőpultra",
+      "newItem": "Új"
+    },
+    "placeholder": {
+      "title": "Hamarosan elkészül",
+      "body": "„{section}” kezelése a következő fejlesztési lépésben érkezik. Az útvonal és a jogosultság már működik."
+    },
+    "sections": {
+      "news": {
+        "lead": "Hírek írása, időzítése és közzététele."
+      },
+      "announcements": {
+        "lead": "A heti hirdetések összeállítása és közzététele."
+      },
+      "events": {
+        "lead": "Események és ismétlődő alkalmak kezelése."
+      },
+      "pages": {
+        "lead": "A weboldal állandó oldalainak szerkesztése."
+      },
+      "staff": {
+        "lead": "A munkatársak bemutatkozó oldalának kezelése."
+      },
+      "locations": {
+        "lead": "Templomok és egyéb helyszínek adatai."
+      },
+      "schedule": {
+        "lead": "A heti rend, az ünnepi sablonok és a kivételek szerkesztése."
+      },
+      "requests": {
+        "lead": "A weboldalon érkezett kérések feldolgozása."
+      },
+      "appearance": {
+        "lead": "Arculat, téma, kezdőlap, menü és lábléc."
+      },
+      "users": {
+        "lead": "A weboldal szerkesztőinek és szerepköreik kezelése."
+      },
+      "domain": {
+        "lead": "Saját webcím és jogi adatok."
+      }
+    },
+    "flows": {
+      "announcementNew": "Új heti hirdetés",
+      "newsNew": "Új hír",
+      "eventNew": "Új esemény",
+      "scheduleException": "{serviceSchedule.nom} módosítása"
+    },
+    "form": {
+      "optional": "(nem kötelező)"
     }
   },
   "munkater": {

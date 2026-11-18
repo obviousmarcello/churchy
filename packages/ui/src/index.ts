@@ -73,3 +73,4 @@ export { embedSource, type AllowedEmbedProvider, type EmbedSource } from "./comp
 export { EmbedFacade, type EmbedFacadeProps } from "./components/embed-facade";
 export { decodeEmail, encodeEmail, spokenEmail } from "./components/email-obfuscation";
 export { ObfuscatedEmail, type ObfuscatedEmailProps } from "./components/obfuscated-email";
+export { CloseIcon, DangerIcon, MenuIcon } from "./icons";
