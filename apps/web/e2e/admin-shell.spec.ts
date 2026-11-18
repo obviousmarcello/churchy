@@ -19,6 +19,17 @@ const SECTION_ROUTES = [
   ["users", "/admin/felhasznalok"],
 ] as const;
 
+/** Sections whose module replaced the placeholder body. */
+const BUILT_SECTIONS = new Set([
+  "news",
+  "announcements",
+  "events",
+  "pages",
+  "staff",
+  "locations",
+  "appearance",
+]);
+
 /** Opens the mobile sidebar when the toggle is shown (below 1024 px). */
 async function openSidebar(page: Page) {
   const toggle = page.getByRole("button", { name: "Admin menü megnyitása" });
@@ -43,8 +54,10 @@ test.describe("admin shell", () => {
     for (const [id, path] of SECTION_ROUTES) {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-      // Sections that have been built (appearance, D-24) replace the placeholder body.
-      if (id !== "appearance") await expect(page.getByTestId("admin-placeholder")).toBeVisible();
+      // Sections that have been built (content D-21, appearance D-24) replace the placeholder.
+      if (!BUILT_SECTIONS.has(id)) {
+        await expect(page.getByTestId("admin-placeholder")).toBeVisible();
+      }
       const crumbs = page.getByTestId("admin-breadcrumbs");
       await expect(crumbs.getByRole("link", { name: "Vezérlőpult" })).toBeVisible();
     }
@@ -172,7 +185,7 @@ test.describe("admin shell", () => {
     await openAs(page, "tulajdonos");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
-    await page.goto("/admin/hirek");
+    await page.goto("/admin/rend");
     await expect(page.getByTestId("admin-placeholder")).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
   });
