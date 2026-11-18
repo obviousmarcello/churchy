@@ -64,11 +64,11 @@ flowchart LR
 | UI components (admin) | Radix UI primitives + own component library | Accessible primitives (focus management, ARIA). |
 | Rich text | **Tiptap** (ProseMirror) storing JSON | Structured content, safe rendering, paste cleanup. |
 | ORM / migrations | **Drizzle ORM** | SQL-first, typed, supports RLS-friendly raw SQL. |
-| Database | **PostgreSQL 16** | RLS for tenant isolation, ICU collation `hu-HU`, built-in `hungarian` full-text config, `unaccent`. |
+| Database | **PostgreSQL 17 on Supabase** (project `churchy`, EU `eu-west-1`) | RLS for tenant isolation, ICU collation `hu-HU`, built-in `hungarian` full-text config, `unaccent`. |
 | Background jobs | **pg-boss** (Postgres-backed queue) | No extra infrastructure; email, image processing, retention purges, reminders. |
-| Object storage | S3-compatible in an EU region | Media and PDFs; signed URLs for private files. |
+| Object storage | **Supabase Storage** (S3-compatible, EU) | Media and PDFs; signed URLs for private files. |
 | Image processing | **sharp** | Resize to AVIF/WebP + JPEG fallback, strip EXIF/GPS. |
-| Auth | **Auth.js** (email magic link + password) + TOTP (otplib) | Simple for elderly users (magic link); 2FA for admins (FR-309). |
+| Auth | **Supabase Auth** (email magic link + password, TOTP MFA) | Simple for elderly users (magic link); 2FA for admins (FR-309). Tenant and role claims are read by RLS from the JWT; Drizzle connects with its own role and sets `app.tenant_id`/`app.org_id` per transaction. Replaces Auth.js (decided 2026-11-18). |
 | Validation | **Zod** | Shared schemas for forms, API, config — and the data contract between UI and adapters (§4.4). |
 | Data access | Repository interfaces per module with a **mock adapter** (in-memory, demo data) and a **DB adapter** (Drizzle/Postgres), selected per module | Enables the frontend-first build: screens are built and demoed before the backend exists, then modules switch to the DB one by one (ADR-19). |
 | Email | Transactional provider with EU data residency, via SMTP/API adapter | Swappable. Templates in **React Email**, Hungarian. |

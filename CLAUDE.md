@@ -69,17 +69,17 @@ Visibility is always decided by `can()` from `@churchy/policy`; the UI never ins
 
 ## Stack (SDD §3)
 
-| Layer           | Choice                                                           |
-| --------------- | ---------------------------------------------------------------- |
-| Language, app   | TypeScript (strict) · Next.js App Router (RSC)                   |
-| UI              | Tailwind + CSS-variable theme tokens · Radix primitives          |
-| Data            | Drizzle + PostgreSQL 16 (RLS) · Zod for schemas and contracts    |
-| Jobs            | pg-boss                                                          |
-| Content & media | Tiptap (JSON content) · sharp                                    |
-| Auth            | Auth.js (magic link + password, TOTP)                            |
-| Tests           | Vitest (unit/contract) · Playwright (E2E/visual) · axe-core · k6 |
-| i18n            | next-intl (Hungarian only) · `packages/i18n` for terms & Zod     |
-| Tooling         | pnpm workspaces                                                  |
+| Layer           | Choice                                                                 |
+| --------------- | ---------------------------------------------------------------------- |
+| Language, app   | TypeScript (strict) · Next.js App Router (RSC)                         |
+| UI              | Tailwind + CSS-variable theme tokens · Radix primitives                |
+| Data            | Drizzle + Supabase PostgreSQL 17 (RLS) · Zod for schemas and contracts |
+| Jobs            | pg-boss                                                                |
+| Content & media | Tiptap (JSON content) · sharp                                          |
+| Auth            | Supabase Auth (magic link, password, TOTP)                             |
+| Tests           | Vitest (unit/contract) · Playwright (E2E/visual) · axe-core · k6       |
+| i18n            | next-intl (Hungarian only) · `packages/i18n` for terms & Zod           |
+| Tooling         | pnpm workspaces                                                        |
 
 Don't add new runtime dependencies without saying why in the PR. Prefer what's already in the stack.
 
