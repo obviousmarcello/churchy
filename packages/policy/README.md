@@ -3,7 +3,8 @@
 The single permission policy for Churchy (D-05, SDD §11.3, §21.2, §25.4, §25.7, §28). It is pure
 TypeScript with **zero runtime dependencies**, no IO, no framework imports and no clock. The
 prototype UI uses it to decide visibility, and the server enforces the **same code** for every
-mutation. It is never mocked.
+mutation (`withPolicy()` / `withPolicyRoute()` in `apps/web/server/policy.ts`, guarded by the lint
+rule `policy/require-policy-wrapper`). It is never mocked.
 
 ```ts
 import { can, explain, tenantActor } from "@churchy/policy";

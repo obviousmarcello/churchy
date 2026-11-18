@@ -3,15 +3,17 @@
 import { contactValues, isBot, parseContactForm } from "@/lib/contact-form";
 import type { ContactFormState } from "@/lib/contact-form-state";
 import { getT } from "@/i18n/server";
+import { publicAction } from "@/server/policy";
 import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 
 /**
  * *Kapcsolat* form (D-12): honeypot, Hungarian validation, then `contact.submit` through the
  * repository interface. The mock adapter writes the email to the demo outbox; real delivery and
- * the rate limit (hashed IP + tenant, SDD §13) are the BE part.
+ * the rate limit (hashed IP + tenant, SDD §13) are the BE part. An anonymous public submission, so
+ * a `publicAction()` exemption of the policy wrapper (D-05): it writes with the public ctx only.
  */
-export async function sendContactMessage(
+export const sendContactMessage = publicAction(async function sendContactMessage(
   _previous: ContactFormState,
   form: FormData,
 ): Promise<ContactFormState> {
@@ -34,4 +36,4 @@ export async function sendContactMessage(
     // No details to the visitor and no content in logs (CLAUDE.md privacy rules).
     return { status: "failed", values: parsed.values };
   }
-}
+});

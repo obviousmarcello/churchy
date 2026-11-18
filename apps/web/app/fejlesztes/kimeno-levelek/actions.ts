@@ -3,6 +3,7 @@
 import { ANONYMOUS_ACTOR, type Ctx } from "@churchy/contracts";
 import { assertDevRoutesVisible } from "@/lib/dev-routes";
 import { clearOutbox, demoDirectory } from "@/server/data-adapters";
+import { demoAction } from "@/server/policy";
 import { getRequestDemoSessionId, getRequestRepositories } from "@/server/repositories";
 import { getRequestContext } from "@/server/session";
 
@@ -18,9 +19,10 @@ const SAMPLE_DATA = {
 /**
  * Dev tool: submits a fictitious request through the real repositories, exactly as the public
  * form would, so the outbox shows the two emails (office notification and confirmation) rendered
- * with the real templates. Creates the sample form on first use.
+ * with the real templates. Creates the sample form on first use. Writes to the visitor's demo
+ * store only (`demoAction()` exemption of the policy wrapper, D-05).
  */
-export async function submitSampleRequest(): Promise<void> {
+export const submitSampleRequest = demoAction(async (): Promise<void> => {
   assertDevRoutesVisible();
   // Requests belong to a church; in the diocese context the sample goes to the default church.
   const tenantId = (await getRequestContext()).tenantId ?? demoDirectory().defaultTenantId;
@@ -49,10 +51,10 @@ export async function submitSampleRequest(): Promise<void> {
       consentTextHash: "dev-minta-hozzajarulas",
     },
   );
-}
+});
 
 /** Dev tool: *Kiürítés*. */
-export async function clearDemoOutbox(): Promise<void> {
+export const clearDemoOutbox = demoAction(async (): Promise<void> => {
   assertDevRoutesVisible();
   clearOutbox(await getRequestDemoSessionId());
-}
+});

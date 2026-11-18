@@ -49,7 +49,11 @@ Visibility is always decided by `can()` from `@churchy/policy`; the UI never ins
 - **Server components:** `canServer(action, resource)` or `can(await getActor(), …)` from `apps/web/lib/permissions/server.ts`.
 - **Client components:** wrap the tree in `<PermissionsProvider actor={await getActor()}>`, then use `useCan(action, resource)` or `<Can action resource fallback>` from `apps/web/lib/permissions/client.tsx`. Resource types come from `ResourceByAction`; without a provider everything is denied.
 - **Navigation:** declare `requires: { action }` (plus optional `module` / `entitlement`, stubbed until D-25 / D-87) on each `PermissionNavItem` and filter with `filterNav(items, actor, ctx)`. See `apps/web/lib/app-nav.ts`.
-- **Hiding is not enforcing:** server mutations still go through the policy wrapper.
+- **Hiding is not enforcing:** server mutations still go through the policy wrapper in `apps/web/server/policy.ts`:
+  - server actions: `export const save = withPolicy(action, (scope, ...args) => resource | null, (scope, ...args) => …)` returns `{ ok: true, value } | { ok: false, status: 403 | 404 }`; route handlers (`POST`/`PUT`/`PATCH`/`DELETE`): `withPolicyRoute(…)` returns an empty 403/404.
+  - It resolves `getActor()` + `getRequestContext()`, hands the handler a repository `ctx`, and calls the same `can()`. Deny by default; 404 when the resolver returns `null`, the resource or actor belongs to another tenant/org, or `{ conceal: true }`; 403 otherwise. Denials are reported to the audit sink (`setPolicyAuditSink()`) without personal data.
+  - Exemptions: `publicAction()` (anonymous public-site submissions, only under `app/(public)/`) and `demoAction()` (demo switcher/dev tools, only `server/demo-actions.ts` and `app/fejlesztes/`).
+  - `eslint.policy.mjs` (`policy/require-policy-wrapper`) fails on any unwrapped server action, inline `"use server"` function or mutating route handler.
 - **Lint:** `eslint.permissions.mjs` forbids role-string comparisons/`includes`/`switch` and `.websiteRoles` / `.workspaceRoles` / `.orgRoles` access in `apps/web` and `packages/ui` (except `server/session.ts`). If you need a new check, add a policy action, not a role test.
 
 ## Language & locale
@@ -123,7 +127,7 @@ pnpm install          # install workspace
 pnpm dev              # run the app on http://localhost:3000 (mock adapters by default in Phase A)
 DEMO_MODE=1 pnpm dev  # demo mode: role/church switcher, banner, reset (apps/web/lib/demo/)
 pnpm build            # production build of apps/web
-pnpm lint             # ESLint incl. custom rules: i18n/no-hardcoded-text (D-06), adapter imports (D-90), role checks (D-05)
+pnpm lint             # ESLint incl. custom rules: i18n/no-hardcoded-text (D-06), adapter imports (D-90), role checks + policy wrapper (D-05)
 pnpm format           # Prettier write; `pnpm format:check` in CI
 pnpm typecheck        # tsc --noEmit in every package
 pnpm test             # unit tests (Vitest) in every package, TZ=Europe/Budapest
