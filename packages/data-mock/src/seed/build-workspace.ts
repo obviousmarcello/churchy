@@ -159,6 +159,20 @@ export function buildBookings(b: Build): void {
         source: "user",
         createdAt,
       };
+      // Dates are relative to `now`, so a one-off booking can land on a weekday where a weekly
+      // series already holds the room. Skip it ("ütközők kihagyása", SDD §23.3): the dataset must
+      // never double-book a room — the DB exclusion constraint (NFR-15) would reject it.
+      if (
+        (status === "pending" || status === "approved") &&
+        user.some(
+          (u) =>
+            u.roomId === roomId &&
+            (u.status === "pending" || u.status === "approved") &&
+            bookingsOverlap(u, booking),
+        )
+      ) {
+        continue;
+      }
       user.push(booking);
       ds.bookings.push(booking);
     }
@@ -321,7 +335,8 @@ export function buildSongs(b: Build): void {
   });
 
   // Attachments: records pointing at placeholder files (no binaries are part of the seed).
-  const rightsBy = b.personaUser.get("zenei") ?? (b.personaUser.get("vezeto") as string);
+  // `rightsConfirmedBy` is a person id (contract: "Person who ticked …"), not a user id.
+  const rightsBy = b.personaPerson.get("zenei") ?? (b.personaPerson.get("vezeto") as string);
   let a = 0;
   const addAtt = (
     partial: Partial<Attachment> & Pick<Attachment, "ownerType" | "ownerId" | "kind" | "label">,

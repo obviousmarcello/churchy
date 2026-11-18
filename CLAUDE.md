@@ -131,6 +131,10 @@ pnpm test:coverage    # unit tests with coverage thresholds (80 %; 90 % schedule
 pnpm --filter @churchy/policy matrix   # regenerate packages/policy/MATRIX.md (a test fails if it is stale)
 pnpm test:contract    # contract suites (*.contract.test.ts) against mock (and DB when DATABASE_URL is set)
 pnpm e2e              # Playwright against `next start` on :3100 — run `pnpm build` first; pass --trace off unless debugging
+pnpm --filter @churchy/db db:generate  # Drizzle schema → migrations/NNNN_*.sql (also write migrations/down/<tag>.sql)
+pnpm --filter @churchy/db db up|down [n]|reset|status|seed  # migrations & D-91 demo seed (DATABASE_URL from env)
+pnpm --filter @churchy/db db auth-stub # plain Postgres only: minimal auth.users (Supabase owns it)
+TEST_DATABASE_URL=… pnpm --filter @churchy/db test  # DB integration tests — disposable database only, they reset it
 ```
 
 Demo mode (D-92) refuses to start when `APP_ENV` is staging/production or any DB, storage, email, push or payment credential is set — the list is in `apps/web/lib/demo/safety.ts`. Deployments must set `APP_ENV`.

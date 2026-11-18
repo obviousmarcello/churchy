@@ -3,3 +3,4 @@ pnpm-lock.yaml
 coverage
 docs
 .claude
+packages/db/migrations/meta
