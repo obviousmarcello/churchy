@@ -23,10 +23,6 @@ export type NavKey =
   | "sections.absences"
   | "sections.hr"
   | "sections.news"
-  | "sections.events"
-  | "sections.pages"
-  | "sections.staff"
-  | "sections.locations"
   | "sections.announcements"
   | "sections.schedule"
   | "sections.requests"
@@ -183,32 +179,6 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           label: t("sections.announcements"),
           href: "/admin/hirdetesek",
           requires: { action: "announcement.create" },
-        },
-        {
-          id: "events",
-          label: t("sections.events"),
-          href: "/admin/esemenyek",
-          // Group leaders (own group only) are checked per event; the section needs the general right.
-          requires: { action: "event.create", resource: (ctx) => ({ tenantId: tenantIdOf(ctx) }) },
-        },
-        {
-          id: "pages",
-          label: t("sections.pages"),
-          href: "/admin/oldalak",
-          requires: { action: "page.create" },
-        },
-        {
-          id: "staff",
-          label: t("sections.staff"),
-          href: "/admin/munkatarsak",
-          // The staff page is page content (SDD §11.3 row "Pages, news, …").
-          requires: { action: "page.edit" },
-        },
-        {
-          id: "locations",
-          label: t("sections.locations"),
-          href: "/admin/helyszinek",
-          requires: { action: "location.manage" },
         },
         {
           id: "schedule",

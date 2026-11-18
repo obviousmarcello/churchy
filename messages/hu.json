@@ -37,11 +37,7 @@
         "orgOverview": "Delegált HR-ügyek",
         "orgLinks": "Kapcsolt {community.plural}",
         "orgTemplates": "HR-sablonok",
-        "orgMembers": "Portál munkatársai",
-        "events": "Események",
-        "pages": "Oldalak",
-        "staff": "{staffSection.nom}",
-        "locations": "Helyszínek"
+        "orgMembers": "Portál munkatársai"
       },
       "contact": "{contactPage.nom}"
     },
@@ -811,6 +807,96 @@
           "message": "Kapcsolat: üzenet az irodának"
         }
       }
+    },
+    "media": {
+      "metaTitle": "Médiatár",
+      "title": "Médiatár",
+      "lead": "A médiatár felülete a bemutató adatbázison: rácsnézet, feltöltés kötelező képleírással és jogi megerősítéssel, szerkesztés, törlés és tárhelyhasználat.",
+      "devNotice": "Fejlesztői oldal: éles környezetben nem érhető el, és a keresők sem indexelik.",
+      "library": {
+        "gridLabel": "A médiatár fájljai",
+        "empty": "Még nincs feltöltött fájl.",
+        "usage": "Felhasznált tárhely: {used} / {quota}",
+        "usageMeterLabel": "Felhasznált tárhely",
+        "uploadTitle": "Új fájl feltöltése",
+        "fileLabel": "Fájl",
+        "fileHelp": "Kép (JPEG, PNG, WebP, SVG) vagy PDF. A bemutató módban a fájl nem kerül tárolásra, csak a leírása.",
+        "fileRequired": "Válasszon ki egy fájlt.",
+        "altLabel": "Képleírás (alt szöveg)",
+        "altHelp": "Írja le röviden, mi látható a képen, hogy a képet nem látó látogatók is megértsék.",
+        "altRequired": "Adja meg a képleírást, vagy jelölje a képet díszítőelemnek.",
+        "decorative": "A kép csak díszítő, nem hordoz információt",
+        "captionLabel": "Képaláírás (nem kötelező)",
+        "peopleConsent": "A képen felismerhető személyek hozzájárultak a közzétételhez",
+        "peopleConsentHelp": "Ha a képen személyek ismerhetők fel, kérjük, jelölje be, ha rendelkezik a hozzájárulásukkal.",
+        "rights": "Megerősítem, hogy jogom van a fájl közzétételére",
+        "rightsRequired": "A feltöltéshez meg kell erősítenie, hogy jogosult a fájl közzétételére.",
+        "upload": "Feltöltés",
+        "uploading": "Feltöltés…",
+        "uploaded": "A(z) {filename} feltöltése sikerült.",
+        "uploadFailed": "A feltöltés nem sikerült. Kérjük, próbálja újra.",
+        "editText": "Szerkesztés",
+        "editAria": "Szerkesztés: {filename}",
+        "editTitle": "Fájl adatai",
+        "save": "Mentés",
+        "saved": "Mentve.",
+        "saveFailed": "A mentés nem sikerült. Kérjük, próbálja újra.",
+        "deleteText": "Törlés",
+        "deleteAria": "Törlés: {filename}",
+        "deleteTitle": "Fájl törlése",
+        "deleteConfirm": "Biztosan törli a(z) {filename} fájlt? A művelet nem vonható vissza.",
+        "deleteAction": "Törlés",
+        "deleted": "A fájl törölve.",
+        "cancel": "Mégse",
+        "close": "Bezárás",
+        "selectText": "Kiválasztás",
+        "selectAria": "Kiválasztás: {filename}",
+        "pickerTitle": "Kép kiválasztása",
+        "pickerDescription": "Válasszon a médiatárból, vagy töltsön fel új képet.",
+        "kindPdf": "PDF",
+        "kindAudio": "Hang",
+        "kindOther": "Fájl",
+        "noAlt": "Hiányzó képleírás",
+        "decorativeBadge": "Díszítő",
+        "consentBadge": "Hozzájárulás megvan"
+      }
+    },
+    "editor": {
+      "metaTitle": "Szerkesztő",
+      "title": "Szövegszerkesztő",
+      "lead": "A közös szövegszerkesztő a hírek, oldalak és hirdetések tartalmához. Csak olyan elemeket állít elő, amelyeket a nyilvános oldal biztonságosan megjelenít.",
+      "devNotice": "Fejlesztői oldal: éles környezetben nem érhető el, és a keresők sem indexelik.",
+      "fieldLabel": "Tartalom",
+      "previewTitle": "Megjelenés a nyilvános oldalon",
+      "jsonTitle": "Tárolt szerkezet (JSON)",
+      "embedFrameTitle": "{provider} beágyazás",
+      "embedNotice": "A tartalom betöltésekor kapcsolat jön létre a(z) {provider} szolgáltatóval.",
+      "embedLoad": "Betöltés",
+      "toolbar": "Szövegformázás",
+      "bold": "Félkövér",
+      "italic": "Dőlt",
+      "heading2": "H2 alcím",
+      "heading3": "H3 alcím",
+      "heading4": "H4 alcím",
+      "bulletList": "Felsorolás",
+      "orderedList": "Számozott lista",
+      "blockquote": "Idézet",
+      "horizontalRule": "Elválasztó vonal",
+      "link": "Hivatkozás",
+      "image": "Kép beszúrása a médiatárból",
+      "embed": "Videó vagy térkép beágyazása",
+      "undo": "Visszavonás",
+      "redo": "Újra",
+      "linkUrl": "Hivatkozás címe",
+      "linkHelp": "Weboldal (https://…), e-mail-cím (mailto:…), telefonszám (tel:…) vagy az oldalon belüli cím (/…).",
+      "linkInvalid": "Ez a cím nem engedélyezett. Adjon meg https://, mailto: vagy tel: kezdetű címet.",
+      "linkApply": "Hivatkozás beállítása",
+      "linkRemove": "Hivatkozás törlése",
+      "embedUrl": "Videó vagy térkép címe",
+      "embedHelp": "Csak YouTube-videó és OpenStreetMap-térkép ágyazható be.",
+      "embedInvalid": "Csak YouTube-videó vagy OpenStreetMap-térkép címe adható meg.",
+      "embedApply": "Beágyazás",
+      "cancel": "Mégse"
     }
   },
   "email": {
@@ -999,140 +1085,7 @@
   "admin": {
     "dashboard": {
       "title": "Vezérlőpult",
-      "lead": "A weboldal tartalmát és beállításait itt kezelheti.",
-      "sections": "Az Ön számára elérhető részek",
-      "warnings": {
-        "heading": "Figyelmeztetések",
-        "none": "Nincs teendő: minden rendben.",
-        "announcement": {
-          "title": "Még nincs hirdetés a közelgő vasárnapra",
-          "body": "A hirdetés a(z) {date} vasárnapra még nincs közzétéve.",
-          "action": "Hirdetés írása"
-        },
-        "holidays": {
-          "title": "Ünnepnap módosítás nélkül",
-          "body": "A következő 14 napban az alábbi napokra még nincs kivétel felvéve.",
-          "action": "Kivétel felvétele"
-        },
-        "onboarding": {
-          "title": "A weboldal beállítása még nem fejeződött be",
-          "body": "Hátra van még:",
-          "action": "Beállítás folytatása",
-          "steps": {
-            "location": "Helyszín megadása",
-            "schedule": "{serviceSchedule.nom} megadása",
-            "page": "Első oldal közzététele"
-          }
-        },
-        "requests": {
-          "title": "Új kérések érkeztek",
-          "body": "{count} új kérés vár feldolgozásra.",
-          "action": "Kérések megnyitása"
-        }
-      },
-      "quick": {
-        "heading": "Gyors feladatok",
-        "weeklyAnnouncement": "Heti hirdetés",
-        "scheduleChange": "{serviceSchedule.nom} módosítása",
-        "newNews": "Új hír",
-        "newEvent": "Új esemény"
-      },
-      "requests": {
-        "heading": "Új kérések",
-        "count": "{count} új kérés",
-        "none": "Nincs új kérés.",
-        "open": "Kérések megnyitása"
-      },
-      "drafts": {
-        "heading": "Piszkozatok",
-        "empty": "Nincs befejezetlen piszkozat.",
-        "caption": "Befejezetlen piszkozatok",
-        "title": "Cím",
-        "type": "Típus",
-        "changed": "Utoljára módosítva",
-        "announcementOf": "Heti hirdetés:",
-        "types": {
-          "news": "Hír",
-          "announcement": "Hirdetés",
-          "event": "Esemény",
-          "page": "Oldal"
-        }
-      },
-      "upcoming": {
-        "heading": "Közelgő események",
-        "empty": "A következő 30 napban nincs esemény.",
-        "caption": "Közelgő események"
-      }
-    },
-    "shell": {
-      "navigation": "Admin menü",
-      "openMenu": "Admin menü megnyitása",
-      "closeMenu": "Admin menü bezárása",
-      "dashboard": "Vezérlőpult",
-      "viewSite": "Weboldal megtekintése",
-      "breadcrumbs": "Morzsamenü",
-      "groups": {
-        "content": "Tartalom",
-        "church": "Egyház",
-        "inbox": "Kérések",
-        "appearance": "Megjelenés",
-        "settings": "Beállítások",
-        "other": "Egyéb"
-      }
-    },
-    "page": {
-      "noAccessTitle": "Ehhez a részhez nincs jogosultsága",
-      "noAccessBody": "A jelenlegi szerepkörrel nem érhető el ez a rész.",
-      "backToDashboard": "Vissza a vezérlőpultra",
-      "newItem": "Új"
-    },
-    "placeholder": {
-      "title": "Hamarosan elkészül",
-      "body": "„{section}” kezelése a következő fejlesztési lépésben érkezik. Az útvonal és a jogosultság már működik."
-    },
-    "sections": {
-      "news": {
-        "lead": "Hírek írása, időzítése és közzététele."
-      },
-      "announcements": {
-        "lead": "A heti hirdetések összeállítása és közzététele."
-      },
-      "events": {
-        "lead": "Események és ismétlődő alkalmak kezelése."
-      },
-      "pages": {
-        "lead": "A weboldal állandó oldalainak szerkesztése."
-      },
-      "staff": {
-        "lead": "A munkatársak bemutatkozó oldalának kezelése."
-      },
-      "locations": {
-        "lead": "Templomok és egyéb helyszínek adatai."
-      },
-      "schedule": {
-        "lead": "A heti rend, az ünnepi sablonok és a kivételek szerkesztése."
-      },
-      "requests": {
-        "lead": "A weboldalon érkezett kérések feldolgozása."
-      },
-      "appearance": {
-        "lead": "Arculat, téma, kezdőlap, menü és lábléc."
-      },
-      "users": {
-        "lead": "A weboldal szerkesztőinek és szerepköreik kezelése."
-      },
-      "domain": {
-        "lead": "Saját webcím és jogi adatok."
-      }
-    },
-    "flows": {
-      "announcementNew": "Új heti hirdetés",
-      "newsNew": "Új hír",
-      "eventNew": "Új esemény",
-      "scheduleException": "{serviceSchedule.nom} módosítása"
-    },
-    "form": {
-      "optional": "(nem kötelező)"
+      "lead": "A weboldal tartalmát és beállításait itt kezelheti."
     }
   },
   "munkater": {

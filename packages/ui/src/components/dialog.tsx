@@ -13,6 +13,8 @@ export interface DialogProps {
   /** Accessible name of the close (X) button. */
   closeLabel: string;
   children?: ReactNode;
+  /** Wide variant for dialogs that hold a grid (media picker). */
+  wide?: boolean;
   /** Action row; wrap dismissing buttons in `<DialogClose asChild>`. */
   footer?: ReactNode;
   open?: boolean;
@@ -33,6 +35,7 @@ export function Dialog({
   description,
   closeLabel,
   children,
+  wide,
   footer,
   open,
   defaultOpen,
@@ -46,7 +49,7 @@ export function Dialog({
         <RadixDialog.Overlay className="fixed inset-0 z-50 bg-text/60" />
         <RadixDialog.Content
           {...(description ? {} : { "aria-describedby": undefined })}
-          className="fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[min(34rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-surface-raised p-6 text-text shadow-raised sm:p-8"
+          className={`fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-2rem)] ${wide ? "w-[min(60rem,calc(100vw-2rem))]" : "w-[min(34rem,calc(100vw-2rem))]"} -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-surface-raised p-6 text-text shadow-raised sm:p-8`}
         >
           <RadixDialog.Title className="pr-12 font-heading text-fs-5 leading-tight font-bold text-primary">
             {title}
