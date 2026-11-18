@@ -53,6 +53,9 @@ importers:
       '@churchy/data-mock':
         specifier: workspace:*
         version: link:../../packages/data-mock
+      '@churchy/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@churchy/email':
         specifier: workspace:*
         version: link:../../packages/email

@@ -12,6 +12,20 @@ export {
   type Tx,
 } from "./client";
 export {
+  DB_MODULES,
+  DbAdapterError,
+  UnsafeDatabaseRoleError,
+  assertAppRole,
+  createDbAdapterBase,
+  createDbRepositories,
+  dbRepositoryFactories,
+  mapDbError,
+  type DbAdapterBase,
+  type DbAdapterOptions,
+  type DbModule,
+  type DbSource,
+} from "./adapter";
+export {
   MIGRATIONS_FOLDER,
   appliedMigrations,
   migrateDown,

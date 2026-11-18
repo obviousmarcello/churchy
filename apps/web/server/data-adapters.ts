@@ -4,7 +4,8 @@
  * registry; everything else resolves repositories through `getRequestRepositories()`
  * (`server/repositories.ts`) or `getRepositories()`.
  *
- * Phase A: the mock adapter for all modules. Without demo mode one default store serves every
+ * Phase A: the mock adapter for all modules; Phase B: the DB adapter (`@churchy/db/register`)
+ * for modules switched with `DATA_ADAPTER_<MODULE>=db`. Without demo mode one default store serves every
  * request. In demo mode (D-92) every visitor has their own demo session (`createMockSessions`,
  * D-91 AC1) named by the demo session cookie: `repositoriesFor(sessionId)` binds the repositories
  * to that session's store and `resetDemoSession()` is *Visszaállítás*.
@@ -34,6 +35,7 @@ import {
   defaultDemoDataset,
   registerMockAdapter,
 } from "@churchy/data-mock";
+import { registerDbAdapter } from "@churchy/db/register";
 import { formatPersonName } from "@churchy/hu";
 import type { DemoContextOption, DemoDirectory, DemoPersonaKey } from "@/lib/demo/personas";
 
@@ -73,6 +75,13 @@ function storeFor(sessionId: string | null): MockStore {
 const resolvingStore = new AsyncLocalStorage<MockStore>();
 
 registerMockAdapter(() => resolvingStore.getStore() ?? defaultStore());
+
+// Phase B (D-90 [BE]): modules with a DB adapter switch to it with `DATA_ADAPTER_<MODULE>=db`;
+// the pool (role `churchy_app`, `DATABASE_URL`) is created on first use only. Every other module
+// stays on the mock adapter. Selecting `db` for a module without a DB adapter fails here, at
+// start-up, instead of on the first request. Runbook: docs/runbooks/switch-module-to-db.md.
+registerDbAdapter();
+adapterRegistry.assertAvailable();
 
 /**
  * Repositories bound to a demo session's store (`null`: the default store). Modules are resolved

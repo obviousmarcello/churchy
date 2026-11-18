@@ -71,6 +71,20 @@ describe("AdapterRegistry", () => {
     );
   });
 
+  it("lists modules whose configured adapter is not registered (start-up check)", () => {
+    const registry = new AdapterRegistry();
+    const all = Object.fromEntries(DATA_MODULES.map((m) => [m, () => ({})]));
+    registry.register("mock", all);
+    registry.register("db", { locations: () => ({}) as Repositories["locations"] });
+    expect(registry.unavailableModules({})).toEqual([]);
+    expect(() => registry.assertAvailable({ DATA_ADAPTER_LOCATIONS: "db" })).not.toThrow();
+    const env = { DATA_ADAPTER_LOCATIONS: "db", DATA_ADAPTER_NEWS: "db" };
+    expect(registry.unavailableModules(env)).toEqual([{ module: "news", kind: "db" }]);
+    expect(() => registry.assertAvailable(env)).toThrow(
+      "No adapter registered for: DATA_ADAPTER_NEWS=db",
+    );
+  });
+
   it("resolves repositories lazily and caches them per object", () => {
     const registry = new AdapterRegistry();
     let calls = 0;

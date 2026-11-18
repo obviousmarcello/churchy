@@ -15,6 +15,7 @@
     "@churchy/calendar": "workspace:*",
     "@churchy/contracts": "workspace:*",
     "@churchy/data-mock": "workspace:*",
+    "@churchy/db": "workspace:*",
     "@churchy/email": "workspace:*",
     "@churchy/events": "workspace:*",
     "@churchy/hu": "workspace:*",

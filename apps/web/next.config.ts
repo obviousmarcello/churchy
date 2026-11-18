@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     "@churchy/contracts",
     "@churchy/email",
     "@churchy/data-mock",
+    "@churchy/db",
     "@churchy/policy",
     "@churchy/hu",
     "@churchy/i18n",

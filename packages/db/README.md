@@ -1,7 +1,8 @@
 # @churchy/db
 
 Drizzle schema, versioned SQL migrations and the demo seed (D-02, SDD §8.2, §19, §21–§26).
-Database: **Supabase Postgres 17** (SDD §3). DB adapters per module follow in S1–S7.
+Database: **Supabase Postgres 17** (SDD §3). The DB adapter base and the first DB repositories are
+D-90 [BE] (see [DB adapter](#db-adapter-d-90-be)); further modules follow in S2–S7.
 
 ```bash
 pnpm --filter @churchy/db db:generate      # drizzle-kit: diff src/schema → migrations/NNNN_*.sql (no DB)
@@ -14,6 +15,7 @@ pnpm --filter @churchy/db db auth-stub     # plain Postgres only: minimal auth.u
 pnpm --filter @churchy/db db seed          # D-91 demo fixtures (refused when APP_ENV=production)
 TEST_DATABASE_URL=… pnpm --filter @churchy/db test   # + integration tests on a DISPOSABLE database
 TEST_DATABASE_URL=… pnpm test:isolation              # D-03 RLS catalog check + tenant isolation suite
+DATABASE_URL=… pnpm test:contract                    # D-90 contract suites: mock + DB adapter (DISPOSABLE db)
 ```
 
 ## Migrations
@@ -104,6 +106,52 @@ reports fixture tables without a (canonical) policy.
 **Object storage.** Keys are `t/<tenant_id>/…`: build them with `tenantStorageKey(ctx, …)` and
 check every incoming key with `assertTenantStorageKey(ctx, key)` (rejects other tenants, missing
 prefix, `..`, empty segments, `\`, `%`, control characters, org/platform contexts).
+
+## DB adapter (D-90 [BE])
+
+SDD §4.4. `src/adapter/` implements the contract repositories (`@churchy/contracts`) on Postgres.
+Switching a further module: [`docs/runbooks/switch-module-to-db.md`](../../docs/runbooks/switch-module-to-db.md).
+
+| Module          | Repository        | Since |
+| --------------- | ----------------- | ----- |
+| `locations`     | `dbLocations`     | D-90  |
+| `announcements` | `dbAnnouncements` | D-90  |
+
+**Adapter base** (`src/adapter/base.ts`, `createDbAdapterBase(db)`). Repositories only query
+through it:
+
+- `run(ctx, fn)` — one transaction per repository call (`withContext`), `app.tenant_id` /
+  `app.org_id` set transaction-locally from the ctx. The ctx is validated **before** a connection
+  is taken: a missing/malformed ctx or one with both `tenantId` and `orgId` throws `CONTEXT`.
+- `read(ctx, empty, fn)` — tenant-scoped read; organization/platform contexts get `empty`.
+- `write(ctx, fn)` — tenant-scoped write; `CONTEXT` without a tenant ctx, `FORBIDDEN` when anonymous.
+- Before the first query it checks that the connected role is neither superuser nor BYPASSRLS
+  (`assertAppRole`) and throws `UnsafeDatabaseRoleError` otherwise — the app must connect as
+  `churchy_app`, so a wrong `DATABASE_URL` cannot switch tenant isolation off.
+- Errors are mapped by `mapDbError` (`src/adapter/errors.ts`): unique/exclusion → `CONFLICT`,
+  foreign key and RLS `WITH CHECK` → `NOT_FOUND` (no existence leak), not-null/check/bad value →
+  `VALIDATION`, other privilege errors → `FORBIDDEN`; anything else becomes a `DbAdapterError`
+  with only the SQLSTATE, constraint and table (never the driver message, which can hold row
+  values). Non-uuid ids are "not found" (`asUuid` / `requireUuid`), never sent to Postgres.
+
+**Registry.** `@churchy/db/register` (`registerDbAdapter()`) registers a `db` factory for every
+module in `DB_MODULES`; the pool is created from `DATABASE_URL` on first use. Only
+`apps/web/server/data-adapters.ts` imports it; it then calls `adapterRegistry.assertAvailable()`,
+so `DATA_ADAPTER_<MODULE>=db` for a module without a DB adapter stops the app at start-up. Every
+module not set to `db` stays on the mock adapter.
+
+**Contract suites** (`src/db.contract.test.ts`, part of `pnpm test:contract` and of this package's
+tests). With `DATABASE_URL` (or `TEST_DATABASE_URL`) pointing at a disposable database it applies
+the auth stub if needed, migrates, loads the contract fixtures (`contractDataset()` from
+`@churchy/data-mock/testing`, ids mapped like the seed, `seedDataset`) as the migration role, and
+runs the suite of every module in `DB_MODULES` with repositories connected as **`churchy_app`**
+(`-c role=churchy_app`, RLS on); the other modules are reported as skipped. Without a database the
+file is skipped, unless `REQUIRE_TEST_DATABASE=1` (CI job _Database_), which fails it.
+
+```bash
+DATABASE_URL=postgresql://postgres@localhost:5432/churchy_test pnpm --filter @churchy/db db auth-stub
+DATABASE_URL=postgresql://postgres@localhost:5432/churchy_test pnpm test:contract
+```
 
 ## Demo seed
 

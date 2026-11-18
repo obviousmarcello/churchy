@@ -209,10 +209,12 @@ and session/auth/feed-token storage (auth layer, D-04/D-59), `event_invitations`
   anonymous-visibility tests where the module has public reads.
 - `runContractSuites(adapterName, factory, { modules })` registers **all 23 suites**; modules
   not listed are shown as skipped.
-- `pnpm test:contract` (root) runs every `packages/*/src/**/*.contract.test.ts`. Today that is
-  `src/testing/reference.contract.test.ts`, which runs the suites against a tiny in-test
-  **reference implementation** of `announcements` and `locations` (proof that the harness works;
-  not the mock adapter).
+- `pnpm test:contract` (root) runs every `packages/*/src/**/*.contract.test.ts`:
+  `src/testing/reference.contract.test.ts` (a tiny in-test **reference implementation** of
+  `announcements` and `locations`), `packages/data-mock/src/mock.contract.test.ts` (the mock
+  adapter, all modules) and `packages/db/src/db.contract.test.ts` (the **DB adapter**, modules in
+  `DB_MODULES`, against Postgres as `churchy_app`; skipped without `DATABASE_URL`, required in
+  the CI job _Database_ — see `packages/db/README.md`).
 
 ### Plugging in an adapter
 
@@ -251,7 +253,10 @@ import "@churchy/data-mock/register";
 import "@churchy/db/register";
 ```
 
-The registry never imports adapter packages; adapters register themselves.
+The registry never imports adapter packages; adapters register themselves. After registering,
+the composition root calls `adapterRegistry.assertAvailable()`: a module configured for an adapter
+that has no factory for it (e.g. `DATA_ADAPTER_NEWS=db` before the news DB adapter exists) stops
+the app at start-up (`unavailableModules(env)` lists them).
 
 ## Lint rule
 
