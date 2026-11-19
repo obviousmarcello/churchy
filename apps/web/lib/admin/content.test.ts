@@ -86,3 +86,28 @@ describe("datetime-local in Europe/Budapest", () => {
     expect(localInputValue(null)).toBe("");
   });
 });
+
+describe("rich text editor values", () => {
+  const doc = JSON.stringify({
+    type: "doc",
+    content: [{ type: "paragraph", content: [{ type: "text", text: "Szia" }] }],
+  });
+
+  it("stores a posted document, and treats an empty one as no text", async () => {
+    const { bodyFromText, docValue, normalizeBodyValue, parseDocValue, blocksFromText } =
+      await import("./content");
+    expect(bodyFromText(null, doc)?.content).toHaveLength(1);
+    const empty = JSON.stringify({ type: "doc", content: [{ type: "paragraph" }] });
+    expect(normalizeBodyValue(empty)).toBe("");
+    expect(bodyFromText(null, empty)).toBeNull();
+    expect(parseDocValue("sima szöveg")).toBeNull();
+    expect(docValue(null)).toBe("");
+    // An image alone is content.
+    const image = JSON.stringify({
+      type: "doc",
+      content: [{ type: "image", attrs: { src: "/a.svg" } }],
+    });
+    expect(normalizeBodyValue(image)).toBe(image);
+    expect(blocksFromText([], doc)).toMatchObject([{ type: "text" }]);
+  });
+});

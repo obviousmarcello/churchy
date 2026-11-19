@@ -22,6 +22,7 @@ const SECTION_ROUTES = [
 /** Sections whose module replaced the placeholder body. */
 const BUILT_SECTIONS = new Set([
   "news",
+  "schedule",
   "announcements",
   "events",
   "pages",
@@ -73,7 +74,7 @@ test.describe("admin shell", () => {
     // The route itself is gated by the same check.
     await page.goto("/admin/rend");
     await expect(page.getByTestId("area-no-access")).toBeVisible();
-    await expect(page.getByTestId("admin-placeholder")).toHaveCount(0);
+    await expect(page.getByTestId("schedule-editor")).toHaveCount(0);
   });
 
   test("a visitor gets the no-access notice, not the admin shell", async ({ page }) => {
@@ -185,7 +186,7 @@ test.describe("admin shell", () => {
     await openAs(page, "tulajdonos");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
-    await page.goto("/admin/rend");
+    await page.goto("/admin/kerelmek");
     await expect(page.getByTestId("admin-placeholder")).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
   });
