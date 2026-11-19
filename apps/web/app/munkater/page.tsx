@@ -121,7 +121,7 @@ export default async function WorkspaceTodayPage() {
                     <span className="font-semibold">{a.title}</span>
                     <Badge tone="warning">{labels.planStatus.in_review}</Badge>
                     <ButtonLink
-                      href="/munkater/liturgia"
+                      href={`/munkater/liturgia/${a.id}`}
                       size="sm"
                       variant="secondary"
                       className="ml-auto"
