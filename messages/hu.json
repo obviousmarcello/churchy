@@ -1267,10 +1267,9 @@
       "adminRooms": {
         "lead": "Termek, eszközök és a szolgálatok terem-blokkolása."
       },
-<<<<<<< HEAD
       "orgLink": {
         "lead": "Az egyházmegyei HR-portállal való kapcsolat és a delegált kategóriák."
-=======
+      },
       "modules": {
         "lead": "A weboldal és a munkatér moduljainak be- és kikapcsolása."
       },
@@ -1279,7 +1278,6 @@
       },
       "billing": {
         "lead": "Előfizetés, számlázási adatok és számlák."
->>>>>>> d-26-ui-users-plans
       }
     },
     "flows": {
@@ -2610,7 +2608,6 @@
         }
       }
     },
-<<<<<<< HEAD
     "orgLink": {
       "lead": "A {community.nom} kapcsolata az egyházmegyei HR-portállal: jóváhagyás, delegált kategóriák, megszüntetés.",
       "noneTitle": "Nincs egyházmegyei kapcsolat",
@@ -2642,7 +2639,8 @@
         "take": "átvétel",
         "close": "lezárás",
         "reply": "válasz"
-=======
+      }
+    },
     "users": {
       "lead": "Hívjon meg munkatársakat, módosítsa a szerepköreiket, vagy függessze fel a hozzáférésüket.",
       "newButton": "Új felhasználó meghívása",
@@ -3109,7 +3107,6 @@
         "doneHeading": "A(z) {number} számla fizetése megerősítve",
         "doneBody": "Ez csak bemutató: nem történt valódi fizetés, és a számla állapota sem változott.",
         "backToBilling": "Vissza a számlázáshoz"
->>>>>>> d-26-ui-users-plans
       }
     }
   },
