@@ -420,6 +420,7 @@ describe("demo dataset — personas (D-92)", () => {
     "iroda",
     "vezeto",
     "onkentes",
+    "csoportvezeto",
     "zenei",
     "terem",
     "hr",
@@ -439,6 +440,7 @@ describe("demo dataset — personas (D-92)", () => {
       expect(membership("vezeto").wsRoles).toContain("leader");
       expect(membership("onkentes").role).toBeNull();
       expect(membership("onkentes").wsRoles).toEqual(["volunteer"]);
+      expect(membership("csoportvezeto").wsRoles).toContain("teamLeader");
       expect(membership("zenei").wsRoles).toContain("musicLeader");
       expect(membership("terem").wsRoles).toContain("roomManager");
       expect(membership("terem").roomIds.length).toBeGreaterThanOrEqual(4);

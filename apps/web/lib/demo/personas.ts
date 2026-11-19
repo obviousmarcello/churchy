@@ -18,6 +18,7 @@ export const DEMO_PERSONAS = [
   { key: "iroda", scope: "tenant" },
   { key: "vezeto", scope: "tenant" },
   { key: "onkentes", scope: "tenant" },
+  { key: "csoportvezeto", scope: "tenant" },
   { key: "zenei", scope: "tenant" },
   { key: "terem", scope: "tenant" },
   { key: "hr", scope: "tenant" },

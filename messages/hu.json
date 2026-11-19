@@ -21,9 +21,12 @@
       "admin": "Weboldal kezelése",
       "organization": "Egyházmegyei portál",
       "sections": {
+        "today": "Ma",
+        "teams": "Csapatok",
+        "worship": "Liturgia",
         "directory": "Névjegyzék",
         "calendar": "Naptár",
-        "rooms": "Teremfoglalás",
+        "rooms": "Termek",
         "songs": "Énektár",
         "absences": "Távollétek",
         "hr": "HR-ügyintézés",
@@ -73,6 +76,7 @@
         "iroda": "Iroda",
         "vezeto": "{leadClergy.nom}/Vezető",
         "onkentes": "Önkéntes",
+        "csoportvezeto": "Csoportvezető",
         "zenei": "Zenei vezető",
         "terem": "Teremfelelős",
         "hr": "HR-felelős",
@@ -1706,7 +1710,222 @@
   "munkater": {
     "home": {
       "title": "Munkatér",
-      "lead": "Naptár, teremfoglalás, szolgálatok és HR-ügyek egy helyen."
+      "lead": "Naptár, teremfoglalás, szolgálatok és HR-ügyek egy helyen.",
+      "greeting": {
+        "morning": "Jó reggelt",
+        "day": "Jó napot",
+        "evening": "Jó estét"
+      },
+      "greetingName": "{greeting}, {name}!",
+      "tier": {
+        "warningTitle": "Közel a felhasználói korláthoz",
+        "fullTitle": "Elérte a felhasználói korlátot",
+        "body": "A Munkatérnek jelenleg {used} aktív felhasználója van a csomagban foglalt {cap} főből. A korlát elérésekor új meghívó már nem küldhető."
+      },
+      "approvals": {
+        "title": "Jóváhagyásra vár",
+        "open": "Megnyitom",
+        "hr": "Munkatársi kérés"
+      },
+      "todos": {
+        "title": "Teendők",
+        "accept": "Elfogadom",
+        "decline": "Nem tudok",
+        "failedTitle": "A válasz nem sikerült",
+        "failedBody": "Kérjük, próbálja újra egy pillanat múlva."
+      },
+      "today": {
+        "title": "Ma"
+      },
+      "week": {
+        "title": "Ezen a héten",
+        "all": "Teljes naptár"
+      },
+      "requests": {
+        "title": "Kéréseim",
+        "hrStatus": {
+          "uj": "Új",
+          "folyamatban": "Folyamatban",
+          "jovahagyasra_var": "Jóváhagyásra vár",
+          "jovahagyva": "Jóváhagyva",
+          "elutasitva": "Elutasítva",
+          "lezart": "Lezárva"
+        }
+      },
+      "quick": {
+        "title": "Gyors műveletek",
+        "room": "Terem foglalása",
+        "request": "Új kérés",
+        "event": "Új esemény"
+      }
+    },
+    "shell": {
+      "navigation": "Munkatér menü"
+    },
+    "entry": {
+      "allDay": "Egész nap",
+      "absent": "Távol",
+      "cancelled": "Elmarad",
+      "draft": "Tervezet",
+      "publicHoliday": "Munkaszüneti nap",
+      "layers": {
+        "events": "Események",
+        "services": "{serviceSchedule.nom}",
+        "bookings": "Teremfoglalások",
+        "assignments": "Szolgálataim",
+        "absences": "Távollétek",
+        "holidays": "Ünnepek"
+      },
+      "planStatus": {
+        "draft": "Tervezet",
+        "in_review": "Véleményezés alatt",
+        "approved": "Jóváhagyva",
+        "locked": "Lezárva"
+      },
+      "bookingStatus": {
+        "pending": "Elbírálásra vár",
+        "approved": "Jóváhagyva",
+        "rejected": "Elutasítva",
+        "cancelled": "Lemondva"
+      },
+      "assignmentStatus": {
+        "requested": "Válaszra vár",
+        "accepted": "Elfogadva",
+        "declined": "Elutasítva",
+        "swap_requested": "Csere kérve",
+        "cancelled": "Törölve"
+      },
+      "visibility": {
+        "private": "Privát",
+        "team": "Csapat",
+        "staff": "Minden munkatárs",
+        "public": "Nyilvános"
+      }
+    },
+    "calendar": {
+      "title": "Naptár",
+      "views": {
+        "nap": "Nap",
+        "het": "Hét",
+        "honap": "Hónap",
+        "napirend": "Napirend"
+      },
+      "today": "Ma",
+      "emptyDay": "Erre a napra nincs program.",
+      "emptyAgenda": "A következő napokra nincs program.",
+      "dayCount": "{count} bejegyzés",
+      "more": "+{count} további",
+      "viewSwitcher": "Nézet",
+      "previous": "Előző",
+      "next": "Következő",
+      "newEvent": "Új esemény",
+      "filter": "Szűrők",
+      "layersLegend": "Rétegek",
+      "calendarsLegend": "Naptárak",
+      "applyFilter": "Szűrés"
+    },
+    "event": {
+      "title": "Esemény",
+      "newTitle": "Új esemény",
+      "editTitle": "Esemény szerkesztése",
+      "back": "Vissza a naptárhoz",
+      "when": "Mikor",
+      "where": "Hol",
+      "about": "Részletek",
+      "fields": {
+        "title": "Cím",
+        "calendarId": "Naptár",
+        "visibility": "Láthatóság",
+        "visibilityHelp": "A „Nyilvános” esemény a weboldalon is megjelenik.",
+        "teamId": "Csapat",
+        "teamHelp": "Csak csapat láthatóságnál szükséges.",
+        "teamNone": "Nincs",
+        "startsAt": "Kezdés",
+        "endsAt": "Befejezés",
+        "locationId": "Helyszín",
+        "locationNone": "Nincs megadva",
+        "body": "Leírás"
+      }
+    },
+    "errors": {
+      "required": "Ez a mező kötelező.",
+      "slugTaken": "Ez a cím már foglalt.",
+      "slugFormat": "A cím nem alakítható át érvényes webcímmé.",
+      "endBeforeStart": "A befejezés nem lehet a kezdés előtt.",
+      "notFound": "A keresett elem nem található.",
+      "general": "A mentés nem sikerült."
+    },
+    "directory": {
+      "title": "Névjegyzék",
+      "lead": "Munkatársak és önkéntesek elérhetőségei, csapatai és szolgálatai.",
+      "search": "Keresés a névjegyzékben",
+      "q": "Név vagy beosztás",
+      "team": "Csapat",
+      "position": "Szolgálat",
+      "skill": "Képesség",
+      "any": "Mind",
+      "apply": "Szűrés",
+      "count": "{count} találat",
+      "empty": "A névjegyzék még üres.",
+      "emptyFiltered": "Nincs a keresésnek megfelelő személy.",
+      "leader": "vezető",
+      "hiddenContact": "Egyes elérhetőségeket a személy nem tett láthatóvá Ön számára.",
+      "teams": "Csapatok",
+      "back": "Vissza a névjegyzékhez",
+      "contact": "Elérhetőség",
+      "noContact": "Nincs megadott elérhetőség."
+    },
+    "teams": {
+      "title": "Csapatok",
+      "lead": "Szolgálati csoportok, vezetőik és tagjaik.",
+      "empty": "Még nincs csapat.",
+      "members": "{count} tag",
+      "back": "Vissza a csapatokhoz",
+      "positions": "Szolgálatok",
+      "noPositions": "Ehhez a csapathoz még nincs szolgálat felvéve.",
+      "needed": "legalább {min} fő",
+      "membersHeading": "Tagok",
+      "noMembers": "Nincs Ön számára látható tag.",
+      "leader": "vezető",
+      "hiddenContact": "Egyes elérhetőségeket a személy nem tett láthatóvá Ön számára.",
+      "form": {
+        "person": "Személy",
+        "choose": "Válasszon…",
+        "position": "Szolgálat",
+        "noPosition": "Nincs",
+        "isLeader": "A csapat vezetője",
+        "positionName": "A szolgálat neve",
+        "minCount": "Legalább hány fő",
+        "maxCount": "Legfeljebb hány fő",
+        "addPosition": "Új szolgálat",
+        "addMember": "Új tag",
+        "add": "Hozzáadás"
+      }
+    },
+    "placeholder": {
+      "title": "Hamarosan",
+      "body": "Ez a rész a következő fejlesztési lépésben készül el; a helye és a jogosultsága már megvan.",
+      "toToday": "Vissza a Ma oldalra",
+      "foglalas": {
+        "title": "Termek",
+        "lead": "Teremfoglalás és terembeosztás."
+      },
+      "liturgia": {
+        "title": "Liturgia",
+        "lead": "Szolgálati tervek és beosztások."
+      },
+      "enektar": {
+        "title": "Énektár",
+        "lead": "Énekek és énekrendek."
+      },
+      "tavollet": {
+        "title": "Távollétek",
+        "lead": "Távollétek és szabadságok."
+      },
+      "hr": {
+        "title": "HR-ügyintézés",
+        "lead": "Kérések és ügyintézés."
+      }
     }
   },
   "portal": {

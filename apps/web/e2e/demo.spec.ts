@@ -62,6 +62,7 @@ const EXPECTED: Record<PersonaKey, { visible: string[]; hidden: string[] }> = {
   iroda: { visible: ["admin", "announcements", "requests"], hidden: ["news", "appearance"] },
   vezeto: { visible: ["admin", "appearance", "songs"], hidden: ["domain", "hr"] },
   onkentes: { visible: ["workspace", "calendar"], hidden: ["admin", "rooms"] },
+  csoportvezeto: { visible: ["workspace", "calendar"], hidden: ["admin", "hr"] },
   zenei: { visible: ["workspace", "songs"], hidden: ["admin", "hr"] },
   terem: { visible: ["workspace", "rooms"], hidden: ["admin", "songs"] },
   hr: { visible: ["workspace", "hr"], hidden: ["admin", "songs"] },

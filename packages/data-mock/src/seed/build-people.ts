@@ -32,6 +32,7 @@ const PERSONA_ROLE: Record<Persona, TenantRole | null> = {
   iroda: "office",
   vezeto: "admin",
   onkentes: null,
+  csoportvezeto: null,
   zenei: null,
   terem: null,
   hr: null,
@@ -44,6 +45,7 @@ const PERSONA_WS: Record<Persona, WorkspaceRole[]> = {
   iroda: ["employee"],
   vezeto: ["leader", "employee"],
   onkentes: ["volunteer"],
+  csoportvezeto: ["teamLeader", "volunteer"],
   zenei: ["musicLeader", "employee"],
   terem: ["roomManager", "employee"],
   hr: ["hrHandler", "employee"],
@@ -171,6 +173,8 @@ export function buildPeople(b: Build): void {
     }
     return 1;
   })();
+  // The first volunteer who leads a team is the group-leader persona (*Csoportvezető*).
+  const groupLeaderKey = spec.teams.map((t) => t.leader).find((l) => /^v\d+$/.test(l));
   for (let i = 1; i <= spec.volunteerCount; i++) {
     const { family, given } = pooledName(i, spec.nameOffset, taken);
     const noLogin = spec.volunteersNoLogin.includes(i);
@@ -187,6 +191,7 @@ export function buildPeople(b: Build): void {
       cv: { email: "team", phone: "team" },
     });
     if (i === volunteerPersonaIdx) personaOf.set(key, "onkentes");
+    else if (key === groupLeaderKey && !noLogin && !minor) personaOf.set(key, "csoportvezeto");
     addUser(key, person, personaOf.get(key) ?? null, 2 + (i % 12));
   }
 

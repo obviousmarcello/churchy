@@ -20,13 +20,14 @@ import type {
 } from "@churchy/contracts";
 import type { LiturgicalFamily } from "@churchy/calendar";
 
-/** The ten demo personas of D-92 (Látogató has no user). */
+/** The demo personas of D-92 (Látogató has no user). */
 export type Persona =
   | "tulajdonos"
   | "szerkeszto"
   | "iroda"
   | "vezeto"
   | "onkentes"
+  | "csoportvezeto"
   | "zenei"
   | "terem"
   | "hr"

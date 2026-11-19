@@ -9,6 +9,7 @@ export const PERSONAS = {
   iroda: "Iroda",
   vezeto: "Plébános/Vezető",
   onkentes: "Önkéntes",
+  csoportvezeto: "Csoportvezető",
   zenei: "Zenei vezető",
   terem: "Teremfelelős",
   hr: "HR-felelős",
