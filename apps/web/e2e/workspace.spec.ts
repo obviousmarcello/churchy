@@ -41,7 +41,7 @@ test.describe("Munkatér shell and Ma", () => {
     await page.goto("/munkater/foglalas");
     await expect(page.getByTestId("rooms-board")).toBeVisible();
     await page.goto("/munkater/tavollet");
-    await expect(page.getByTestId("workspace-placeholder")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 });
 
