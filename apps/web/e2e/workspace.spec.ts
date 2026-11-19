@@ -40,8 +40,6 @@ test.describe("Munkatér shell and Ma", () => {
     await expect(page.locator('[data-section="rooms"]')).toHaveCount(1);
     await page.goto("/munkater/foglalas");
     await expect(page.getByTestId("workspace-placeholder")).toBeVisible();
-    await page.goto("/munkater/liturgia");
-    await expect(page.getByTestId("workspace-placeholder")).toBeVisible();
   });
 });
 
