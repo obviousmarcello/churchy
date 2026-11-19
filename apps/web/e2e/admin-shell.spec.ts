@@ -187,7 +187,7 @@ test.describe("admin shell", () => {
     await openAs(page, "tulajdonos");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
-    await page.goto("/admin/kerelmek");
+    await page.goto("/admin/felhasznalok");
     await expect(page.getByTestId("admin-placeholder")).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
   });
