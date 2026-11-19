@@ -31,3 +31,4 @@ export * from "./modules/hr";
 export * from "./modules/absences";
 export * from "./modules/notifications";
 export * from "./modules/contact";
+export * from "./modules/import";

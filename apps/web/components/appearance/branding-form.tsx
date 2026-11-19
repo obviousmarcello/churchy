@@ -248,7 +248,7 @@ function ThemeCard({
  * A colour input: native picker plus hex text, the measured contrast and, when the colour fails,
  * the nearest passing shade as a one-click fix.
  */
-function ColorField({
+export function ColorField({
   label,
   help,
   value,

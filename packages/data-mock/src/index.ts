@@ -38,3 +38,6 @@ export type {
 
 export { createMockRepositories, createMockRepository } from "./repositories";
 export { mockRepositoryFactories, registerMockAdapter } from "./register";
+
+export type { MockImportJobOptions } from "./import-job";
+export { createMockImportJob, mockImportResult } from "./import-job";
