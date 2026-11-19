@@ -1,5 +1,6 @@
 import type { Actor } from "@churchy/policy";
-import { orgActor, tenantActor } from "@churchy/policy";
+import { can, orgActor, tenantActor } from "@churchy/policy";
+import type { Membership } from "@churchy/contracts";
 import { contextOf } from "@/lib/demo/personas";
 import { demoDirectory, demoIdentity, type DemoIdentity } from "@/server/data-adapters";
 import { getDemoState, type DemoState } from "@/server/demo";
@@ -68,6 +69,26 @@ export function actorFromIdentity(identity: DemoIdentity | null): Actor {
     confidentialCategoryIds: membership.hrCategoryIds.filter((id) => confidential.has(id)),
     directReportPersonIds: identity.directReportPersonIds,
   });
+}
+
+/**
+ * Whether a church member may handle pastoral requests (`can()` on the actor their membership
+ * describes). Used to offer only valid assignees in the requests inbox (D-29); the one place
+ * outside `actorFromIdentity()` that reads a membership's roles.
+ */
+export function memberMayHandleRequests(
+  membership: Pick<Membership, "tenantId" | "userId" | "role" | "wsRoles" | "groupIds" | "active">,
+): boolean {
+  if (!membership.active) return false;
+  const actor = tenantActor({
+    tenantId: membership.tenantId,
+    userId: membership.userId,
+    personId: null,
+    websiteRoles: membership.role === null ? [] : [membership.role],
+    workspaceRoles: membership.wsRoles,
+    groupIds: membership.groupIds,
+  });
+  return can(actor, "pastoralRequest.handle", { tenantId: membership.tenantId });
 }
 
 const defaultResolver: ActorResolver = async () => {

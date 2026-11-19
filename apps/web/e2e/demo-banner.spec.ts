@@ -25,6 +25,8 @@ const SAMPLE_PARAMS: Record<string, string> = {
   rite: "keresztelo",
   // An admin item (D-21): unknown ids render the shell's not-found page, which has the banner too.
   id: "nincs-ilyen",
+  // A request form of the default demo church (D-28).
+  key: "keresztelo",
 };
 
 function pagesIn(dir: string): string[] {

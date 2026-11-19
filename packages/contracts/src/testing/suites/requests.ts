@@ -25,6 +25,16 @@ const submission = (formKey: string) => ({
 });
 
 export const requestsContract = defineContractSuite("requests", (t) => {
+  it("lists deactivated forms only for staff that ask for them", async () => {
+    const form = await baptismForm(t.repo, t.ctx.a);
+    await t.repo.upsertForm(t.ctx.a, { ...form, active: false });
+    const keys = async (ctx: Ctx, includeInactive?: boolean) =>
+      (await t.repo.listForms(ctx, { includeInactive })).map((f) => f.key);
+    expect(await keys(t.ctx.a)).not.toContain(form.key);
+    expect(await keys(t.ctx.a, true)).toContain(form.key);
+    expect(await keys(t.ctx.anonA, true)).not.toContain(form.key);
+  });
+
   it("accepts anonymous submissions and lists them in the inbox", async () => {
     const form = await baptismForm(t.repo, t.ctx.a);
     expect(form).toMatchObject({ retentionDays: 365, active: true, confirmationText: "" });

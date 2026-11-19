@@ -22,6 +22,7 @@ const SECTION_ROUTES = [
 /** Sections whose module replaced the placeholder body. */
 const BUILT_SECTIONS = new Set([
   "news",
+  "requests",
   "announcements",
   "events",
   "pages",
