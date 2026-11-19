@@ -431,7 +431,7 @@ export function buildPlatformAndDiocese(
     ds,
     personas: {
       egyhazmegyeiHr: "u-org-hr",
-      orgUgyintezo: "u-org-ugyintezo",
+      egyhazmegyeiUgyintezo: "u-org-ugyintezo",
       orgBizalmas: "u-org-bizalmas",
     },
   };

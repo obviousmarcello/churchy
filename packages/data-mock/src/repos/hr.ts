@@ -133,9 +133,18 @@ export function mockHr({ store }: RepoDeps): HrRepo {
 
   return {
     async listCategories(ctx) {
-      const tenantId = staffTenant(ctx);
+      const { orgId, tenantIds } = hrTenants(store, ctx);
+      // Org ctx: only the categories the parish delegated (`hr_categories` is an HR table).
+      const delegated = (c: HrCategory): boolean =>
+        orgId === null ||
+        d().orgDelegations.some(
+          (x) =>
+            x.orgId === orgId &&
+            x.tenantId === c.tenantId &&
+            (x.hrCategoryKey === "*" || x.hrCategoryKey === c.key),
+        );
       return d()
-        .hrCategories.filter((c) => c.tenantId === tenantId)
+        .hrCategories.filter((c) => tenantIds.has(c.tenantId) && delegated(c))
         .sort((a, b) => huCollator.compare(a.name, b.name));
     },
     async upsertCategory(ctx, input) {

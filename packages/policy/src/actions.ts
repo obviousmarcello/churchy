@@ -125,6 +125,7 @@ export type GroupContentAction = `${GroupContentKind}.${ContentVerb}`;
 /** Website/admin actions that take only a `TenantResource`. */
 export const WEBSITE_TENANT_ACTIONS = [
   "site.domain.manage",
+  "site.orgLink.manage",
   "site.legal.edit",
   "site.delete",
   "site.appearance.edit",

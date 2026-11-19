@@ -42,6 +42,10 @@ const SECTION_AREA: Record<string, Area> = {
   users: "admin",
   domain: "admin",
   orgOverview: "organization",
+  orgRequests: "organization",
+  orgAbsences: "organization",
+  orgReports: "organization",
+  orgLink: "admin",
   orgLinks: "organization",
   orgTemplates: "organization",
   orgMembers: "organization",
@@ -70,6 +74,10 @@ const EXPECTED: Record<PersonaKey, { visible: string[]; hidden: string[] }> = {
   egyhazmegyeiHr: {
     visible: ["organization", "orgLinks", "orgTemplates"],
     hidden: ["workspace", "admin"],
+  },
+  egyhazmegyeiUgyintezo: {
+    visible: ["organization", "orgOverview", "orgRequests"],
+    hidden: ["workspace", "admin", "orgLinks", "orgTemplates"],
   },
 };
 

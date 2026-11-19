@@ -64,7 +64,12 @@ export function createDemoDatasetWithPersonas(now: Date): {
       tenantId: rkSpec.tenant.id,
       tulajdonosUserId: rk.personas["tulajdonos"] as string,
       vezetoUserId: rk.personas["vezeto"] as string,
-      delegatedCategoryKeys: ["munkaugyi-kerdes", "bizalmas-bejelentes"],
+      delegatedCategoryKeys: [
+        "munkaugyi-kerdes",
+        "koltsegterites",
+        "egyeb-tavollet",
+        "bizalmas-bejelentes",
+      ],
     },
     emails,
   );

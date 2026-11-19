@@ -124,10 +124,13 @@ export function ReplyForm({
   action,
   canNote,
   grant,
+  canAttach = true,
 }: {
   action: FormAction;
   canNote: boolean;
   grant?: string;
+  /** The diocesan portal does not attach library documents of a parish. */
+  canAttach?: boolean;
 }) {
   const t = useT("munkater.hr.controls");
   const [state, formAction, pending] = useFormAction(action);
@@ -142,7 +145,7 @@ export function ReplyForm({
       ) : null}
       <Textarea name="body" label={t("message")} rows={3} required error={errors["body"]} />
       <div className="flex flex-wrap gap-6">
-        <Checkbox name="attach" label={t("attach")} help={t("attachHelp")} />
+        {canAttach ? <Checkbox name="attach" label={t("attach")} help={t("attachHelp")} /> : null}
         {canNote ? (
           <Checkbox name="internal" label={t("internal")} help={t("internalHelp")} />
         ) : null}

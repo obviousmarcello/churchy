@@ -24,8 +24,8 @@ const ROLES = ["owner", "admin", "editor", "office", "groupLeader"] as const;
 const SDD_11_3: [string, Action[], [Cell, Cell, Cell, Cell, Cell]][] = [
   ["Manage users & roles", ["site.users.manage"], ["Y", "notOwners", "-", "-", "-"]],
   [
-    "Domain, legal data, delete site",
-    ["site.domain.manage", "site.legal.edit", "site.delete"],
+    "Domain, legal data, delete site, diocesan link",
+    ["site.domain.manage", "site.orgLink.manage", "site.legal.edit", "site.delete"],
     ["Y", "-", "-", "-", "-"],
   ],
   [
