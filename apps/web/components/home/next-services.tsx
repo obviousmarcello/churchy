@@ -61,7 +61,7 @@ export async function NextServicesCard({
   return (
     <section
       aria-labelledby="home-next-services"
-      className="flex flex-col gap-4 rounded-lg border border-border bg-surface-raised p-4 shadow-card sm:p-6"
+      className="flex flex-col gap-3 rounded-lg border border-border bg-surface-raised p-3 shadow-card sm:gap-4 sm:p-6"
       data-testid="next-services"
     >
       <SectionHeading id="home-next-services" title={t("nextServices")} />
