@@ -294,10 +294,11 @@ export function mockRequests({ store }: RepoDeps): RequestRepo {
     ) ?? null;
 
   return {
-    async listForms(ctx) {
+    async listForms(ctx, options) {
       const tenantId = readTenant(ctx);
+      const all = options?.includeInactive === true && !isAnonymous(ctx);
       return d()
-        .formDefinitions.filter((f) => f.tenantId === tenantId && f.active)
+        .formDefinitions.filter((f) => f.tenantId === tenantId && (all || f.active))
         .sort((a, b) => huCollator.compare(a.title, b.title));
     },
     async getForm(ctx, key) {

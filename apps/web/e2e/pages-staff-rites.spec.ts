@@ -74,10 +74,10 @@ test.describe("rite pages per preset", () => {
       await expect(rite.getByRole("heading", { name: "Kapcsolat" })).toBeVisible();
       expect(await axeSeriousOrCritical(page)).toEqual([]);
 
-      // The request form is D-28: a placeholder for now.
+      // The request form (D-28, covered in requests.spec.ts) opens from the button.
       await request.click();
       await expect(page).toHaveURL(new RegExp(`${ritePath}/bejelentes$`));
-      await expect(page.getByTestId("rite-request")).toContainText("hamarosan");
+      await expect(page.getByTestId("request-form")).toBeVisible();
       expect(await axeSeriousOrCritical(page)).toEqual([]);
 
       // Rites of other presets and the internal route do not exist here.

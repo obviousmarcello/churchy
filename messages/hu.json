@@ -437,9 +437,45 @@
       "contactLink": "Elérhetőségeink",
       "requestTitle": "{rite} — bejelentés",
       "requestMetaTitle": "{rite} — bejelentés · {church}",
-      "requestComingTitle": "Az online bejelentés hamarosan elérhető",
+      "requestComingTitle": "Az online bejelentés jelenleg nem érhető el",
       "requestComingBody": "Addig kérjük, keresse {office.article} {office.lower} munkatársait telefonon, e-mailben vagy személyesen.",
-      "requestBack": "Vissza a tudnivalókhoz"
+      "requestBack": "Vissza a tudnivalókhoz",
+      "request": {
+        "intro": "Kérjük, töltse ki az űrlapot. {office.article} {office.lower} munkatársai a megadott elérhetőségen felveszik Önnel a kapcsolatot.",
+        "stepProgress": "{current}. lépés / {total}",
+        "stepContact": "Elérhetősége",
+        "stepDetails": "A bejelentés adatai",
+        "stepSummary": "Összegzés és hozzájárulás",
+        "summaryIntro": "Kérjük, ellenőrizze az adatokat, majd küldje el a bejelentést.",
+        "summaryEdit": "Adatok javítása",
+        "next": "Tovább",
+        "back": "Vissza",
+        "submit": "Bejelentés elküldése",
+        "sending": "Küldés…",
+        "optional": "(nem kötelező)",
+        "choose": "Válasszon…",
+        "yes": "Igen",
+        "no": "Nem",
+        "none": "–",
+        "fileHelp": "Legfeljebb {size} MB méretű fájl.",
+        "consent": "Hozzájárulok, hogy a megadott adataimat a bejelentés intézése céljából kezeljék.",
+        "privacyLink": "Adatkezelési tájékoztató",
+        "honeypot": "Ezt a mezőt ne töltse ki",
+        "errorSummary": "A bejelentés nem küldhető el: kérjük, javítsa a megjelölt mezőket.",
+        "successTitle": "Köszönjük, a bejelentést megkaptuk",
+        "successBody": "Munkatársaink hamarosan felveszik Önnel a kapcsolatot. Kérjük, őrizze meg a hivatkozási számot.",
+        "successReference": "Hivatkozási szám: {reference}",
+        "successHome": "Vissza a tudnivalókhoz",
+        "errors": {
+          "required": "Ez a mező kötelező.",
+          "invalid": "Kérjük, adjon meg érvényes értéket.",
+          "tooLarge": "A fájl mérete meghaladja a megengedett legnagyobbat.",
+          "consent": "A bejelentéshez a hozzájárulás szükséges.",
+          "tooFast": "Az űrlapot túl gyorsan küldte el. Kérjük, ellenőrizze az adatokat, és küldje el újra.",
+          "rateLimited": "Ebből a hálózatból most túl sok bejelentés érkezett. Kérjük, később próbálja újra, vagy keresse {office.article} {office.lower} munkatársait.",
+          "failed": "A bejelentést most nem sikerült elküldeni. Kérjük, próbálja újra később."
+        }
+      }
     }
   },
   "dev": {
@@ -1208,7 +1244,7 @@
         "lead": "A heti rend, az ünnepi sablonok és a kivételek szerkesztése."
       },
       "requests": {
-        "lead": "A weboldalon érkezett kérések feldolgozása."
+        "lead": "A weboldalon érkezett kérelmek feldolgozása és az online űrlapok beállítása."
       },
       "appearance": {
         "lead": "Arculat, téma, kezdőlap, menü és lábléc."
@@ -1986,6 +2022,173 @@
       "preview": {
         "caption": "Az új oldal előnézete",
         "photoMark": "Fotó"
+      }
+    },
+    "requests": {
+      "status": {
+        "uj": "Új",
+        "folyamatban": "Folyamatban",
+        "lezart": "Lezárt"
+      },
+      "tabs": {
+        "label": "Kérelmek",
+        "inbox": "Beérkezett kérelmek",
+        "forms": "Űrlapok"
+      },
+      "yes": "Igen",
+      "no": "Nem",
+      "none": "–",
+      "inbox": {
+        "caption": "Beérkezett kérelmek",
+        "empty": "Még nem érkezett kérelem.",
+        "emptyFiltered": "A szűrésnek nincs találata.",
+        "count": "{count} kérelem",
+        "formsButton": "Űrlapok kezelése",
+        "summaryLabel": "Kérelmek állapot szerint",
+        "filters": {
+          "label": "Kérelmek szűrése",
+          "status": "Állapot",
+          "allStatuses": "Mind",
+          "form": "Űrlap",
+          "allForms": "Mind",
+          "assignee": "Felelős",
+          "anyAssignee": "Mind",
+          "unassigned": "Nincs kijelölve",
+          "from": "Beérkezett ettől",
+          "to": "Beérkezett eddig",
+          "apply": "Szűrés",
+          "reset": "Szűrés törlése"
+        },
+        "columns": {
+          "reference": "Hivatkozási szám",
+          "form": "Űrlap",
+          "received": "Beérkezett",
+          "status": "Állapot",
+          "assignee": "Felelős"
+        },
+        "unassigned": "Nincs kijelölve"
+      },
+      "detail": {
+        "title": "Kérelem: {reference}",
+        "metaTitle": "Kérelem",
+        "notFound": "A kérelem nem található.",
+        "privacy": "Személyes adatokat tartalmaz. E-mailben csak a hivatkozási szám és ez a link jár.",
+        "received": "Beérkezett",
+        "form": "Űrlap",
+        "closedAt": "Lezárva",
+        "purgeAfter": "Automatikus törlés:",
+        "dataHeading": "A beküldött adatok",
+        "consent": "Hozzájárulás megadva",
+        "workflowHeading": "Állapot és felelős",
+        "currentStatus": "Jelenlegi állapot",
+        "setStatus": "Állapot módosítása",
+        "toProgress": "Feldolgozás megkezdése",
+        "toClosed": "Lezárás",
+        "reopen": "Újranyitás",
+        "assignee": "Felelős",
+        "assign": "Kijelölés",
+        "unassign": "Nincs felelős",
+        "saved": "Mentve.",
+        "failed": "A művelet nem sikerült.",
+        "notesHeading": "Belső jegyzetek",
+        "notesNone": "Még nincs jegyzet.",
+        "noteLabel": "Új jegyzet",
+        "noteHelp": "Csak a munkatársak látják; a kérelmező nem.",
+        "noteAdd": "Jegyzet rögzítése",
+        "noteBy": "{name}, {date}",
+        "noteSystem": "Rendszer",
+        "replyHeading": "Válaszsablon",
+        "replyHelp": "Az űrlap visszaigazoló szövege; a kérelmező e-mailjében is ez szerepel. A szöveget az Űrlapok menüben állíthatja.",
+        "replyEmpty": "Ehhez az űrlaphoz még nincs válaszsablon.",
+        "replyCopy": "Sablon másolása",
+        "replyCopied": "Másolva",
+        "back": "Vissza a kérelmekhez",
+        "pdfSoon": "PDF-exportálás (később)"
+      },
+      "forms": {
+        "title": "Űrlapok",
+        "lead": "Az online bejelentő űrlapok mezői, értesítései és megőrzési ideje.",
+        "caption": "Bejelentő űrlapok",
+        "empty": "Még nincs űrlap.",
+        "newButton": "Új űrlap",
+        "columns": {
+          "title": "Űrlap",
+          "key": "Azonosító",
+          "fields": "Mezők",
+          "prefix": "Előtag",
+          "active": "Állapot"
+        },
+        "active": "Aktív",
+        "inactive": "Kikapcsolva",
+        "edit": "Szerkesztés",
+        "editItem": "Szerkesztés: {name}",
+        "back": "Vissza az űrlapokhoz",
+        "newTitle": "Új űrlap",
+        "editTitle": "Űrlap szerkesztése",
+        "saved": "Az űrlap elmentve.",
+        "preview": "Nyilvános űrlap megnyitása",
+        "general": {
+          "heading": "Alapadatok",
+          "title": "Az űrlap neve",
+          "key": "Azonosító",
+          "keyHelp": "A weboldal címében szerepel; mentés után nem módosítható. Kisbetű, szám és kötőjel.",
+          "prefix": "Hivatkozási szám előtagja",
+          "prefixHelp": "2–5 nagybetű, például KER (KER-2026-0042).",
+          "notifyEmails": "Értesítendő e-mail-címek",
+          "notifyEmailsHelp": "Vesszővel elválasztva. Az értesítés nem tartalmazza a beküldött adatokat.",
+          "confirmationText": "Visszaigazoló szöveg",
+          "confirmationHelp": "A kérelmező ezt kapja válaszul; a Válaszsablon is ebből készül.",
+          "retentionDays": "Megőrzési idő a lezárás után (nap)",
+          "retentionHelp": "Ennyi nap után a lezárt kérelem törlődik.",
+          "active": "Az űrlap elérhető a weboldalon"
+        },
+        "fields": {
+          "heading": "Mezők",
+          "help": "A kapcsolattartó neve, e-mail-címe és telefonszáma az első lépésben jelenik meg.",
+          "empty": "Még nincs mező.",
+          "item": "{index}. mező: {label}",
+          "label": "Felirat",
+          "key": "Azonosító",
+          "type": "Típus",
+          "required": "Kötelező",
+          "fieldHelp": "Súgószöveg",
+          "options": "Választási lehetőségek",
+          "optionsHelp": "Soronként egy lehetőség.",
+          "multiple": "Több is választható",
+          "maxMb": "Legnagyobb méret (MB)",
+          "remove": "Törlés: {label}",
+          "up": "Mező feljebb: {label}",
+          "down": "Mező lejjebb: {label}",
+          "add": "Mező hozzáadása",
+          "newLabel": "Új mező",
+          "types": {
+            "text": "Szöveg (egy sor)",
+            "textarea": "Hosszú szöveg",
+            "email": "E-mail-cím",
+            "phone": "Telefonszám",
+            "date": "Dátum",
+            "checkbox": "Jelölőnégyzet",
+            "select": "Választólista",
+            "file": "Fájl (legfeljebb 10 MB)"
+          },
+          "removeButton": "Törlés"
+        },
+        "submit": "Űrlap mentése",
+        "delete": "Űrlap törlése",
+        "deleteBlocked": "Az űrlaphoz már érkeztek kérelmek, ezért nem törölhető; kikapcsolhatja.",
+        "errors": {
+          "title": "Adja meg az űrlap nevét.",
+          "key": "Az azonosító csak kisbetűt, számot és kötőjelet tartalmazhat.",
+          "keyTaken": "Ez az azonosító már használatban van.",
+          "prefix": "Az előtag 2–5 nagybetű legyen.",
+          "emails": "Valamelyik e-mail-cím hibás.",
+          "retention": "Adjon meg pozitív egész számot.",
+          "fieldLabel": "Minden mezőnek legyen felirata.",
+          "fieldKey": "A mezőazonosító betűvel kezdődjön, és csak betűt, számot vagy aláhúzást tartalmazzon.",
+          "fieldKeyTaken": "A mezőazonosítók nem ismétlődhetnek.",
+          "options": "A választólistához legalább egy lehetőség kell.",
+          "general": "Az űrlap nem menthető. Kérjük, ellenőrizze az adatokat."
+        }
       }
     }
   },

@@ -113,7 +113,7 @@ function TextLikeInput({ type, ...props }: InputBase & { type: string }) {
 }
 
 export type InputProps = InputBase & {
-  type?: "text" | "email" | "tel" | "url" | "search" | "number" | "password";
+  type?: "text" | "email" | "tel" | "url" | "search" | "number" | "password" | "file";
 };
 
 /** Single-line text input with label, help text and error state. */

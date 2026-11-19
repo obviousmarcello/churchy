@@ -172,8 +172,11 @@ export type RequestSubmission = z.input<typeof RequestSubmissionSchema>;
  * special-category data: anonymous ctx may **submit** but never read them back.
  */
 export interface RequestRepo {
-  /** @public Active forms of the tenant. */
-  listForms(ctx: Ctx): Promise<FormDefinition[]>;
+  /**
+   * @public Active forms of the tenant. `includeInactive` (staff ctx only, ignored for anonymous
+   * visitors) adds deactivated forms so the form builder can reactivate them.
+   */
+  listForms(ctx: Ctx, options?: { includeInactive?: boolean }): Promise<FormDefinition[]>;
   /** @public An active form by key (anonymous) / any form (authenticated), or null. */
   getForm(ctx: Ctx, key: string): Promise<FormDefinition | null>;
   /** Tenant ctx: create/update a form. CONFLICT on duplicate key. */
