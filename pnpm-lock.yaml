@@ -65,6 +65,9 @@ importers:
       '@churchy/events':
         specifier: workspace:*
         version: link:../../packages/events
+      '@churchy/hr':
+        specifier: workspace:*
+        version: link:../../packages/hr
       '@churchy/hu':
         specifier: workspace:*
         version: link:../../packages/hu
@@ -266,6 +269,12 @@ importers:
       ical.js:
         specifier: 2.2.1
         version: 2.2.1
+
+  packages/hr:
+    dependencies:
+      '@churchy/hu':
+        specifier: workspace:*
+        version: link:../hu
 
   packages/hu: {}
 

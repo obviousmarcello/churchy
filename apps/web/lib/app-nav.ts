@@ -196,7 +196,15 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           label: t("sections.hr"),
           href: "/munkater/hr",
           module: "ws.hr",
-          requires: { action: "hr.report.view" },
+          // Everyone who may submit HR requests (volunteers: categories enabled for them);
+          // the page lists what the actor may see.
+          requires: {
+            action: "hr.ticket.create",
+            resource: (ctx) => ({
+              tenantId: tenantIdOf(ctx),
+              category: { id: "", key: "", confidential: false, whoCanSubmit: "volunteers" },
+            }),
+          },
         },
       ],
     },
