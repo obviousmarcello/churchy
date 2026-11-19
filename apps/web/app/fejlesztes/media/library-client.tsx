@@ -85,7 +85,7 @@ export function useMediaState(initial: MediaLibraryState) {
     onUpdate: (id, patch) => apply(updateMedia(id, patch)),
     onDelete: (id) => apply(deleteMedia(id)),
   };
-  return { state, handlers };
+  return { state, handlers, setState };
 }
 
 export function MediaLibraryDemo({ initial }: { initial: MediaLibraryState }) {

@@ -11,7 +11,7 @@ import type {
 import { huCollator } from "@churchy/contracts";
 import { getT } from "@/i18n/server";
 import type { FieldDef, FormValues } from "@/lib/admin/content-form";
-import { localInputValue, textFromBlocks, textFromDoc } from "@/lib/admin/content";
+import { localInputValue, docFromBlocks, docValue } from "@/lib/admin/content";
 
 /**
  * Field descriptors (translated) and initial values of the content forms (D-21), shared by the
@@ -44,7 +44,7 @@ export function newsValues(post?: Post): FormValues {
     title: post?.title ?? "",
     slug: post?.slug ?? "",
     lead: post?.lead ?? "",
-    body: textFromDoc(post?.body),
+    body: docValue(post?.body),
     categories: post?.categories.join(", ") ?? "",
     expiresAt: localInputValue(post?.expiresAt),
   };
@@ -67,7 +67,7 @@ export async function announcementFields(): Promise<FieldDef[]> {
 }
 
 export function announcementValues(row: Announcement | undefined, sunday: string): FormValues {
-  return { weekSunday: row?.weekSunday ?? sunday, body: textFromDoc(row?.body) };
+  return { weekSunday: row?.weekSunday ?? sunday, body: docValue(row?.body) };
 }
 
 // --- events ------------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ export async function eventValues(
     endsAt: localInputValue(event?.endsAt),
     locationId: event?.locationId ?? "",
     category: event?.category ?? "",
-    body: textFromDoc(event?.body),
+    body: docValue(event?.body),
   };
 }
 
@@ -164,7 +164,7 @@ export function pageValues(page?: Page): FormValues {
     title: page?.title ?? "",
     slug: page?.slug ?? "",
     parentId: page?.parentId ?? "",
-    body: page ? textFromBlocks(page.blocks) : "",
+    body: page ? docValue(docFromBlocks(page.blocks)) : "",
     seoTitle: page?.seo.title ?? "",
     seoDescription: page?.seo.description ?? "",
   };

@@ -25,6 +25,7 @@ import {
   bodyFromText,
   docFromText,
   instantFromLocalInput,
+  normalizeBodyValue,
   uniqueSlug,
 } from "@/lib/admin/content";
 import type { AuthorizedScope } from "@/server/policy";
@@ -109,11 +110,14 @@ async function errorMessages(): Promise<ErrorMessages> {
 }
 
 async function env(scope: Scope, form: FormData, fields: readonly string[]): Promise<Env> {
+  const values = formValues(form, fields);
+  // The editor always posts a document; an empty one is no text (required checks, empty body).
+  if (values["body"] !== undefined) values["body"] = normalizeBodyValue(values["body"]);
   return {
     ctx: scope.ctx,
     repos: await getRequestRepositories(),
     messages: await errorMessages(),
-    values: formValues(form, fields),
+    values,
   };
 }
 

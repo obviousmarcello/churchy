@@ -11,9 +11,10 @@ const PARTS = [
   { id: "home", href: `${BASE}/nyitooldal` },
   { id: "navigation", href: `${BASE}/menu` },
   { id: "footer", href: `${BASE}/lablec` },
+  { id: "terms", href: `${BASE}/kifejezesek` },
 ] as const;
 
-/** Links between the four appearance screens; marks the current one. */
+/** Links between the appearance screens; marks the current one. */
 export function AppearanceNav() {
   const t = useT("admin.appearance.tabs");
   const pathname = usePathname();

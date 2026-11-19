@@ -49,6 +49,43 @@ export function docFromText(text: string): RichText {
   };
 }
 
+/** The document inside an editor value (`{"type":"doc",…}`), or null for anything else. */
+export function parseDocValue(value: string | null | undefined): RichText | null {
+  const text = (value ?? "").trim();
+  if (!text.startsWith("{")) return null;
+  try {
+    const parsed = JSON.parse(text) as { type?: unknown; content?: unknown } | null;
+    if (parsed !== null && typeof parsed === "object" && parsed.type === "doc") {
+      const content = Array.isArray(parsed.content) ? (parsed.content as RichText["content"]) : [];
+      return { type: "doc", content };
+    }
+  } catch {
+    // Not JSON: plain text from a form posted without the editor.
+  }
+  return null;
+}
+
+/** Whether a document has neither text nor an image / embed. */
+export function isEmptyDoc(doc: RichText): boolean {
+  const media = (nodes: unknown): boolean =>
+    Array.isArray(nodes) &&
+    nodes.some((n: { type?: string; content?: unknown }) =>
+      n.type === "image" || n.type === "embed" ? true : media(n.content),
+    );
+  return richTextPlain(doc).trim() === "" && !media(doc.content);
+}
+
+/** The editor's value for a stored document (JSON), `""` for none. */
+export function docValue(doc: RichText | null | undefined): string {
+  return doc && !isEmptyDoc(doc) ? JSON.stringify(doc) : "";
+}
+
+/** Form value of a submitted editor: an empty document counts as empty text. */
+export function normalizeBodyValue(value: string): string {
+  const doc = parseDocValue(value);
+  return doc ? docValue(doc) : value;
+}
+
 export function textFromDoc(doc: RichText | null | undefined): string {
   return doc ? richTextPlain(doc) : "";
 }
@@ -60,6 +97,8 @@ export function textFromDoc(doc: RichText | null | undefined): string {
  */
 export function bodyFromText(original: RichText | null | undefined, text: string): RichText | null {
   if (text.trim() === "") return null;
+  const posted = parseDocValue(text);
+  if (posted) return isEmptyDoc(posted) ? null : posted;
   if (original && textFromDoc(original) === text.replaceAll("\r\n", "\n").trim()) return original;
   return docFromText(text);
 }
@@ -81,12 +120,39 @@ export function textFromBlocks(blocks: readonly PageBlock[]): string {
     .join("\n\n");
 }
 
+/** Headings and text blocks of a page as one document (the editor's value). */
+export function docFromBlocks(blocks: readonly PageBlock[]): RichText {
+  return {
+    type: "doc",
+    content: blocks.flatMap((b) =>
+      b.type === "heading"
+        ? [
+            {
+              type: "heading",
+              attrs: { level: Math.min(4, Math.max(2, b.level)) },
+              content: [{ type: "text", text: b.text }],
+            },
+          ]
+        : b.type === "text"
+          ? b.content.content
+          : [],
+    ),
+  };
+}
+
 export function hasOtherBlocks(blocks: readonly PageBlock[]): boolean {
   return blocks.some((b) => b.type !== "heading" && b.type !== "text");
 }
 
 /** Inverse of `textFromBlocks`; unchanged text keeps the original blocks, other blocks stay last. */
 export function blocksFromText(original: readonly PageBlock[], text: string): PageBlock[] {
+  const posted = parseDocValue(text);
+  if (posted) {
+    return [
+      ...(isEmptyDoc(posted) ? [] : [{ type: "text" as const, content: posted }]),
+      ...original.filter((b) => b.type !== "heading" && b.type !== "text"),
+    ];
+  }
   const normalized = text.replaceAll("\r\n", "\n").trim();
   if (textFromBlocks(original) === normalized) return [...original];
   const blocks: PageBlock[] = [];

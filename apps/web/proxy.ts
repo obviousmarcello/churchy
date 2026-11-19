@@ -9,6 +9,7 @@ import {
 import { demoModeEnabled } from "@/lib/demo/flag";
 import { TERM_ROUTE_HEADER, isTermRouteCandidate, termRouteTarget } from "@/lib/term-routes";
 import { siteConfigForRequest } from "@/server/site-config";
+import { redirectForRequest } from "@/server/term-redirects";
 
 /**
  * Runs before every page request:
@@ -17,6 +18,8 @@ import { siteConfigForRequest } from "@/server/site-config";
  *   the Catholic parish, `/istentiszteleti-rend` for the Reformed church, …) is rewritten to the
  *   one internal page that renders it, and the request is marked so that page knows it was
  *   reached through its public URL. Another denomination's slug is not rewritten, so it is a 404.
+ * - Renamed terms (D-23): the old slug of a renamed section answers 301 to the new one, from the
+ *   church's stored redirects.
  * - Demo mode (D-92): gives every visitor a demo session id before the first render, so each
  *   visitor works on their own in-memory copy of the demo data from the first request on. The id
  *   is also put on the forwarded request, so that very request already uses it. Without demo mode
@@ -34,6 +37,24 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   request.headers.delete(TERM_ROUTE_HEADER);
   const termRoute = await requestTermRoute(request);
   if (termRoute) request.headers.set(TERM_ROUTE_HEADER, termRoute.key);
+
+  // A renamed term's old URL answers 301 to the new one (FR-102).
+  const moved = termRoute ? null : await requestRedirect(request);
+  if (moved) {
+    const target = request.nextUrl.clone();
+    target.pathname = moved.toPath;
+    const redirect = NextResponse.redirect(target, moved.code);
+    // Terms can be renamed back, so browsers must not remember the move for good.
+    redirect.headers.set("cache-control", "no-store");
+    if (newSessionId !== null) {
+      redirect.cookies.set(
+        DEMO_SESSION_COOKIE,
+        newSessionId,
+        demoCookieOptions(request.nextUrl.protocol === "https:"),
+      );
+    }
+    return redirect;
+  }
 
   const forward = { request: { headers: request.headers } };
   let response: NextResponse;
@@ -68,6 +89,13 @@ async function requestTermRoute(request: NextRequest) {
   if (!isTermRouteCandidate(pathname)) return null;
   const config = await siteConfigForRequest((name) => request.cookies.get(name)?.value);
   return termRouteTarget(pathname, termsForSiteConfig(config));
+}
+
+/** The stored redirect of this request's path (only paths that could be a term URL). */
+async function requestRedirect(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (!isTermRouteCandidate(pathname)) return null;
+  return redirectForRequest((name) => request.cookies.get(name)?.value, pathname);
 }
 
 export const config = {
