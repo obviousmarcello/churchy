@@ -26,6 +26,8 @@ export interface AlertProps {
    */
   role?: "alert" | "status";
   className?: string;
+  /** Test hook. */
+  "data-testid"?: string;
 }
 
 /** Notice with icon + text (never colour alone). */
@@ -37,11 +39,13 @@ export function Alert({
   action,
   role,
   className,
+  "data-testid": testId,
 }: AlertProps) {
   const { box, icon: Icon } = tones[tone];
   return (
     <div
       role={role}
+      data-testid={testId}
       className={cn(
         "flex items-start gap-3 border-2 px-4 py-3 text-fs-3",
         variant === "inline"

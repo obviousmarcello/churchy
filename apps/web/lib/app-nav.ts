@@ -30,6 +30,7 @@ export type NavKey =
   | "sections.pages"
   | "sections.staff"
   | "sections.locations"
+  | "sections.adminRooms"
   | "sections.announcements"
   | "sections.schedule"
   | "sections.requests"
@@ -240,6 +241,12 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           id: "locations",
           label: t("sections.locations"),
           href: "/admin/helyszinek",
+          requires: { action: "location.manage" },
+        },
+        {
+          id: "adminRooms",
+          label: t("sections.adminRooms"),
+          href: "/admin/termek",
           requires: { action: "location.manage" },
         },
         {

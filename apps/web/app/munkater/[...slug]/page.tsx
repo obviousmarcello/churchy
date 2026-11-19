@@ -3,7 +3,7 @@ import { Alert, ButtonLink } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { getWorkspaceSections } from "@/server/workspace-nav";
 
-const PLACEHOLDERS = ["foglalas", "tavollet", "hr"] as const;
+const PLACEHOLDERS = ["tavollet", "hr"] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
 const isPlaceholder = (slug: string | undefined): slug is Placeholder =>
