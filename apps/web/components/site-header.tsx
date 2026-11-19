@@ -3,6 +3,7 @@ import { buildAppNav, buildPublicNav } from "@/lib/app-nav";
 import { aboutPages } from "@/lib/pages/public-pages";
 import { filterNav } from "@/lib/permissions/nav";
 import { getT } from "@/i18n/server";
+import { getEnabledPublicModules } from "@/server/plans";
 import { listPublishedPages } from "@/server/public-pages";
 import { getActor, getRequestContext } from "@/server/session";
 
@@ -14,14 +15,19 @@ import { getActor, getRequestContext } from "@/server/session";
  * no navigation item. `currentHref` marks the item of the current page.
  */
 export async function SiteHeader({ currentHref }: { currentHref?: string } = {}) {
-  const [actor, ctx, t, nav, pages] = await Promise.all([
+  const [actor, ctx, t, nav, pages, modules] = await Promise.all([
     getActor(),
     getRequestContext(),
     getT("common"),
     getT("common.nav"),
     listPublishedPages(),
+    getEnabledPublicModules(),
   ]);
-  const publicItems = filterNav(buildPublicNav(nav, nav, aboutPages(pages, nav)), actor, ctx);
+  // Modules switched off (D-25) or outside the plan (D-87) leave the public navigation.
+  const publicItems = filterNav(buildPublicNav(nav, nav, aboutPages(pages, nav)), actor, {
+    ...ctx,
+    isModuleEnabled: (module) => (modules as ReadonlySet<string>).has(module),
+  });
   const appItems = filterNav(buildAppNav(nav), actor, ctx);
   if (publicItems.length + appItems.length === 0) return null;
   return (

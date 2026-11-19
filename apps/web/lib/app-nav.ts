@@ -39,6 +39,9 @@ export type NavKey =
   | "sections.domain"
   | "sections.setup"
   | "sections.orgLink"
+  | "sections.modules"
+  | "sections.plan"
+  | "sections.billing"
   | "sections.orgOverview"
   | "sections.orgRequests"
   | "sections.orgAbsences"
@@ -308,6 +311,28 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           href: "/admin/egyhazmegye",
           // The parish side of the diocesan link: approve, choose delegated HR categories, revoke.
           requires: { action: "site.orgLink.manage" },
+        },
+        {
+          id: "modules",
+          label: t("sections.modules"),
+          href: "/admin/modulok",
+          // Module toggles (D-25): owner and admin (SDD §11.3 "Appearance, modules, …").
+          requires: { action: "site.modules.manage" },
+        },
+        {
+          id: "plan",
+          label: t("sections.plan"),
+          href: "/admin/csomag",
+          // Plan overview (D-87): read by those who switch modules; changing it is the owner's.
+          requires: { action: "site.modules.manage" },
+        },
+        {
+          id: "billing",
+          label: t("sections.billing"),
+          href: "/admin/szamlazas",
+          // Billing (D-88): the owner, like the domain and the legal data. A dedicated policy
+          // action (`site.billing.manage`) is proposed in the PR.
+          requires: { action: "site.domain.manage" },
         },
       ],
     },

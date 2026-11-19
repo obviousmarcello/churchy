@@ -19,6 +19,7 @@ import {
   listPublicEvents,
   type PublicOccurrence,
 } from "@/server/public-events";
+import { requirePublicModule } from "@/server/plans";
 
 /** Days per list page; `?tol=YYYY-MM-DD` pages forward (the month view browses freely). */
 const LIST_DAYS = 28;
@@ -71,6 +72,7 @@ function groupByMonth(occurrences: PublicOccurrence[], today: string): MonthGrou
 }
 
 export default async function EventsListPage({ searchParams }: { searchParams: SearchParams }) {
+  await requirePublicModule("events");
   const now = new Date();
   const today = todayInBudapest(now);
   const from = pageStart((await searchParams).tol, today);

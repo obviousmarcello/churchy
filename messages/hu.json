@@ -50,7 +50,10 @@
         "staff": "{staffSection.nom}",
         "locations": "Helyszínek",
         "setup": "Első beállítás",
-        "adminRooms": "Termek"
+        "adminRooms": "Termek",
+        "modules": "Modulok",
+        "plan": "Csomag",
+        "billing": "Számlázás"
       },
       "contact": "{contactPage.nom}"
     },
@@ -1264,8 +1267,19 @@
       "adminRooms": {
         "lead": "Termek, eszközök és a szolgálatok terem-blokkolása."
       },
+<<<<<<< HEAD
       "orgLink": {
         "lead": "Az egyházmegyei HR-portállal való kapcsolat és a delegált kategóriák."
+=======
+      "modules": {
+        "lead": "A weboldal és a munkatér moduljainak be- és kikapcsolása."
+      },
+      "plan": {
+        "lead": "Az aktuális csomag, a keretek és a csomagváltás."
+      },
+      "billing": {
+        "lead": "Előfizetés, számlázási adatok és számlák."
+>>>>>>> d-26-ui-users-plans
       }
     },
     "flows": {
@@ -2596,6 +2610,7 @@
         }
       }
     },
+<<<<<<< HEAD
     "orgLink": {
       "lead": "A {community.nom} kapcsolata az egyházmegyei HR-portállal: jóváhagyás, delegált kategóriák, megszüntetés.",
       "noneTitle": "Nincs egyházmegyei kapcsolat",
@@ -2627,6 +2642,474 @@
         "take": "átvétel",
         "close": "lezárás",
         "reply": "válasz"
+=======
+    "users": {
+      "lead": "Hívjon meg munkatársakat, módosítsa a szerepköreiket, vagy függessze fel a hozzáférésüket.",
+      "newButton": "Új felhasználó meghívása",
+      "inviteTitle": "Felhasználó meghívása",
+      "inviteLead": "A meghívott e-mailben kap hívást a belépéshez. A szerepkört később bármikor módosíthatja.",
+      "inviteSubmit": "Meghívó küldése",
+      "editTitle": "Szerepkörök módosítása",
+      "editLead": "{name} ({email}) hozzáférése",
+      "save": "Mentés",
+      "empty": "Még nincs felhasználó.",
+      "notYours": "Nem módosíthatja",
+      "edit": "Szerkesztés",
+      "editAria": "Szerkesztés: {name}",
+      "lastOwner": "Ön az utolsó aktív tulajdonos, nem függesztheti fel. Előbb nevezzen ki másik tulajdonost.",
+      "mockTitle": "Bemutató",
+      "mockNote": "Bemutató: a meghívót nem küldjük el. Kitalált e-mail-címeket használjon.",
+      "table": {
+        "caption": "Felhasználók és szerepköreik",
+        "name": "Név",
+        "role": "Weboldali szerepkör",
+        "workspace": "Munkatér szerepkörök",
+        "state": "Állapot",
+        "actions": "Teendők"
+      },
+      "states": {
+        "active": "Aktív",
+        "invited": "Meghívva",
+        "inactive": "Felfüggesztve"
+      },
+      "roles": {
+        "owner": "Tulajdonos",
+        "admin": "Adminisztrátor",
+        "editor": "Szerkesztő",
+        "office": "Iroda",
+        "groupLeader": "Csoportvezető"
+      },
+      "wsRoles": {
+        "leader": "Vezető",
+        "employee": "Munkatárs",
+        "volunteer": "Önkéntes",
+        "teamLeader": "Csapatvezető",
+        "musicLeader": "Zenei vezető",
+        "roomManager": "Teremfelelős",
+        "hrHandler": "HR-felelős",
+        "confidentialHandler": "Bizalmas ügyek felelőse"
+      },
+      "fields": {
+        "name": "Név",
+        "email": "E-mail-cím",
+        "role": "Weboldali szerepkör",
+        "roleHelp": "A weboldal szerkesztéséhez szükséges. Üresen hagyva csak a munkatérhez kap hozzáférést.",
+        "roleNone": "Nincs (csak munkatér)",
+        "groups": "Csoportok",
+        "groupsHelp": "Csoportvezetőnél: azok a csoportok, amelyek eseményeit kezelheti. Vesszővel válassza el őket.",
+        "wsHeading": "Munkatér szerepkörök"
+      },
+      "tier": {
+        "upgrade": "Csomagok megtekintése",
+        "warning": {
+          "title": "A munkatér-felhasználók keretének 90%-a betelt",
+          "body": "Jelenleg {used} aktív felhasználó van a csomag {cap} fős keretéből. Újabb meghívás előtt érdemes nagyobb csomagot választani, vagy felfüggeszteni a már nem használt hozzáféréseket."
+        },
+        "full": {
+          "title": "A munkatér-felhasználók kerete betelt",
+          "body": "A csomag {cap} fős kerete elfogyott ({used} aktív felhasználó), új munkatér-felhasználót nem hívhat meg. Függesszen fel egy hozzáférést, vagy válasszon nagyobb csomagot."
+        }
+      },
+      "editors": {
+        "warning": {
+          "title": "A szerkesztők keretének 90%-a betelt",
+          "body": "Jelenleg {used} szerkesztő van a csomag {cap} fős keretéből."
+        },
+        "full": {
+          "title": "A szerkesztők kerete betelt",
+          "body": "A csomag legfeljebb {cap} szerkesztőt enged ({used} aktív van), újabb szerkesztő nem hívható meg."
+        }
+      },
+      "errors": {
+        "unknownRole": "Ez a szerepkör nem választható.",
+        "needRole": "Adjon meg weboldali szerepkört vagy legalább egy munkatér szerepkört.",
+        "alreadyMember": "Ez az e-mail-cím már szerepel a felhasználók között.",
+        "lastOwner": "Legalább egy aktív tulajdonosnak maradnia kell, ezért ez a módosítás nem végezhető el.",
+        "wsFull": "A munkatér-felhasználók kerete betelt, új munkatér szerepkör nem adható. Válasszon nagyobb csomagot, vagy függesszen fel egy hozzáférést.",
+        "wsDisabled": "A jelenlegi csomag nem tartalmazza a munkatért, ezért munkatér szerepkör nem adható.",
+        "editorsFull": "A szerkesztők kerete betelt, új weboldali szerepkör nem adható. Válasszon nagyobb csomagot, vagy függesszen fel egy hozzáférést.",
+        "notFound": "A felhasználó nem található."
+      },
+      "active": {
+        "close": "Bezárás",
+        "cancel": "Mégse",
+        "deactivate": {
+          "button": "Felfüggesztés",
+          "trigger": "Felfüggesztés: {name}",
+          "title": "Hozzáférés felfüggesztése",
+          "question": "Felfüggeszti {name} hozzáférését?",
+          "body": "A felhasználó nem tud belépni, de a korábbi munkája megmarad. A hozzáférést később visszaállíthatja.",
+          "confirm": "Felfüggesztés"
+        },
+        "activate": {
+          "button": "Visszaállítás",
+          "trigger": "Visszaállítás: {name}",
+          "title": "Hozzáférés visszaállítása",
+          "question": "Visszaállítja {name} hozzáférését?",
+          "body": "A felhasználó újra beléphet a korábbi szerepköreivel.",
+          "confirm": "Visszaállítás"
+        },
+        "problems": {
+          "lastOwner": "Legalább egy aktív tulajdonosnak maradnia kell.",
+          "limit": "A csomag kerete betelt, ezért a hozzáférés nem állítható vissza.",
+          "failed": "A művelet nem sikerült."
+        }
+      }
+    },
+    "modules": {
+      "lead": "Kapcsolja be azokat a részeket, amelyeket használni szeretne. A kikapcsolt modul eltűnik a menüből, a kezdőoldalról és az oldaltérképről; a tartalma megmarad.",
+      "save": "Mentés",
+      "offTitle": "Kikapcsolás nem töröl semmit",
+      "offBody": "Ha kikapcsol egy modult, az oldalai nem érhetők el. Bekapcsoláskor minden tartalom újra megjelenik.",
+      "securityTitle": "Éles használat csak biztonsági átvétel után",
+      "securityBody": "A HR-modulok személyes adatot kezelnek. Valós adatot csak a hozzáférés-védelem és a titkosítás ellenőrzése után szabad bevinni; addig csak mintaadatokkal próbálható.",
+      "website": {
+        "title": "Weboldal modulok",
+        "items": {
+          "news": {
+            "title": "Hírek",
+            "help": "Cikkek és beszámolók a közösség életéről."
+          },
+          "announcements": {
+            "title": "Heti hirdetések",
+            "help": "A heti hirdetések közzététele és archívuma."
+          },
+          "events": {
+            "title": "Események",
+            "help": "Naptár, ismétlődő alkalmak és iCal-feliratkozás."
+          },
+          "schedule": {
+            "title": "{serviceSchedule.nom}",
+            "help": "A rendszeres és ünnepi alkalmak heti rendje."
+          },
+          "locations": {
+            "title": "Helyszínek",
+            "help": "Templomok, imaházak és egyéb helyszínek térképpel."
+          },
+          "staff": {
+            "title": "{staffSection.nom}",
+            "help": "A lelkészek és munkatársak bemutatkozó oldala."
+          },
+          "rites": {
+            "title": "{ritesSection.nom}",
+            "help": "Tájékoztató oldalak és online bejelentők."
+          },
+          "groups": {
+            "title": "Közösségek",
+            "help": "Csoportok és közösségek oldalai."
+          },
+          "sermons": {
+            "title": "Igehirdetések",
+            "help": "Hang- és videófelvételek, szöveges összefoglalók."
+          },
+          "livestream": {
+            "title": "Élő közvetítés",
+            "help": "Beágyazott közvetítés a kezdőoldalon."
+          },
+          "gallery": {
+            "title": "Képtár",
+            "help": "Albumok az eseményekről."
+          },
+          "documents": {
+            "title": "Dokumentumok",
+            "help": "Letölthető tájékoztatók és űrlapok."
+          },
+          "giving": {
+            "title": "Támogatás",
+            "help": "Adományozási tudnivalók, számlaszám és QR-kód."
+          },
+          "onlineGiving": {
+            "title": "Online adományozás",
+            "help": "Adományozás bankkártyával a weboldalon."
+          },
+          "massIntentions": {
+            "title": "Imaszándékok",
+            "help": "Szándékok felvétele és a heti lista."
+          },
+          "funeralNotices": {
+            "title": "Gyászhírek",
+            "help": "Gyászhírek közzététele."
+          },
+          "newsletter": {
+            "title": "Hírlevél",
+            "help": "Feliratkozás és hírlevél-küldés."
+          },
+          "search": {
+            "title": "Keresés",
+            "help": "Keresés az oldal tartalmában."
+          },
+          "liturgicalCalendar": {
+            "title": "Egyházi naptár",
+            "help": "Ünnepek és liturgikus napok az oldalon."
+          }
+        }
+      },
+      "workspace": {
+        "title": "Munkatér modulok",
+        "items": {
+          "calendar": {
+            "title": "Naptárak",
+            "help": "Közös és személyes naptárak a munkatársaknak."
+          },
+          "rooms": {
+            "title": "Teremfoglalás",
+            "help": "Termek, foglalási kérések és jóváhagyás."
+          },
+          "worship": {
+            "title": "Szolgálattervezés",
+            "help": "Az alkalmak menete, énekek és szolgálati beosztás."
+          },
+          "rota": {
+            "title": "Szolgálati beosztás",
+            "help": "Ki mikor szolgál."
+          },
+          "hr": {
+            "title": "HR-kérelmek",
+            "help": "Kérelmek és jóváhagyási láncok a munkatársaknak."
+          },
+          "hr_leave": {
+            "title": "Szabadság és távollét",
+            "help": "Szabadságkérelmek, egyenleg és távolléti naptár."
+          },
+          "hr_confidential": {
+            "title": "Bizalmas bejelentések",
+            "help": "Szigorúbb védelemmel kezelt bejelentések."
+          },
+          "docs": {
+            "title": "Belső dokumentumok",
+            "help": "Csak a munkatársak számára elérhető dokumentumtár."
+          },
+          "board": {
+            "title": "Hirdetőtábla",
+            "help": "Belső hirdetések és közlemények."
+          }
+        }
+      },
+      "locked": {
+        "title": "A csomagban nem szereplő modulok",
+        "lead": "Ezek a modulok a jelenlegi csomaggal nem kapcsolhatók be. Tartalmuk megmarad, és csomagváltás után újra használhatók.",
+        "badge": "Nem része a csomagnak",
+        "upgrade": "Csomagok megtekintése és váltás"
+      }
+    },
+    "plan": {
+      "lead": "Itt látja, melyik csomagot használja, mennyit használt a keretekből, és mit érhet el nagyobb csomaggal.",
+      "toBilling": "Számlázás",
+      "current": {
+        "title": "Jelenlegi csomag",
+        "website": "Weboldal csomag",
+        "workspace": "Munkatér",
+        "noWorkspace": "Nincs munkatér",
+        "renews": "Következő megújítás"
+      },
+      "deal": {
+        "title": "Egyházmegyei megállapodás",
+        "body": "A csomagot az egyházmegyei megállapodás fedezi, a számlázást az egyházmegye intézi. A csomagváltást az egyházmegyén keresztül kérheti."
+      },
+      "limits": {
+        "title": "Keretek",
+        "storage": "Tárhely",
+        "storageUsed": "{used} GB a(z) {cap} GB-ból",
+        "storageAlert": {
+          "warning": "A tárhely 90%-a betelt. Hamarosan nem tölthet fel újabb fájlt.",
+          "full": "A tárhely betelt, új fájl feltöltése le van tiltva. A meglévő tartalom megmarad."
+        },
+        "editors": "Szerkesztők",
+        "editorsUsed": "{used} szerkesztő a(z) {cap} főből",
+        "editorsUnlimited": "{used} szerkesztő, korlátlan keretből",
+        "editorsAlert": {
+          "warning": "A szerkesztők keretének 90%-a betelt.",
+          "full": "A szerkesztők kerete betelt, újabb szerkesztő nem hívható meg."
+        },
+        "workspaceUsers": "Munkatér-felhasználók",
+        "workspaceUsed": "{used} aktív felhasználó a(z) {cap} főből",
+        "workspaceAlert": {
+          "warning": "A munkatér-felhasználók keretének 90%-a betelt.",
+          "full": "A munkatér-felhasználók kerete betelt, újabb munkatér-felhasználó nem hívható meg."
+        },
+        "noWorkspace": "A csomag nem tartalmazza a munkatért.",
+        "upgrade": {
+          "storage": "Nagyobb tárhely a Teljes csomaggal",
+          "editors": "Korlátlan szerkesztő a Teljes csomaggal",
+          "workspace": "Nagyobb munkatér-csomag"
+        }
+      },
+      "features": {
+        "domain": "Saját webcím",
+        "included": "A csomag tartalmazza",
+        "notIncluded": "Nem része a csomagnak",
+        "domainUpgrade": "A saját webcím a Teljes csomaggal használható; addig az oldal a semleges címen érhető el.",
+        "credit": "„Készült a Churchy-vel” felirat a láblécben",
+        "creditShown": "Látszik",
+        "creditHidden": "Nem látszik"
+      },
+      "modules": {
+        "title": "Elérhető modulok",
+        "lead": "Ami nincs a csomagban, az zárolva van, de a tartalma megmarad.",
+        "available": "Elérhető",
+        "locked": "Nem része a csomagnak",
+        "toToggles": "Modulok be- és kikapcsolása",
+        "website": {
+          "news": "Hírek",
+          "announcements": "Heti hirdetések",
+          "events": "Események",
+          "schedule": "{serviceSchedule.nom}",
+          "locations": "Helyszínek",
+          "staff": "{staffSection.nom}",
+          "rites": "{ritesSection.nom}",
+          "groups": "Közösségek",
+          "sermons": "Igehirdetések",
+          "livestream": "Élő közvetítés",
+          "gallery": "Képtár",
+          "documents": "Dokumentumok",
+          "giving": "Támogatás",
+          "onlineGiving": "Online adományozás",
+          "massIntentions": "Imaszándékok",
+          "funeralNotices": "Gyászhírek",
+          "newsletter": "Hírlevél",
+          "search": "Keresés",
+          "liturgicalCalendar": "Egyházi naptár"
+        },
+        "workspace": {
+          "calendar": "Naptárak (munkatér)",
+          "rooms": "Teremfoglalás (munkatér)",
+          "worship": "Szolgálattervezés (munkatér)",
+          "rota": "Szolgálati beosztás (munkatér)",
+          "hr": "HR-kérelmek (munkatér)",
+          "hr_leave": "Szabadság és távollét (munkatér)",
+          "hr_confidential": "Bizalmas bejelentések (munkatér)",
+          "docs": "Belső dokumentumok (munkatér)",
+          "board": "Hirdetőtábla (munkatér)"
+        }
+      },
+      "catalog": {
+        "title": "Csomagok",
+        "lead": "A munkatér a Teljes csomaghoz választható kiegészítés. Csomagváltáskor semmilyen tartalom nem törlődik.",
+        "ownerOnly": "A csomagot a tulajdonos válthatja.",
+        "current": "Jelenlegi csomag",
+        "perMonth": "havonta",
+        "perYear": "vagy {price} évente",
+        "storage": "{gb} GB tárhely",
+        "editors": "Legfeljebb {count} szerkesztő",
+        "editorsUnlimited": "Korlátlan szerkesztő",
+        "modules": "{count} weboldal modul",
+        "domainYes": "Saját webcím",
+        "domainNo": "Csak semleges webcím",
+        "creditYes": "„Készült a Churchy-vel” felirat",
+        "creditNo": "Felirat nélkül",
+        "wsUsers": "Legfeljebb {count} munkatér-felhasználó",
+        "wsModules": "{count} munkatér modul",
+        "workspaceNeedsPaid": "A munkatér a Teljes csomaggal együtt választható."
+      },
+      "change": {
+        "close": "Bezárás",
+        "cancel": "Mégse",
+        "confirm": "Csomagváltás",
+        "failed": "A csomagváltás nem sikerült.",
+        "demoNote": "Bemutató: a váltás azonnal érvénybe lép, fizetés nélkül. Éles működésben a fizetés visszaigazolása után, legfeljebb egy percen belül.",
+        "upgrade": {
+          "button": "Váltás",
+          "trigger": "Váltás a(z) {plan} csomagra",
+          "title": "Váltás: {plan}",
+          "question": "Átvált a(z) {plan} csomagra?",
+          "body": "A csomag új lehetőségei azonnal elérhetők lesznek."
+        },
+        "downgrade": {
+          "button": "Váltás",
+          "trigger": "Váltás a(z) {plan} csomagra",
+          "title": "Váltás: {plan}",
+          "question": "Átvált a(z) {plan} csomagra?",
+          "body": "Nem törlődik tartalom. A csomagban nem szereplő modulok elrejtésre kerülnek, a saját webcím a semleges címre irányít át, és a keret felett nem tölthető fel új fájl."
+        }
+      }
+    },
+    "billing": {
+      "lead": "Az előfizetés, a számlázási adatok és a számlák egy helyen.",
+      "toPlan": "Csomag",
+      "mockTitle": "Bemutató",
+      "mockNote": "A bemutatóban nincs valódi fizetés: a „Fizetés Barionnal” gomb csak egy kitalált megerősítő oldalra visz. Bankkártya-adatot a Churchy soha nem lát és nem tárol.",
+      "covered": {
+        "title": "A számlázást az egyházmegye intézi",
+        "body": "A csomagot az egyházmegyei megállapodás fedezi, ezért a számlák és a számlázási adatok az egyházmegyei számlán szerepelnek."
+      },
+      "dunning": {
+        "title": "Lejárt fizetés",
+        "body": "Az utolsó számla kifizetetlen. Emlékeztetőt a határidőn, 7 és 14 nappal utána küldünk; 30 napos türelmi idő után a weboldal az Ingyenes csomagra vált, a tartalom megmarad."
+      },
+      "period": {
+        "monthly": "Havi",
+        "yearly": "Éves"
+      },
+      "subscriptionStates": {
+        "trialing": "Próbaidőszak",
+        "active": "Aktív",
+        "past_due": "Lejárt fizetés",
+        "cancelled": "Lemondva"
+      },
+      "subscriptions": {
+        "title": "Előfizetés",
+        "empty": "Nincs aktív előfizetés.",
+        "plan": "Csomag",
+        "period": "Számlázás",
+        "status": "Állapot",
+        "renews": "Következő megújítás"
+      },
+      "invoiceStates": {
+        "proforma": "Díjbekérő",
+        "issued": "Kiállítva",
+        "paid": "Kifizetve",
+        "void": "Érvénytelenítve"
+      },
+      "invoices": {
+        "title": "Számlák",
+        "empty": "Még nincs számla.",
+        "number": "Sorszám",
+        "issued": "Kelt",
+        "amount": "Összeg",
+        "status": "Állapot",
+        "actions": "Teendők",
+        "pay": "Fizetés Barionnal",
+        "payAria": "Fizetés Barionnal: {number}",
+        "note": "A számlák PDF-je a fizetés után e-mailben érkezik, és itt is letölthető lesz."
+      },
+      "details": {
+        "title": "Számlázási adatok",
+        "lead": "Ezek az adatok szerepelnek a számlákon.",
+        "save": "Mentés"
+      },
+      "fields": {
+        "name": "Számlázási név",
+        "taxNumber": "Adószám",
+        "taxNumberHelp": "Például 12345678-1-42. Egyházi szervezetnél elhagyható.",
+        "postalCode": "Irányítószám",
+        "city": "Település",
+        "line1": "Utca, házszám",
+        "email": "A számlák e-mail-címe",
+        "emailHelp": "Ide küldjük a számlákat és a fizetési emlékeztetőket.",
+        "paymentMethod": "Fizetési mód",
+        "card": "Bankkártya (Barion)",
+        "transfer": "Banki átutalás (díjbekérő alapján)"
+      },
+      "errors": {
+        "taxNumber": "Az adószám formátuma 12345678-1-42."
+      },
+      "barion": {
+        "title": "Fizetés Barionnal",
+        "lead": "Ez a bemutató fizetési oldala.",
+        "mockTitle": "Kitalált fizetési oldal",
+        "mockBody": "Ez nem a valódi Barion oldal, és nem történik valódi fizetés. A bemutatóban a gomb csak megerősíti a lépést.",
+        "merchant": "Fizetés címzettje",
+        "merchantName": "Churchy (bemutató)",
+        "invoice": "Számla",
+        "amount": "Fizetendő összeg",
+        "noCardData": "A valódi fizetésnél a kártyaadatokat a Barion kezeli; a Churchy azokat sosem látja.",
+        "confirm": "Fizetés jóváhagyása (bemutató)",
+        "cancel": "Mégse",
+        "doneTitle": "A fizetés visszaigazolva (bemutató)",
+        "doneHeading": "A(z) {number} számla fizetése megerősítve",
+        "doneBody": "Ez csak bemutató: nem történt valódi fizetés, és a számla állapota sem változott.",
+        "backToBilling": "Vissza a számlázáshoz"
+>>>>>>> d-26-ui-users-plans
       }
     }
   },

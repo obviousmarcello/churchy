@@ -17,6 +17,10 @@ const SECTION_ROUTES = [
   ["requests", "/admin/kerelmek"],
   ["appearance", "/admin/megjelenes"],
   ["users", "/admin/felhasznalok"],
+  ["modules", "/admin/modulok"],
+  ["plan", "/admin/csomag"],
+  ["billing", "/admin/szamlazas"],
+  ["domain", "/admin/domain"],
 ] as const;
 
 /** Sections whose module replaced the placeholder body. */
@@ -30,6 +34,10 @@ const BUILT_SECTIONS = new Set([
   "staff",
   "locations",
   "appearance",
+  "users",
+  "modules",
+  "plan",
+  "billing",
 ]);
 
 /** Opens the mobile sidebar when the toggle is shown (below 1024 px). */
@@ -187,7 +195,7 @@ test.describe("admin shell", () => {
     await openAs(page, "tulajdonos");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
-    await page.goto("/admin/felhasznalok");
+    await page.goto("/admin/domain");
     await expect(page.getByTestId("admin-placeholder")).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
   });

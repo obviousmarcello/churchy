@@ -15,6 +15,7 @@ import { EventsHeader, LINK_CLASS, occurrenceHref } from "@/components/events/ev
 import { SiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { getPublicTenantName, publicOccurrences } from "@/server/public-events";
+import { requirePublicModule } from "@/server/plans";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -40,6 +41,7 @@ export async function generateMetadata({
 const WEEKDAYS = [1, 2, 3, 4, 5, 6, 7] as const;
 
 export default async function EventsMonthPage({ searchParams }: { searchParams: SearchParams }) {
+  await requirePublicModule("events");
   const now = new Date();
   const today = todayInBudapest(now);
   const ym = await selectedMonth(searchParams, today);

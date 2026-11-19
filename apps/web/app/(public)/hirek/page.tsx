@@ -14,6 +14,7 @@ import {
 } from "@/lib/news/public-news";
 import { getPublicTenantName } from "@/server/public-events";
 import { listPublicNews } from "@/server/public-news";
+import { requirePublicModule } from "@/server/plans";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -37,6 +38,7 @@ function PostDate({ post }: { post: Post }) {
 }
 
 export default async function NewsListPage({ searchParams }: { searchParams: SearchParams }) {
+  await requirePublicModule("news");
   const requested = parseNewsPage((await searchParams).oldal);
   const [t, common, result] = await Promise.all([
     getT("public.news"),

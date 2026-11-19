@@ -6,6 +6,7 @@ import { getT } from "@/i18n/server";
 import { LOCATIONS_PATH } from "@/lib/locations";
 import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
+import { requirePublicModule } from "@/server/plans";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [t, { tenants }, ctx] = await Promise.all([
@@ -22,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** *Templomaink* (title from the `locationsSection` term): all locations of the church. */
 export default async function LocationsPage() {
+  await requirePublicModule("locations");
   const [t, common, { locations }, ctx] = await Promise.all([
     getT("public.locations"),
     getT("common"),
