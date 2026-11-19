@@ -16,7 +16,10 @@ export type NavKey =
   | "workspace"
   | "admin"
   | "organization"
+  | "sections.today"
   | "sections.directory"
+  | "sections.teams"
+  | "sections.worship"
   | "sections.calendar"
   | "sections.rooms"
   | "sections.songs"
@@ -118,15 +121,17 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
       href: "/munkater",
       children: [
         {
-          id: "directory",
-          label: t("sections.directory"),
-          href: "/munkater/nevjegyzek",
+          id: "today",
+          label: t("sections.today"),
+          href: "/munkater",
+          // *Ma* is the home of every workspace role (it only shows what the actor may see).
           requires: { action: "directory.open" },
         },
         {
           id: "calendar",
           label: t("sections.calendar"),
           href: "/munkater/naptar",
+          module: "ws.calendar",
           // Every workspace role has a personal calendar (policy README).
           requires: {
             action: "calendarEvent.create",
@@ -134,9 +139,23 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           },
         },
         {
+          id: "directory",
+          label: t("sections.directory"),
+          href: "/munkater/nevjegyzek",
+          requires: { action: "directory.open" },
+        },
+        {
+          id: "teams",
+          label: t("sections.teams"),
+          href: "/munkater/csapatok",
+          requires: { action: "directory.open" },
+        },
+        {
           id: "rooms",
           label: t("sections.rooms"),
-          href: "/munkater/teremfoglalas",
+          // Built by the room booking deliverable (D-60); until then a placeholder page.
+          href: "/munkater/foglalas",
+          module: "ws.rooms",
           // A room with the default booking policy (all staff, SDD §23.2).
           requires: {
             action: "room.book",
@@ -148,21 +167,33 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           },
         },
         {
+          id: "worship",
+          label: t("sections.worship"),
+          // Built by the worship plan deliverable (D-66); until then a placeholder page. Every
+          // workspace role may open it — the plans themselves are filtered with `servicePlan.view`.
+          href: "/munkater/liturgia",
+          module: "ws.worship",
+          requires: { action: "directory.open" },
+        },
+        {
           id: "songs",
           label: t("sections.songs"),
           href: "/munkater/enektar",
+          module: "ws.worship",
           requires: { action: "song.edit" },
         },
         {
           id: "absences",
           label: t("sections.absences"),
           href: "/munkater/tavollet",
+          module: "ws.hr.leave",
           requires: { action: "hr.absence.viewCalendar" },
         },
         {
           id: "hr",
           label: t("sections.hr"),
           href: "/munkater/hr",
+          module: "ws.hr",
           requires: { action: "hr.report.view" },
         },
       ],

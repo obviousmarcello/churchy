@@ -22,6 +22,19 @@ const nextConfig: NextConfig = {
     "@churchy/ui",
   ],
   poweredByHeader: false,
+  async headers() {
+    // The workspace is private (D-53 AC3, SDD §20.1): never cached by a CDN or the browser and
+    // never indexed.
+    return [
+      {
+        source: "/munkater/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

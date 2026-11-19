@@ -102,6 +102,7 @@ const EXPECTED: Record<DemoPersonaKey, { visible: string[]; hidden: string[] }> 
   iroda: { visible: ["announcements", "requests", "schedule"], hidden: ["news", "appearance"] },
   vezeto: { visible: ["appearance", "users", "songs"], hidden: ["domain", "hr"] },
   onkentes: { visible: ["workspace", "calendar", "directory"], hidden: ["rooms", "admin"] },
+  csoportvezeto: { visible: ["workspace", "calendar", "directory"], hidden: ["admin", "hr"] },
   zenei: { visible: ["songs", "rooms"], hidden: ["admin", "hr"] },
   terem: { visible: ["rooms"], hidden: ["songs", "admin"] },
   hr: { visible: ["hr", "absences"], hidden: ["songs", "admin"] },
