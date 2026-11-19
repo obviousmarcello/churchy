@@ -138,6 +138,10 @@ export const hrContract = defineContractSuite("hr", (t) => {
     const link = await activeLink(orgs, t.ctx.org, t.ctx.a, t.env.tenantA);
     await orgs.setDelegations(t.ctx.a, t.env.orgId, [delegated.key]);
 
+    const seenCategories = ids(await t.repo.listCategories(t.ctx.org));
+    expect(seenCategories).toContain(delegated.id);
+    expect(seenCategories).not.toContain(other.id);
+
     const seen = ids(await t.repo.listTickets(t.ctx.org, { tenantIds: [t.env.tenantA] }));
     expect(seen).toContain(visible.id);
     expect(seen).not.toContain(hidden.id);
@@ -152,5 +156,6 @@ export const hrContract = defineContractSuite("hr", (t) => {
 
     await orgs.revokeLink(t.ctx.a, link.id);
     expect(await t.repo.getTicket(t.ctx.org, visible.id)).toBeNull();
+    expect(ids(await t.repo.listCategories(t.ctx.org))).not.toContain(delegated.id);
   });
 });

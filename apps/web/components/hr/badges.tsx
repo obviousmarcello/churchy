@@ -49,12 +49,18 @@ export async function TicketRow({
   requester,
   sla,
   now,
+  href,
+  parish,
 }: {
   ticket: HrTicket;
   category: string;
   requester: string;
   sla: SlaStatus;
   now: Date;
+  /** Detail page; the workspace inbox by default. */
+  href?: string;
+  /** The parish of the ticket (diocesan inbox). */
+  parish?: string;
 }) {
   const t = await getT("munkater.hr.list");
   return (
@@ -64,7 +70,7 @@ export async function TicketRow({
       data-reference={ticket.reference}
     >
       <Link
-        href={`/munkater/hr/${ticket.id}`}
+        href={href ?? `/munkater/hr/${ticket.id}`}
         className="inline-flex min-h-11 items-center font-heading text-fs-4 font-bold text-primary"
       >
         <span className="mr-2 font-mono text-fs-3">{ticket.reference}</span>
@@ -73,6 +79,9 @@ export async function TicketRow({
       <div className="flex flex-wrap items-center gap-2">
         <StatusBadge status={ticket.status} />
         <SlaBadge sla={sla} />
+        {parish !== undefined && parish !== "" ? (
+          <Badge data-testid="ticket-parish">{parish}</Badge>
+        ) : null}
         <span className="text-muted">{category}</span>
         {requester !== "" ? <span className="text-muted">· {requester}</span> : null}
         {ticket.anonymous ? <span className="text-muted">· {t("anonymous")}</span> : null}

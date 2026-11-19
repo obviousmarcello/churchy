@@ -12,9 +12,9 @@ export interface WorkspaceNavItem {
 
 const HOME_HREF = "/munkater";
 
-/** `/munkater/naptar/uj` belongs to `/munkater/naptar`; *Ma* only matches itself. */
-function isCurrent(pathname: string, href: string): boolean {
-  if (href === HOME_HREF) return pathname === href;
+/** `/munkater/naptar/uj` belongs to `/munkater/naptar`; the home item only matches itself. */
+function isCurrent(pathname: string, href: string, homeHref: string): boolean {
+  if (href === homeHref) return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -26,10 +26,13 @@ function isCurrent(pathname: string, href: string): boolean {
 export function WorkspaceFrame({
   label,
   items,
+  homeHref = HOME_HREF,
   children,
 }: {
   label: string;
   items: readonly WorkspaceNavItem[];
+  /** The area's landing page (*Ma*; *Áttekintés* in the diocesan portal). */
+  homeHref?: string;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -45,7 +48,7 @@ export function WorkspaceFrame({
           className="flex overflow-x-auto md:flex-col md:gap-1 md:overflow-visible md:p-2"
         >
           {items.map((item) => {
-            const current = isCurrent(pathname, item.href);
+            const current = isCurrent(pathname, item.href, homeHref);
             return (
               <li key={item.id} data-section={item.id} className="shrink-0 md:shrink">
                 <Link

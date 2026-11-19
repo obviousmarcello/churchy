@@ -24,6 +24,7 @@ export const DEMO_PERSONAS = [
   { key: "hr", scope: "tenant" },
   { key: "bizalmas", scope: "tenant" },
   { key: "egyhazmegyeiHr", scope: "org" },
+  { key: "egyhazmegyeiUgyintezo", scope: "org" },
 ] as const satisfies readonly { key: string; scope: PersonaScope }[];
 
 export type DemoPersonaKey = (typeof DEMO_PERSONAS)[number]["key"];

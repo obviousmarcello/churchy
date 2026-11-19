@@ -186,7 +186,10 @@ export type HrApprovalInput = z.input<typeof HrApprovalInputSchema>;
  * Confidential/handler scoping and read reasons are enforced by `can()` + audit logging.
  */
 export interface HrRepo {
-  /** Tenant ctx: categories of the tenant. */
+  /**
+   * Tenant ctx: categories of the tenant. Org ctx: only the *delegated* categories of actively
+   * linked parishes (same rule as the tickets).
+   */
   listCategories(ctx: Ctx): Promise<HrCategory[]>;
   /** Tenant ctx: create/update. CONFLICT on duplicate key. */
   upsertCategory(ctx: Ctx, input: HrCategoryInput): Promise<HrCategory>;

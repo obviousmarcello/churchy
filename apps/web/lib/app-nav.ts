@@ -38,7 +38,11 @@ export type NavKey =
   | "sections.users"
   | "sections.domain"
   | "sections.setup"
+  | "sections.orgLink"
   | "sections.orgOverview"
+  | "sections.orgRequests"
+  | "sections.orgAbsences"
+  | "sections.orgReports"
   | "sections.orgLinks"
   | "sections.orgTemplates"
   | "sections.orgMembers";
@@ -298,6 +302,13 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           href: "/admin/domain",
           requires: { action: "site.domain.manage" },
         },
+        {
+          id: "orgLink",
+          label: t("sections.orgLink"),
+          href: "/admin/egyhazmegye",
+          // The parish side of the diocesan link: approve, choose delegated HR categories, revoke.
+          requires: { action: "site.orgLink.manage" },
+        },
       ],
     },
     {
@@ -309,7 +320,25 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
         {
           id: "orgOverview",
           label: t("sections.orgOverview"),
-          href: "/egyhazmegye/ugyek",
+          href: "/egyhazmegye",
+          requires: { action: "org.portal.open", resource: (ctx) => ({ orgId: orgIdOf(ctx) }) },
+        },
+        {
+          id: "orgRequests",
+          label: t("sections.orgRequests"),
+          href: "/egyhazmegye/kerelmek",
+          requires: { action: "org.portal.open", resource: (ctx) => ({ orgId: orgIdOf(ctx) }) },
+        },
+        {
+          id: "orgAbsences",
+          label: t("sections.orgAbsences"),
+          href: "/egyhazmegye/tavollet",
+          requires: { action: "org.portal.open", resource: (ctx) => ({ orgId: orgIdOf(ctx) }) },
+        },
+        {
+          id: "orgReports",
+          label: t("sections.orgReports"),
+          href: "/egyhazmegye/jelentesek",
           requires: { action: "org.portal.open", resource: (ctx) => ({ orgId: orgIdOf(ctx) }) },
         },
         {

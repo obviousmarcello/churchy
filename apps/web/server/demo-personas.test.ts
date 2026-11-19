@@ -81,7 +81,12 @@ describe("persona → actor (from the demo memberships)", () => {
     expect(actor.links).toContainEqual({
       tenantId: "t-szenttivadar",
       status: "active",
-      delegatedCategoryKeys: ["munkaugyi-kerdes", "bizalmas-bejelentes"],
+      delegatedCategoryKeys: [
+        "munkaugyi-kerdes",
+        "koltsegterites",
+        "egyeb-tavollet",
+        "bizalmas-bejelentes",
+      ],
     });
     expect(can(actor, "org.portal.open", { orgId: org.id })).toBe(true);
     expect(can(actor, "directory.open", { tenantId: "t-szenttivadar" })).toBe(false);
@@ -108,8 +113,21 @@ const EXPECTED: Record<DemoPersonaKey, { visible: string[]; hidden: string[] }> 
   hr: { visible: ["hr", "absences"], hidden: ["songs", "admin"] },
   bizalmas: { visible: ["calendar", "absences", "hr"], hidden: ["admin"] },
   egyhazmegyeiHr: {
-    visible: ["organization", "orgOverview", "orgLinks", "orgTemplates", "orgMembers"],
+    visible: [
+      "organization",
+      "orgOverview",
+      "orgRequests",
+      "orgAbsences",
+      "orgReports",
+      "orgLinks",
+      "orgTemplates",
+      "orgMembers",
+    ],
     hidden: ["workspace", "admin"],
+  },
+  egyhazmegyeiUgyintezo: {
+    visible: ["organization", "orgOverview", "orgRequests", "orgAbsences", "orgReports"],
+    hidden: ["workspace", "admin", "orgLinks", "orgTemplates", "orgMembers"],
   },
 };
 

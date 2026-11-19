@@ -192,6 +192,22 @@ export interface DemoOrgIdentity {
 export type DemoIdentity = DemoTenantIdentity | DemoOrgIdentity;
 
 /**
+ * One link per parish: the live one, or — for a revoked parish — the latest. A re-linked parish
+ * has a revoked row before its current one, and the policy must not see the stale row first.
+ */
+function currentLinks<T extends { orgId: string; tenantId: string; status: string }>(
+  links: readonly T[],
+  orgId: string,
+): T[] {
+  const own = links.filter((l) => l.orgId === orgId);
+  return [...new Set(own.map((l) => l.tenantId))].flatMap((tenantId) => {
+    const rows = own.filter((l) => l.tenantId === tenantId);
+    const row = rows.findLast((l) => l.status !== "revoked") ?? rows.at(-1);
+    return row === undefined ? [] : [row];
+  });
+}
+
+/**
  * The memberships behind `persona` in the given context, read from the visitor's demo session
  * (so a role change made in the demo shows up on the next request). `null` for the visitor
  * persona or when the persona has no active membership there.
@@ -215,15 +231,13 @@ export function demoIdentity(
       orgId: contextId,
       userId,
       membership,
-      links: data.orgLinks
-        .filter((l) => l.orgId === contextId)
-        .map((l) => ({
-          tenantId: l.tenantId,
-          status: l.status,
-          categoryKeys: data.orgDelegations
-            .filter((d) => d.orgId === contextId && d.tenantId === l.tenantId)
-            .map((d) => d.hrCategoryKey),
-        })),
+      links: currentLinks(data.orgLinks, contextId).map((l) => ({
+        tenantId: l.tenantId,
+        status: l.status,
+        categoryKeys: data.orgDelegations
+          .filter((d) => d.orgId === contextId && d.tenantId === l.tenantId)
+          .map((d) => d.hrCategoryKey),
+      })),
     };
   }
 

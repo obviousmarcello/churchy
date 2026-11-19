@@ -15,6 +15,7 @@ export const PERSONAS = {
   hr: "HR-felelős",
   bizalmas: "Bizalmas ügyek felelőse",
   egyhazmegyeiHr: "Egyházmegyei HR",
+  egyhazmegyeiUgyintezo: "Egyházmegyei ügyintéző",
 } as const;
 
 export type PersonaKey = keyof typeof PERSONAS;

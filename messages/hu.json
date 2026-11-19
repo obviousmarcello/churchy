@@ -37,9 +37,13 @@
         "appearance": "Megjelenés",
         "users": "Felhasználók és szerepkörök",
         "domain": "Domain és jogi adatok",
-        "orgOverview": "Delegált HR-ügyek",
+        "orgOverview": "Áttekintés",
+        "orgRequests": "Kérések",
+        "orgAbsences": "Távollétek",
+        "orgReports": "Jelentések",
+        "orgLink": "Egyházmegyei kapcsolat",
         "orgLinks": "Kapcsolt {community.plural}",
-        "orgTemplates": "HR-sablonok",
+        "orgTemplates": "Sablonok",
         "orgMembers": "Portál munkatársai",
         "events": "Események",
         "pages": "Oldalak",
@@ -83,7 +87,8 @@
         "terem": "Teremfelelős",
         "hr": "HR-felelős",
         "bizalmas": "Bizalmas ügyek felelőse",
-        "egyhazmegyeiHr": "Egyházmegyei HR"
+        "egyhazmegyeiHr": "Egyházmegyei HR",
+        "egyhazmegyeiUgyintezo": "Egyházmegyei ügyintéző"
       }
     }
   },
@@ -1258,6 +1263,9 @@
       },
       "adminRooms": {
         "lead": "Termek, eszközök és a szolgálatok terem-blokkolása."
+      },
+      "orgLink": {
+        "lead": "Az egyházmegyei HR-portállal való kapcsolat és a delegált kategóriák."
       }
     },
     "flows": {
@@ -2587,6 +2595,39 @@
           "general": "Az űrlap nem menthető. Kérjük, ellenőrizze az adatokat."
         }
       }
+    },
+    "orgLink": {
+      "lead": "A {community.nom} kapcsolata az egyházmegyei HR-portállal: jóváhagyás, delegált kategóriák, megszüntetés.",
+      "noneTitle": "Nincs egyházmegyei kapcsolat",
+      "noneBody": "Ha az egyházmegye kapcsolatot kér, a kérelem itt jelenik meg jóváhagyásra.",
+      "diocese": "Egyházmegye",
+      "status": {
+        "active": "Aktív",
+        "requested": "Kérelem folyamatban",
+        "revoked": "Megszüntetve"
+      },
+      "waitsForOrg": "Az egyházmegye jóváhagyására vár.",
+      "approveLead": "Az egyházmegye kapcsolatot kért. Jóváhagyás előtt válassza ki, mely HR-kategóriák ügyeit kezelheti.",
+      "activeLead": "A kapcsolat aktív. Az egyházmegye csak az alább kijelölt kategóriák ügyeit éri el.",
+      "delegateLegend": "Delegált HR-kategóriák",
+      "confidentialHelp": "Bizalmas kategória: csak az egyházmegye bizalmas ügyek felelőse érheti el, és a portál jelenleg nem jeleníti meg.",
+      "approve": "Jóváhagyás",
+      "save": "Delegálás mentése",
+      "revoke": "Kapcsolat megszüntetése",
+      "decline": "Kérelem elutasítása",
+      "withdraw": "Kérelem visszavonása",
+      "failed": "A művelet nem sikerült",
+      "failedBody": "Frissítse az oldalt, és próbálja újra.",
+      "accessTitle": "Egyházmegyei hozzáférések",
+      "accessLead": "Az egyházmegye minden megnyitása és művelete itt látszik, csak az ügyszámmal.",
+      "accessNone": "Az egyházmegye még nem nyitott meg ügyet.",
+      "accessEntry": "Egyházmegye: {kind} — {reference}",
+      "kind": {
+        "read": "megnyitás",
+        "take": "átvétel",
+        "close": "lezárás",
+        "reply": "válasz"
+      }
     }
   },
   "munkater": {
@@ -3367,6 +3408,110 @@
     "home": {
       "title": "Egyházmegyei portál",
       "lead": "A kapcsolt {community.plural} által delegált HR-ügyek kezelése."
+    },
+    "shell": {
+      "navigation": "Egyházmegyei portál menü"
+    },
+    "scope": {
+      "title": "Az Ön hatóköre",
+      "lead": "Csak azok a kategóriák láthatók, amelyeket a {community.nom} átruházott, és amelyekhez Önnek jogosultsága van. A bizalmas ügyek ebben a portálban nem jelennek meg.",
+      "categories": "Látható kategóriák:",
+      "noneTitle": "Még nincs látható ügy",
+      "noneBody": "Önnek jelenleg egyetlen kapcsolt {community.lower} egyetlen kategóriájához sincs hozzáférése."
+    },
+    "overview": {
+      "title": "Áttekintés",
+      "lead": "A kapcsolt {community.plural} által delegált HR-ügyek összesítése.",
+      "toRequests": "Kérések megnyitása",
+      "figures": "Főbb számok",
+      "open": "Nyitott ügyek",
+      "overdue": "Határidőn túl",
+      "waiting": "Jóváhagyásra vár",
+      "median": "Medián megoldási idő",
+      "hours": "{count} óra",
+      "byParish": "{community.nom} szerint",
+      "colParish": "{community.nom}",
+      "colOpen": "Nyitott",
+      "colOverdue": "Határidőn túl",
+      "colTotal": "Összes",
+      "overdueList": "Határidőn túli ügyek",
+      "noOverdue": "Nincs határidőn túli ügy.",
+      "emptyTitle": "Még nincs látható ügy",
+      "emptyBody": "Amint egy {community.lower} összekapcsolódik az egyházmegyével és HR-kategóriákat delegál, az ügyei itt jelennek meg."
+    },
+    "requests": {
+      "title": "Kérések",
+      "lead": "A kapcsolt {community.plural} delegált HR-ügyei egy helyen.",
+      "filterParish": "Szűrés: {community.nom}",
+      "filterStatus": "Szűrés: állapot",
+      "allParishes": "Minden {community.lower}",
+      "allStatuses": "Minden állapot",
+      "count": "{count} ügy",
+      "empty": "Nincs a szűrésnek megfelelő ügy."
+    },
+    "ticket": {
+      "title": "Egyházmegyei ügykezelés",
+      "back": "Vissza a kérésekhez",
+      "readOnly": "Csak olvasható",
+      "requesterPosition": "Kérelmező beosztása: {position}",
+      "requesterUnknown": "Kérelmező: a {community.lower} munkatársa",
+      "scopeTitle": "Hatókör",
+      "scopeBody": "Ezt az ügyet azért látja, mert a(z) {parish} a(z) „{category}” kategóriát átruházta az egyházmegyére. Minden megnyitás és művelet bekerül a {community.lower} naplójába.",
+      "approvalAtParish": "A jóváhagyási lépéseket a {community.lower} végzi.",
+      "authorOrg": "Egyházmegye",
+      "authorRequester": "Kérelmező",
+      "authorParish": "{community.nom} ügyintézője"
+    },
+    "parishes": {
+      "title": "Kapcsolt {community.plural}",
+      "lead": "A kapcsolat állapota és a delegált HR-kategóriák {community.plural} szerint.",
+      "rulesTitle": "A kapcsolódás szabályai",
+      "rulesBody": "A kapcsolat akkor lép életbe, ha a {community.nom} tulajdonosa és az egyházmegye is jóváhagyta. Bármelyik fél megszüntetheti, a hozzáférés ilyenkor azonnal megszűnik. A delegált kategóriákról a {community.nom} dönt.",
+      "status": {
+        "active": "Aktív",
+        "requested": "Kérelem folyamatban",
+        "revoked": "Megszüntetve",
+        "none": "Nincs kapcsolat"
+      },
+      "waitsForParish": "A {community.nom} jóváhagyására vár.",
+      "waitsForOrg": "Az Ön jóváhagyására vár.",
+      "delegated": "Delegált kategóriák",
+      "delegatedNone": "Nincs delegált, nem bizalmas kategória.",
+      "delegatedNote": "A {community.nom} további kategóriái itt nem láthatók és nem számítanak bele az összesítésekbe.",
+      "request": "Kapcsolat kérése",
+      "approve": "Jóváhagyás",
+      "revoke": "Kapcsolat megszüntetése",
+      "withdraw": "Kérelem visszavonása"
+    },
+    "absences": {
+      "title": "Távollétek",
+      "lead": "A kapcsolt {community.plural} jóváhagyott távollétei a következő {days} napra. Név helyett a munkatárs beosztása látható.",
+      "empty": "Nincs jóváhagyott távollét a következő időszakban.",
+      "colParish": "{community.nom}",
+      "colPosition": "Beosztás",
+      "colPeriod": "Időszak",
+      "colReason": "Ok",
+      "away": "Távol"
+    },
+    "reports": {
+      "title": "Jelentések",
+      "lead": "{year}. évi összesítés {community.plural} szerint, csak a delegált ügyekről.",
+      "emptyTitle": "Nincs jelenthető adat",
+      "emptyBody": "Jelentés csak aktív kapcsolat és HR-jelentési jogosultság esetén készül.",
+      "colParish": "{community.nom}",
+      "colOpen": "Nyitott ügy",
+      "colOverdue": "Határidőn túl",
+      "colSla": "Határidőre megoldva",
+      "colMedian": "Medián megoldási idő",
+      "colDays": "Jóváhagyott távollét (munkanap)",
+      "slaMet": "{met} / {closed}",
+      "hours": "{count} óra",
+      "note": "A havi bérszámfejtési CSV és a szabadságegyenlegek a sablonokkal együtt egy későbbi lépésben érkeznek."
+    },
+    "placeholder": {
+      "title": "Hamarosan",
+      "orgTemplates": "A HR-kategóriasablonok verziózott kezelése egy későbbi fejlesztési lépésben érkezik.",
+      "orgMembers": "A portál munkatársainak és hatókörüknek kezelése egy későbbi fejlesztési lépésben érkezik."
     }
   }
 }

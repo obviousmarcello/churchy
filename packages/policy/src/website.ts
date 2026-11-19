@@ -35,8 +35,8 @@ export const WEBSITE_MATRIX: readonly MatrixRow<WebsiteMatrixAction, WebsiteRole
       grants: { owner: "all", admin: "notOwners" },
     },
     {
-      capability: "Domain, legal data, delete site",
-      actions: ["site.domain.manage", "site.legal.edit", "site.delete"],
+      capability: "Domain, legal data, delete site, diocesan link",
+      actions: ["site.domain.manage", "site.orgLink.manage", "site.legal.edit", "site.delete"],
       grants: { owner: "all" },
     },
     {
