@@ -64,6 +64,8 @@ export {
   normalizeBankAccount,
 } from "./bank";
 
+export { formatHuf } from "./money";
+
 export { slugify } from "./slug";
 
 export { article, leadingNumberWord, withArticle } from "./article";

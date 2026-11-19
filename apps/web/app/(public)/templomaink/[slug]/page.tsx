@@ -9,6 +9,7 @@ import { getT } from "@/i18n/server";
 import { LOCATIONS_PATH, jsonLdScript, locationJsonLd, toHuAddress } from "@/lib/locations";
 import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
+import { requirePublicModule } from "@/server/plans";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -39,6 +40,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 /** Location detail (FR-003, D-12): address, route link, map facade, hours, accessibility. */
 export default async function LocationPage({ params }: Params) {
+  await requirePublicModule("locations");
   const { slug } = await params;
   const [{ location }, t, common] = await Promise.all([
     findLocation(slug),

@@ -37,6 +37,7 @@ import {
   type PublicEventFamily,
   type PublicOccurrence,
 } from "@/server/public-events";
+import { requirePublicModule } from "@/server/plans";
 
 type Params = Promise<{ eventSlug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -84,6 +85,7 @@ export default async function EventDetailPage({
   params: Params;
   searchParams: SearchParams;
 }) {
+  await requirePublicModule("events");
   const now = new Date();
   const { eventSlug } = await params;
   const family = await getPublicEventFamily(decodeURIComponent(eventSlug), now);

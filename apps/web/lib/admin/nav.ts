@@ -11,7 +11,7 @@ export const ADMIN_NAV_GROUPS = [
   { id: "church", items: ["schedule", "locations", "staff"] },
   { id: "inbox", items: ["requests"] },
   { id: "appearance", items: ["appearance"] },
-  { id: "settings", items: ["setup", "users", "domain"] },
+  { id: "settings", items: ["setup", "users", "modules", "plan", "billing", "domain"] },
 ] as const;
 
 export type AdminNavGroupId = (typeof ADMIN_NAV_GROUPS)[number]["id"] | "other";

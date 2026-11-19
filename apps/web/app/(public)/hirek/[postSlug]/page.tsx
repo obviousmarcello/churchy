@@ -11,6 +11,7 @@ import { jsonLdScript } from "@/lib/events/json-ld";
 import { NEWS_PATH, newsArticleJsonLd, newsOpenGraph, newsPath } from "@/lib/news/public-news";
 import { getPublicTenantName, requestOrigin } from "@/server/public-events";
 import { getPublicPost, listRelatedNews } from "@/server/public-news";
+import { requirePublicModule } from "@/server/plans";
 
 type Params = Promise<{ postSlug: string }>;
 
@@ -33,6 +34,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 export default async function NewsPostPage({ params }: { params: Params }) {
+  await requirePublicModule("news");
   const { postSlug } = await params;
   const post = await getPublicPost(decodeURIComponent(postSlug));
   if (post === null) notFound();
