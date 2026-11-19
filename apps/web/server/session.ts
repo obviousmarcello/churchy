@@ -110,6 +110,16 @@ export function resetActorResolver(): void {
   resolver = defaultResolver;
 }
 
+/**
+ * Workspace roles of the acting church member, for the room booking auto-approval
+ * (`ApprovalPolicy.autoApprove.roles`, SDD §23.2). Like `actorFromIdentity()` this is one of the
+ * few places that read role lists; visibility and permissions still come from `can()`.
+ */
+export async function getActorWorkspaceRoles(): Promise<readonly string[]> {
+  const actor = await getActor();
+  return actor.kind === "tenant" ? actor.workspaceRoles : [];
+}
+
 /** The actor of the current request. */
 export async function getActor(): Promise<Actor> {
   return resolver();

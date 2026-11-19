@@ -9,6 +9,7 @@ import {
   VISIBILITIES,
 } from "@/lib/workspace/event-access";
 import { getT } from "@/i18n/server";
+import { loadRoomViews } from "@/server/rooms";
 import type { WorkspaceEnv } from "@/server/workspace";
 
 /**
@@ -26,6 +27,12 @@ export async function eventFormFields(env: WorkspaceEnv, event?: Event): Promise
     repos.teams.list(ctx),
     repos.locations.list(ctx),
   ]);
+  // D-61 AC4: a new event can book a room in the same save.
+  const roomOptions = event
+    ? []
+    : (await loadRoomViews(env))
+        .filter((v) => v.canBook)
+        .map((v) => ({ value: v.room.id, label: v.room.name }));
   const own = creatableCalendars(actor, calendars);
   // Editing an event in a calendar one may not add to (e.g. as the leader) keeps that calendar.
   const current = event ? calendars.find((c) => c.id === event.calendarId) : undefined;
@@ -74,6 +81,18 @@ export async function eventFormFields(env: WorkspaceEnv, event?: Event): Promise
       placeholder: t("locationNone"),
       options: locations.map((l) => ({ value: l.id, label: l.name })),
     },
+    ...(roomOptions.length > 0
+      ? [
+          {
+            kind: "select" as const,
+            name: "roomId",
+            label: t("roomId"),
+            help: t("roomHelp"),
+            placeholder: t("roomNone"),
+            options: roomOptions,
+          },
+        ]
+      : []),
     { kind: "textarea", name: "body", label: t("body"), rows: 5 },
   ];
 }
@@ -110,6 +129,7 @@ export async function eventFormValues(
     startsAt: `${startDate ?? env.today}T09:00`,
     endsAt: "",
     locationId: "",
+    roomId: "",
     body: "",
   };
 }

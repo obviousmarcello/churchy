@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
     "@churchy/hu",
     "@churchy/i18n",
     "@churchy/schedule",
+    "@churchy/booking",
     "@churchy/calendar",
     "@churchy/events",
     "@churchy/presets",

@@ -12,6 +12,7 @@
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@churchy/booking": "workspace:*",
     "@churchy/calendar": "workspace:*",
     "@churchy/contracts": "workspace:*",
     "@churchy/data-mock": "workspace:*",

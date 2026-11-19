@@ -15,6 +15,10 @@ import { withPolicy, type PolicyScope } from "@/server/policy";
 import { getRequestRepositories } from "@/server/repositories";
 import { getRequestContext } from "@/server/session";
 import { workspaceErrorMessages } from "@/server/workspace-form";
+import { evaluateBooking } from "@/server/room-evaluate";
+import { getWorkspaceEnv } from "@/server/workspace";
+import { can } from "@churchy/policy";
+import { localParts } from "@churchy/booking";
 
 /**
  * Mutations of the workspace calendar (D-57). Creating and changing an event is checked against
@@ -35,6 +39,7 @@ const EVENT_FIELDS = [
   "startsAt",
   "endsAt",
   "locationId",
+  "roomId",
   "body",
 ] as const;
 
@@ -135,10 +140,67 @@ async function save(
   );
   if (!parsed.ok) return invalid(parsed.errors);
 
+  // D-61 AC4: book the chosen room in the same save; nothing is saved when it is not bookable.
+  const roomId = (values["roomId"] ?? "").trim();
+  let roomBooking: Awaited<ReturnType<typeof evaluateBooking>> | null = null;
+  if (id === null && roomId !== "") {
+    const env = await getWorkspaceEnv();
+    const start = localParts(parsed.data.startsAt);
+    const endMs = parsed.data.endsAt
+      ? Date.parse(parsed.data.endsAt)
+      : Date.parse(parsed.data.startsAt) + 3_600_000;
+    const end = localParts(endMs);
+    const room = await repos.rooms.get(ctx, roomId);
+    const evaluation = await evaluateBooking(env, {
+      roomId,
+      date: start.date,
+      startTime: start.time,
+      endTime: end.date === start.date ? end.time : "23:59",
+      title: parsed.data.title,
+      purpose: "",
+      attendees: "",
+      setupNotes: "",
+      teamId: parsed.data.teamId ?? "",
+      repeat: "none",
+      weekdays: [],
+      until: start.date,
+      skipConflicts: false,
+    });
+    const allowed =
+      room !== null &&
+      can(actor, "room.book", {
+        tenantId: env.tenantId,
+        roomId,
+        whoCanRequest: room.rules.whoCanRequest,
+      });
+    if (
+      !allowed ||
+      !evaluation.check.ready ||
+      evaluation.check.clash ||
+      evaluation.check.violations.length > 0
+    ) {
+      return invalid({ roomId: messages.roomUnavailable });
+    }
+    roomBooking = evaluation;
+  }
+
   let saved: Event;
   try {
     saved = await repos.events.upsert(ctx, parsed.data);
     if (saved.status !== "published") await repos.events.setStatus(ctx, saved.id, "published");
+    if (roomBooking?.room && roomBooking.free[0]) {
+      await repos.bookings.create(ctx, {
+        roomId: roomBooking.room.id,
+        startsAt: roomBooking.free[0].startsAt,
+        endsAt: roomBooking.free[0].endsAt,
+        status: roomBooking.check.status,
+        title: saved.title,
+        eventId: saved.id,
+        teamId: saved.teamId,
+        requestedByPersonId: ctx.actor.personId,
+        holdExpiresAt: roomBooking.holdExpiresAt,
+      });
+    }
   } catch (error) {
     return invalid(repositoryErrors(error, EVENT_FIELDS, messages));
   }

@@ -2,7 +2,9 @@ import type { ErrorMessages } from "@/lib/admin/content-form";
 import { getT } from "@/i18n/server";
 
 /** Validation messages of the workspace forms (`munkater.errors`); unused ones stay empty. */
-export async function workspaceErrorMessages(): Promise<ErrorMessages> {
+export async function workspaceErrorMessages(): Promise<
+  ErrorMessages & { roomUnavailable: string }
+> {
   const t = await getT("munkater.errors");
   return {
     required: t("required"),
@@ -16,6 +18,7 @@ export async function workspaceErrorMessages(): Promise<ErrorMessages> {
     postalCode: "",
     address: "",
     notFound: t("notFound"),
+    roomUnavailable: t("roomUnavailable"),
     general: t("general"),
   };
 }

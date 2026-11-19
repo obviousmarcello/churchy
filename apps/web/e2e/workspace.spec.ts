@@ -35,11 +35,11 @@ test.describe("Munkatér shell and Ma", () => {
     expect(await axeSeriousOrCritical(page)).toEqual([]);
   });
 
-  test("the office sees the room and request entries (placeholders)", async ({ page }) => {
+  test("the office sees the room booking and the other placeholders", async ({ page }) => {
     await as(page, "iroda", "/munkater");
     await expect(page.locator('[data-section="rooms"]')).toHaveCount(1);
     await page.goto("/munkater/foglalas");
-    await expect(page.getByTestId("workspace-placeholder")).toBeVisible();
+    await expect(page.getByTestId("rooms-board")).toBeVisible();
     await page.goto("/munkater/liturgia");
     await expect(page.getByTestId("workspace-placeholder")).toBeVisible();
   });

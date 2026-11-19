@@ -45,7 +45,8 @@
         "pages": "Oldalak",
         "staff": "{staffSection.nom}",
         "locations": "Helyszínek",
-        "setup": "Első beállítás"
+        "setup": "Első beállítás",
+        "adminRooms": "Termek"
       },
       "contact": "{contactPage.nom}"
     },
@@ -1254,6 +1255,9 @@
       },
       "domain": {
         "lead": "Saját webcím és jogi adatok."
+      },
+      "adminRooms": {
+        "lead": "Termek, eszközök és a szolgálatok terem-blokkolása."
       }
     },
     "flows": {
@@ -1569,6 +1573,87 @@
         "embedApply": "Beágyazás",
         "cancel": "Mégse",
         "mediaUnavailable": "A médiatár most nem érhető el, ezért kép nem szúrható be."
+      },
+      "rooms": {
+        "lead": "A foglalható termek és eszközök, valamint hogy mely szolgálatok blokkolják őket.",
+        "newButton": "Új terem",
+        "newTitle": "Új terem",
+        "editTitle": "Terem szerkesztése",
+        "empty": "Még nincs terem. Az „Új terem” gombbal vehet fel egyet.",
+        "capacity": "{count} fő",
+        "resource": "Eszköz",
+        "inactive": "Inaktív",
+        "deleteNote": "Ha a teremnek vannak jövőbeli foglalásai, nem törölhető: ilyenkor kapcsolja ki az „Aktív” jelölőt.",
+        "kinds": {
+          "room": "Terem",
+          "resource": "Eszköz / erőforrás"
+        },
+        "weekdays": {
+          "1": "Hétfő",
+          "2": "Kedd",
+          "3": "Szerda",
+          "4": "Csütörtök",
+          "5": "Péntek",
+          "6": "Szombat",
+          "7": "Vasárnap"
+        },
+        "fields": {
+          "name": "Név",
+          "locationId": "Helyszín",
+          "kind": "Típus",
+          "capacity": "Befogadóképesség (fő)",
+          "features": "Felszerelés",
+          "featuresHelp": "Vesszővel elválasztva, például: projektor, zongora.",
+          "accessibility": "Megközelíthetőség",
+          "wheelchair": "Kerekesszékkel megközelíthető",
+          "accessibleToilet": "Akadálymentes mosdó",
+          "hearingLoop": "Indukciós hurok",
+          "parking": "Parkoló",
+          "policy": "Jóváhagyás",
+          "manager1": "Felelős",
+          "manager2": "Másik felelős",
+          "none": "Nincs",
+          "whoCanRequest": "Ki foglalhat?",
+          "whoAll": "Minden munkatér-felhasználó",
+          "whoStaff": "Csak munkatársak és vezetők",
+          "autoApprove": "Azonnali jóváhagyás",
+          "autoApproveHelp": "Aki ide tartozik, annak a foglalása jóváhagyás nélkül érvényes.",
+          "auto": {
+            "leader": "Csak a vezető és a terem felelőse",
+            "staff": "A munkatársak is",
+            "everyone": "Mindenki"
+          },
+          "holdHours": "Fenntartás (óra)",
+          "holdHoursHelp": "Ennyi ideig tartjuk fenn a jóváhagyásra váró kérést.",
+          "rules": "Foglalási szabályok",
+          "minNoticeHours": "Legkorábbi foglalás (órával előre)",
+          "maxDurationMin": "Leghosszabb foglalás (perc)",
+          "horizonDays": "Legfeljebb ennyi napra előre",
+          "hoursFrom": "Foglalható ettől",
+          "hoursHelp": "A bejelölt napokon, óó:pp formában, például 08:00.",
+          "hoursTo": "Foglalható eddig",
+          "blackoutName": "Zárás neve",
+          "blackoutFrom": "Zárás első napja",
+          "blackoutTo": "Zárás utolsó napja",
+          "active": "Aktív (foglalható)"
+        },
+        "blocks": {
+          "title": "Szolgálatok terem-blokkolása",
+          "new": "Új blokk",
+          "lead": "A szolgálat idejére a hozzárendelt terem le van foglalva, a megadott előtte és utána lévő pufferrel. Semmit nem mondunk le automatikusan.",
+          "empty": "Még nincs terem-blokk.",
+          "buffers": "−{before} / +{after} perc",
+          "newTitle": "Új terem-blokk",
+          "editTitle": "Terem-blokk szerkesztése",
+          "fields": {
+            "locationId": "Helyszín",
+            "serviceType": "Szolgálat típusa",
+            "serviceTypeHelp": "Pontosan úgy, ahogy a rendben szerepel, például szentmise.",
+            "room": "Blokkolt terem",
+            "before": "Puffer előtte (perc)",
+            "after": "Puffer utána (perc)"
+          }
+        }
       }
     },
     "appearance": {
@@ -2641,7 +2726,10 @@
         "endsAt": "Befejezés",
         "locationId": "Helyszín",
         "locationNone": "Nincs megadva",
-        "body": "Leírás"
+        "body": "Leírás",
+        "roomId": "Terem foglalása",
+        "roomHelp": "Az esemény mentésével a terem is lefoglalódik.",
+        "roomNone": "Nem foglalok termet"
       }
     },
     "errors": {
@@ -2650,7 +2738,8 @@
       "slugFormat": "A cím nem alakítható át érvényes webcímmé.",
       "endBeforeStart": "A befejezés nem lehet a kezdés előtt.",
       "notFound": "A keresett elem nem található.",
-      "general": "A mentés nem sikerült."
+      "general": "A mentés nem sikerült.",
+      "roomUnavailable": "A terem ebben az időpontban nem foglalható. Kérjük, válasszon másik termet vagy időpontot a Termek menüben."
     },
     "directory": {
       "title": "Névjegyzék",
@@ -2722,6 +2811,159 @@
       "hr": {
         "title": "HR-ügyintézés",
         "lead": "Kérések és ügyintézés."
+      }
+    },
+    "rooms": {
+      "title": "Termek",
+      "capacity": "{count} fő",
+      "resource": "Eszköz / erőforrás",
+      "empty": "Még nincs foglalható terem.",
+      "tabs": {
+        "label": "Teremfoglalás menü",
+        "board": "Foglaltság",
+        "rooms": "Termek",
+        "mine": "Foglalásaim",
+        "approvals": "Jóváhagyás"
+      },
+      "status": {
+        "pending": "Jóváhagyásra vár",
+        "approved": "Jóváhagyva",
+        "rejected": "Elutasítva",
+        "cancelled": "Lemondva"
+      },
+      "board": {
+        "lead": "Egy napra látja, mikor szabad vagy foglalt a terem. A szolgálatok (misék, istentiszteletek) automatikusan blokkolják a hozzájuk rendelt termeket.",
+        "previous": "Előző nap",
+        "today": "Ma",
+        "next": "Következő nap",
+        "pickDate": "Dátum",
+        "show": "Megjelenítés",
+        "book": "Foglalás",
+        "freeAllDay": "Egész nap szabad.",
+        "service": "Szolgálat",
+        "legend": "Jelmagyarázat",
+        "legendFree": "Szabad",
+        "legendBooked": "Foglalt"
+      },
+      "rules": {
+        "bookableHours": "A terem ezen a napon, ebben az időben nem foglalható.",
+        "minNotice": "Legalább {detail} órával előre kell foglalni.",
+        "maxDuration": "Egy foglalás legfeljebb {detail} percig tarthat.",
+        "horizon": "A terem legfeljebb {detail} nappal előre foglalható.",
+        "blackout": "A terem ekkor zárva van: {detail}."
+      },
+      "clash": {
+        "booking": "Ütközik egy meglévő foglalással: {title}.",
+        "service": "A terem ekkor a következő szolgálat miatt le van foglalva: {title}."
+      },
+      "catalog": {
+        "title": "Termek és eszközök",
+        "lead": "A közösség termei, felszereltségük és foglalási szabályaik.",
+        "equipment": "Felszerelés",
+        "wheelchair": "Kerekesszékkel megközelíthető",
+        "toilet": "Akadálymentes mosdó",
+        "hearingLoop": "Indukciós hurok",
+        "managers": "Felelős: {names}",
+        "approvalAuto": "A vezető azonnal foglalhat, mások jóváhagyással.",
+        "approvalManual": "Minden foglalás jóváhagyást igényel.",
+        "maxDuration": "legfeljebb {hours} óra"
+      },
+      "form": {
+        "newTitle": "Új foglalás",
+        "denied": "A foglalás nem sikerült: ehhez nincs jogosultsága.",
+        "room": "Terem",
+        "date": "Dátum",
+        "from": "Kezdés",
+        "to": "Befejezés",
+        "timeError": "Kérjük, adjon meg érvényes időpontot: a befejezés legyen a kezdés után.",
+        "title": "Cím",
+        "titleError": "Kérjük, adja meg a foglalás címét.",
+        "alternatives": "Szabad alternatívák:",
+        "otherRoom": "Másik terem: {name}",
+        "free": "A terem szabad.",
+        "willApprove": "A foglalás azonnal jóváhagyásra kerül.",
+        "willHold": "A foglalás jóváhagyásra vár, addig {hours} óráig lefoglalva tartjuk.",
+        "seriesConflicts": "{total} alkalomból {count} ütközik",
+        "seriesFree": "Mind a(z) {total} alkalom szabad.",
+        "purpose": "Cél",
+        "optional": "(nem kötelező)",
+        "attendees": "Létszám",
+        "team": "Csapat",
+        "noTeam": "Nincs",
+        "setup": "Előkészítési megjegyzés",
+        "repeatLegend": "Ismétlődés",
+        "repeat": "Ismétlés",
+        "repeatNone": "Egyszeri",
+        "repeatWeekly": "Hetente",
+        "weekdays": "Hét napjai",
+        "weekday": {
+          "1": "Hétfő",
+          "2": "Kedd",
+          "3": "Szerda",
+          "4": "Csütörtök",
+          "5": "Péntek",
+          "6": "Szombat",
+          "7": "Vasárnap"
+        },
+        "until": "Utolsó nap",
+        "untilHelp": "Legfeljebb 12 hónapra előre foglalhat.",
+        "skipConflicts": "Ütközők kihagyása: csak a szabad alkalmakat foglalom le",
+        "submit": "Foglalás",
+        "submitRequest": "Foglalás kérése",
+        "cancel": "Mégse"
+      },
+      "mine": {
+        "title": "Foglalásaim",
+        "lead": "Az Ön foglalásai és kérései.",
+        "savedRequest": "A kérés elküldve, jóváhagyásra vár.",
+        "savedApproved": "A foglalás elkészült.",
+        "savedSkipped": "{created} alkalom lefoglalva, {skipped} kihagyva.",
+        "cancelled": "A foglalás lemondva.",
+        "edited": "A foglalás módosítva.",
+        "empty": "Még nincs foglalása.",
+        "series": "{count} alkalom",
+        "new": "Új foglalás"
+      },
+      "approvals": {
+        "title": "Jóváhagyás",
+        "lead": "A kezelt termekre érkezett, még el nem döntött kérések.",
+        "empty": "Nincs jóváhagyásra váró kérés.",
+        "pending": "Vár",
+        "holdUntil": "Fenntartva eddig:",
+        "clashesTitle": "Szolgálati ütközések",
+        "clashesNote": "Ezek a foglalások szolgálatok idejére esnek. Semmit nem mondtunk le automatikusan: kérjük, egyeztessen a foglalóval.",
+        "approve": "Jóváhagyás",
+        "reject": "Elutasítás",
+        "approveFor": "Jóváhagyás: {name}",
+        "rejectFor": "Elutasítás: {name}"
+      },
+      "detail": {
+        "title": "Foglalás",
+        "recurring": "Ismétlődő",
+        "requestedBy": "Foglalta: {name}",
+        "attendees": "Létszám: {count} fő",
+        "setup": "Előkészítés: {notes}",
+        "editHeading": "Módosítás és lemondás"
+      },
+      "edit": {
+        "denied": "Ezt a foglalást nem módosíthatja.",
+        "missing": "Kérjük, adjon meg címet és érvényes időpontot.",
+        "refused": "A módosítás nem lehetséges.",
+        "title": "Cím",
+        "date": "Dátum",
+        "from": "Kezdés",
+        "to": "Befejezés",
+        "purpose": "Cél",
+        "optional": "(nem kötelező)",
+        "attendees": "Létszám",
+        "setup": "Előkészítési megjegyzés",
+        "scope": "Mire vonatkozzon?",
+        "scopeHelp": "Ismétlődő foglalásnál választhat.",
+        "scopeThis": "Csak erre az alkalomra",
+        "scopeFollowing": "Erre és a következőkre",
+        "scopeAll": "Az összesre",
+        "save": "Mentés",
+        "cancelBooking": "Foglalás lemondása"
       }
     }
   },
