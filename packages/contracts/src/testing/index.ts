@@ -32,6 +32,7 @@ import { teamsContract } from "./suites/teams";
 import { tenantsContract } from "./suites/tenants";
 
 export * from "./harness";
+export { importJobContract } from "./import-job";
 export {
   absencesContract,
   announcementsContract,

@@ -1,0 +1,102 @@
+/*
+ * Animation of the setup wizard (D-34): little robots build a church while the import runs. Every
+ * piece of the building is in the picture from the start but hidden; it appears when its stage is
+ * completed. All motion is inside `prefers-reduced-motion: no-preference`, so people who ask for
+ * less motion see the pieces simply appear. The picture is decorative (aria-hidden); the progress
+ * is told in text by the live region next to it.
+ */
+.scene {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.piece {
+  opacity: 0;
+}
+
+.piece[data-on="true"] {
+  opacity: 1;
+}
+
+.robot {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.arm {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+}
+
+.sparkle {
+  opacity: 0;
+}
+
+.scene[data-done="true"] .sparkle {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .piece {
+    transform: translateY(-14px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+
+  .piece[data-on="true"] {
+    transform: translateY(0);
+  }
+
+  .scene[data-running="true"] .robot {
+    animation: robot-bob 0.9s ease-in-out infinite;
+  }
+
+  .scene[data-running="true"] .robotB {
+    animation-delay: -0.3s;
+  }
+
+  .scene[data-running="true"] .robotC {
+    animation-delay: -0.6s;
+  }
+
+  .scene[data-running="true"] .arm {
+    animation: arm-swing 0.6s ease-in-out infinite alternate;
+  }
+
+  .scene[data-done="true"] .robot {
+    animation: robot-hop 0.7s ease-in-out infinite;
+  }
+
+  .scene[data-done="true"] .sparkle {
+    animation: sparkle 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes robot-bob {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes robot-hop {
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes arm-swing {
+  from {
+    transform: rotate(-28deg);
+  }
+  to {
+    transform: rotate(24deg);
+  }
+}
+
+@keyframes sparkle {
+  50% {
+    opacity: 0.25;
+  }
+}

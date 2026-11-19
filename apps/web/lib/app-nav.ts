@@ -36,6 +36,7 @@ export type NavKey =
   | "sections.appearance"
   | "sections.users"
   | "sections.domain"
+  | "sections.setup"
   | "sections.orgOverview"
   | "sections.orgLinks"
   | "sections.orgTemplates"
@@ -268,6 +269,13 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
             action: "site.users.manage",
             resource: (ctx) => ({ tenantId: tenantIdOf(ctx), targetRoles: ["editor"] }),
           },
+        },
+        {
+          id: "setup",
+          label: t("sections.setup"),
+          href: "/admin/inditas",
+          // First-setup wizard (D-34): the people who switch the site's modules on and off.
+          requires: { action: "site.modules.manage" },
         },
         {
           id: "domain",

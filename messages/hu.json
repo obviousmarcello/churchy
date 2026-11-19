@@ -44,7 +44,8 @@
         "events": "Események",
         "pages": "Oldalak",
         "staff": "{staffSection.nom}",
-        "locations": "Helyszínek"
+        "locations": "Helyszínek",
+        "setup": "Első beállítás"
       },
       "contact": "{contactPage.nom}"
     },
@@ -1704,6 +1705,287 @@
         "blocked": "A mentéshez javítsa a jelölt mezőket.",
         "forbidden": "Ehhez a módosításhoz nincs jogosultsága.",
         "invalid": "A módosítást nem sikerült menteni, kérjük, ellenőrizze a megadott adatokat."
+      }
+    },
+    "setup": {
+      "title": "Első beállítás",
+      "lead": "Adja meg a jelenlegi weboldal címét, és néhány perc alatt elkészítjük az új oldal vázlatát.",
+      "steps": {
+        "label": "Lépések",
+        "site": "Weboldal",
+        "review": "Átnézés",
+        "modules": "Munkatér",
+        "invites": "Meghívások",
+        "done": "Kész",
+        "srDone": "(kész)",
+        "srCurrent": "(jelenlegi lépés)"
+      },
+      "headings": {
+        "review": "Az új oldal vázlata",
+        "modules": "Belső munkatér",
+        "invites": "Meghívások és beállítások",
+        "done": "Az első beállítás kész"
+      },
+      "site": {
+        "heading": "Honnan induljunk?",
+        "lead": "Írja be a jelenlegi weboldal címét. Végigolvassuk, és kiolvassuk belőle az alkalmak időpontjait, a helyszíneket, az elérhetőségeket és a színeket. Az eredményt Ön nézi át, mielőtt bármi élesre kerülne.",
+        "address": "A jelenlegi weboldal címe",
+        "addressHelp": "Például: gyulekezet.example.hu. A weboldalon semmit nem módosítunk.",
+        "addressPlaceholder": "gyulekezet.example.hu",
+        "start": "Beállítás indítása",
+        "privacy": "Csak a nyilvánosan látható tartalmat olvassuk be. Nevet és fényképet csak akkor veszünk át, ha Ön külön engedélyezi.",
+        "readyTitle": "A vázlat elkészült",
+        "readyBody": "Átnézheti és módosíthatja, mielőtt továbbmegy.",
+        "openReview": "Vázlat megtekintése",
+        "idleHint": "Az indítás után itt látja, ahogy a kis robotok felépítik az új oldalt.",
+        "errors": {
+          "invalid_url": "Ez nem tűnik weboldal-címnek. Adjon meg például gyulekezet.example.hu alakú címet.",
+          "unreachable": "Most nem sikerült beolvasni a weboldalt. Ellenőrizze a címet, és próbálja újra."
+        }
+      },
+      "progress": {
+        "starting": "Indítás…",
+        "allDone": "Minden lépés kész. A vázlat elkészült.",
+        "bar": "A beolvasás előrehaladása",
+        "list": "A beolvasás lépései",
+        "state": {
+          "done": "kész",
+          "running": "folyamatban",
+          "waiting": "vár"
+        },
+        "stages": {
+          "fetched": {
+            "label": "Weboldal megnyitása",
+            "running": "Weboldal megnyitása…",
+            "done": "A weboldal elérhető."
+          },
+          "pages": {
+            "label": "Oldalak beolvasása",
+            "running": "Oldalak beolvasása…",
+            "done": "{count} oldal beolvasva."
+          },
+          "serviceTimes": {
+            "label": "Alkalmak és időpontok keresése",
+            "running": "Alkalmak és időpontok keresése…",
+            "done": "{count} alkalom időpontja megtalálva."
+          },
+          "contacts": {
+            "label": "Elérhetőségek és helyszínek keresése",
+            "running": "Elérhetőségek és helyszínek keresése…",
+            "done": "Elérhetőségek és helyszínek megtalálva."
+          },
+          "theme": {
+            "label": "Színek és megjelenés kiválasztása",
+            "running": "Színek és megjelenés kiválasztása…",
+            "done": "Színek és megjelenés kiválasztva."
+          },
+          "preset": {
+            "label": "Egyházi minta kiválasztása",
+            "running": "Egyházi minta kiválasztása…",
+            "done": "Egyházi minta kiválasztva."
+          },
+          "draft": {
+            "label": "Az oldal vázlatának összeállítása",
+            "running": "Az oldal vázlatának összeállítása…",
+            "done": "A vázlat elkészült."
+          }
+        }
+      },
+      "review": {
+        "lead": "Ezt találtuk a weboldalon. Minden mező szerkeszthető, és jobb oldalon azonnal látszik, milyen lesz az új oldal.",
+        "flagged": {
+          "title": "{count} elemet érdemes ellenőriznie",
+          "body": "A sárgával jelölt elemeknél az importáló nem volt biztos a dolgában. Javítsa vagy erősítse meg őket.",
+          "noneTitle": "Minden elemet ellenőrzött"
+        },
+        "flag": {
+          "badge": "Ellenőrizze",
+          "text": "Bizonytalan találat ({percent} % biztonság).",
+          "confirm": "Rendben, megerősítem"
+        },
+        "optional": "(nem kötelező)",
+        "sections": {
+          "basics": "Alapadatok",
+          "preset": "Egyházi minta és megnevezések",
+          "services": "Alkalmak",
+          "locations": "Helyszínek",
+          "contact": "Elérhetőségek",
+          "theme": "Megjelenés",
+          "staff": "Munkatársak"
+        },
+        "name": "Az egyház teljes neve",
+        "shortName": "Rövid név",
+        "shortNameHelp": "A fejlécben és a címekben ez jelenik meg.",
+        "tagline": "Mottó",
+        "denomination": "Egyházi minta",
+        "presetLead": "A minta határozza meg az oldal megnevezéseit, az alapértelmezett menüt és az alkalmak típusait.",
+        "betaHelp": "Ez a minta még szakmai átnézésre vár (béta).",
+        "terms": {
+          "serviceSchedule": "Az alkalmak oldalának neve",
+          "leadClergy": "A lelkipásztor megnevezése"
+        },
+        "termHelp": "A minta szerinti megnevezést itt átírhatja.",
+        "serviceLabel": "Az alkalom neve",
+        "serviceWeekday": "Nap",
+        "serviceTime": "Időpont",
+        "serviceLocation": "Helyszín",
+        "noLocation": "Nincs megadva",
+        "addService": "Alkalom hozzáadása",
+        "remove": "Törlés",
+        "addLocation": "Helyszín hozzáadása",
+        "locationName": "A helyszín neve",
+        "postalCode": "Irányítószám",
+        "city": "Település",
+        "street": "Utca, házszám",
+        "email": "E-mail-cím",
+        "phone": "Telefonszám",
+        "themeLabel": "Téma",
+        "staffLead": "A weboldalon talált munkatársak nevét és fényképét csak akkor vesszük át, ha Ön személyenként bejelöli, és megerősíti, hogy közzétehetők.",
+        "staffInclude": "Név és beosztás átvétele",
+        "staffPhoto": "Fénykép átvétele",
+        "staffConsent": "Megerősítem, hogy {name} hozzájárult az adatai közzétételéhez, vagy a közzétételre egyébként jogosult vagyok.",
+        "staffConsentMissing": "A megerősítés nélkül nem vehetjük át az adatokat.",
+        "problems": {
+          "title": "A továbblépéshez ezeket kell rendbe tennie",
+          "name": "Adja meg az egyház nevét.",
+          "shortName": "Adja meg a rövid nevet.",
+          "theme": "A fő színnek legalább 4,5:1 kontrasztarányt kell elérnie.",
+          "serviceTimes": "Minden alkalomnak legyen neve és időpontja.",
+          "consent": "Erősítse meg minden átvett munkatárs közzétételi jogosultságát."
+        },
+        "back": "Vissza",
+        "next": "Tovább a munkatérhez"
+      },
+      "modules": {
+        "lead": "Válassza ki, melyik belső eszközöket szeretné használni. Később bármikor módosíthatja.",
+        "items": {
+          "calendar": {
+            "title": "Naptárak",
+            "help": "Közös és személyes naptárak a munkatársaknak."
+          },
+          "rooms": {
+            "title": "Teremfoglalás",
+            "help": "Termek, foglalási kérések és jóváhagyás."
+          },
+          "worship": {
+            "title": "Szolgálattervezés",
+            "help": "Az alkalmak menete, énekek és szolgálati beosztás."
+          },
+          "hr": {
+            "title": "HR-kérelmek",
+            "help": "Szabadság- és egyéb kérelmek a munkatársaknak."
+          },
+          "diocese": {
+            "title": "Kapcsolat az egyházmegyével",
+            "help": "Az egyházmegyei HR-portállal való összekapcsolás."
+          }
+        },
+        "notIncluded": "Nem része a csomagnak",
+        "sensitive": "Személyes adatot kezel",
+        "securityTitle": "Éles használat csak biztonsági átvétel után",
+        "securityBody": "A HR-kérelmek és az egyházmegyei kapcsolat személyes adatot érintenek. Valós adatot csak a hozzáférés-védelem és a titkosítás ellenőrzése után szabad bevinni; addig a bemutatóban csak mintaadatokkal próbálható.",
+        "back": "Vissza",
+        "next": "Tovább a meghívásokhoz"
+      },
+      "invites": {
+        "lead": "Hívja meg azokat, akik segítenek az oldal és a munkatér vezetésében.",
+        "mockNote": "Bemutató: a meghívókat nem küldjük el, csak a listát mutatjuk. Kitalált e-mail-címeket használjon.",
+        "email": "E-mail-cím",
+        "role": "Szerepkör",
+        "add": "Hozzáadás",
+        "empty": "Még nincs meghívott.",
+        "listLabel": "Meghívottak",
+        "remove": "Törlés",
+        "errors": {
+          "email": "Adjon meg érvényes e-mail-címet.",
+          "duplicate": "Ezt a címet már hozzáadta.",
+          "role": "Ez a szerepkör nem választható.",
+          "limit": "Legfeljebb {max} meghívott adható hozzá."
+        },
+        "roles": {
+          "admin": "Adminisztrátor",
+          "editor": "Szerkesztő",
+          "office": "Iroda",
+          "employee": "Munkatárs",
+          "musicLeader": "Zenei vezető",
+          "roomManager": "Teremfelelős",
+          "hrHandler": "HR-felelős"
+        },
+        "settings": {
+          "title": "Beállítások",
+          "notifyEmail": "Értesítések e-mail-címe",
+          "notifyHelp": "Ide érkeznek az új üzenetek és kérelmek jelzései.",
+          "comingSoon": "A „Hamarosan” oldal megjelenítése az élesítésig",
+          "comingSoonHelp": "A látogatók addig nem látják a vázlatot.",
+          "weeklyReminder": "Heti emlékeztető a hirdetések közzétételéről",
+          "fixed": "A nyelv magyar, az időzóna Európa/Budapest; ezek nem módosíthatók."
+        },
+        "back": "Vissza",
+        "next": "Befejezés"
+      },
+      "done": {
+        "title": "{name}: az első beállítás kész",
+        "lead": "A vázlat elkészült. A hátralévő lépéseket az alábbi ellenőrzőlistán követheti, mindegyik a megfelelő admin oldalra visz.",
+        "stats": {
+          "services": "Alkalom",
+          "locations": "Helyszín",
+          "people": "Átvett munkatárs",
+          "invites": "Meghívott"
+        },
+        "comingSoon": "Az oldal a „Hamarosan” felirattal látszik, amíg élesíti.",
+        "stillFlagged": "{count} elem még ellenőrzésre vár; az admin felületen később is javíthatja.",
+        "checklist": {
+          "title": "Ellenőrzőlista",
+          "progress": "{done} / {total} lépés kész",
+          "bar": "Az ellenőrzőlista előrehaladása",
+          "done": "Kész",
+          "todo": "Hátravan",
+          "open": "Megnyitás",
+          "items": {
+            "basics": {
+              "title": "Alapadatok ellenőrzése",
+              "help": "A név, az egyházi minta és a megnevezések."
+            },
+            "appearance": {
+              "title": "Arculat jóváhagyása",
+              "help": "Téma, színek és betűk."
+            },
+            "schedule": {
+              "title": "Alkalmak ellenőrzése",
+              "help": "Időpontok és helyszínek az alkalmaknál."
+            },
+            "locations": {
+              "title": "Helyszínek ellenőrzése",
+              "help": "Címek, nyitvatartás és megközelítés."
+            },
+            "staff": {
+              "title": "Munkatársak oldal",
+              "help": "Név és fénykép csak azoktól, akik ehhez hozzájárultak."
+            },
+            "users": {
+              "title": "Felhasználók meghívása",
+              "help": "Szerkesztők, iroda és szolgálattevők."
+            },
+            "workspace": {
+              "title": "Munkatér beállítása",
+              "help": "Naptárak, teremfoglalás és szolgálattervezés."
+            },
+            "domain": {
+              "title": "Saját tartomány és jogi adatok",
+              "help": "Tartomány, impresszum és adatkezelési tájékoztató."
+            },
+            "launch": {
+              "title": "Oldal élesítése",
+              "help": "Amíg nincs élesítve, a látogatók a „Hamarosan” oldalt látják."
+            }
+          }
+        },
+        "openAdmin": "Tovább az admin felületre",
+        "demoNote": "Bemutató: a vázlat még nem kerül mentésre, az admin felület a bemutató saját mintaadatait mutatja."
+      },
+      "preview": {
+        "caption": "Az új oldal előnézete",
+        "photoMark": "Fotó"
       }
     }
   },

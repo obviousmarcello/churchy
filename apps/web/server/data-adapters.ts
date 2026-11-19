@@ -17,6 +17,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import type {
   Denomination,
+  ImportJob,
   Membership,
   OrgMembership,
   Repositories,
@@ -30,6 +31,7 @@ import {
   DEMO_ORG_ID,
   DEMO_TENANT_IDS,
   createDemoDatasetWithPersonas,
+  createMockImportJob,
   createMockSessions,
   createMockStore,
   defaultDemoDataset,
@@ -337,4 +339,13 @@ export function listOutbox(sessionId: string | null = null): OutboxMessage[] {
 /** Empties a demo session's outbox (`null`: the default store) — *Kiürítés*. */
 export function clearOutbox(sessionId: string | null = null): void {
   storeFor(sessionId).clearOutbox();
+}
+
+/**
+ * The first-setup import job (D-34). Phase A: the scripted mock, which accepts any address and
+ * never touches the network. A real importer implements `ImportJob` and is returned here instead
+ * (the only place that knows which one runs).
+ */
+export function getImportJob(options: { stageDelayMs?: number } = {}): ImportJob {
+  return createMockImportJob(options);
 }
