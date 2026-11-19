@@ -140,3 +140,18 @@ export function requestContextFrom(
   const context = contextOf(demo.directory, demo.selection.contextId);
   return context.kind === "org" ? { orgId: context.id } : { tenantId: context.id };
 }
+
+/**
+ * The people who hold the leader role (*Vezető*) in a church — used to resolve `role: leader`
+ * approval steps (D-72). Like `memberMayHandleRequests`, one of the few places that read a
+ * membership's roles.
+ */
+export function leaderPersonIds(
+  members: readonly Pick<Membership, "userId" | "wsRoles" | "active">[],
+  people: readonly { id: string; userId: string | null }[],
+): string[] {
+  const leaders = new Set(
+    members.filter((m) => m.active && m.wsRoles.includes("leader")).map((m) => m.userId),
+  );
+  return people.filter((p) => p.userId !== null && leaders.has(p.userId)).map((p) => p.id);
+}

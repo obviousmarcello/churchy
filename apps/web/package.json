@@ -18,6 +18,7 @@
     "@churchy/db": "workspace:*",
     "@churchy/email": "workspace:*",
     "@churchy/events": "workspace:*",
+    "@churchy/hr": "workspace:*",
     "@churchy/hu": "workspace:*",
     "@churchy/i18n": "workspace:*",
     "@churchy/policy": "workspace:*",
