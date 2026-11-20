@@ -46,12 +46,12 @@ export function Dialog({
     <RadixDialog.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       {trigger ? <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger> : null}
       <RadixDialog.Portal container={container}>
-        <RadixDialog.Overlay className="fixed inset-0 z-50 bg-text/60" />
+        <RadixDialog.Overlay className="fixed inset-0 z-50 bg-text/45" />
         <RadixDialog.Content
           {...(description ? {} : { "aria-describedby": undefined })}
-          className={`fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-2rem)] ${wide ? "w-[min(60rem,calc(100vw-2rem))]" : "w-[min(34rem,calc(100vw-2rem))]"} -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-surface-raised p-6 text-text shadow-raised sm:p-8`}
+          className={`fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-2rem)] ${wide ? "w-[min(60rem,calc(100vw-2rem))]" : "w-[min(34rem,calc(100vw-2rem))]"} -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-surface-raised p-6 text-text shadow-overlay sm:p-7`}
         >
-          <RadixDialog.Title className="pr-12 font-heading text-fs-5 leading-tight font-bold text-primary">
+          <RadixDialog.Title className="pr-12 font-heading text-section-title [font-weight:var(--fw-heading-sm,var(--fw-heading))] text-text">
             {title}
           </RadixDialog.Title>
           {description ? (
@@ -63,9 +63,9 @@ export function Dialog({
           {footer ? <div className="mt-6 flex flex-wrap justify-end gap-3">{footer}</div> : null}
           <RadixDialog.Close
             aria-label={closeLabel}
-            className="absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-md text-text hover:bg-primary-soft"
+            className="absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-hover hover:text-text"
           >
-            <CloseIcon className="size-6" />
+            <CloseIcon className="size-5" />
           </RadixDialog.Close>
         </RadixDialog.Content>
       </RadixDialog.Portal>

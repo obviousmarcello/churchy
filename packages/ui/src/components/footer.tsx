@@ -62,7 +62,7 @@ export function Footer({ brand, columns, legal, legalLabel, note }: FooterProps)
           </div>
           {columns.map((column) => (
             <div key={column.heading} className="text-fs-2 text-inverse-text">
-              <h2 className="mb-3 font-body text-fs-1 font-bold tracking-[0.14em] text-inverse-accent uppercase">
+              <h2 className="mb-3 font-body text-fs-2 font-semibold text-inverse-accent">
                 {column.heading}
               </h2>
               {column.children}

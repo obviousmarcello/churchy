@@ -12,33 +12,60 @@ import {
   Alert,
   Badge,
   BankAccount,
+  Breadcrumbs,
   Button,
   ButtonLink,
+  CalendarIcon,
   Card,
   Checkbox,
+  CopyIcon,
+  DataTable,
   DateInput,
   Dialog,
   DialogClose,
+  DoorIcon,
+  DownloadIcon,
+  EditIcon,
+  EmptyState,
+  EyeIcon,
   Footer,
   FooterLink,
+  FormActions,
   FormattedDate,
   FormattedTime,
   Header,
   Hero,
+  ICONS,
+  Icon,
+  IconButton,
+  InboxIcon,
   Input,
+  LoadingRegion,
+  MoreIcon,
+  MusicIcon,
+  NavTabs,
+  PageHeader,
   PageShell,
   PersonName,
   Phone,
+  PlusIcon,
   SectionHeading,
   Select,
+  Skeleton,
+  StatusPill,
   Tabs,
   Textarea,
   TimeInput,
+  TrashIcon,
+  type DataTableColumn,
   type HeroImage,
+  type IconName,
+  type StatusTone,
 } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { assertDevRoutesVisible } from "@/lib/dev-routes";
 import { termsForDenomination } from "@/i18n/terms";
+import { SaveDemo } from "./save-demo";
 import { ThemePlayground } from "./theme-playground";
 
 export async function generateMetadata() {
@@ -100,10 +127,44 @@ function Block({
 }
 
 function Label({ children }: { children: ReactNode }) {
-  return (
-    <h3 className="mb-3 text-fs-1 font-bold tracking-[0.14em] text-muted uppercase">{children}</h3>
-  );
+  return <h3 className="mb-3 font-body text-fs-2 font-semibold text-muted">{children}</h3>;
 }
+
+// Fictitious requests for the table demo (CLAUDE.md rule 4).
+interface DemoRequest {
+  id: string;
+  nameKey: "row1Name" | "row2Name" | "row3Name";
+  typeKey: "typeBaptism" | "typeWedding" | "typeFuneral";
+  date: string;
+  status: StatusTone;
+  statusKey: "statusPending" | "statusInfo" | "statusSuccess";
+}
+const DEMO_REQUESTS: DemoRequest[] = [
+  {
+    id: "KER-2026-0012",
+    nameKey: "row1Name",
+    typeKey: "typeBaptism",
+    date: "2026-11-12",
+    status: "pending",
+    statusKey: "statusPending",
+  },
+  {
+    id: "KER-2026-0011",
+    nameKey: "row2Name",
+    typeKey: "typeWedding",
+    date: "2026-11-09",
+    status: "info",
+    statusKey: "statusInfo",
+  },
+  {
+    id: "KER-2026-0009",
+    nameKey: "row3Name",
+    typeKey: "typeFuneral",
+    date: "2026-11-02",
+    status: "success",
+    statusKey: "statusSuccess",
+  },
+];
 
 const colorTokens = [
   "--c-surface",
@@ -116,7 +177,9 @@ const colorTokens = [
   "--c-accent",
   "--c-accent-text",
   "--c-border",
+  "--c-divider",
   "--c-border-strong",
+  "--c-selected",
   "--c-focus",
   "--c-inverse",
   "--c-danger",
@@ -129,12 +192,16 @@ const TOC_KEYS = [
   "theme",
   "tokens",
   "typography",
+  "icons",
+  "navigation",
   "header",
   "hero",
   "cards",
   "buttons",
   "forms",
   "feedback",
+  "table",
+  "states",
   "tabs",
   "admin",
   "formatting",
@@ -142,7 +209,8 @@ const TOC_KEYS = [
 ] as const;
 
 const spacingSteps = Array.from({ length: 12 }, (_, i) => i + 1);
-const typeSteps = [1, 2, 3, 4, 5, 6, 7] as const;
+const typeSteps = [1, 2, 3, 4, 5, 6, 7, 8] as const;
+const typeRoles = ["page-title", "section-title", "card-title", "body", "caption"] as const;
 
 export default async function ShowcasePage({
   searchParams,
@@ -257,16 +325,43 @@ export default async function ShowcasePage({
   const cd = await getT("dev.showcase.cards");
   const bt = await getT("dev.showcase.buttons");
   const tk = await getT("dev.showcase.tokens");
+  const ic = await getT("dev.showcase.icons");
+  const nv = await getT("dev.showcase.navigation");
+  const tbl = await getT("dev.showcase.table");
+  const st = await getT("dev.showcase.states");
+
+  const requestColumns: DataTableColumn<DemoRequest>[] = [
+    { key: "name", header: tbl("colName"), cell: (r) => tbl(r.nameKey), primary: true },
+    { key: "type", header: tbl("colType"), cell: (r) => tbl(r.typeKey) },
+    {
+      key: "date",
+      header: tbl("colDate"),
+      cell: (r) => <FormattedDate value={r.date} format="short" />,
+      nowrap: true,
+    },
+    {
+      key: "status",
+      header: tbl("colStatus"),
+      cell: (r) => <StatusPill status={r.status}>{fb(r.statusKey)}</StatusPill>,
+    },
+    {
+      key: "ref",
+      header: tbl("colRef"),
+      cell: (r) => <code className="text-fs-2">{r.id}</code>,
+      nowrap: true,
+      hideBelow: "lg",
+    },
+  ];
 
   return (
     <div id={SCOPE_ID} {...scopeAttrs} style={style as CSSProperties} className="bg-surface">
       <PageShell skipLinkLabel={common("skipToContent")} footer={footer}>
         <div className="mx-auto w-full max-w-(--content-max) px-(--gutter)">
           <header className="py-10 lg:py-14">
-            <h1 className="font-heading text-fs-7 leading-[1.02] font-bold text-primary">
+            <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] text-primary">
               {t("title")}
             </h1>
-            <p className="mt-4 max-w-[68ch] text-fs-4 text-text">{t("lead")}</p>
+            <p className="mt-3 max-w-[68ch] text-fs-4 text-muted">{t("lead")}</p>
             <Alert tone="info" className="mt-6">
               {t("devNotice")}
             </Alert>
@@ -328,6 +423,23 @@ export default async function ShowcasePage({
               </div>
               <div>
                 <Label>{tk("type")}</Label>
+                <ul className="mb-6 grid gap-2" data-testid="showcase-type-roles">
+                  {typeRoles.map((role) => (
+                    <li key={role} className="flex items-baseline gap-4">
+                      <code className="w-36 shrink-0 text-fs-1 text-muted">text-{role}</code>
+                      <span
+                        className="leading-tight"
+                        style={{
+                          fontSize: `var(--fs-${role})`,
+                          fontFamily: role.endsWith("title") ? "var(--font-heading)" : undefined,
+                          fontWeight: role.endsWith("title") ? "var(--fw-heading)" : undefined,
+                        }}
+                      >
+                        {tk("typeSample")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
                 <ul className="grid gap-2">
                   {typeSteps.map((step) => (
                     <li key={step} className="flex items-baseline gap-4">
@@ -373,13 +485,17 @@ export default async function ShowcasePage({
                       <span className="text-fs-2 text-muted">{label}</span>
                     </li>
                   ))}
-                  <li className="grid justify-items-center gap-2">
-                    <span
-                      aria-hidden="true"
-                      className="size-20 rounded-md bg-surface-raised shadow-card"
-                    />
-                    <span className="text-fs-2 text-muted">{tk("shadow")}</span>
-                  </li>
+                  {(["shadow-xs", "shadow-card", "shadow-raised", "shadow-overlay"] as const).map(
+                    (cls) => (
+                      <li key={cls} className="grid justify-items-center gap-2">
+                        <span
+                          aria-hidden="true"
+                          className={`size-20 rounded-md bg-surface-raised ${cls}`}
+                        />
+                        <code className="text-fs-1 text-muted">{cls}</code>
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             </div>
@@ -405,6 +521,81 @@ export default async function ShowcasePage({
                 </p>
               </div>
             </div>
+          </Block>
+
+          <Block id="icons" title={ic("title")} lead={ic("lead")}>
+            <ul
+              data-testid="showcase-icons"
+              className="grid grid-cols-2 gap-2 min-[480px]:grid-cols-3 sm:grid-cols-4 lg:grid-cols-6"
+            >
+              {(Object.keys(ICONS) as IconName[]).map((name) => (
+                <li
+                  key={name}
+                  className="flex min-w-0 items-center gap-3 rounded-md border border-border bg-surface-raised px-3 py-2.5"
+                >
+                  <Icon name={name} className="shrink-0 text-primary" />
+                  <code className="truncate text-fs-1 text-muted">{name}</code>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6">
+              <Label>{ic("sizes")}</Label>
+              <div className="flex items-end gap-5 text-text">
+                {(["xs", "sm", "md", "lg"] as const).map((size) => (
+                  <span key={size} className="grid justify-items-center gap-1">
+                    <CalendarIcon size={size} />
+                    <code className="text-fs-1 text-muted">{size}</code>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </Block>
+
+          <Block id="navigation" title={nv("title")} lead={nv("lead")}>
+            <AdminScope
+              data-testid="showcase-page-header"
+              className="rounded-lg border border-border p-5 sm:p-6"
+            >
+              <PageHeader
+                className="mb-0"
+                breadcrumbs={
+                  <Breadcrumbs
+                    label={nv("breadcrumbsLabel")}
+                    items={[
+                      { label: nv("crumbAdmin"), href: "#navigation" },
+                      { label: nv("crumbNews"), href: "#navigation" },
+                      { label: nv("pageTitle") },
+                    ]}
+                  />
+                }
+                title={nv("pageTitle")}
+                description={nv("pageDescription")}
+                meta={
+                  <>
+                    <StatusPill status="warning">{nv("statusDraft")}</StatusPill>
+                    <span className="text-fs-2 text-muted">{nv("lastSaved")}</span>
+                  </>
+                }
+                actions={
+                  <>
+                    <Button variant="secondary" iconStart={<EyeIcon />}>
+                      {nv("preview")}
+                    </Button>
+                    <Button>{nv("publish")}</Button>
+                  </>
+                }
+                tabs={
+                  <NavTabs
+                    label={nv("tabsLabel")}
+                    items={[
+                      { label: nv("tabContent"), href: "#navigation", current: true },
+                      { label: nv("tabMedia"), href: "#navigation", count: 4 },
+                      { label: nv("tabComments"), href: "#navigation", count: 2 },
+                    ]}
+                  />
+                }
+              />
+            </AdminScope>
           </Block>
 
           <Block id="header" title={t("header.title")} lead={t("header.lead")}>
@@ -492,6 +683,36 @@ export default async function ShowcasePage({
                 />
                 <SectionHeading level={3} align="center" title={cd("headingCenteredTitle")} />
               </div>
+              <div>
+                <Label>{cd("variants")}</Label>
+                <div
+                  data-testid="showcase-card-variants"
+                  className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                >
+                  <Card title={cd("flatTitle")} headingLevel={4}>
+                    <p>{cd("flatBody")}</p>
+                  </Card>
+                  <Card title={cd("raisedTitle")} headingLevel={4} variant="raised">
+                    <p>{cd("raisedBody")}</p>
+                  </Card>
+                  <Card
+                    title={cd("interactiveTitle")}
+                    headingLevel={4}
+                    href="#cards"
+                    icon={<DoorIcon />}
+                  >
+                    <p>{cd("interactiveBody")}</p>
+                  </Card>
+                  <Card
+                    title={cd("iconTitle")}
+                    headingLevel={4}
+                    icon={<MusicIcon />}
+                    actions={<IconButton label={cd("cardActions")} icon={<MoreIcon />} size="sm" />}
+                  >
+                    <p>{cd("iconBody")}</p>
+                  </Card>
+                </div>
+              </div>
               <div data-testid="showcase-cards" className="grid gap-6 md:grid-cols-3">
                 <Card
                   eyebrow={cd("newsEyebrow")}
@@ -532,8 +753,25 @@ export default async function ShowcasePage({
                 <div className="flex flex-wrap gap-3">
                   <Button variant="primary">{bt("primary")}</Button>
                   <Button variant="secondary">{bt("secondary")}</Button>
+                  <Button variant="outline">{bt("outline")}</Button>
                   <Button variant="ghost">{bt("ghost")}</Button>
-                  <Button variant="danger">{bt("danger")}</Button>
+                  <Button variant="destructive">{bt("danger")}</Button>
+                </div>
+              </div>
+              <div>
+                <Label>{bt("icons")}</Label>
+                <div
+                  data-testid="showcase-icon-buttons"
+                  className="flex flex-wrap items-center gap-3"
+                >
+                  <Button iconStart={<PlusIcon />}>{bt("withIcon")}</Button>
+                  <Button variant="secondary" iconStart={<DownloadIcon />}>
+                    {bt("download")}
+                  </Button>
+                  <IconButton label={bt("iconEdit")} icon={<EditIcon />} />
+                  <IconButton label={bt("iconCopy")} icon={<CopyIcon />} variant="secondary" />
+                  <IconButton label={bt("iconMore")} icon={<MoreIcon />} variant="outline" />
+                  <IconButton label={bt("iconDelete")} icon={<TrashIcon />} variant="destructive" />
                 </div>
               </div>
               <div>
@@ -547,6 +785,7 @@ export default async function ShowcasePage({
               <div>
                 <Label>{bt("states")}</Label>
                 <div className="flex flex-wrap items-center gap-3">
+                  <Button loading>{bt("loading")}</Button>
                   <Button disabled>{bt("disabled")}</Button>
                   <Button variant="secondary" disabled>
                     {bt("disabled")}
@@ -608,6 +847,11 @@ export default async function ShowcasePage({
                   wrapperClassName="mt-3"
                 />
               </div>
+              <FormActions className="md:col-span-2">
+                <Button>{bt("primary")}</Button>
+                <Button variant="secondary">{bt("secondary")}</Button>
+                <Button variant="ghost">{bt("ghost")}</Button>
+              </FormActions>
             </div>
           </Block>
 
@@ -641,6 +885,42 @@ export default async function ShowcasePage({
                   </Badge>
                 </li>
               </ul>
+              <div>
+                <Label>{fb("statusHeading")}</Label>
+                <ul data-testid="showcase-status" className="flex flex-wrap gap-3">
+                  {(
+                    [
+                      ["pending", "statusPending"],
+                      ["info", "statusInfo"],
+                      ["success", "statusSuccess"],
+                      ["warning", "statusWarning"],
+                      ["danger", "statusDanger"],
+                      ["neutral", "statusNeutral"],
+                    ] as const
+                  ).map(([status, key]) => (
+                    <li key={status}>
+                      <StatusPill status={status}>{fb(key)}</StatusPill>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <Label>{fb("confirmHeading")}</Label>
+                <p className="mb-4 max-w-[68ch] text-fs-3 text-muted">{fb("confirmLead")}</p>
+                <SaveDemo
+                  labels={{
+                    toastRegion: fb("toastRegion"),
+                    toastClose: fb("toastClose"),
+                    toastSaved: fb("toastSaved"),
+                    toastSavedBody: fb("toastSavedBody"),
+                    saveInline: fb("saveInline"),
+                    saveToast: fb("saveToast"),
+                    saving: fb("saving"),
+                    saved: fb("saved"),
+                    saveError: fb("saveError"),
+                  }}
+                />
+              </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <Alert tone="info" title={fb("infoTitle")}>
                   {fb("infoBody")}
@@ -672,6 +952,76 @@ export default async function ShowcasePage({
                   {fb("bannerBody")}
                 </Alert>
               </div>
+            </div>
+          </Block>
+
+          <Block id="table" title={tbl("title")} lead={tbl("lead")}>
+            <div className="grid gap-8">
+              <DataTable
+                data-testid="showcase-table"
+                caption={tbl("caption")}
+                captionVisible
+                columns={requestColumns}
+                rows={DEMO_REQUESTS}
+                rowKey={(r) => r.id}
+                actionsHeader={tbl("actions")}
+                rowActions={(r) => (
+                  <>
+                    <IconButton
+                      size="sm"
+                      label={`${tbl("open")}: ${tbl(r.nameKey)}`}
+                      icon={<EyeIcon />}
+                    />
+                    <IconButton
+                      size="sm"
+                      label={`${tbl("more")}: ${tbl(r.nameKey)}`}
+                      icon={<MoreIcon />}
+                    />
+                  </>
+                )}
+                rowProps={(r) => ({ selected: r.status === "pending" })}
+              />
+              <DataTable
+                data-testid="showcase-table-empty"
+                caption={tbl("emptyCaption")}
+                captionVisible
+                columns={requestColumns}
+                rows={[]}
+                rowKey={(r) => r.id}
+                empty={
+                  <EmptyState
+                    size="sm"
+                    icon={<CalendarIcon />}
+                    title={tbl("emptyTitle")}
+                    description={tbl("emptyBody")}
+                    action={
+                      <Button variant="secondary" size="sm" iconStart={<PlusIcon />}>
+                        {tbl("emptyAction")}
+                      </Button>
+                    }
+                  />
+                }
+              />
+            </div>
+          </Block>
+
+          <Block id="states" title={st("title")} lead={st("lead")}>
+            <div className="grid gap-6 md:grid-cols-2">
+              <EmptyState
+                data-testid="showcase-empty"
+                icon={<InboxIcon />}
+                title={st("emptyTitle")}
+                description={st("emptyBody")}
+                action={<Button iconStart={<PlusIcon />}>{st("emptyAction")}</Button>}
+              />
+              <LoadingRegion label={st("loading")} className="grid content-start gap-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton shape="circle" />
+                  <Skeleton className="w-40" />
+                </div>
+                <Skeleton shape="rect" className="h-28" />
+                <Skeleton lines={3} />
+              </LoadingRegion>
             </div>
           </Block>
 

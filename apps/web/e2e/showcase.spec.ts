@@ -291,3 +291,51 @@ test.describe("dev-only route", () => {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   });
 });
+
+test.describe("design system (UI-01)", () => {
+  test("save confirmation: inline status and toast are announced", async ({ page }) => {
+    await page.goto(SHOWCASE);
+    await page.getByTestId("showcase-save-inline").click();
+    await expect(page.getByTestId("showcase-save-status")).toHaveText("Mentve");
+    await page.getByTestId("showcase-save-toast").click();
+    const region = page.getByRole("region", { name: "Értesítések", exact: true });
+    await expect(region.getByRole("status")).toContainText("A hirdetés mentve.");
+    expect(await axeSeriousOrCritical(page)).toEqual([]);
+    await region.getByRole("button", { name: "Értesítés bezárása" }).click();
+    await expect(region.getByRole("status")).toHaveCount(0);
+  });
+
+  test("buttons, icon buttons and row actions are at least 44 x 44 px", async ({ page }) => {
+    await page.goto(SHOWCASE);
+    const small = await page
+      .locator(
+        '[data-testid="showcase-icon-buttons"] button, [data-testid="showcase-table"] button, #buttons button',
+      )
+      .evaluateAll((elements) =>
+        elements
+          .map((el) => el.getBoundingClientRect())
+          .filter((r) => r.width > 0 && (r.width < 43.99 || r.height < 43.99)),
+      );
+    expect(small).toEqual([]);
+  });
+
+  test("the table keeps every column visible: no clipping, no sideways scroll", async ({
+    page,
+  }) => {
+    for (const width of [360, 1024]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(SHOWCASE);
+      const table = page.getByTestId("showcase-table");
+      await table.scrollIntoViewIfNeeded();
+      const clipped = await table.evaluate((el) => {
+        const box = el.getBoundingClientRect();
+        return [...el.querySelectorAll("td, th")]
+          .map((cell) => cell.getBoundingClientRect())
+          .filter((r) => r.width > 0 && (r.right > box.right + 1 || r.left < box.left - 1)).length;
+      });
+      expect(clipped, `${width}px`).toBe(0);
+      await expect(table.getByText("Kertész Dóra")).toBeVisible();
+      await expect(table.getByText("Keresztelő")).toBeVisible();
+    }
+  });
+});

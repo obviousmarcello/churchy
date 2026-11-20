@@ -1,7 +1,8 @@
 /*
  * Structural design tokens shared by every theme and by the admin variant.
- * Colours and fonts live in the theme files (klasszikus.css, admin.css) and in the runtime
- * ThemeConfig (see ../css.ts). Spacing is a 4 px grid; the type scale is anchored at 17 px.
+ * Colours, fonts, radii and shadows live in the theme files (klasszikus.css, letisztult.css,
+ * kozossegi.css, admin.css) and in the runtime ThemeConfig (see ../css.ts).
+ * Spacing is a 4 px grid; the type scale is anchored at 17 px (--fs-3).
  */
 :root {
   /* Spacing: 4 px grid (SDD 5.4). Tailwind's own spacing utilities (p-4 = 16 px) use the same grid. */
@@ -18,26 +19,46 @@
   --space-11: 5rem; /* 80 */
   --space-12: 6rem; /* 96 */
 
-  /* Type scale: the base (--fs-3) is 17 px. Steps 6-7 are fluid so headings fit 360 px screens. */
-  --fs-1: 0.8125rem; /* 13: eyebrows and badges only */
-  --fs-2: 0.9375rem; /* 15: captions, help text */
+  /* Semantic spacing: four rhythms instead of picking a number each time. */
+  --space-inline: var(--space-2); /*  8: icon to label, chips in a row */
+  --space-stack: var(--space-4); /* 16: between fields, items inside a card */
+  --space-card: var(--space-5); /* 20: card / panel padding */
+  --space-section: var(--space-9); /* 48: between page sections (64 from 40rem) */
+
+  /* Type scale: a calm modular scale (about 1.15) on a 17 px base. Steps 6-8 are fluid. */
+  --fs-1: 0.8125rem; /* 13: badges, overlines */
+  --fs-2: 0.9375rem; /* 15: captions, help text, table meta */
   --fs-3: 1.0625rem; /* 17: body */
-  --fs-4: 1.25rem; /* 20: lead, h4 */
-  --fs-5: 1.625rem; /* 26: h3 */
-  --fs-6: clamp(1.875rem, 1.45rem + 1.7vw, 2.5rem); /* 30-40: h2 */
-  --fs-7: clamp(2.375rem, 1.6rem + 3.4vw, 3.75rem); /* 38-60: h1 / hero */
-  --lh-tight: 1.12;
+  --fs-4: 1.1875rem; /* 19: lead, card titles */
+  --fs-5: 1.375rem; /* 22: section titles */
+  --fs-6: clamp(1.5rem, 1.32rem + 0.75vw, 1.875rem); /* 24-30: large section titles */
+  --fs-7: clamp(1.75rem, 1.5rem + 1.1vw, 2.375rem); /* 28-38: page title */
+  --fs-8: clamp(2.25rem, 1.7rem + 2.4vw, 3.5rem); /* 36-56: hero display only */
+
+  /* Semantic type roles (Tailwind: text-page-title, text-section-title, text-card-title, text-body,
+     text-caption). Prefer these over the numbered steps in new code. */
+  --fs-page-title: var(--fs-7);
+  --fs-section-title: var(--fs-5);
+  --fs-card-title: var(--fs-4);
+  --fs-body: var(--fs-3);
+  --fs-caption: var(--fs-2);
+
+  --lh-tight: 1.15;
   --lh-snug: 1.3;
   --lh-body: 1.6;
   --measure: 68ch;
+
+  /* Weights: headings use --fw-heading (set per theme); labels and table headers use --fw-label. */
+  --fw-label: 600;
 
   /* Layout */
   --content-max: 75rem; /* 1200 px (SDD 7.1) */
   --gutter: 1rem;
   --header-h: 3.5rem; /* 56 px mobile sticky header */
+  --demo-bar-h: 2.75rem; /* 44 px on touch screens, 40 px from 64rem */
 
-  /* Interaction */
-  --control-h-sm: 2.5rem;
+  /* Interaction: every control is at least 44 px tall (WCAG 2.5.5 target size). */
+  --control-h-sm: 2.75rem;
   --control-h-md: 2.75rem; /* 44 px */
   --control-h-lg: 3.25rem;
   --control-px: 1.125rem;
@@ -46,9 +67,24 @@
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
+/*
+ * Derived interaction colours. Declared on every theme / variant scope so they follow the colours of
+ * the closest scope (a custom property's var() is resolved where it is declared).
+ */
+:root,
+[data-theme],
+[data-ui] {
+  /* Lighter than the border token, for table rows and list separators. Decorative only. */
+  --c-divider: color-mix(in oklab, var(--c-border) 65%, var(--c-surface-raised));
+  /* Row / item hover and the selected (current) state. Never the only cue. */
+  --c-hover: color-mix(in oklab, var(--c-text) 4%, transparent);
+  --c-selected: var(--c-primary-soft);
+}
+
 @media (min-width: 40rem) {
   :root {
     --gutter: 1.5rem;
+    --space-section: var(--space-10);
   }
 }
 
@@ -56,5 +92,6 @@
   :root {
     --gutter: 2rem;
     --header-h: 4.5rem;
+    --demo-bar-h: 2.5rem;
   }
 }

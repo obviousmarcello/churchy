@@ -28,7 +28,7 @@
   --c-accent-soft: color-mix(in oklab, var(--c-accent) 16%, var(--c-surface-raised));
 
   /* Lines */
-  --c-border: #e1ddd4; /* decorative hairlines */
+  --c-border: #e6e2da; /* decorative hairlines (cards, dividers) */
   --c-border-strong: #7d776c; /* control borders: 3:1 against surfaces */
   --c-focus: #0b57d0;
 
@@ -62,6 +62,8 @@
   --radius-sm: 0px;
   --radius-md: 0px;
   --radius-lg: 2px;
-  --shadow-card: 0 0 0 1px rgb(28 27 26 / 0.06), 0 1px 2px rgb(28 27 26 / 0.05);
-  --shadow-raised: 0 2px 4px rgb(28 27 26 / 0.06), 0 14px 32px rgb(28 27 26 / 0.14);
+  --shadow-xs: 0 1px 1px rgb(28 27 26 / 0.05);
+  --shadow-card: 0 1px 2px rgb(28 27 26 / 0.05);
+  --shadow-raised: 0 2px 4px rgb(28 27 26 / 0.05), 0 10px 24px rgb(28 27 26 / 0.08);
+  --shadow-overlay: 0 8px 20px rgb(28 27 26 / 0.1), 0 28px 56px rgb(28 27 26 / 0.16);
 }

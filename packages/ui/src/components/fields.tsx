@@ -39,8 +39,8 @@ function Messages({
   return (
     <>
       {error ? (
-        <p id={errorId} className="flex items-start gap-2 text-fs-2 font-semibold text-danger">
-          <DangerIcon className="mt-0.5 size-5 shrink-0" />
+        <p id={errorId} className="flex items-start gap-1.5 text-fs-2 font-semibold text-danger">
+          <DangerIcon className="mt-0.5 size-4 shrink-0" />
           <span>{error}</span>
         </p>
       ) : null}
@@ -73,10 +73,11 @@ function LabelText({
 }
 
 const controlBase =
-  "block w-full min-h-(--control-h-md) rounded-md border-2 border-border-strong bg-surface-raised " +
-  "px-4 py-2 text-fs-3 text-text placeholder:text-muted transition-colors duration-(--duration) " +
+  "block w-full min-h-(--control-h-md) rounded-md border border-border-strong bg-surface-raised " +
+  "px-3.5 py-2 text-fs-3 text-text shadow-xs placeholder:text-muted " +
+  "transition-[border-color,box-shadow] duration-(--duration) " +
   "hover:border-text focus-visible:border-primary aria-[invalid=true]:border-danger " +
-  "aria-[invalid=true]:bg-danger-soft disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted";
+  "aria-[invalid=true]:bg-danger-soft disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted disabled:shadow-none";
 
 const labelClass = "text-fs-3 leading-snug font-semibold text-text";
 
@@ -255,7 +256,7 @@ export function Checkbox({
             aria-invalid={error ? true : undefined}
             aria-describedby={describedBy}
             className={cn(
-              "peer size-6 cursor-[inherit] appearance-none rounded-sm border-2 border-border-strong bg-surface-raised",
+              "peer size-6 cursor-[inherit] appearance-none rounded-sm border-[1.5px] border-border-strong bg-surface-raised",
               "transition-colors duration-(--duration) hover:border-text checked:border-primary checked:bg-primary",
               "aria-[invalid=true]:border-danger disabled:bg-surface-sunken",
               className,
@@ -269,6 +270,45 @@ export function Checkbox({
       <div className="grid gap-1.5 pl-9">
         <Messages help={help} error={error} helpId={helpId} errorId={errorId} />
       </div>
+    </div>
+  );
+}
+
+export interface FieldsetProps {
+  /** Group heading, e.g. "Elérhetőség". */
+  legend: string;
+  /** One sentence under the legend. */
+  description?: string;
+  children: ReactNode;
+  className?: string;
+}
+
+/** Groups related fields under a legend; fields inside are spaced with `--space-stack`. */
+export function Fieldset({ legend, description, children, className }: FieldsetProps) {
+  return (
+    <fieldset className={cn("grid min-w-0 gap-(--space-stack)", className)}>
+      <legend className="mb-1 font-heading text-section-title [font-weight:var(--fw-heading-sm,var(--fw-heading))] text-text">
+        {legend}
+      </legend>
+      {description ? <p className="-mt-2 text-fs-2 text-muted">{description}</p> : null}
+      {children}
+    </fieldset>
+  );
+}
+
+/**
+ * The button row at the end of a form: primary action first, then secondary ones, then the inline
+ * `SaveStatus`. A hairline separates it from the fields.
+ */
+export function FormActions({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "mt-2 flex flex-wrap items-center gap-3 border-t border-divider pt-5",
+        className,
+      )}
+    >
+      {children}
     </div>
   );
 }
