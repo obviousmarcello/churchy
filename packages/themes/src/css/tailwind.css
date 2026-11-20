@@ -1,0 +1,80 @@
+/*
+ * Maps the CSS-variable tokens onto Tailwind v4 utilities (bg-surface, text-muted, font-heading,
+ * rounded-md, shadow-card, text-fs-4 ...). `inline` makes utilities reference var(--c-...) directly,
+ * so a runtime change of the variables re-themes everything without a rebuild.
+ */
+@theme static {
+  --color-*: initial;
+  /* Only for scrims and text on photographs; everything else uses the semantic tokens below. */
+  --color-black: #000000;
+  --color-white: #ffffff;
+  /* Structural tokens whose names double as Tailwind namespaces. The theme blocks and the runtime
+     ThemeConfig override these defaults. */
+  --font-heading: "Cormorant Garamond", "Cormorant Garamond Fallback", Georgia, serif;
+  --font-body: "Source Sans 3", "Source Sans 3 Fallback", system-ui, sans-serif;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --shadow-xs: 0 1px 2px rgb(60 40 20 / 0.06);
+  --shadow-card: 0 1px 2px rgb(60 40 20 / 0.04), 0 2px 10px rgb(60 40 20 / 0.05);
+  --shadow-raised: 0 2px 6px rgb(60 40 20 / 0.06), 0 12px 28px rgb(60 40 20 / 0.1);
+  --shadow-overlay: 0 8px 24px rgb(60 40 20 / 0.12), 0 32px 64px rgb(60 40 20 / 0.2);
+}
+
+@theme inline {
+  --color-surface: var(--c-surface);
+  --color-surface-raised: var(--c-surface-raised);
+  --color-surface-sunken: var(--c-surface-sunken);
+  --color-text: var(--c-text);
+  --color-muted: var(--c-muted);
+  --color-primary: var(--c-primary);
+  --color-primary-hover: var(--c-primary-hover);
+  --color-primary-soft: var(--c-primary-soft);
+  --color-primary-contrast: var(--c-primary-contrast);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-text: var(--c-accent-text);
+  --color-accent-contrast: var(--c-accent-contrast);
+  --color-border: var(--c-border);
+  --color-border-strong: var(--c-border-strong);
+  --color-focus: var(--c-focus);
+  --color-inverse: var(--c-inverse);
+  --color-inverse-text: var(--c-inverse-text);
+  --color-inverse-muted: var(--c-inverse-muted);
+  --color-inverse-accent: var(--c-inverse-accent);
+  --color-danger: var(--c-danger);
+  --color-danger-soft: var(--c-danger-soft);
+  --color-success: var(--c-success);
+  --color-success-soft: var(--c-success-soft);
+  --color-warning: var(--c-warning);
+  --color-warning-soft: var(--c-warning-soft);
+  --color-info: var(--c-info);
+  --color-info-soft: var(--c-info-soft);
+
+  --font-sans: var(--font-body);
+
+  --text-fs-1: var(--fs-1);
+  --text-fs-2: var(--fs-2);
+  --text-fs-3: var(--fs-3);
+  --text-fs-4: var(--fs-4);
+  --text-fs-5: var(--fs-5);
+  --text-fs-6: var(--fs-6);
+  --text-fs-7: var(--fs-7);
+  --text-fs-8: var(--fs-8);
+
+  /* Semantic type roles: size + line height. */
+  --text-page-title: var(--fs-page-title);
+  --text-page-title--line-height: var(--lh-tight);
+  --text-section-title: var(--fs-section-title);
+  --text-section-title--line-height: var(--lh-snug);
+  --text-card-title: var(--fs-card-title);
+  --text-card-title--line-height: var(--lh-snug);
+  --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-body);
+  --text-caption: var(--fs-caption);
+  --text-caption--line-height: 1.45;
+
+  --color-divider: var(--c-divider);
+  --color-hover: var(--c-hover);
+  --color-selected: var(--c-selected);
+}

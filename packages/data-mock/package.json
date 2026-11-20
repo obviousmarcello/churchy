@@ -1,0 +1,21 @@
+{
+  "name": "@churchy/data-mock",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing/index.ts"
+  },
+  "scripts": {
+    "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
+    "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@churchy/calendar": "workspace:*",
+    "@churchy/contracts": "workspace:*",
+    "@churchy/hu": "workspace:*",
+    "@churchy/schedule": "workspace:*"
+  }
+}

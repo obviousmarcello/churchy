@@ -1,0 +1,69 @@
+/*
+ * Letisztult: clean and modern. Warm white surfaces, one sans-serif (Inter) for headings and text,
+ * square corners, hairline borders and almost no shadow. Navy brand colour with a terracotta accent.
+ * Runtime values (--c-primary, --c-accent and pairs, fonts, radii) are written from the ThemeConfig
+ * as inline custom properties; the values below must stay equal to the defaults in registry.ts (a
+ * unit test enforces that).
+ */
+[data-theme="letisztult"] {
+  /* Surfaces */
+  --c-surface: #fdfcfa; /* warm white page */
+  --c-surface-raised: #ffffff; /* cards, inputs */
+  --c-surface-sunken: #f1eee8; /* bands, table headers */
+
+  /* Text */
+  --c-text: #1c1b1a;
+  --c-muted: #55514b;
+
+  /* Brand (configurable) */
+  --c-primary: #1f3a5f; /* navy */
+  --c-primary-contrast: #ffffff;
+  --c-accent: #e07a5f; /* terracotta: decoration and fills with dark text */
+  --c-accent-contrast: #1c1b1a;
+  --c-accent-text: #a15844; /* terracotta dark enough for text on the surface */
+
+  /* Derived (pure CSS so they follow the configurable colours) */
+  --c-primary-hover: color-mix(in oklab, var(--c-primary) 82%, black);
+  --c-primary-soft: color-mix(in oklab, var(--c-primary) 7%, var(--c-surface-raised));
+  --c-accent-soft: color-mix(in oklab, var(--c-accent) 16%, var(--c-surface-raised));
+
+  /* Lines */
+  --c-border: #e6e2da; /* decorative hairlines (cards, dividers) */
+  --c-border-strong: #7d776c; /* control borders: 3:1 against surfaces */
+  --c-focus: #0b57d0;
+
+  /* Inverse (footer) */
+  --c-inverse: #14233a;
+  --c-inverse-text: #eef1f6;
+  --c-inverse-muted: #bcc6d6;
+  --c-inverse-accent: #f0a48f;
+
+  /* Status */
+  --c-danger: #a11d1d;
+  --c-danger-soft: #fbeceb;
+  --c-success: #25663a;
+  --c-success-soft: #e8f3ea;
+  --c-warning: #7a4e00;
+  --c-warning-soft: #fbf1d8;
+  --c-info: #1f5282;
+  --c-info-soft: #e7eef7;
+
+  /* Typography */
+  --font-heading:
+    "Inter", "Inter Fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-body:
+    "Inter", "Inter Fallback", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --fw-heading: 600;
+  --heading-tracking: -0.015em;
+
+  /* Shape */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 2px;
+  --shadow-xs: 0 1px 1px rgb(28 27 26 / 0.05);
+  --shadow-card: 0 1px 2px rgb(28 27 26 / 0.05);
+  --shadow-raised: 0 2px 4px rgb(28 27 26 / 0.05), 0 10px 24px rgb(28 27 26 / 0.08);
+  --shadow-overlay: 0 8px 20px rgb(28 27 26 / 0.1), 0 28px 56px rgb(28 27 26 / 0.16);
+}

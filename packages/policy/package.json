@@ -1,0 +1,15 @@
+{
+  "name": "@churchy/policy",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
+    "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
+    "matrix": "UPDATE_MATRIX=1 TZ=Europe/Budapest vitest run src/role-matrix.test.ts",
+    "typecheck": "tsc --noEmit"
+  }
+}

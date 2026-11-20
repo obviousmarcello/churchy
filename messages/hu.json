@@ -1,0 +1,4093 @@
+{
+  "common": {
+    "appName": "Churchy",
+    "skipToContent": "Ugrás a tartalomra",
+    "openMenu": "Menü megnyitása",
+    "closeMenu": "Menü bezárása",
+    "mainNavigation": "Főmenü",
+    "closeDialog": "Bezárás",
+    "legalNavigation": "Jogi tájékoztatók",
+    "nav": {
+      "public": {
+        "serviceSchedule": "{serviceSchedule.nom}",
+        "announcements": "{announcementsSection.nom}",
+        "events": "Események",
+        "news": "Hírek",
+        "rites": "{ritesSection.nom}",
+        "about": "{aboutPage.nom}",
+        "staff": "{staffSection.nom}"
+      },
+      "workspace": "Munkatér",
+      "admin": "Weboldal kezelése",
+      "organization": "Egyházmegyei portál",
+      "sections": {
+        "today": "Ma",
+        "teams": "Csapatok",
+        "worship": "Liturgia",
+        "directory": "Névjegyzék",
+        "calendar": "Naptár",
+        "rooms": "Termek",
+        "songs": "Énektár",
+        "absences": "Távollétek",
+        "hr": "HR-ügyintézés",
+        "news": "Hírek",
+        "announcements": "Hirdetések",
+        "schedule": "{serviceSchedule.nom}",
+        "requests": "Kérelmek",
+        "appearance": "Megjelenés",
+        "users": "Felhasználók és szerepkörök",
+        "domain": "Domain és jogi adatok",
+        "orgOverview": "Áttekintés",
+        "orgRequests": "Kérések",
+        "orgAbsences": "Távollétek",
+        "orgReports": "Jelentések",
+        "orgLink": "Egyházmegyei kapcsolat",
+        "orgLinks": "Kapcsolt {community.plural}",
+        "orgTemplates": "Sablonok",
+        "orgMembers": "Portál munkatársai",
+        "events": "Események",
+        "pages": "Oldalak",
+        "staff": "{staffSection.nom}",
+        "locations": "Helyszínek",
+        "setup": "Első beállítás",
+        "adminRooms": "Termek",
+        "modules": "Modulok",
+        "plan": "Csomag",
+        "billing": "Számlázás"
+      },
+      "contact": "{contactPage.nom}"
+    },
+    "area": {
+      "sectionsHeading": "Az Ön számára elérhető részek",
+      "upcoming": "Hamarosan",
+      "upcomingNote": "Ezek a részek a következő fejlesztési lépésekben készülnek el.",
+      "noAccessTitle": "Ehhez a felülethez nincs jogosultsága",
+      "noAccessBody": "A jelenlegi szerepkörrel nem érhető el ez a rész.",
+      "noAccessDemoHint": "Bemutató módban a fenti sávban válthat szerepet vagy egyházat."
+    },
+    "demo": {
+      "regionLabel": "Bemutató mód",
+      "banner": "Bemutató — nem valós adatok",
+      "bannerNote": "Minden név és adat kitalált.",
+      "persona": "Szerep",
+      "context": "Egyház",
+      "choosePersona": "Szerep kiválasztása",
+      "chooseContext": "Egyház kiválasztása",
+      "current": "(jelenlegi)",
+      "orgContext": "{name} – egyházmegyei portál",
+      "reset": "Visszaállítás",
+      "resetDone": "A bemutató adatai visszaálltak az eredeti állapotra.",
+      "resetFailed": "A visszaállítás nem sikerült. Kérjük, töltse újra az oldalt, majd próbálja újra.",
+      "menu": "Bemutató beállításai",
+      "resetHint": "A bemutató minden módosítását visszavonja.",
+      "personas": {
+        "latogato": "Látogató",
+        "tulajdonos": "Tulajdonos",
+        "szerkeszto": "Szerkesztő",
+        "iroda": "Iroda",
+        "vezeto": "{leadClergy.nom}/Vezető",
+        "onkentes": "Önkéntes",
+        "csoportvezeto": "Csoportvezető",
+        "zenei": "Zenei vezető",
+        "terem": "Teremfelelős",
+        "hr": "HR-felelős",
+        "bizalmas": "Bizalmas ügyek felelőse",
+        "egyhazmegyeiHr": "Egyházmegyei HR",
+        "egyhazmegyeiUgyintezo": "Egyházmegyei ügyintéző"
+      }
+    }
+  },
+  "public": {
+    "home": {
+      "metaDescription": "{church} – {serviceSchedule.lower}, hirdetések, hírek és események egy helyen.",
+      "nextServices": "Következő {service.plural}",
+      "welcome": "Üdvözöljük {community.article} {community.lower} oldalán!",
+      "nextServicesNone": "A következő két hétre még nincs megadva alkalom.",
+      "fullSchedule": "Teljes {serviceSchedule.lower}",
+      "inProgress": "Most zajlik",
+      "changesHeading": "Változások",
+      "changesMore": "és még {count} további változás",
+      "liveTitle": "Most közvetítünk",
+      "liveWatch": "Megnézem az élő közvetítést",
+      "announcementsEmpty": "Ezen a héten még nincs közzétett hirdetés.",
+      "newsTitle": "Hírek",
+      "newsAll": "Összes hír",
+      "newsEmpty": "Jelenleg nincs megjelent hír.",
+      "eventsTitle": "Események",
+      "eventsCalendar": "Naptár",
+      "eventsEmpty": "A következő időszakra nincs meghirdetett esemény.",
+      "mapTitle": "Hol talál meg minket?",
+      "mapAddressLabel": "Cím",
+      "quoteSource": "Forrás:"
+    },
+    "schedule": {
+      "metaDescription": "Heti {serviceSchedule.lower} és általános {serviceSchedule.lower} helyszínenként, a változásokkal együtt.",
+      "weekNavigation": "Hetek közötti lapozás",
+      "previousWeek": "Előző hét",
+      "thisWeek": "Ez a hét",
+      "nextWeek": "Következő hét",
+      "dateLabel": "Ugrás egy napra",
+      "dateHelp": "Formátum: év. hónap. nap., például 2026. 12. 24.",
+      "dateSubmit": "Megjelenítés",
+      "dateInvalid": "Ezt a dátumot nem tudtuk értelmezni. Kérjük, így adja meg: 2026. 12. 24. Addig az aktuális hetet mutatjuk.",
+      "locationFilter": "Helyszín",
+      "allLocations": "Mind",
+      "unknownLocation": "Ilyen helyszínt nem találtunk, ezért minden helyszín alkalmait mutatjuk.",
+      "weekHeading": "A hét alkalmai: {range}",
+      "today": "Ma",
+      "noServices": "Ezen a napon nincs alkalom.",
+      "noLocations": "Még nincs megadva helyszín és {serviceSchedule.lower}.",
+      "badges": {
+        "cancelled": "Elmarad",
+        "modified": "Változás",
+        "added": "Rendkívüli"
+      },
+      "language": "{language} nyelvű",
+      "originalTime": "eredetileg {time}",
+      "regularTitle": "Általános {serviceSchedule.lower}",
+      "regularLead": "A rendszeres heti alkalmak helyszínenként és időszakonként. Az eltéréseket a fenti heti nézet mutatja.",
+      "regularCurrent": "Jelenleg érvényes",
+      "regularDay": "Nap",
+      "regularServices": "Alkalmak",
+      "regularCaption": "{location}: {period}",
+      "regularEmpty": "Ehhez a helyszínhez még nincs rendszeres alkalom megadva.",
+      "validity": {
+        "always": "Egész évben érvényes",
+        "yearly": "Érvényes minden évben: {from} – {to}",
+        "range": "Érvényes: {from} – {to}",
+        "from": "Érvényesség kezdete: {from}",
+        "until": "Érvényesség vége: {to}"
+      },
+      "nthWeek": "a hónap {nth, select, 1 {első} 2 {második} 3 {harmadik} 4 {negyedik} 5 {ötödik} other {utolsó}} {weekday, select, 1 {hétfőjén} 2 {keddjén} 3 {szerdáján} 4 {csütörtökjén} 5 {péntekjén} 6 {szombatján} other {vasárnapján}}"
+    },
+    "hours": {
+      "openNow": "Most nyitva",
+      "closedNow": "Most zárva",
+      "openUntil": "{time}-ig",
+      "opensToday": "Ma {time}-kor nyit",
+      "opensOn": "Legközelebb: {date}, {time}",
+      "noUpcoming": "A közeljövőben nincs nyitvatartás.",
+      "statusLoading": "Nyitvatartási állapot betöltése…",
+      "today": "Ma",
+      "closed": "Zárva",
+      "dayColumn": "Nap",
+      "hoursColumn": "Nyitvatartás",
+      "exceptionsHeading": "Eltérő nyitvatartás",
+      "exceptionClosed": "Zárva: {range}",
+      "exceptionChanged": "Eltérő nyitvatartás: {range}",
+      "exceptionToday": "Ma eltérő nyitvatartás érvényes.",
+      "noHours": "Nincs megadott nyitvatartás."
+    },
+    "map": {
+      "heading": "Térkép",
+      "placeholderLabel": "Térkép helye: {name}",
+      "notice": "A térkép az OpenStreetMap szolgáltatásból töltődik be. A betöltéskor böngészője kapcsolatba lép az OpenStreetMap kiszolgálóival.",
+      "load": "Térkép betöltése",
+      "frameTitle": "Térkép: {name}",
+      "route": "Útvonaltervezés",
+      "routeHint": "Megnyílik a térképalkalmazásban",
+      "openOsm": "Megnyitás az OpenStreetMapen"
+    },
+    "locations": {
+      "title": "{locationsSection.nom}",
+      "lead": "Címek, nyitvatartás, megközelítés és akadálymentesség.",
+      "empty": "Még nincs megadott helyszín.",
+      "details": "Részletek",
+      "kind": {
+        "templom": "Templom",
+        "kapolna": "Kápolna",
+        "filia": "Fíliatemplom",
+        "egyeb": "Helyszín"
+      },
+      "addressHeading": "Cím",
+      "noAddress": "Nincs megadott cím.",
+      "hoursHeading": "Nyitvatartás",
+      "accessibilityHeading": "Akadálymentesség",
+      "accessibility": {
+        "wheelchair": "Kerekesszékkel megközelíthető",
+        "accessibleToilet": "Akadálymentes mosdó",
+        "hearingLoop": "Indukciós hurok",
+        "parking": "Parkolási lehetőség",
+        "available": "Van",
+        "unavailable": "Nincs"
+      },
+      "backToList": "Vissza: {locationsSection.nom}",
+      "notFoundTitle": "A helyszín nem található"
+    },
+    "contact": {
+      "title": "{contactPage.nom}",
+      "lead": "Kérdése van? Keressen minket személyesen, telefonon vagy az alábbi űrlapon.",
+      "detailsHeading": "Elérhetőségeink",
+      "address": "Cím",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "officeHoursHeading": "{office.nom} nyitvatartása",
+      "locationsHeading": "{locationsSection.nom}",
+      "form": {
+        "heading": "Írjon nekünk",
+        "intro": "Üzenetét e-mailben továbbítjuk {office.article} {office.lower} számára. Kérjük, ne írjon bele egészségügyi vagy más különleges személyes adatot.",
+        "name": "Név",
+        "email": "E-mail-cím",
+        "emailHelp": "Erre a címre válaszolunk.",
+        "phone": "Telefonszám",
+        "optional": "(nem kötelező)",
+        "subject": "Tárgy",
+        "message": "Üzenet",
+        "consent": "Elolvastam az adatkezelési tájékoztatót, és hozzájárulok, hogy adataimat az üzenet megválaszolásához kezeljék.",
+        "privacyLink": "Adatkezelési tájékoztató",
+        "honeypot": "Ezt a mezőt hagyja üresen",
+        "submit": "Üzenet küldése",
+        "sending": "Küldés…",
+        "errorSummary": "Kérjük, javítsa a megjelölt mezőket.",
+        "failed": "Az üzenetet most nem sikerült elküldeni. Kérjük, próbálja újra később.",
+        "successTitle": "Köszönjük, üzenetét megkaptuk!",
+        "successBody": "Munkatársunk hamarosan válaszol a megadott e-mail-címen.",
+        "successReference": "Hivatkozási szám: {reference}",
+        "sendAnother": "Új üzenet írása",
+        "errors": {
+          "required": "Ez a mező kötelező.",
+          "phone": "Adjon meg érvényes telefonszámot, például +36 30 123 4567.",
+          "consent": "Az üzenet elküldéséhez el kell fogadnia az adatkezelési tájékoztatót."
+        }
+      }
+    },
+    "announcements": {
+      "metaTitle": "{announcementsSection.nom} – {church}",
+      "metaDescription": "A heti {announcementsSection.lower} és a korábbi hetek archívuma.",
+      "weekHeading": "{announcementsSection.nom} — {date} ({day})",
+      "weekHeadingPlain": "{announcementsSection.nom} — {date}",
+      "weekRange": "A hét: {range}",
+      "latest": "Legfrissebb",
+      "weekNavigation": "Hetek közötti lapozás",
+      "previousWeek": "Előző hét",
+      "nextWeek": "Következő hét",
+      "archive": "Archívum",
+      "toLatest": "Legfrissebb {announcementsSection.lower}",
+      "attachmentTitle": "Csatolt dokumentum",
+      "openPdf": "Megnyitás a böngészőben",
+      "downloadPdf": "Letöltés",
+      "pdfMeta": "PDF, {size} kB",
+      "print": "Nyomtatás",
+      "empty": "Még nincsenek közzétett heti {announcementsSection.lower}.",
+      "weekMissing": "Erre a hétre ({range}) nincsenek közzétett {announcementsSection.lower}.",
+      "dateInvalid": "Ezt a dátumot nem tudtuk értelmezni, ezért a legfrissebb heti {announcementsSection.lower} láthatók.",
+      "archiveTitle": "{announcementsSection.nom} – archívum",
+      "archiveLead": "A korábbi heteket a legújabbal kezdve soroljuk fel.",
+      "archiveEmpty": "Az archívum még üres.",
+      "archiveItem": "{date} – {day}",
+      "withPdf": "PDF melléklettel",
+      "archivePages": "Lapozás az archívumban",
+      "archiveNewer": "Újabb hetek",
+      "archiveOlder": "Régebbi hetek",
+      "teaserTitle": "Heti {announcementsSection.lower}",
+      "teaserRead": "Elolvasom",
+      "teaserPdf": "PDF letöltése"
+    },
+    "events": {
+      "title": "Események",
+      "lead": "Közösségünk programjai, alkalmai és rendezvényei egy helyen.",
+      "metaTitle": "Események – {church}",
+      "monthMetaTitle": "Eseménynaptár, {month} – {church}",
+      "views": "Nézet",
+      "viewList": "Lista",
+      "viewMonth": "Havi naptár",
+      "subscribe": "Feliratkozás a naptárra (.ics)",
+      "subscribeHint": "A hivatkozást Google Naptárba, Apple Naptárba vagy Outlookba felvéve az események automatikusan frissülnek.",
+      "empty": "A következő időszakban nincs meghirdetett esemény.",
+      "allDay": "Egész nap",
+      "recurring": "Ismétlődő esemény",
+      "moved": "Módosított időpont",
+      "monthNavigation": "Lépés a hónapok között",
+      "prevMonth": "Előző hónap",
+      "nextMonth": "Következő hónap",
+      "today": "Aktuális hónap",
+      "monthEmpty": "Ebben a hónapban nincs meghirdetett esemény.",
+      "todayBadge": "Ma",
+      "back": "Vissza az eseményekhez",
+      "whenHeading": "Időpont",
+      "whereHeading": "Helyszín",
+      "aboutHeading": "Az eseményről",
+      "upcomingHeading": "Következő alkalmak",
+      "noUpcoming": "Ennek az eseménynek nincs több meghirdetett alkalma.",
+      "mapLink": "Megnyitás térképen",
+      "addToCalendar": "Hozzáadás a naptárhoz",
+      "downloadIcs": "Letöltés (.ics)",
+      "googleCalendar": "Google Naptár",
+      "opensInNewTab": "(új lapon nyílik meg)",
+      "icsCalendarName": "{church} – események",
+      "icsCalendarDescription": "{church} nyilvános eseményei",
+      "monthTitle": "{year}. {month}",
+      "weekdayShort": "{day, select, 1 {H} 2 {K} 3 {Sze} 4 {Cs} 5 {P} 6 {Szo} other {V}}",
+      "eventMetaTitle": "{title} – {church}",
+      "listPages": "Lapozás az események között",
+      "earlier": "Korábbi hetek",
+      "later": "Későbbi események"
+    },
+    "news": {
+      "title": "Hírek",
+      "lead": "Beszámolók, meghívók és hírek {community.article} {community.lower} életéből.",
+      "metaTitle": "Hírek – {church}",
+      "metaTitlePaged": "Hírek, {page}. oldal – {church}",
+      "empty": "Jelenleg nincs megjelent hír.",
+      "listHeading": "Legfrissebb hírek",
+      "publishedOn": "Megjelent:",
+      "categories": "Kategóriák",
+      "pagination": "Lapozás a hírek között",
+      "pageStatus": "{page}. oldal / {pages}",
+      "prevPage": "Előző oldal",
+      "nextPage": "Következő oldal",
+      "pageLink": "{page}. oldal",
+      "back": "Vissza a hírekhez",
+      "postMetaTitle": "{title} – {church}",
+      "share": "Megosztás",
+      "shareFacebook": "Megosztás Facebookon",
+      "shareMessenger": "Küldés Messengeren",
+      "copyLink": "Hivatkozás másolása",
+      "copied": "A hivatkozást a vágólapra másoltuk.",
+      "copyFailed": "A másolás nem sikerült. A hivatkozást innen jelölheti ki: {url}",
+      "opensInNewTab": "(új lapon nyílik meg)",
+      "relatedHeading": "Kapcsolódó hírek"
+    },
+    "giving": {
+      "metaTitle": "{givingSection.nom} – {church}",
+      "metaDescription": "Banki átutalás, azonnali fizetés QR-kóddal és 1%-os felajánlás.",
+      "title": "{givingSection.nom}",
+      "lead": "Köszönjük, hogy adományával támogatja {community.article} {community.lower} szolgálatát és közösségi életét.",
+      "transferHeading": "Banki átutalás",
+      "beneficiary": "Kedvezményezett",
+      "accountNumber": "Számlaszám",
+      "iban": "IBAN",
+      "reference": "Közlemény",
+      "referenceHint": "Kérjük, az átutalás közleményében ezt tüntesse fel.",
+      "copyAccount": "Számlaszám másolása",
+      "copyReference": "Közlemény másolása",
+      "copyTechnicalNumber": "Technikai szám másolása",
+      "copyTaxNumber": "Adószám másolása",
+      "copied": "Vágólapra másolva.",
+      "copyFailed": "A másolás nem sikerült. Kérjük, jelölje ki a szöveget, és másolja ki kézzel.",
+      "qrHeading": "Azonnali átutalás QR-kóddal",
+      "qrHelp": "Olvassa be a kódot bankja mobilalkalmazásával. A kedvezményezett, a számlaszám és a közlemény kitöltve jelenik meg, az összeget Ön adja meg.",
+      "qrLabel": "QR-kód azonnali átutaláshoz, kedvezményezett: {name}",
+      "qrValidity": "A kód érvényessége: {date}",
+      "szjaHeading": "1%-os felajánlás",
+      "szjaLead": "Személyi jövedelemadója 1+1%-áról Ön rendelkezhet: az egyik 1%-ot egy egyháznak, a másikat egy civil szervezetnek ajánlhatja fel. A rendelkező nyilatkozatot az adóbevallással együtt vagy a NAV online felületén teheti meg.",
+      "technicalNumber": "Technikai szám",
+      "technicalNumberHint": "Az egyháznak szánt 1%-hoz ezt a számot írja a nyilatkozatra.",
+      "foundationTaxNumber": "Alapítványunk adószáma",
+      "foundationTaxNumberHint": "A civil szervezetnek szánt 1%-hoz ezt az adószámot írja a nyilatkozatra.",
+      "noDetails": "A támogatási adatok hamarosan itt lesznek. Addig kérjük, érdeklődjön elérhetőségeinken."
+    },
+    "legal": {
+      "metaTitle": "{title} – {church}",
+      "impresszumTitle": "Impresszum",
+      "privacyTitle": "Adatkezelési tájékoztató",
+      "comingSoon": "A szöveg hamarosan elérhető lesz.",
+      "comingSoonNote": "Az oldal tartalma {community.article} {community.lower} jogi adataiból készül. Addig kérdéseivel forduljon hozzánk bizalommal.",
+      "contactLink": "{contactPage.nom}"
+    },
+    "footer": {
+      "contactHeading": "Elérhetőség",
+      "hoursHeading": "Ügyfélfogadás",
+      "hoursRow": "{days}: {hours}",
+      "noHours": "Nincs megadott nyitvatartás.",
+      "allHours": "Teljes nyitvatartás és eltérések",
+      "linksHeading": "További oldalak",
+      "support": "{givingSection.nom}",
+      "contact": "{contactPage.nom}",
+      "followHeading": "Kövessen minket",
+      "social": {
+        "facebook": "Facebook",
+        "youtube": "YouTube",
+        "instagram": "Instagram"
+      },
+      "opensInNewTab": "(új lapon nyílik meg)",
+      "impresszum": "Impresszum",
+      "privacy": "Adatkezelési tájékoztató",
+      "copyright": "© {year} {name}"
+    },
+    "blocks": {
+      "gallery": "Képgaléria",
+      "fileInfo": "PDF, {kilobytes} kB",
+      "embedNotice": "A videó külső szolgáltatótól ({provider}) töltődik be. A betöltéskor böngészője kapcsolatba lép a szolgáltató kiszolgálóival.",
+      "embedLoad": "Videó betöltése",
+      "embedFrameTitle": "Videó ({provider})"
+    },
+    "pages": {
+      "metaTitle": "{title} · {church}"
+    },
+    "staff": {
+      "title": "{staffSection.nom}",
+      "metaTitle": "{staffSection.nom} · {church}",
+      "lead": "Lelkipásztoraink, munkatársaink és {layCouncil.article} {layCouncil.lower} tagjai. Keressék őket bizalommal.",
+      "groups": {
+        "clergy": "Lelkipásztori szolgálat",
+        "staff": "Munkatársak",
+        "council": "{layCouncil.nom}",
+        "volunteer": "Önkéntesek"
+      },
+      "email": "E-mail",
+      "phone": "Telefon",
+      "emailAt": "kukac",
+      "emailDot": "pont",
+      "empty": "Munkatársaink adatai hamarosan felkerülnek erre az oldalra.",
+      "officeHint": "Általános ügyekben kérjük, keresse {office.article} {office.lower} munkatársait.",
+      "contactLink": "Elérhetőségeink"
+    },
+    "rites": {
+      "title": "{ritesSection.nom}",
+      "metaTitle": "{ritesSection.nom} · {church}",
+      "metaDescription": "Tudnivalók, szükséges dokumentumok és bejelentés.",
+      "listHeading": "Válasszon az alábbiak közül",
+      "readMore": "Tudnivalók",
+      "back": "Vissza: {ritesSection.nom}",
+      "riteMetaTitle": "{rite} · {church}",
+      "fallbackIntro": "Részletes tájékoztatásért kérjük, keresse {office.article} {office.lower} munkatársait.",
+      "requestButton": "Bejelentés indítása",
+      "contactHeading": "Kapcsolat",
+      "contactBody": "Kérdés esetén {office.article} {office.lower} munkatársai szívesen segítenek.",
+      "contactLink": "Elérhetőségeink",
+      "requestTitle": "{rite} — bejelentés",
+      "requestMetaTitle": "{rite} — bejelentés · {church}",
+      "requestComingTitle": "Az online bejelentés jelenleg nem érhető el",
+      "requestComingBody": "Addig kérjük, keresse {office.article} {office.lower} munkatársait telefonon, e-mailben vagy személyesen.",
+      "requestBack": "Vissza a tudnivalókhoz",
+      "request": {
+        "intro": "Kérjük, töltse ki az űrlapot. {office.article} {office.lower} munkatársai a megadott elérhetőségen felveszik Önnel a kapcsolatot.",
+        "stepProgress": "{current}. lépés / {total}",
+        "stepContact": "Elérhetősége",
+        "stepDetails": "A bejelentés adatai",
+        "stepSummary": "Összegzés és hozzájárulás",
+        "summaryIntro": "Kérjük, ellenőrizze az adatokat, majd küldje el a bejelentést.",
+        "summaryEdit": "Adatok javítása",
+        "next": "Tovább",
+        "back": "Vissza",
+        "submit": "Bejelentés elküldése",
+        "sending": "Küldés…",
+        "optional": "(nem kötelező)",
+        "choose": "Válasszon…",
+        "yes": "Igen",
+        "no": "Nem",
+        "none": "–",
+        "fileHelp": "Legfeljebb {size} MB méretű fájl.",
+        "consent": "Hozzájárulok, hogy a megadott adataimat a bejelentés intézése céljából kezeljék.",
+        "privacyLink": "Adatkezelési tájékoztató",
+        "honeypot": "Ezt a mezőt ne töltse ki",
+        "errorSummary": "A bejelentés nem küldhető el: kérjük, javítsa a megjelölt mezőket.",
+        "successTitle": "Köszönjük, a bejelentést megkaptuk",
+        "successBody": "Munkatársaink hamarosan felveszik Önnel a kapcsolatot. Kérjük, őrizze meg a hivatkozási számot.",
+        "successReference": "Hivatkozási szám: {reference}",
+        "successHome": "Vissza a tudnivalókhoz",
+        "errors": {
+          "required": "Ez a mező kötelező.",
+          "invalid": "Kérjük, adjon meg érvényes értéket.",
+          "tooLarge": "A fájl mérete meghaladja a megengedett legnagyobbat.",
+          "consent": "A bejelentéshez a hozzájárulás szükséges.",
+          "tooFast": "Az űrlapot túl gyorsan küldte el. Kérjük, ellenőrizze az adatokat, és küldje el újra.",
+          "rateLimited": "Ebből a hálózatból most túl sok bejelentés érkezett. Kérjük, később próbálja újra, vagy keresse {office.article} {office.lower} munkatársait.",
+          "failed": "A bejelentést most nem sikerült elküldeni. Kérjük, próbálja újra később."
+        }
+      }
+    }
+  },
+  "dev": {
+    "showcase": {
+      "metaTitle": "Komponenstár",
+      "title": "Komponenstár",
+      "lead": "A közös felületi elemek minden változata egy helyen. Ez az oldal a vizuális és hozzáférhetőségi tesztek alapja.",
+      "devNotice": "Fejlesztői oldal: éles környezetben nem érhető el, és a keresők sem indexelik.",
+      "tocLabel": "Az oldal fejezetei",
+      "toc": {
+        "theme": "Téma",
+        "tokens": "Tokenek",
+        "typography": "Betűk",
+        "icons": "Ikonok",
+        "navigation": "Navigáció",
+        "header": "Fejléc",
+        "hero": "Nyitókép",
+        "cards": "Kártyák",
+        "buttons": "Gombok",
+        "forms": "Űrlapok",
+        "feedback": "Jelzések",
+        "table": "Táblázat",
+        "states": "Üres és töltő állapot",
+        "tabs": "Fülek és párbeszédablak",
+        "admin": "Admin változat",
+        "formatting": "Formátumok",
+        "footer": "Lábléc"
+      },
+      "theme": {
+        "title": "Téma élő kipróbálása",
+        "lead": "A színek és a lekerekítés CSS-változókból jönnek, ezért az oldal újraépítés nélkül átszínezhető. Az érték az URL-ben is megadható (primary, accent, radius).",
+        "primaryLabel": "Főszín",
+        "primaryHelp": "Hexa kód, például #6e1f2e. Gombok és hivatkozások színe.",
+        "accentLabel": "Kiemelő szín",
+        "accentHelp": "Díszítő vonalak és kitöltések színe.",
+        "radiusLabel": "Lekerekítés",
+        "radiusSquare": "Szögletes",
+        "radiusSoft": "Enyhén lekerekített",
+        "radiusRound": "Kerekített",
+        "apply": "Alkalmazás",
+        "reset": "Alapértelmezett",
+        "invalidColor": "Adjon meg érvényes hexa színkódot, például #6e1f2e.",
+        "contrastOk": "A főszín kontrasztja a háttéren {ratio}:1, megfelel.",
+        "contrastBad": "A főszín kontrasztja a háttéren csak {ratio}:1 (legalább 4,5:1 kell). Javasolt árnyalat: {suggestion}.",
+        "previewButton": "Minta gomb",
+        "previewLink": "Minta hivatkozás"
+      },
+      "tokens": {
+        "title": "Tokenek",
+        "lead": "Színek, betűméretek, térközök és formák. Minden komponens ezekből dolgozik.",
+        "colors": "Színek",
+        "type": "Betűméret-skála (alap: 17 px)",
+        "spacing": "Térközök (4 px-es rács)",
+        "shape": "Forma",
+        "typeSample": "Egy hirdetés címe",
+        "radiusSmall": "kicsi",
+        "radiusMedium": "közepes",
+        "radiusLarge": "nagy",
+        "shadow": "kártyaárnyék"
+      },
+      "typography": {
+        "title": "Magyar betűk a téma betűtípusaiban",
+        "lead": "A latin-ext részhalmaz miatt a hosszú ő és ű a kiválasztott betűtípussal jelenik meg.",
+        "headingLabel": "Címsor betűtípus",
+        "headingSample": "Őszi hűség, Űrhajó, tőke, fű",
+        "bodyLabel": "Szövegtörzs betűtípus",
+        "bodySample": "Őszi ünnepi műsor, hűvös este, lángoló kürtő: őrült ŰŐ-játék, ű és ő.",
+        "linkSample": "Hivatkozás a szövegben"
+      },
+      "header": {
+        "title": "Fejléc és mobilmenü",
+        "lead": "1024 px alatt a menü lenyíló; a Rólunk pont almenüt nyit. Escape bezárja, és visszaadja a fókuszt a gombra.",
+        "brandName": "Belvárosi Plébánia",
+        "nav": {
+          "home": "Kezdőlap",
+          "schedule": "Miserend",
+          "announcements": "Hirdetések",
+          "events": "Események",
+          "sacraments": "Szentségek",
+          "about": "Rólunk",
+          "aboutHistory": "Történetünk",
+          "aboutStaff": "Munkatársaink",
+          "aboutGroups": "Közösségeink",
+          "contact": "Kapcsolat",
+          "support": "Támogatás"
+        }
+      },
+      "hero": {
+        "title": "Nyitókép változatok",
+        "lead": "A három téma-változat: teljes képes, kétoszlopos és csak szöveges.",
+        "variantImageFull": "Teljes képes",
+        "variantImageSplit": "Kétoszlopos",
+        "variantTextOnly": "Csak szöveg",
+        "heroTitle": "Isten hozott közöttünk!",
+        "heroLead": "Szentmisék, hirdetések és közösségi alkalmak egy helyen, a belváros szívében.",
+        "heroEyebrow": "Belvárosi Plébánia",
+        "heroAction": "Teljes miserend",
+        "heroActionSecondary": "Kapcsolat",
+        "imageAlt": "Kőből épült templom tornyos homlokzata alkonyi fényben"
+      },
+      "cards": {
+        "title": "Kártyák és szakaszcímek",
+        "lead": "Sima, árnyékos és kattintható kártya, kiemelt kártya a rendkívüli értesítésekhez, valamint szakaszcímek.",
+        "headingTitle": "Hírek",
+        "headingEyebrow": "Legfrissebb",
+        "headingAction": "Összes hír",
+        "headingCenteredTitle": "Közösségeink",
+        "newsEyebrow": "Hír",
+        "newsTitle": "Adventi koszorúkötés",
+        "newsBody": "Idén is közösen készítjük el az adventi koszorúkat a plébániai teremben. Szeretettel várunk minden korosztályt.",
+        "newsFooter": "2026. november 20.",
+        "plainEyebrow": "Heti hirdetések",
+        "plainTitle": "Nov. 9–15.",
+        "plainBody": "Szombaton 15 órakor ifjúsági találkozó. Vasárnap a 10 órai szentmise után agapé a közösségi házban.",
+        "plainAction": "Elolvasom",
+        "highlightEyebrow": "Változás",
+        "highlightTitle": "Rendkívüli miserend",
+        "highlightBody": "Nov. 15-én a 10 órai szentmise 8:30-kor kezdődik.",
+        "badge": "Rendkívüli",
+        "variants": "Változatok",
+        "flatTitle": "Hittanóra",
+        "flatBody": "Keddenként 17 órakor a plébániai teremben.",
+        "raisedTitle": "Heti összesítő",
+        "raisedBody": "3 új kérelem és 2 teremfoglalás vár jóváhagyásra.",
+        "interactiveTitle": "Teremfoglalás",
+        "interactiveBody": "Foglaljon termet közösségi alkalomra.",
+        "iconTitle": "Kóruspróba",
+        "iconBody": "Csütörtök 19:00, kántorlakás.",
+        "cardActions": "Kóruspróba műveletei"
+      },
+      "buttons": {
+        "title": "Gombok",
+        "lead": "Kitöltött elsődleges, halvány másodlagos, keretes, szöveges és veszélyes változat; három méret és ikongombok. Minden gomb legalább 44 képpont magas.",
+        "primary": "Közzététel",
+        "secondary": "Mentés piszkozatként",
+        "ghost": "Mégse",
+        "danger": "Törlés",
+        "small": "Kicsi",
+        "medium": "Közepes",
+        "large": "Nagy",
+        "disabled": "Nem elérhető",
+        "link": "Gombként megjelenő hivatkozás",
+        "variants": "Változatok",
+        "sizes": "Méretek",
+        "states": "Állapotok",
+        "outline": "Előnézet",
+        "icons": "Ikonnal és ikongombok",
+        "withIcon": "Új esemény",
+        "download": "Letöltés",
+        "iconEdit": "Szerkesztés",
+        "iconCopy": "Másolás",
+        "iconDelete": "Törlés",
+        "iconMore": "További műveletek",
+        "loading": "Mentés"
+      },
+      "forms": {
+        "title": "Űrlapelemek",
+        "lead": "Címke, segítő szöveg és hibaállapot minden elemnél. A hiba ikonnal és szöveggel is jelzett.",
+        "nameLabel": "Teljes név",
+        "nameHelp": "Így fogjuk megszólítani.",
+        "emailLabel": "E-mail-cím",
+        "emailError": "Az e-mail-címből hiányzik a @ jel.",
+        "emailValue": "minta.kata",
+        "phoneLabel": "Telefonszám",
+        "phoneOptional": "(nem kötelező)",
+        "phoneHelp": "Például: +36 30 123 4567",
+        "selectLabel": "Templom",
+        "selectPlaceholder": "Válasszon helyszínt",
+        "selectOption1": "Nagyboldogasszony-templom",
+        "selectOption2": "Szent Anna-kápolna",
+        "selectHelp": "A kiválasztott helyszín miserendje jelenik meg.",
+        "dateLabel": "Dátum",
+        "dateHelp": "Válassza ki a naptárból, vagy írja be.",
+        "timeLabel": "Időpont",
+        "textareaLabel": "Üzenet",
+        "textareaHelp": "Legfeljebb néhány mondat.",
+        "checkboxLabel": "Elfogadom az adatkezelési tájékoztatót",
+        "checkboxHelp": "Az adatait csak a kérés intézéséhez használjuk.",
+        "checkboxError": "A folytatáshoz el kell fogadnia a tájékoztatót.",
+        "checkboxChecked": "Értesítést kérek a hírekről",
+        "disabledLabel": "Letiltott mező",
+        "disabledValue": "Nem módosítható"
+      },
+      "feedback": {
+        "title": "Jelölők és értesítések",
+        "lead": "Státuszjelölők és értesítések; az értesítés mindig ikonnal és szöveggel jelzi a jelentését.",
+        "badgeNeutral": "Semleges",
+        "badgePrimary": "Elsődleges",
+        "badgeAccent": "Kiemelt",
+        "badgeSuccess": "Közzétéve",
+        "badgeWarning": "Piszkozat",
+        "badgeDanger": "Elmarad",
+        "badgeInfo": "Változás",
+        "badgeLive": "Élő",
+        "infoTitle": "Jó tudni",
+        "infoBody": "A heti hirdetést vasárnap reggelig módosíthatja.",
+        "successTitle": "Mentve",
+        "successBody": "A változtatásokat elmentettük 12:04-kor.",
+        "warningTitle": "Figyelem",
+        "warningBody": "A szombati misét még nem tette közzé.",
+        "dangerTitle": "Nem sikerült",
+        "dangerBody": "A mentés nem sikerült. Kérjük, próbálja újra.",
+        "bannerBody": "Most közvetítünk: vasárnapi szentmise",
+        "bannerAction": "Megnézem",
+        "bannerHeading": "Sávos értesítés",
+        "statusHeading": "Állapotjelzők",
+        "statusPending": "Beérkezett",
+        "statusInfo": "Folyamatban",
+        "statusSuccess": "Jóváhagyva",
+        "statusWarning": "Pótlásra vár",
+        "statusDanger": "Elutasítva",
+        "statusNeutral": "Lezárva",
+        "confirmHeading": "Megerősítés mentés után",
+        "confirmLead": "Helyben megjelenő „Mentve” jelzés az űrlap gombja mellett, vagy rövid értesítés a képernyő alján.",
+        "toastRegion": "Értesítések",
+        "toastClose": "Értesítés bezárása",
+        "toastSaved": "A hirdetés mentve.",
+        "toastSavedBody": "A weboldalon azonnal megjelenik.",
+        "saveInline": "Mentés",
+        "saveToast": "Mentés értesítéssel",
+        "saving": "Mentés…",
+        "saved": "Mentve",
+        "saveError": "Nem sikerült menteni"
+      },
+      "tabs": {
+        "title": "Fülek és párbeszédablak",
+        "lead": "Nyilakkal váltható fülek; a párbeszédablak megőrzi a fókuszt, és Escape-pel zárható.",
+        "label": "Hely adatai",
+        "tab1": "Elérhetőség",
+        "tab2": "Nyitvatartás",
+        "tab3": "Megközelítés",
+        "panel1": "1056 Budapest, Március 15. tér 3. Telefon: +36 30 123 4567.",
+        "panel2": "Hétfőtől péntekig 9 és 16 óra között tart nyitva az iroda.",
+        "panel3": "A 15-ös villamossal a Március 15. tér megállóig.",
+        "open": "Törlés megerősítése",
+        "dialogTitle": "Biztosan törli?",
+        "dialogDescription": "A „Nov. 9–15.” hirdetés véglegesen törlődik. Ez a művelet nem vonható vissza.",
+        "dialogBody": "Törlés előtt győződjön meg róla, hogy a hirdetést már nem használja.",
+        "confirm": "Igen, törlöm",
+        "cancel": "Mégse"
+      },
+      "admin": {
+        "title": "Admin változat",
+        "lead": "Nagy kontrasztú, 17 px-es alapbetűvel és legalább 44 px-es kattintási felületekkel (SDD 11.2).",
+        "heading": "Heti hirdetés",
+        "stepLabel": "1. lépés: válassza ki a hetet",
+        "weekLabel": "Hét",
+        "weekHelp": "Alapértelmezetten a következő vasárnap.",
+        "weekValue": "2026-11-15",
+        "titleLabel": "Cím",
+        "titleHelp": "Így jelenik meg a nyilvános oldalon.",
+        "textLabel": "Szöveg",
+        "textHelp": "Illessze be a hirdetések szövegét.",
+        "pdfLabel": "Szeretném PDF-ként is közzétenni",
+        "locationLabel": "Helyszín",
+        "locationPlaceholder": "Válasszon helyszínt",
+        "save": "Mentés piszkozatként",
+        "publish": "Közzététel",
+        "delete": "Törlés",
+        "savedBadge": "Mentve 12:04-kor",
+        "tabsLabel": "Hirdetés részei",
+        "tab1": "Szerkesztés",
+        "tab2": "Előnézet",
+        "panel1": "Itt szerkesztheti a hirdetés szövegét.",
+        "panel2": "Itt látja, hogyan jelenik meg a látogatóknak.",
+        "alertTitle": "Nem mentett változtatások",
+        "alertBody": "Ha elhagyja az oldalt, a módosítások elvesznek.",
+        "linksLabel": "Admin menü",
+        "link1": "Vezérlőpult",
+        "link2": "Hirdetések",
+        "link3": "Hírek"
+      },
+      "footer": {
+        "title": "Lábléc",
+        "lead": "Az oldal saját lábléce is ez a komponens.",
+        "brandName": "Belvárosi Plébánia",
+        "description": "Római katolikus plébánia a főváros szívében. Mindenkit szeretettel várunk.",
+        "contactHeading": "Elérhetőség",
+        "email": "iroda@minta-plebania.example",
+        "hoursHeading": "Hivatali órák",
+        "hours1": "Hétfő–péntek: 9:00–16:00",
+        "hours2": "Szombat: 9:00–12:00",
+        "hours3": "Vasárnap: zárva",
+        "linksHeading": "Gyorslinkek",
+        "linkSchedule": "Miserend",
+        "linkAnnouncements": "Hirdetések",
+        "linkEvents": "Események",
+        "linkContact": "Kapcsolat",
+        "legalImprint": "Impresszum",
+        "legalPrivacy": "Adatkezelés",
+        "legalAccessibility": "Akadálymentesség",
+        "note": "© 2026 Belvárosi Plébánia. Minden jog fenntartva."
+      },
+      "formatting": {
+        "title": "Magyar formátumok és terminológia",
+        "lead": "A dátumok, nevek, címek és telefonszámok a közös megjelenítő komponensekből jönnek; a fogalmak az egyház hagyományához igazodnak.",
+        "dateLong": "Hosszú dátum",
+        "dateShort": "Rövid dátum",
+        "dateMonthDay": "Hónap és nap",
+        "dateWeek": "Hét",
+        "dateRelative": "Relatív nap",
+        "time": "Időpont",
+        "timeSpoken": "Kimondott időpont",
+        "timeRange": "Időszak",
+        "personName": "Név",
+        "address": "Cím",
+        "phone": "Telefonszám",
+        "bankAccount": "Bankszámlaszám",
+        "iban": "IBAN",
+        "termsHeading": "Fogalmak hagyományonként",
+        "termsLead": "Ugyanaz a felület háromféle egyháznál: a szavakat az előbeállítás adja, a toldalékolás nem futásidőben történik.",
+        "termsLive": "Az aktuális egyház szövegei",
+        "termsColumnService": "Alkalom",
+        "termsColumnSchedule": "Rend",
+        "termsColumnLead": "Vezető",
+        "termsColumnCommunity": "Közösség",
+        "traditionRk": "Római katolikus",
+        "traditionRef": "Református",
+        "traditionBapt": "Baptista",
+        "demoGivenName": "Katalin",
+        "demoFamilyName": "Minta"
+      },
+      "icons": {
+        "title": "Ikonok",
+        "lead": "Egységes vonalvastagságú, beágyazott SVG ikonok. Dekoratívak: a jelentést mindig a mellettük álló szöveg vagy a gomb neve hordozza.",
+        "sizes": "Méretek"
+      },
+      "navigation": {
+        "title": "Navigáció és oldalfejléc",
+        "lead": "Morzsamenü, oldalfejléc egyetlen fő címmel és műveletekkel, valamint linkként működő fülek.",
+        "breadcrumbsLabel": "Morzsamenü",
+        "crumbAdmin": "Vezérlőpult",
+        "crumbNews": "Hírek",
+        "pageTitle": "Adventi koszorúkötés",
+        "pageDescription": "Hír szerkesztése. A módosítások a közzététel után jelennek meg a weboldalon.",
+        "statusDraft": "Piszkozat",
+        "lastSaved": "Utoljára mentve: 12:04",
+        "tabsLabel": "A hír részei",
+        "tabContent": "Tartalom",
+        "tabMedia": "Képek",
+        "tabComments": "Megjegyzések",
+        "preview": "Előnézet",
+        "publish": "Közzététel"
+      },
+      "table": {
+        "title": "Táblázat",
+        "lead": "Ragadós fejléc, sorkiemelés, sorműveletek és üres állapot. Keskeny képernyőn a sorok kártyává alakulnak, így egy oszlop sem lóg le.",
+        "caption": "Beérkezett kérelmek",
+        "colName": "Kérelmező",
+        "colType": "Típus",
+        "colDate": "Beérkezett",
+        "colStatus": "Állapot",
+        "colRef": "Azonosító",
+        "actions": "Műveletek",
+        "open": "Megnyitás",
+        "more": "További műveletek",
+        "row1Name": "Kertész Dóra",
+        "row2Name": "Fehér Bálint",
+        "row3Name": "Molnár Éva",
+        "typeBaptism": "Keresztelő",
+        "typeWedding": "Házasságkötés",
+        "typeFuneral": "Temetés",
+        "emptyCaption": "Teremfoglalások",
+        "emptyTitle": "Még nincs teremfoglalás",
+        "emptyBody": "Az új foglalások itt jelennek meg.",
+        "emptyAction": "Új foglalás"
+      },
+      "states": {
+        "title": "Üres és töltő állapot",
+        "lead": "Az üres állapot megmondja, mi hiányzik, és felkínálja a következő lépést. Töltés közben helyőrzők jelennek meg.",
+        "emptyTitle": "Még nincs esemény",
+        "emptyBody": "Az események itt jelennek meg, amint felvesz egyet.",
+        "emptyAction": "Új esemény",
+        "loading": "Betöltés…"
+      }
+    },
+    "outbox": {
+      "metaTitle": "Kimenő levelek",
+      "title": "Kimenő levelek",
+      "lead": "Bemutató módban semmi nem megy ki: minden e-mail és értesítés, amelyet a rendszer elküldene, itt jelenik meg, a valódi sablonokkal megjelenítve.",
+      "devNotice": "Fejlesztői oldal: éles környezetben nem érhető el, és a keresők sem indexelik.",
+      "live": "Élő frissítés: az új üzenetek maguktól megjelennek a listában.",
+      "actionsLabel": "Műveletek",
+      "sample": "Mintakérelem beküldése",
+      "sampleHelp": "Egy fiktív kérelmet küld be; a rendszer két e-mailt készít róla: az irodának és a beküldőnek.",
+      "clear": "Kiürítés",
+      "clearHelp": "Az összes kimenő üzenetet törli.",
+      "filtersLabel": "Szűrők",
+      "filterChannel": "Csatorna",
+      "filterRecipient": "Címzett",
+      "filterAll": "Mind",
+      "apply": "Szűrés",
+      "resetFilters": "Szűrők törlése",
+      "channelEmail": "E-mail",
+      "channelPush": "Értesítés",
+      "listHeading": "Üzenetek",
+      "count": "{count} üzenet",
+      "listLabel": "Kimenő üzenetek listája",
+      "columnTime": "Időpont",
+      "columnChannel": "Csatorna",
+      "columnRecipient": "Címzett",
+      "columnSubject": "Tárgy",
+      "open": "Megnyitás",
+      "empty": "Még nem keletkezett kimenő üzenet. Hajtson végre egy műveletet, például küldjön be egy mintakérelmet.",
+      "emptyFiltered": "A szűrőnek egyetlen üzenet sem felel meg.",
+      "detailHeading": "Az üzenet részletei",
+      "detailNone": "Válasszon egy üzenetet a listából.",
+      "detailGone": "Ez az üzenet már nem található a kimenő levelek között.",
+      "fieldTime": "Időpont",
+      "fieldChannel": "Csatorna",
+      "fieldRecipient": "Címzett",
+      "fieldChurch": "Egyházközség",
+      "fieldTemplate": "Sablon",
+      "fieldSubject": "Tárgy",
+      "fieldLink": "Hivatkozás",
+      "fieldPushTitle": "Cím",
+      "fieldPushBody": "Szöveg",
+      "noLink": "Nincs",
+      "emailPreview": "E-mail előnézet",
+      "emailFrameTitle": "A kimenő e-mail tartalma",
+      "plainTextHeading": "Szöveges változat",
+      "pushPreview": "Értesítés előnézete",
+      "renderFailed": "Az üzenetet nem sikerült megjeleníteni.",
+      "unknownTemplate": "Ehhez a sablonhoz nincs megjelenítő.",
+      "noChurch": "Nincs megadva",
+      "recipientPerson": "Munkatárs ({id})",
+      "recipientUser": "Felhasználó ({id})",
+      "personas": {
+        "office": "Plébániai iroda",
+        "requester": "Kérelmező",
+        "hrHandlers": "HR-ügyintézők",
+        "roomManagers": "Teremfelelősök",
+        "planApprovers": "Tervjóváhagyók",
+        "team": "Csapat",
+        "billingContact": "Számlázási kapcsolattartó"
+      },
+      "templates": {
+        "request": {
+          "officeNotification": "Kérelem: értesítés az irodának",
+          "confirmation": "Kérelem: visszaigazolás"
+        },
+        "hr": {
+          "ticketCreated": "HR: új ügy",
+          "ticketReceived": "HR: ügy rögzítve",
+          "ticketUpdated": "HR: ügy frissítve"
+        },
+        "assignment": {
+          "requested": "Beosztás: új",
+          "swapRequested": "Beosztás: cserekérés",
+          "swapAccepted": "Beosztás: csere elfogadva"
+        },
+        "booking": {
+          "requested": "Foglalás: új kérés",
+          "decided": "Foglalás: döntés"
+        },
+        "plan": {
+          "reviewRequested": "Terv: jóváhagyásra vár",
+          "approved": "Terv: jóváhagyva",
+          "mention": "Terv: megemlítés"
+        },
+        "member": {
+          "invitation": "Meghívás a munkatérbe"
+        },
+        "billing": {
+          "paymentFailed": "Számlázás: sikertelen fizetés"
+        },
+        "contact": {
+          "message": "Kapcsolat: üzenet az irodának"
+        }
+      }
+    },
+    "media": {
+      "metaTitle": "Médiatár",
+      "title": "Médiatár",
+      "lead": "A médiatár felülete a bemutató adatbázison: rácsnézet, feltöltés kötelező képleírással és jogi megerősítéssel, szerkesztés, törlés és tárhelyhasználat.",
+      "devNotice": "Fejlesztői oldal: éles környezetben nem érhető el, és a keresők sem indexelik.",
+      "library": {
+        "gridLabel": "A médiatár fájljai",
+        "empty": "Még nincs feltöltött fájl.",
+        "usage": "Felhasznált tárhely: {used} / {quota}",
+        "usageMeterLabel": "Felhasznált tárhely",
+        "uploadTitle": "Új fájl feltöltése",
+        "fileLabel": "Fájl",
+        "fileHelp": "Kép (JPEG, PNG, WebP, SVG) vagy PDF. A bemutató módban a fájl nem kerül tárolásra, csak a leírása.",
+        "fileRequired": "Válasszon ki egy fájlt.",
+        "altLabel": "Képleírás (alt szöveg)",
+        "altHelp": "Írja le röviden, mi látható a képen, hogy a képet nem látó látogatók is megértsék.",
+        "altRequired": "Adja meg a képleírást, vagy jelölje a képet díszítőelemnek.",
+        "decorative": "A kép csak díszítő, nem hordoz információt",
+        "captionLabel": "Képaláírás (nem kötelező)",
+        "peopleConsent": "A képen felismerhető személyek hozzájárultak a közzétételhez",
+        "peopleConsentHelp": "Ha a képen személyek ismerhetők fel, kérjük, jelölje be, ha rendelkezik a hozzájárulásukkal.",
+        "rights": "Megerősítem, hogy jogom van a fájl közzétételére",
+        "rightsRequired": "A feltöltéshez meg kell erősítenie, hogy jogosult a fájl közzétételére.",
+        "upload": "Feltöltés",
+        "uploading": "Feltöltés…",
+        "uploaded": "A(z) {filename} feltöltése sikerült.",
+        "uploadFailed": "A feltöltés nem sikerült. Kérjük, próbálja újra.",
+        "editText": "Szerkesztés",
+        "editAria": "Szerkesztés: {filename}",
+        "editTitle": "Fájl adatai",
+        "save": "Mentés",
+        "saved": "Mentve.",
+        "saveFailed": "A mentés nem sikerült. Kérjük, próbálja újra.",
+        "deleteText": "Törlés",
+        "deleteAria": "Törlés: {filename}",
+        "deleteTitle": "Fájl törlése",
+        "deleteConfirm": "Biztosan törli a(z) {filename} fájlt? A művelet nem vonható vissza.",
+        "deleteAction": "Törlés",
+        "deleted": "A fájl törölve.",
+        "cancel": "Mégse",
+        "close": "Bezárás",
+        "selectText": "Kiválasztás",
+        "selectAria": "Kiválasztás: {filename}",
+        "pickerTitle": "Kép kiválasztása",
+        "pickerDescription": "Válasszon a médiatárból, vagy töltsön fel új képet.",
+        "kindPdf": "PDF",
+        "kindAudio": "Hang",
+        "kindOther": "Fájl",
+        "noAlt": "Hiányzó képleírás",
+        "decorativeBadge": "Díszítő",
+        "consentBadge": "Hozzájárulás megvan"
+      }
+    },
+    "editor": {
+      "metaTitle": "Szerkesztő",
+      "title": "Szövegszerkesztő",
+      "lead": "A közös szövegszerkesztő a hírek, oldalak és hirdetések tartalmához. Csak olyan elemeket állít elő, amelyeket a nyilvános oldal biztonságosan megjelenít.",
+      "devNotice": "Fejlesztői oldal: éles környezetben nem érhető el, és a keresők sem indexelik.",
+      "fieldLabel": "Tartalom",
+      "previewTitle": "Megjelenés a nyilvános oldalon",
+      "jsonTitle": "Tárolt szerkezet (JSON)",
+      "embedFrameTitle": "{provider} beágyazás",
+      "embedNotice": "A tartalom betöltésekor kapcsolat jön létre a(z) {provider} szolgáltatóval.",
+      "embedLoad": "Betöltés",
+      "toolbar": "Szövegformázás",
+      "bold": "Félkövér",
+      "italic": "Dőlt",
+      "heading2": "H2 alcím",
+      "heading3": "H3 alcím",
+      "heading4": "H4 alcím",
+      "bulletList": "Felsorolás",
+      "orderedList": "Számozott lista",
+      "blockquote": "Idézet",
+      "horizontalRule": "Elválasztó vonal",
+      "link": "Hivatkozás",
+      "image": "Kép beszúrása a médiatárból",
+      "embed": "Videó vagy térkép beágyazása",
+      "undo": "Visszavonás",
+      "redo": "Újra",
+      "linkUrl": "Hivatkozás címe",
+      "linkHelp": "Weboldal (https://…), e-mail-cím, telefonszám vagy az oldalon belüli cím (/…).",
+      "linkInvalid": "Ez a cím nem engedélyezett. Adjon meg weboldal-, e-mail- vagy telefonos címet.",
+      "linkApply": "Hivatkozás beállítása",
+      "linkRemove": "Hivatkozás törlése",
+      "embedUrl": "Videó vagy térkép címe",
+      "embedHelp": "Csak YouTube-videó és OpenStreetMap-térkép ágyazható be.",
+      "embedInvalid": "Csak YouTube-videó vagy OpenStreetMap-térkép címe adható meg.",
+      "embedApply": "Beágyazás",
+      "cancel": "Mégse"
+    }
+  },
+  "email": {
+    "layout": {
+      "brand": "Churchy",
+      "linkFallback": "Ha a gomb nem működik, másolja be ezt a címet a böngészőjébe:",
+      "churchLabel": "Egyházközség",
+      "footerNotice": "Ezt az üzenetet a Churchy rendszer küldte automatikusan. Kérjük, ne válaszoljon rá."
+    },
+    "labels": {
+      "reference": "Hivatkozási szám",
+      "category": "Kategória",
+      "categoryRequest": "Lelkipásztori kérelem",
+      "categoryHr": "Munkatársi ügy",
+      "when": "Időpont",
+      "decision": "Döntés",
+      "approved": "Jóváhagyva",
+      "rejected": "Elutasítva",
+      "senderName": "Feladó",
+      "senderEmail": "E-mail-cím",
+      "senderPhone": "Telefonszám",
+      "subject": "Tárgy",
+      "message": "Üzenet"
+    },
+    "request": {
+      "officeNotification": {
+        "subject": "Új kérelem érkezett: {reference}",
+        "preheader": "Új kérelem érkezett az irodához. A részletek az adminisztrációs felületen olvashatók.",
+        "heading": "Új kérelem érkezett",
+        "body": "A weboldalon keresztül új kérelem érkezett. A tartalmát az adatvédelmi szabályok miatt nem küldjük el e-mailben; kérjük, nyissa meg a kérelmet az adminisztrációs felületen.",
+        "cta": "Kérelem megnyitása",
+        "pushTitle": "Új kérelem",
+        "pushBody": "Új kérelem érkezett: {reference}."
+      },
+      "confirmation": {
+        "subject": "Kérelmét megkaptuk: {reference}",
+        "preheader": "Köszönjük, kérelmét rögzítettük. Őrizze meg a hivatkozási számot.",
+        "heading": "Köszönjük, kérelmét megkaptuk",
+        "body": "Kérelmét rögzítettük, munkatársunk hamarosan felveszi Önnel a kapcsolatot. Ha érdeklődni szeretne, kérjük, hivatkozzon az alábbi azonosítóra.",
+        "cta": "Megnyitás",
+        "pushTitle": "Kérelem megérkezett",
+        "pushBody": "Kérelmét rögzítettük: {reference}."
+      }
+    },
+    "hr": {
+      "ticketCreated": {
+        "subject": "Új munkatársi ügy érkezett: {reference}",
+        "preheader": "Új ügy vár a kezelésére. A tartalma csak a Munkatérben olvasható.",
+        "heading": "Új munkatársi ügy érkezett",
+        "body": "Új ügy került a kezelésére váró ügyek közé. Az ügy tartalma az adatvédelmi szabályok miatt nem szerepel az üzenetben; kérjük, nyissa meg a Munkatérben.",
+        "cta": "Ügy megnyitása",
+        "pushTitle": "Új munkatársi ügy",
+        "pushBody": "Új ügy érkezett: {reference}."
+      },
+      "ticketReceived": {
+        "subject": "Ügyét rögzítettük: {reference}",
+        "preheader": "Köszönjük, a kérését megkaptuk. Az állapotát a Munkatérben követheti.",
+        "heading": "Ügyét rögzítettük",
+        "body": "Köszönjük, a kérését megkaptuk. Az ügy állapotáról a Munkatérben tájékozódhat; a tartalmát nem küldjük el e-mailben.",
+        "cta": "Ügy megnyitása",
+        "pushTitle": "Ügy rögzítve",
+        "pushBody": "Ügyét rögzítettük: {reference}."
+      },
+      "ticketUpdated": {
+        "subject": "Az ügye frissült: {reference}",
+        "preheader": "Változás történt az Ön ügyében. A részletek a Munkatérben olvashatók.",
+        "heading": "Az ügye frissült",
+        "body": "Az Ön ügyével kapcsolatban változás történt. A részleteket a Munkatérben tekintheti meg; a tartalmát nem küldjük el e-mailben.",
+        "cta": "Ügy megnyitása",
+        "pushTitle": "Frissült az ügye",
+        "pushBody": "Változás történt az ügyében: {reference}."
+      }
+    },
+    "assignment": {
+      "requested": {
+        "subject": "Új szolgálati beosztás: {when}",
+        "preheader": "Beosztották Önt egy szolgálatra. Kérjük, jelezze, hogy vállalja-e.",
+        "heading": "Új szolgálati beosztást kapott",
+        "body": "Beosztották Önt egy szolgálatra. Kérjük, a Munkatérben jelezze, hogy vállalja-e.",
+        "cta": "Beosztás megnyitása",
+        "pushTitle": "Új beosztás",
+        "pushBody": "Beosztották Önt: {when}."
+      },
+      "swapRequested": {
+        "subject": "Szolgálatcserét kértek Öntől: {when}",
+        "preheader": "Egy munkatárs szeretné átadni Önnek a szolgálatát.",
+        "heading": "Szolgálatcserét kértek Öntől",
+        "body": "Egy munkatárs szeretné, ha Ön átvenné a szolgálatát. Kérjük, a Munkatérben fogadja el vagy utasítsa el a kérést.",
+        "cta": "Kérés megnyitása",
+        "pushTitle": "Szolgálatcsere-kérés",
+        "pushBody": "Szolgálatcserét kértek Öntől: {when}."
+      },
+      "swapAccepted": {
+        "subject": "Szolgálatcsere elfogadva: {when}",
+        "preheader": "A szolgálatcserét elfogadták, a beosztás frissült.",
+        "heading": "A szolgálatcserét elfogadták",
+        "body": "A szolgálatcserét elfogadták, a beosztás ennek megfelelően frissült.",
+        "cta": "Beosztás megnyitása",
+        "pushTitle": "Szolgálatcsere elfogadva",
+        "pushBody": "A cserét elfogadták: {when}."
+      }
+    },
+    "booking": {
+      "requested": {
+        "subject": "Új teremfoglalási kérés",
+        "preheader": "Foglalási kérés vár a döntésére.",
+        "heading": "Új teremfoglalási kérés érkezett",
+        "body": "Új foglalási kérés érkezett a kezelése alá tartozó teremre. Kérjük, döntsön róla a Munkatérben.",
+        "cta": "Foglalás megnyitása",
+        "pushTitle": "Új foglalási kérés",
+        "pushBody": "Foglalási kérés vár a döntésére."
+      },
+      "decided": {
+        "subject": "Döntés született a foglalásáról: {decision}",
+        "preheader": "A teremfoglalási kérésével kapcsolatban döntés született.",
+        "heading": "Döntés született a foglalásáról",
+        "body": "A teremfoglalási kérésével kapcsolatban döntés született. A részleteket a Munkatérben tekintheti meg.",
+        "cta": "Foglalás megnyitása",
+        "pushTitle": "Döntés a foglalásról",
+        "pushBody": "A foglalási kérése: {decision}."
+      }
+    },
+    "plan": {
+      "reviewRequested": {
+        "subject": "Jóváhagyásra vár {service.article} {service.lower} terve",
+        "preheader": "Egy terv felülvizsgálatra vár a Munkatérben.",
+        "heading": "Jóváhagyásra vár {service.article} {service.lower} terve",
+        "body": "{service.article} {service.lower} terve felülvizsgálatra vár. Kérjük, tekintse át, és hagyja jóvá a Munkatérben.",
+        "cta": "Terv megnyitása",
+        "pushTitle": "Terv vár jóváhagyásra",
+        "pushBody": "Jóváhagyásra vár {service.article} {service.lower} terve."
+      },
+      "approved": {
+        "subject": "Jóváhagyták {service.article} {service.lower} tervét",
+        "preheader": "A terv jóváhagyása megtörtént.",
+        "heading": "A terv jóváhagyva",
+        "body": "Jóváhagyták {service.article} {service.lower} tervét. A jóváhagyott változatot a Munkatérben találja.",
+        "cta": "Terv megnyitása",
+        "pushTitle": "Terv jóváhagyva",
+        "pushBody": "Jóváhagyták {service.article} {service.lower} tervét."
+      },
+      "mention": {
+        "subject": "Megemlítették Önt {service.article} {service.lower} tervében",
+        "preheader": "Egy kolléga megemlítette Önt egy megjegyzésben.",
+        "heading": "Megemlítették Önt egy megjegyzésben",
+        "body": "Egy munkatárs megemlítette Önt {service.article} {service.lower} tervéhez fűzött megjegyzésben. A megjegyzés a Munkatérben olvasható.",
+        "cta": "Megjegyzés megnyitása",
+        "pushTitle": "Megemlítették",
+        "pushBody": "Megemlítették Önt {service.article} {service.lower} tervében."
+      }
+    },
+    "member": {
+      "invitation": {
+        "subject": "Meghívás a Churchy Munkatérbe",
+        "preheader": "Meghívást kapott a munkatérbe. A belépéshez nyissa meg az üzenetet.",
+        "heading": "Meghívást kapott a Munkatérbe",
+        "body": "Meghívást kapott a Churchy Munkatérbe, ahol a beosztásokat, a teremfoglalásokat és a szolgálati terveket kezelhetik. A belépéshez kérjük, használja az alábbi gombot.",
+        "cta": "Belépés",
+        "pushTitle": "Meghívás a Munkatérbe",
+        "pushBody": "Meghívást kapott a Churchy Munkatérbe."
+      }
+    },
+    "billing": {
+      "paymentFailed": {
+        "subject": "Az előfizetés díját nem sikerült levonni",
+        "preheader": "Kérjük, ellenőrizze a fizetési adatokat.",
+        "heading": "A fizetés nem sikerült",
+        "body": "Az előfizetés díját nem tudtuk levonni. Kérjük, ellenőrizze a fizetési adatokat az adminisztrációs felületen, hogy a szolgáltatás megszakítás nélkül működhessen.",
+        "cta": "Előfizetés megnyitása",
+        "pushTitle": "A fizetés nem sikerült",
+        "pushBody": "Kérjük, ellenőrizze az előfizetés fizetési adatait."
+      }
+    },
+    "contact": {
+      "message": {
+        "subject": "Új üzenet a honlapról: {reference}",
+        "preheader": "Új üzenet érkezett a honlap kapcsolatfelvételi űrlapján.",
+        "heading": "Új üzenet érkezett a honlapról",
+        "body": "A honlap kapcsolatfelvételi űrlapján új üzenet érkezett. A feladónak a megadott e-mail-címen válaszolhat.",
+        "cta": "Megnyitás",
+        "pushTitle": "Új üzenet a honlapról",
+        "pushBody": "Új üzenet érkezett: {reference}."
+      }
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Vezérlőpult",
+      "lead": "A weboldal tartalmát és beállításait itt kezelheti.",
+      "sections": "Az Ön számára elérhető részek",
+      "warnings": {
+        "heading": "Figyelmeztetések",
+        "none": "Nincs teendő: minden rendben.",
+        "announcement": {
+          "title": "Még nincs hirdetés a közelgő vasárnapra",
+          "body": "A hirdetés a(z) {date} vasárnapra még nincs közzétéve.",
+          "action": "Hirdetés írása"
+        },
+        "holidays": {
+          "title": "Ünnepnap módosítás nélkül",
+          "body": "A következő 14 napban az alábbi napokra még nincs kivétel felvéve.",
+          "action": "Kivétel felvétele"
+        },
+        "onboarding": {
+          "title": "A weboldal beállítása még nem fejeződött be",
+          "body": "Hátra van még:",
+          "action": "Beállítás folytatása",
+          "steps": {
+            "location": "Helyszín megadása",
+            "schedule": "{serviceSchedule.nom} megadása",
+            "page": "Első oldal közzététele"
+          }
+        },
+        "requests": {
+          "title": "Új kérések érkeztek",
+          "body": "{count} új kérés vár feldolgozásra.",
+          "action": "Kérések megnyitása"
+        }
+      },
+      "quick": {
+        "heading": "Gyors feladatok",
+        "weeklyAnnouncement": "Heti hirdetés",
+        "scheduleChange": "{serviceSchedule.nom} módosítása",
+        "newNews": "Új hír",
+        "newEvent": "Új esemény"
+      },
+      "requests": {
+        "heading": "Új kérések",
+        "count": "{count} új kérés",
+        "none": "Nincs új kérés.",
+        "open": "Kérések megnyitása"
+      },
+      "drafts": {
+        "heading": "Piszkozatok",
+        "empty": "Nincs befejezetlen piszkozat.",
+        "caption": "Befejezetlen piszkozatok",
+        "title": "Cím",
+        "type": "Típus",
+        "changed": "Utoljára módosítva",
+        "announcementOf": "Heti hirdetés:",
+        "types": {
+          "news": "Hír",
+          "announcement": "Hirdetés",
+          "event": "Esemény",
+          "page": "Oldal"
+        }
+      },
+      "upcoming": {
+        "heading": "Közelgő események",
+        "empty": "A következő 30 napban nincs esemény.",
+        "caption": "Közelgő események"
+      }
+    },
+    "shell": {
+      "navigation": "Admin menü",
+      "openMenu": "Admin menü megnyitása",
+      "closeMenu": "Admin menü bezárása",
+      "dashboard": "Vezérlőpult",
+      "viewSite": "Weboldal megtekintése",
+      "breadcrumbs": "Morzsamenü",
+      "groups": {
+        "content": "Tartalom",
+        "church": "Egyház",
+        "inbox": "Kérések",
+        "appearance": "Megjelenés",
+        "settings": "Beállítások",
+        "other": "Egyéb"
+      }
+    },
+    "page": {
+      "noAccessTitle": "Ehhez a részhez nincs jogosultsága",
+      "noAccessBody": "A jelenlegi szerepkörrel nem érhető el ez a rész.",
+      "backToDashboard": "Vissza a vezérlőpultra",
+      "newItem": "Új"
+    },
+    "placeholder": {
+      "title": "Hamarosan elkészül",
+      "body": "„{section}” kezelése a következő fejlesztési lépésben érkezik. Az útvonal és a jogosultság már működik."
+    },
+    "sections": {
+      "news": {
+        "lead": "Hírek írása, időzítése és közzététele."
+      },
+      "announcements": {
+        "lead": "A heti hirdetések összeállítása és közzététele."
+      },
+      "events": {
+        "lead": "Események és ismétlődő alkalmak kezelése."
+      },
+      "pages": {
+        "lead": "A weboldal állandó oldalainak szerkesztése."
+      },
+      "staff": {
+        "lead": "A munkatársak bemutatkozó oldalának kezelése."
+      },
+      "locations": {
+        "lead": "Templomok és egyéb helyszínek adatai."
+      },
+      "schedule": {
+        "lead": "A heti rend, az ünnepi sablonok és a kivételek szerkesztése."
+      },
+      "requests": {
+        "lead": "A weboldalon érkezett kérelmek feldolgozása és az online űrlapok beállítása."
+      },
+      "appearance": {
+        "lead": "Arculat, téma, kezdőlap, menü és lábléc."
+      },
+      "users": {
+        "lead": "A weboldal szerkesztőinek és szerepköreik kezelése."
+      },
+      "domain": {
+        "lead": "Saját webcím és jogi adatok."
+      },
+      "adminRooms": {
+        "lead": "Termek, eszközök és a szolgálatok terem-blokkolása."
+      },
+      "orgLink": {
+        "lead": "Az egyházmegyei HR-portállal való kapcsolat és a delegált kategóriák."
+      },
+      "modules": {
+        "lead": "A weboldal és a munkatér moduljainak be- és kikapcsolása."
+      },
+      "plan": {
+        "lead": "Az aktuális csomag, a keretek és a csomagváltás."
+      },
+      "billing": {
+        "lead": "Előfizetés, számlázási adatok és számlák."
+      }
+    },
+    "flows": {
+      "announcementNew": "Új heti hirdetés",
+      "newsNew": "Új hír",
+      "eventNew": "Új esemény",
+      "scheduleException": "{serviceSchedule.nom} módosítása"
+    },
+    "form": {
+      "optional": "(nem kötelező)"
+    },
+    "content": {
+      "form": {
+        "optional": "(nem kötelező)",
+        "cancel": "Mégse",
+        "save": "Mentés",
+        "create": "Létrehozás",
+        "invalidTitle": "A mentés nem sikerült",
+        "invalidBody": "Kérjük, javítsa a megjelölt mezőket.",
+        "deniedTitle": "Ehhez nincs jogosultsága",
+        "deniedBody": "A jelenlegi szerepkörrel a módosítás nem engedélyezett.",
+        "savedTitle": "Mentve",
+        "savedBody": "A módosítások elmentődtek."
+      },
+      "errors": {
+        "required": "Ez a mező kötelező.",
+        "slugTaken": "Ez a webcím már foglalt. Kérjük, válasszon másikat.",
+        "slugFormat": "A webcím csak kisbetűt, számot és kötőjelet tartalmazhat.",
+        "sunday": "A hirdetés vasárnaphoz tartozik. Kérjük, vasárnapi dátumot adjon meg.",
+        "weekTaken": "Erre a hétre már készült hirdetés.",
+        "announcementEmpty": "Kérjük, írja meg a hirdetés szövegét.",
+        "endBeforeStart": "A befejezés nem lehet korábbi a kezdésnél.",
+        "phone": "Adjon meg érvényes telefonszámot, például +36 30 123 4567.",
+        "postalCode": "Az irányítószám négy számjegyből áll.",
+        "address": "Kérjük, adja meg a teljes címet.",
+        "notFound": "A tartalom nem található, lehet, hogy közben törölték.",
+        "general": "A mentés nem sikerült."
+      },
+      "delete": {
+        "title": "Törlés megerősítése",
+        "question": "Biztosan törli a(z) „{name}” elemet?",
+        "warning": "A törlés nem vonható vissza.",
+        "button": "Törlés",
+        "trigger": "Törlés: {name}",
+        "cancel": "Mégse",
+        "confirm": "Végleges törlés",
+        "close": "Bezárás",
+        "failed": "A törlés nem sikerült."
+      },
+      "publish": {
+        "heading": "Közzététel",
+        "preview": "Előnézet",
+        "viewLive": "Megtekintés az oldalon",
+        "publishNow": "Közzététel most",
+        "republish": "Közzététel újra",
+        "cancelEvent": "Esemény lemondása",
+        "backToDraft": "Vissza piszkozatba",
+        "scheduleAt": "Időzített közzététel",
+        "scheduleHelp": "A megadott időpontban (budapesti idő szerint) válik láthatóvá.",
+        "schedule": "Időzítés",
+        "noRight": "A közzétételhez nincs jogosultsága.",
+        "done": "Az állapot frissült.",
+        "failed": "A művelet nem sikerült.",
+        "invalidDate": "Kérjük, érvényes időpontot adjon meg.",
+        "scheduledFor": "Megjelenik: {when}",
+        "publishedOn": "Közzétéve: {when}",
+        "expiredOn": "Lejárt: {when}"
+      },
+      "preview": {
+        "title": "Előnézet",
+        "body": "Így fog megjelenni a weboldalon. Az előnézetet csak a szerkesztők látják, a látogatók nem.",
+        "back": "Vissza a szerkesztéshez",
+        "heading": "{title} – előnézet"
+      },
+      "reorder": {
+        "hint": "Húzással vagy a nyilakkal módosíthatja a sorrendet; a változás azonnal mentődik.",
+        "disabledHint": "Szűrés közben a sorrend nem módosítható.",
+        "up": "Feljebb: {name}",
+        "down": "Lejjebb: {name}",
+        "saved": "A sorrend mentve.",
+        "failed": "A sorrend mentése nem sikerült."
+      },
+      "list": {
+        "search": "Keresés",
+        "searchLabel": "Keresés a névben vagy címben",
+        "status": "Állapot",
+        "allStatuses": "Mind",
+        "filter": "Szűrés",
+        "reset": "Szűrés törlése",
+        "edit": "Szerkesztés",
+        "editItem": "Szerkesztés: {name}",
+        "actions": "Műveletek",
+        "filters": "Szűrők"
+      },
+      "states": {
+        "draft": "Piszkozat",
+        "scheduled": "Időzítve",
+        "published": "Közzétéve",
+        "expired": "Lejárt",
+        "cancelled": "Lemondva"
+      },
+      "news": {
+        "caption": "Hírek",
+        "empty": "Még nincs hír. Az „Új hír” gombbal készíthet egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új hír",
+        "editTitle": "Hír szerkesztése",
+        "columns": {
+          "title": "Cím",
+          "state": "Állapot",
+          "date": "Közzététel",
+          "updated": "Módosítva"
+        },
+        "fields": {
+          "title": "Cím",
+          "slug": "Webcím",
+          "slugHelp": "Üresen hagyva a cím alapján automatikusan készül.",
+          "lead": "Bevezető",
+          "leadHelp": "Rövid összefoglaló a hírlistához, legfeljebb 600 karakter.",
+          "body": "Szöveg",
+          "bodyHelp": "A bekezdéseket üres sor választja el. A szövegszerkesztő hamarosan érkezik.",
+          "categories": "Kategóriák",
+          "categoriesHelp": "Vesszővel elválasztva.",
+          "expiresAt": "Lejárat",
+          "expiresHelp": "Ezután a hír már nem jelenik meg a weboldalon."
+        }
+      },
+      "announcements": {
+        "caption": "Heti hirdetések",
+        "empty": "Még nincs hirdetés. A „Heti hirdetés” gombbal készíthet egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Heti hirdetés",
+        "editTitle": "Heti hirdetés szerkesztése",
+        "columns": {
+          "week": "Hét (vasárnap)",
+          "state": "Állapot",
+          "date": "Közzététel",
+          "updated": "Módosítva"
+        },
+        "steps": {
+          "week": "1. Melyik hétre szól?",
+          "text": "2. A hirdetés szövege",
+          "publish": "3. Közzététel"
+        },
+        "existing": "Erre a hétre már van hirdetés, ezt szerkesztheti.",
+        "saveDraft": "Mentés piszkozatként",
+        "publish": "Közzététel",
+        "fields": {
+          "weekSunday": "Vasárnap",
+          "weekHelp": "Alapértelmezés: a közelgő vasárnap.",
+          "body": "Szöveg",
+          "bodyHelp": "A bekezdéseket üres sor választja el. A szövegszerkesztő hamarosan érkezik."
+        },
+        "heading": "Hirdetés – {date}"
+      },
+      "events": {
+        "caption": "Események",
+        "empty": "Még nincs esemény. Az „Új esemény” gombbal készíthet egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új esemény",
+        "editTitle": "Esemény szerkesztése",
+        "columns": {
+          "title": "Cím",
+          "when": "Időpont",
+          "state": "Állapot",
+          "visibility": "Láthatóság"
+        },
+        "recurring": "Ismétlődő esemény. Az ismétlődési szabály szerkesztése hamarosan érkezik, a meglévő szabály változatlan marad.",
+        "visibility": {
+          "public": "Nyilvános",
+          "staff": "Munkatársak",
+          "team": "Csapat",
+          "private": "Személyes"
+        },
+        "fields": {
+          "title": "Cím",
+          "slug": "Webcím",
+          "slugHelp": "Üresen hagyva a cím alapján automatikusan készül.",
+          "calendarId": "Naptár",
+          "visibility": "Láthatóság",
+          "visibilityHelp": "Csak a nyilvános, közzétett események jelennek meg a weboldalon.",
+          "startsAt": "Kezdés",
+          "endsAt": "Befejezés",
+          "locationId": "Helyszín",
+          "locationNone": "Nincs megadva",
+          "category": "Kategória",
+          "body": "Leírás",
+          "bodyHelp": "A bekezdéseket üres sor választja el. A szövegszerkesztő hamarosan érkezik."
+        }
+      },
+      "pages": {
+        "caption": "Oldalak",
+        "empty": "Még nincs oldal. Az „Új oldal” gombbal készíthet egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új oldal",
+        "newTitle": "Új oldal",
+        "editTitle": "Oldal szerkesztése",
+        "columns": {
+          "title": "Cím",
+          "slug": "Webcím",
+          "state": "Állapot",
+          "parent": "Szülőoldal"
+        },
+        "rite": "Szertartási oldal",
+        "fields": {
+          "title": "Cím",
+          "slug": "Webcím",
+          "slugHelp": "Üresen hagyva a cím alapján automatikusan készül.",
+          "parentId": "Szülőoldal",
+          "parentNone": "Nincs (főoldal)",
+          "body": "Tartalom",
+          "bodyHelp": "A „## ” kezdetű sor címsor, a bekezdéseket üres sor választja el. A képek és egyéb blokkok változatlanul maradnak.",
+          "seo": "Keresőoptimalizálás",
+          "seoTitle": "Keresőmotoros cím",
+          "seoDescription": "Keresőmotoros leírás"
+        }
+      },
+      "staff": {
+        "caption": "Munkatársak",
+        "empty": "Még nincs munkatárs. Az „Új munkatárs” gombbal vehet fel egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új munkatárs",
+        "newTitle": "Új munkatárs",
+        "editTitle": "Munkatárs szerkesztése",
+        "public": "Nyilvános",
+        "inactive": "Inaktív",
+        "groups": {
+          "clergy": "Lelkipásztorok",
+          "staff": "Munkatársak",
+          "council": "Képviselő-testület",
+          "volunteer": "Önkéntesek"
+        },
+        "visibility": {
+          "public": "Mindenki (nyilvános)",
+          "workspace": "A munkatér felhasználói",
+          "team": "Közös csapat tagjai",
+          "private": "Csak vezetők és HR"
+        },
+        "fields": {
+          "name": "Név",
+          "prefix": "Előtag",
+          "prefixHelp": "Például: dr.",
+          "familyName": "Családnév",
+          "givenName": "Utónév",
+          "suffix": "Utótag",
+          "roleTitle": "Beosztás",
+          "staffGroup": "Csoport",
+          "isPublic": "Megjelenik a nyilvános munkatársi oldalon",
+          "bio": "Bemutatkozás",
+          "contact": "Elérhetőség",
+          "email": "E-mail-cím",
+          "emailVisibility": "Ki láthatja az e-mail-címet?",
+          "phone": "Telefonszám",
+          "phoneVisibility": "Ki láthatja a telefonszámot?",
+          "active": "Aktív"
+        }
+      },
+      "locations": {
+        "caption": "Helyszínek",
+        "empty": "Még nincs helyszín. Az „Új helyszín” gombbal vehet fel egyet.",
+        "emptyFiltered": "A keresésnek nincs találata.",
+        "newButton": "Új helyszín",
+        "newTitle": "Új helyszín",
+        "editTitle": "Helyszín szerkesztése",
+        "kinds": {
+          "templom": "Templom",
+          "kapolna": "Kápolna",
+          "filia": "Fiókegyház",
+          "egyeb": "Egyéb"
+        },
+        "hoursNote": "A nyitvatartás és a térképi pont szerkesztése hamarosan érkezik, a meglévő adatok változatlanok maradnak.",
+        "fields": {
+          "name": "Név",
+          "slug": "Webcím",
+          "slugHelp": "Üresen hagyva a név alapján automatikusan készül.",
+          "kind": "Típus",
+          "address": "Cím",
+          "postalCode": "Irányítószám",
+          "city": "Település",
+          "line1": "Utca, házszám",
+          "accessibility": "Megközelíthetőség",
+          "wheelchair": "Kerekesszékkel megközelíthető",
+          "accessibleToilet": "Akadálymentes mosdó",
+          "hearingLoop": "Indukciós hurok",
+          "parking": "Parkoló",
+          "accessNote": "Megjegyzés"
+        }
+      },
+      "editor": {
+        "toolbar": "Szövegformázás",
+        "bold": "Félkövér",
+        "italic": "Dőlt",
+        "heading2": "H2 alcím",
+        "heading3": "H3 alcím",
+        "heading4": "H4 alcím",
+        "bulletList": "Felsorolás",
+        "orderedList": "Számozott lista",
+        "blockquote": "Idézet",
+        "horizontalRule": "Elválasztó vonal",
+        "link": "Hivatkozás",
+        "image": "Kép beszúrása a médiatárból",
+        "embed": "Videó vagy térkép beágyazása",
+        "undo": "Visszavonás",
+        "redo": "Újra",
+        "linkUrl": "Hivatkozás címe",
+        "linkHelp": "Weboldal (https://…), e-mail-cím, telefonszám vagy az oldalon belüli cím (/…).",
+        "linkInvalid": "Ez a cím nem engedélyezett. Adjon meg weboldal-, e-mail- vagy telefonos címet.",
+        "linkApply": "Hivatkozás beállítása",
+        "linkRemove": "Hivatkozás törlése",
+        "embedUrl": "Videó vagy térkép címe",
+        "embedHelp": "Csak YouTube-videó és OpenStreetMap-térkép ágyazható be.",
+        "embedInvalid": "Csak YouTube-videó vagy OpenStreetMap-térkép címe adható meg.",
+        "embedApply": "Beágyazás",
+        "cancel": "Mégse",
+        "mediaUnavailable": "A médiatár most nem érhető el, ezért kép nem szúrható be."
+      },
+      "rooms": {
+        "lead": "A foglalható termek és eszközök, valamint hogy mely szolgálatok blokkolják őket.",
+        "newButton": "Új terem",
+        "newTitle": "Új terem",
+        "editTitle": "Terem szerkesztése",
+        "empty": "Még nincs terem. Az „Új terem” gombbal vehet fel egyet.",
+        "capacity": "{count} fő",
+        "resource": "Eszköz",
+        "inactive": "Inaktív",
+        "deleteNote": "Ha a teremnek vannak jövőbeli foglalásai, nem törölhető: ilyenkor kapcsolja ki az „Aktív” jelölőt.",
+        "kinds": {
+          "room": "Terem",
+          "resource": "Eszköz / erőforrás"
+        },
+        "weekdays": {
+          "1": "Hétfő",
+          "2": "Kedd",
+          "3": "Szerda",
+          "4": "Csütörtök",
+          "5": "Péntek",
+          "6": "Szombat",
+          "7": "Vasárnap"
+        },
+        "fields": {
+          "name": "Név",
+          "locationId": "Helyszín",
+          "kind": "Típus",
+          "capacity": "Befogadóképesség (fő)",
+          "features": "Felszerelés",
+          "featuresHelp": "Vesszővel elválasztva, például: projektor, zongora.",
+          "accessibility": "Megközelíthetőség",
+          "wheelchair": "Kerekesszékkel megközelíthető",
+          "accessibleToilet": "Akadálymentes mosdó",
+          "hearingLoop": "Indukciós hurok",
+          "parking": "Parkoló",
+          "policy": "Jóváhagyás",
+          "manager1": "Felelős",
+          "manager2": "Másik felelős",
+          "none": "Nincs",
+          "whoCanRequest": "Ki foglalhat?",
+          "whoAll": "Minden munkatér-felhasználó",
+          "whoStaff": "Csak munkatársak és vezetők",
+          "autoApprove": "Azonnali jóváhagyás",
+          "autoApproveHelp": "Aki ide tartozik, annak a foglalása jóváhagyás nélkül érvényes.",
+          "auto": {
+            "leader": "Csak a vezető és a terem felelőse",
+            "staff": "A munkatársak is",
+            "everyone": "Mindenki"
+          },
+          "holdHours": "Fenntartás (óra)",
+          "holdHoursHelp": "Ennyi ideig tartjuk fenn a jóváhagyásra váró kérést.",
+          "rules": "Foglalási szabályok",
+          "minNoticeHours": "Legkorábbi foglalás (órával előre)",
+          "maxDurationMin": "Leghosszabb foglalás (perc)",
+          "horizonDays": "Legfeljebb ennyi napra előre",
+          "hoursFrom": "Foglalható ettől",
+          "hoursHelp": "A bejelölt napokon, óó:pp formában, például 08:00.",
+          "hoursTo": "Foglalható eddig",
+          "blackoutName": "Zárás neve",
+          "blackoutFrom": "Zárás első napja",
+          "blackoutTo": "Zárás utolsó napja",
+          "active": "Aktív (foglalható)"
+        },
+        "blocks": {
+          "title": "Szolgálatok terem-blokkolása",
+          "new": "Új blokk",
+          "lead": "A szolgálat idejére a hozzárendelt terem le van foglalva, a megadott előtte és utána lévő pufferrel. Semmit nem mondunk le automatikusan.",
+          "empty": "Még nincs terem-blokk.",
+          "buffers": "−{before} / +{after} perc",
+          "newTitle": "Új terem-blokk",
+          "editTitle": "Terem-blokk szerkesztése",
+          "fields": {
+            "locationId": "Helyszín",
+            "serviceType": "Szolgálat típusa",
+            "serviceTypeHelp": "Pontosan úgy, ahogy a rendben szerepel, például szentmise.",
+            "room": "Blokkolt terem",
+            "before": "Puffer előtte (perc)",
+            "after": "Puffer utána (perc)"
+          }
+        }
+      }
+    },
+    "appearance": {
+      "title": "Megjelenés",
+      "lead": "Az oldal arculata, nyitóoldala, menüje és lábléce egy helyen.",
+      "tabs": {
+        "label": "Megjelenés részei",
+        "branding": "Arculat",
+        "home": "Nyitóoldal",
+        "navigation": "Menü",
+        "footer": "Lábléc",
+        "terms": "Felekezet és kifejezések"
+      },
+      "preview": {
+        "caption": "Előnézet",
+        "heroTitle": "Szeretettel várjuk Önt",
+        "heroText": "Alkalmaink, híreink és programjaink egy helyen.",
+        "cardTitle": "Következő alkalmak",
+        "cardText": "Vasárnap 10:00 · Templom",
+        "cardLink": "Teljes rend",
+        "primaryButton": "Kapcsolat",
+        "secondaryButton": "Hírek",
+        "badge": "Új",
+        "footerText": "1011 Budapest, Fő utca 1."
+      },
+      "branding": {
+        "title": "Arculat",
+        "lead": "Állítsa be az oldal nevét, színeit és megjelenését. Az előnézet azonnal követi a módosításokat.",
+        "identity": "Név és mottó",
+        "name": "Az egyházközség neve",
+        "shortName": "Rövid név",
+        "shortNameHelp": "A fejlécben és a böngészőfülön ez jelenik meg.",
+        "tagline": "Mottó",
+        "optional": "(nem kötelező)",
+        "theme": "Téma",
+        "themeNames": {
+          "klasszikus": "Klasszikus",
+          "letisztult": "Letisztult",
+          "kozossegi": "Közösségi"
+        },
+        "themeDescriptions": {
+          "klasszikus": "Hagyományos, talpas betűk, krémszínű háttér.",
+          "letisztult": "Modern és áttekinthető, szögletes formák, sok fehér tér.",
+          "kozossegi": "Barátságos, lekerekített formák, meleg színek."
+        },
+        "current": "Kiválasztva",
+        "colors": "Színek",
+        "primary": "Fő szín",
+        "primaryHelp": "Gombok, hivatkozások és kiemelések színe. A szövegnek legalább 4,5:1 kontrasztarányt kell elérnie.",
+        "secondary": "Kiegészítő szín",
+        "secondaryHelp": "Díszítő elemek és jelvények színe.",
+        "resetColors": "A téma alapszíneinek visszaállítása",
+        "shape": "Betűk és formák",
+        "fonts": "Betűpár",
+        "fontOptions": {
+          "serif-classic": "Talpas (Klasszikus)",
+          "humanist": "Egyszerű talpatlan (Letisztult)",
+          "modern-sans": "Lekerekített (Közösségi)"
+        },
+        "hero": "Nyitókép elrendezése",
+        "heroOptions": {
+          "image-full": "Teljes szélességű kép",
+          "image-split": "Kép és szöveg egymás mellett",
+          "text-only": "Csak szöveg"
+        },
+        "radius": "Sarkok",
+        "radiusOptions": {
+          "none": "Szögletes",
+          "small": "Enyhén lekerekített",
+          "large": "Erősen lekerekített"
+        },
+        "colorFormat": "Adjon meg érvényes színkódot, például #1f4e79.",
+        "contrastFail": "A kontrasztarány {ratio}:1, ami kevesebb a szükséges 4,5:1-nél, ezért nem menthető.",
+        "contrastOk": "Kontrasztarány: {ratio}:1, megfelelő.",
+        "useSuggestion": "Javasolt szín használata: {color}",
+        "pickColor": "{label} kiválasztása színválasztóval",
+        "contrastRefused": "A fő szín kontrasztja nem elegendő, ezért nem mentettük. Használja a javasolt színt.",
+        "save": "Mentés",
+        "saving": "Mentés…",
+        "saved": "A módosítások mentve, az oldalon azonnal megjelennek.",
+        "blocked": "A mentéshez javítsa a jelölt mezőket.",
+        "forbidden": "Ehhez a módosításhoz nincs jogosultsága.",
+        "invalid": "A módosítást nem sikerült menteni, kérjük, ellenőrizze a megadott adatokat."
+      },
+      "home": {
+        "title": "Nyitóoldal",
+        "lead": "Válassza ki, mely részek jelenjenek meg a nyitóoldalon, és milyen sorrendben.",
+        "listLabel": "A nyitóoldal részei",
+        "empty": "A nyitóoldalon még nincs egyetlen rész sem.",
+        "types": {
+          "hero": "Nyitókép",
+          "nextServices": "Következő alkalmak",
+          "announcements": "Hirdetések",
+          "news": "Hírek",
+          "events": "Események",
+          "livestream": "Élő közvetítés",
+          "quote": "Idézet vagy ige",
+          "map": "Térkép",
+          "cta": "Felhívás gombbal",
+          "customText": "Szabad szöveg"
+        },
+        "hints": {
+          "hero": "A nyitóképet az Arculat oldalon állíthatja be.",
+          "nextServices": "A következő alkalmak automatikusan frissülnek.",
+          "announcements": "A legfrissebb hirdetés jelenik meg.",
+          "livestream": "Az élő közvetítés csak közvetítés idején látszik.",
+          "map": "A templomok térképe a helyszínek adataiból készül."
+        },
+        "up": "Fel",
+        "down": "Le",
+        "removeShort": "Eltávolítás",
+        "moveUp": "Fel: {name}",
+        "moveDown": "Le: {name}",
+        "remove": "Eltávolítás: {name}",
+        "moved": "{name}: {position}. hely a(z) {total} közül.",
+        "added": "{name} hozzáadva.",
+        "removed": "{name} eltávolítva.",
+        "addLabel": "Új rész hozzáadása",
+        "choose": "Válasszon…",
+        "nothingToAdd": "Minden elérhető rész szerepel",
+        "add": "Hozzáadás",
+        "count": "Megjelenített elemek száma",
+        "countHelp": "1 és 12 között.",
+        "quoteText": "Idézet szövege",
+        "quoteSource": "Forrás",
+        "ctaTitle": "Cím",
+        "ctaLabel": "Gomb felirata",
+        "ctaHref": "Gomb címe",
+        "ctaHrefHelp": "Belső oldal (például /kapcsolat) vagy teljes webcím.",
+        "ctaText": "Rövid szöveg",
+        "textTitle": "Cím",
+        "textBody": "Szöveg",
+        "textBodyHelp": "A bekezdéseket üres sor válassza el.",
+        "optional": "(nem kötelező)",
+        "problems": {
+          "quoteText": "Az idézet szövegét meg kell adni.",
+          "ctaLabel": "A gomb feliratát meg kell adni.",
+          "ctaHref": "Adjon meg érvényes belső címet vagy webcímet.",
+          "customText": "A szöveget meg kell adni.",
+          "count": "Az elemek száma 1 és 12 között lehet."
+        },
+        "previewCaption": "Az oldal vázlata",
+        "previewEmpty": "Nincs megjeleníthető rész",
+        "save": "Mentés",
+        "saving": "Mentés…",
+        "saved": "A módosítások mentve, az oldalon azonnal megjelennek.",
+        "blocked": "A mentéshez javítsa a jelölt mezőket.",
+        "forbidden": "Ehhez a módosításhoz nincs jogosultsága.",
+        "invalid": "A módosítást nem sikerült menteni, kérjük, ellenőrizze a megadott adatokat."
+      },
+      "navigation": {
+        "title": "Menü",
+        "help": "A főmenü elemei, legfeljebb két szinten. Belső oldalra /-jellel kezdődő cím, külső oldalra teljes webcím mutathat.",
+        "listLabel": "A menü elemei",
+        "newLabel": "Új menüpont",
+        "addChild": "Almenüpont hozzáadása: {name}",
+        "add": "Menüpont hozzáadása",
+        "maxItems": "Legfeljebb {max} főmenüpont lehet.",
+        "label": "Megnevezés",
+        "href": "Cím",
+        "labelMissing": "Adja meg a menüpont nevét.",
+        "hrefInvalid": "Adjon meg belső címet (például /hirek) vagy teljes webcímet.",
+        "externalHint": "Külső hivatkozás, új lapon nyílik.",
+        "internalHint": "Az oldalon belüli cím.",
+        "up": "Fel",
+        "down": "Le",
+        "nest": "Almenübe",
+        "unnest": "Főmenübe",
+        "removeShort": "Törlés",
+        "moveUp": "Fel: {name}",
+        "moveDown": "Le: {name}",
+        "indent": "Almenübe: {name}",
+        "outdent": "Főmenübe: {name}",
+        "remove": "Törlés: {name}",
+        "previewCaption": "A menü előnézete",
+        "externalBadge": "külső",
+        "save": "Mentés",
+        "saving": "Mentés…",
+        "saved": "A módosítások mentve, az oldalon azonnal megjelennek.",
+        "blocked": "A mentéshez javítsa a jelölt mezőket.",
+        "forbidden": "Ehhez a módosításhoz nincs jogosultsága.",
+        "invalid": "A módosítást nem sikerült menteni, kérjük, ellenőrizze a megadott adatokat."
+      },
+      "footer": {
+        "title": "Lábléc",
+        "help": "A lábléc további hivatkozásai. A kapcsolati adatok, a nyitvatartás és a jogi hivatkozások automatikusan megjelennek.",
+        "listLabel": "A lábléc hivatkozásai",
+        "newLabel": "Új hivatkozás",
+        "add": "Hivatkozás hozzáadása",
+        "diocese": "Egyházmegyei hivatkozás",
+        "dioceseLabel": "Felirat",
+        "dioceseUrl": "Webcím",
+        "dioceseLabelMissing": "Adja meg a feliratot.",
+        "dioceseUrlInvalid": "Adjon meg teljes webcímet, például https://pelda.hu.",
+        "optional": "(nem kötelező)",
+        "save": "Mentés",
+        "saving": "Mentés…",
+        "saved": "A módosítások mentve, az oldalon azonnal megjelennek.",
+        "blocked": "A mentéshez javítsa a jelölt mezőket.",
+        "forbidden": "Ehhez a módosításhoz nincs jogosultsága.",
+        "invalid": "A módosítást nem sikerült menteni, kérjük, ellenőrizze a megadott adatokat."
+      },
+      "terms": {
+        "title": "Felekezet és kifejezések",
+        "lead": "A felekezet kiválasztása adja az alapszóhasználatot. A kifejezéseket egyenként át is írhatja.",
+        "help": "Egy kifejezés átírása megváltoztatja a menüt, a címeket és az oldal webcímét is. A régi webcím átirányít az újra, így a régi hivatkozások továbbra is működnek.",
+        "groups": {
+          "denominational": "Felekezeti fogalmak",
+          "section": "Oldalak és szakaszok"
+        },
+        "columns": {
+          "term": "Fogalom",
+          "wording": "Megnevezés",
+          "url": "Webcím",
+          "state": "Állapot",
+          "actions": "Műveletek"
+        },
+        "own": "Saját",
+        "preset": "Alapértelmezett",
+        "edit": "Módosítás",
+        "editAria": "Módosítás: {term}",
+        "keys": {
+          "community": "A közösség megnevezése",
+          "service": "Alkalom",
+          "serviceSchedule": "A rend oldala",
+          "leadClergy": "Vezető lelkész",
+          "office": "Hivatal",
+          "sermon": "Igehirdetés",
+          "layCouncil": "Világi testület",
+          "support": "Támogatás",
+          "worshipTeam": "Szolgálati csoport",
+          "musicPlan": "Zenei rend",
+          "serviceRota": "Szolgálati beosztás",
+          "homePage": "Kezdőlap",
+          "announcementsSection": "Hirdetések",
+          "newsSection": "Hírek",
+          "eventsSection": "Események",
+          "locationsSection": "Helyszínek",
+          "staffSection": "Munkatársak",
+          "groupsSection": "Közösségek",
+          "ritesSection": "Szertartások",
+          "sermonsSection": "Igehirdetések",
+          "livestreamSection": "Közvetítés",
+          "gallerySection": "Galéria",
+          "documentsSection": "Dokumentumok",
+          "givingSection": "Támogatás oldala",
+          "aboutPage": "Bemutatkozás",
+          "contactPage": "Kapcsolat"
+        },
+        "denomination": {
+          "title": "Felekezet",
+          "help": "A felekezet határozza meg a kifejezéseket, a szertartásokat, az alkalmak fajtáit és az alapértelmezett modulokat. A saját módosításai megmaradnak.",
+          "current": "Jelenlegi felekezet:",
+          "beta": "béta",
+          "choose": "Felekezet",
+          "betaNote": "Ezt az előbeállítást még nem nézte át az adott felekezet lelkésze (béta). Használható, de a szóhasználatot érdemes ellenőriznie.",
+          "diffTitle": "Mi változik: {from} → {to}",
+          "diffTerms": "Kifejezések",
+          "diffModules": "Modulok",
+          "diffRites": "Szertartások",
+          "diffServiceTypes": "Alkalmak fajtái",
+          "diffRedirects": "Átirányítások (301)",
+          "none": "Nincs változás.",
+          "termChange": "{from} → {to}",
+          "moduleOn": "{name}: bekapcsol",
+          "moduleOff": "{name}: kikapcsol",
+          "riteAdded": "Új: {name}",
+          "riteRemoved": "Megszűnik: {name}",
+          "riteRenamed": "{from} → {to}",
+          "modules": {
+            "news": "Hírek",
+            "announcements": "Hirdetések",
+            "events": "Események",
+            "schedule": "Rend",
+            "locations": "Helyszínek",
+            "staff": "Munkatársak",
+            "rites": "Szertartások",
+            "groups": "Közösségek",
+            "sermons": "Igehirdetések",
+            "livestream": "Közvetítés",
+            "gallery": "Galéria",
+            "documents": "Dokumentumok",
+            "giving": "Támogatás",
+            "onlineGiving": "Online adományozás",
+            "massIntentions": "Szándékok",
+            "funeralNotices": "Gyászjelentések",
+            "newsletter": "Hírlevél",
+            "search": "Keresés",
+            "liturgicalCalendar": "Egyházi naptár"
+          },
+          "keptOverrides": "Az Ön saját megnevezései megmaradnak: {terms}.",
+          "apply": "Váltás: {name}",
+          "cancel": "Mégse",
+          "forbidden": "Ehhez nincs jogosultsága.",
+          "invalid": "A váltás nem sikerült.",
+          "applied": "A felekezet átváltva: {name}."
+        },
+        "form": {
+          "title": "Kifejezés módosítása: {term}",
+          "nom": "Megnevezés",
+          "nomHelp": "Ahogy a menüben és a címekben megjelenik, például „Istentiszteleti rend”.",
+          "plural": "Többes szám",
+          "pluralHelp": "Felsorolásokban használjuk, például „istentiszteletek”.",
+          "optional": "(nem kötelező)",
+          "slug": "Webcím",
+          "slugHelp": "Kisbetűk, számok és kötőjel. Ha megváltoztatja, a régi cím átirányít az újra.",
+          "article": "Névelő",
+          "articleHelp": "Mondatban ezt használjuk a megnevezés előtt.",
+          "articleA": "a",
+          "articleAz": "az",
+          "previewTitle": "Így jelenik meg",
+          "previewNav": "Menü",
+          "previewHeading": "Oldal címe",
+          "previewAdmin": "Szerkesztői menü",
+          "previewSentence": "Mondatban",
+          "previewPlural": "Többes szám",
+          "previewUrl": "Webcím",
+          "sentence": "{article, select, az {Az} other {A}} {lower} megújult.",
+          "redirectNote": "A régi cím ({from}) tartósan átirányít az újra ({to}).",
+          "save": "Mentés",
+          "cancel": "Mégse",
+          "reset": "Visszaállítás: {preset}",
+          "saved": "A kifejezés mentve.",
+          "resetDone": "A kifejezés visszaállt az alapértelmezettre.",
+          "forbidden": "Ehhez nincs jogosultsága.",
+          "invalid": "A mentés nem sikerült.",
+          "problems": {
+            "nom": "Adja meg a megnevezést.",
+            "slug": "A webcím csak kisbetűt, számot és kötőjelet tartalmazhat.",
+            "slugTaken": "Ezt a webcímet már egy másik oldal használja."
+          }
+        }
+      }
+    },
+    "schedule": {
+      "tabs": {
+        "label": "Rend részei",
+        "weekly": "Heti rend",
+        "exceptions": "Kivételek és ünnepek"
+      },
+      "editor": {
+        "title": "Heti rend",
+        "lead": "Állítsa be, mikor és hol tartanak alkalmakat. Mentés előtt látja, mit fognak látni a látogatók a következő 8 hétben.",
+        "noLocationsTitle": "Még nincs helyszín",
+        "noLocations": "Előbb adjon meg legalább egy helyszínt, utána állíthatja be a rendet.",
+        "location": "Helyszín",
+        "period": "Időszak",
+        "noPeriods": "Még nincs időszak",
+        "pickPeriod": "Hozzon létre egy időszakot (például „Általános”), és abban adhatja meg a heti rendet.",
+        "gridTitle": "Heti rend: {period}",
+        "gridHelp": "Naponként adja meg az alkalmakat. Az időszak lejártáig ez a rend érvényes a kiválasztott helyszínen.",
+        "noRules": "Ezen a napon nincs alkalom.",
+        "time": "Időpont",
+        "type": "Alkalom fajtája",
+        "language": "Nyelv",
+        "nth": {
+          "label": "Mikor",
+          "every": "Minden héten",
+          "last": "A hónap utolsó hetén",
+          "nth": "A hónap {n}. hetén"
+        },
+        "duration": "Hossz (perc)",
+        "note": "Megjegyzés",
+        "optional": "(nem kötelező)",
+        "livestream": "Élő közvetítés",
+        "remove": "Törlés",
+        "removeRule": "Törlés: {day} {time} alkalom",
+        "addRule": "Alkalom hozzáadása",
+        "addRuleDay": "Alkalom hozzáadása: {day}",
+        "save": "Mentés",
+        "discard": "Módosítások elvetése",
+        "dirty": "Mentetlen módosítások vannak.",
+        "clean": "Nincs mentetlen módosítás.",
+        "saved": "A rend mentve, a nyilvános oldalon már ez látszik.",
+        "forbidden": "Ehhez nincs jogosultsága.",
+        "invalid": "A mentés nem sikerült. Ellenőrizze az adatokat.",
+        "fixProblems": "Javítsa a jelölt hibákat, utána mentheti.",
+        "problems": {
+          "time": "Adja meg az időpontot óó:pp alakban.",
+          "duration": "A hossz 1 és 1440 perc között legyen.",
+          "type": "Válasszon alkalmat.",
+          "duplicate": "Ugyanez az alkalom már szerepel ezen a napon."
+        },
+        "previewTitle": "Előnézet: a következő 8 hét",
+        "previewHelp": "Így látják majd a látogatók. A kiemelt alkalmak az új rend miatt jelennek meg.",
+        "noChanges": "A mentetlen módosításnak nincs hatása a következő 8 hétre.",
+        "changesSummary": "{added} új és {removed} megszűnő alkalom a következő 8 hétben",
+        "addedBadge": "Új",
+        "removedBadge": "Megszűnik",
+        "more": "… és még {n}",
+        "changedBadge": "Új",
+        "week": "Megjelenített hét",
+        "thisWeek": "Ez a hét",
+        "periodForm": {
+          "title": "Időszak",
+          "yearlyShort": "évente",
+          "always": "Egész évben",
+          "priorityBadge": "Elsőbbség: {n}",
+          "edit": "Időszak szerkesztése",
+          "new": "Új időszak",
+          "help": "Egy időszak (például „Nyári rend”) a megadott napok között felülírja az alacsonyabb elsőbbségű időszakokat.",
+          "name": "Időszak neve",
+          "validFrom": "Kezdete",
+          "validTo": "Vége",
+          "optional": "(nem kötelező)",
+          "yearly": "Minden évben ismétlődik",
+          "yearlyHelp": "Csak a hónap és a nap számít, például június 15. és szeptember 1.",
+          "priority": "Elsőbbség",
+          "priorityHelp": "Nagyobb szám az erősebb: a nyári rendnek legyen nagyobb, mint az általánosnak.",
+          "save": "Időszak mentése",
+          "cancel": "Mégse",
+          "delete": "Időszak törlése",
+          "confirmDelete": "Igen, törlöm: {name}",
+          "nameRequired": "Adja meg az időszak nevét.",
+          "yearlyNeedsDates": "Az évente ismétlődő időszaknak kezdő és záró napja is kell.",
+          "endBeforeStart": "A vége nem lehet a kezdete előtt.",
+          "forbidden": "Ehhez nincs jogosultsága.",
+          "invalid": "Az időszak mentése nem sikerült. Ellenőrizze az adatokat."
+        }
+      },
+      "exceptions": {
+        "title": "Kivételek és ünnepi rend",
+        "lead": "Egy nap alkalmának elmaradása, időpontváltozása vagy rendkívüli alkalom. A nyilvános oldalon az ok is látszik.",
+        "stepDate": "1. Melyik napra?",
+        "stepAction": "2. Mi történik?",
+        "stepServices": "3. Mely alkalmakat érinti?",
+        "stepDetails": "4. Részletek",
+        "stepResult": "5. Így fog megjelenni",
+        "date": "Nap",
+        "dateHoliday": "Ezen a napon: {name}",
+        "actions": {
+          "cancel": "Elmarad",
+          "modify": "Változik",
+          "add": "Rendkívüli alkalom"
+        },
+        "actionHelp": {
+          "cancel": "A kiválasztott alkalmak aznap nem lesznek megtartva.",
+          "modify": "A kiválasztott alkalmak más időpontban vagy fajtával lesznek.",
+          "add": "Egy új alkalom aznapra, a rendes rendtől függetlenül."
+        },
+        "noServicesOnDate": "Ezen a napon a rendes rend szerint nincs alkalom.",
+        "addedAlready": "már rendkívüli",
+        "location": "Helyszín",
+        "newTime": "Új időpont",
+        "time": "Időpont",
+        "type": "Alkalom fajtája",
+        "typeUnchanged": "Változatlan",
+        "reason": "Ok (a látogatók is látják)",
+        "reasonHelp": "Például „Nagycsütörtök” vagy „A plébános távol van”.",
+        "note": "Megjegyzés",
+        "optional": "(nem kötelező)",
+        "resultEmpty": "Válassza ki az alkalmakat, és itt látja az eredményt.",
+        "problems": {
+          "date": "Adjon meg egy érvényes napot.",
+          "services": "Jelöljön ki legalább egy alkalmat.",
+          "time": "Adja meg az időpontot óó:pp alakban.",
+          "type": "Válassza ki az alkalom fajtáját.",
+          "location": "Válasszon helyszínt.",
+          "reason": "Adja meg az okot."
+        },
+        "save": "Kivétel mentése",
+        "saved": "A kivétel mentve, a nyilvános oldalon már látszik.",
+        "forbidden": "Ehhez nincs jogosultsága.",
+        "invalid": "A mentés nem sikerült. Ellenőrizze az adatokat.",
+        "upcomingTitle": "Következő kivételek",
+        "upcomingEmpty": "Nincs előre rögzített kivétel.",
+        "allLocations": "Minden helyszín",
+        "remove": "Törlés",
+        "removeAria": "Törlés: kivétel, {date}",
+        "templates": {
+          "title": "Ünnepi sablonok",
+          "help": "A sablon az ünnepi napokra egy-egy elmaradást javasol, minden helyszínen ({count}). Mentés előtt napokat kapcsolhat ki, és az okot is átírhatja.",
+          "names": {
+            "holyWeek": "Nagyhét",
+            "christmas": "Karácsony",
+            "newYear": "Szilveszter és Újév"
+          },
+          "previewTitle": "Ezek a napok kerülnek rögzítésre:",
+          "cancelAll": "minden alkalom elmarad",
+          "reason": "Ok (a látogatók is látják)",
+          "apply": "Sablon alkalmazása",
+          "applied": "{count} nap rögzítve.",
+          "failed": "A sablon alkalmazása nem sikerült."
+        }
+      }
+    },
+    "setup": {
+      "title": "Első beállítás",
+      "lead": "Adja meg a jelenlegi weboldal címét, és néhány perc alatt elkészítjük az új oldal vázlatát.",
+      "steps": {
+        "label": "Lépések",
+        "site": "Weboldal",
+        "review": "Átnézés",
+        "modules": "Munkatér",
+        "invites": "Meghívások",
+        "done": "Kész",
+        "srDone": "(kész)",
+        "srCurrent": "(jelenlegi lépés)"
+      },
+      "headings": {
+        "review": "Az új oldal vázlata",
+        "modules": "Belső munkatér",
+        "invites": "Meghívások és beállítások",
+        "done": "Az első beállítás kész"
+      },
+      "site": {
+        "heading": "Honnan induljunk?",
+        "lead": "Írja be a jelenlegi weboldal címét. Végigolvassuk, és kiolvassuk belőle az alkalmak időpontjait, a helyszíneket, az elérhetőségeket és a színeket. Az eredményt Ön nézi át, mielőtt bármi élesre kerülne.",
+        "address": "A jelenlegi weboldal címe",
+        "addressHelp": "Például: gyulekezet.example.hu. A weboldalon semmit nem módosítunk.",
+        "addressPlaceholder": "gyulekezet.example.hu",
+        "start": "Beállítás indítása",
+        "privacy": "Csak a nyilvánosan látható tartalmat olvassuk be. Nevet és fényképet csak akkor veszünk át, ha Ön külön engedélyezi.",
+        "readyTitle": "A vázlat elkészült",
+        "readyBody": "Átnézheti és módosíthatja, mielőtt továbbmegy.",
+        "openReview": "Vázlat megtekintése",
+        "idleHint": "Az indítás után itt látja, ahogy a kis robotok felépítik az új oldalt.",
+        "errors": {
+          "invalid_url": "Ez nem tűnik weboldal-címnek. Adjon meg például gyulekezet.example.hu alakú címet.",
+          "unreachable": "Most nem sikerült beolvasni a weboldalt. Ellenőrizze a címet, és próbálja újra."
+        }
+      },
+      "progress": {
+        "starting": "Indítás…",
+        "allDone": "Minden lépés kész. A vázlat elkészült.",
+        "bar": "A beolvasás előrehaladása",
+        "list": "A beolvasás lépései",
+        "state": {
+          "done": "kész",
+          "running": "folyamatban",
+          "waiting": "vár"
+        },
+        "stages": {
+          "fetched": {
+            "label": "Weboldal megnyitása",
+            "running": "Weboldal megnyitása…",
+            "done": "A weboldal elérhető."
+          },
+          "pages": {
+            "label": "Oldalak beolvasása",
+            "running": "Oldalak beolvasása…",
+            "done": "{count} oldal beolvasva."
+          },
+          "serviceTimes": {
+            "label": "Alkalmak és időpontok keresése",
+            "running": "Alkalmak és időpontok keresése…",
+            "done": "{count} alkalom időpontja megtalálva."
+          },
+          "contacts": {
+            "label": "Elérhetőségek és helyszínek keresése",
+            "running": "Elérhetőségek és helyszínek keresése…",
+            "done": "Elérhetőségek és helyszínek megtalálva."
+          },
+          "theme": {
+            "label": "Színek és megjelenés kiválasztása",
+            "running": "Színek és megjelenés kiválasztása…",
+            "done": "Színek és megjelenés kiválasztva."
+          },
+          "preset": {
+            "label": "Egyházi minta kiválasztása",
+            "running": "Egyházi minta kiválasztása…",
+            "done": "Egyházi minta kiválasztva."
+          },
+          "draft": {
+            "label": "Az oldal vázlatának összeállítása",
+            "running": "Az oldal vázlatának összeállítása…",
+            "done": "A vázlat elkészült."
+          }
+        }
+      },
+      "review": {
+        "lead": "Ezt találtuk a weboldalon. Minden mező szerkeszthető, és jobb oldalon azonnal látszik, milyen lesz az új oldal.",
+        "flagged": {
+          "title": "{count} elemet érdemes ellenőriznie",
+          "body": "A sárgával jelölt elemeknél az importáló nem volt biztos a dolgában. Javítsa vagy erősítse meg őket.",
+          "noneTitle": "Minden elemet ellenőrzött"
+        },
+        "flag": {
+          "badge": "Ellenőrizze",
+          "text": "Bizonytalan találat ({percent} % biztonság).",
+          "confirm": "Rendben, megerősítem"
+        },
+        "optional": "(nem kötelező)",
+        "sections": {
+          "basics": "Alapadatok",
+          "preset": "Egyházi minta és megnevezések",
+          "services": "Alkalmak",
+          "locations": "Helyszínek",
+          "contact": "Elérhetőségek",
+          "theme": "Megjelenés",
+          "staff": "Munkatársak"
+        },
+        "name": "Az egyház teljes neve",
+        "shortName": "Rövid név",
+        "shortNameHelp": "A fejlécben és a címekben ez jelenik meg.",
+        "tagline": "Mottó",
+        "denomination": "Egyházi minta",
+        "presetLead": "A minta határozza meg az oldal megnevezéseit, az alapértelmezett menüt és az alkalmak típusait.",
+        "betaHelp": "Ez a minta még szakmai átnézésre vár (béta).",
+        "terms": {
+          "serviceSchedule": "Az alkalmak oldalának neve",
+          "leadClergy": "A lelkipásztor megnevezése"
+        },
+        "termHelp": "A minta szerinti megnevezést itt átírhatja.",
+        "serviceLabel": "Az alkalom neve",
+        "serviceWeekday": "Nap",
+        "serviceTime": "Időpont",
+        "serviceLocation": "Helyszín",
+        "noLocation": "Nincs megadva",
+        "addService": "Alkalom hozzáadása",
+        "remove": "Törlés",
+        "addLocation": "Helyszín hozzáadása",
+        "locationName": "A helyszín neve",
+        "postalCode": "Irányítószám",
+        "city": "Település",
+        "street": "Utca, házszám",
+        "email": "E-mail-cím",
+        "phone": "Telefonszám",
+        "themeLabel": "Téma",
+        "staffLead": "A weboldalon talált munkatársak nevét és fényképét csak akkor vesszük át, ha Ön személyenként bejelöli, és megerősíti, hogy közzétehetők.",
+        "staffInclude": "Név és beosztás átvétele",
+        "staffPhoto": "Fénykép átvétele",
+        "staffConsent": "Megerősítem, hogy {name} hozzájárult az adatai közzétételéhez, vagy a közzétételre egyébként jogosult vagyok.",
+        "staffConsentMissing": "A megerősítés nélkül nem vehetjük át az adatokat.",
+        "problems": {
+          "title": "A továbblépéshez ezeket kell rendbe tennie",
+          "name": "Adja meg az egyház nevét.",
+          "shortName": "Adja meg a rövid nevet.",
+          "theme": "A fő színnek legalább 4,5:1 kontrasztarányt kell elérnie.",
+          "serviceTimes": "Minden alkalomnak legyen neve és időpontja.",
+          "consent": "Erősítse meg minden átvett munkatárs közzétételi jogosultságát."
+        },
+        "back": "Vissza",
+        "next": "Tovább a munkatérhez"
+      },
+      "modules": {
+        "lead": "Válassza ki, melyik belső eszközöket szeretné használni. Később bármikor módosíthatja.",
+        "items": {
+          "calendar": {
+            "title": "Naptárak",
+            "help": "Közös és személyes naptárak a munkatársaknak."
+          },
+          "rooms": {
+            "title": "Teremfoglalás",
+            "help": "Termek, foglalási kérések és jóváhagyás."
+          },
+          "worship": {
+            "title": "Szolgálattervezés",
+            "help": "Az alkalmak menete, énekek és szolgálati beosztás."
+          },
+          "hr": {
+            "title": "HR-kérelmek",
+            "help": "Szabadság- és egyéb kérelmek a munkatársaknak."
+          },
+          "diocese": {
+            "title": "Kapcsolat az egyházmegyével",
+            "help": "Az egyházmegyei HR-portállal való összekapcsolás."
+          }
+        },
+        "notIncluded": "Nem része a csomagnak",
+        "sensitive": "Személyes adatot kezel",
+        "securityTitle": "Éles használat csak biztonsági átvétel után",
+        "securityBody": "A HR-kérelmek és az egyházmegyei kapcsolat személyes adatot érintenek. Valós adatot csak a hozzáférés-védelem és a titkosítás ellenőrzése után szabad bevinni; addig a bemutatóban csak mintaadatokkal próbálható.",
+        "back": "Vissza",
+        "next": "Tovább a meghívásokhoz"
+      },
+      "invites": {
+        "lead": "Hívja meg azokat, akik segítenek az oldal és a munkatér vezetésében.",
+        "mockNote": "Bemutató: a meghívókat nem küldjük el, csak a listát mutatjuk. Kitalált e-mail-címeket használjon.",
+        "email": "E-mail-cím",
+        "role": "Szerepkör",
+        "add": "Hozzáadás",
+        "empty": "Még nincs meghívott.",
+        "listLabel": "Meghívottak",
+        "remove": "Törlés",
+        "errors": {
+          "email": "Adjon meg érvényes e-mail-címet.",
+          "duplicate": "Ezt a címet már hozzáadta.",
+          "role": "Ez a szerepkör nem választható.",
+          "limit": "Legfeljebb {max} meghívott adható hozzá."
+        },
+        "roles": {
+          "admin": "Adminisztrátor",
+          "editor": "Szerkesztő",
+          "office": "Iroda",
+          "employee": "Munkatárs",
+          "musicLeader": "Zenei vezető",
+          "roomManager": "Teremfelelős",
+          "hrHandler": "HR-felelős"
+        },
+        "settings": {
+          "title": "Beállítások",
+          "notifyEmail": "Értesítések e-mail-címe",
+          "notifyHelp": "Ide érkeznek az új üzenetek és kérelmek jelzései.",
+          "comingSoon": "A „Hamarosan” oldal megjelenítése az élesítésig",
+          "comingSoonHelp": "A látogatók addig nem látják a vázlatot.",
+          "weeklyReminder": "Heti emlékeztető a hirdetések közzétételéről",
+          "fixed": "A nyelv magyar, az időzóna Európa/Budapest; ezek nem módosíthatók."
+        },
+        "back": "Vissza",
+        "next": "Befejezés"
+      },
+      "done": {
+        "title": "{name}: az első beállítás kész",
+        "lead": "A vázlat elkészült. A hátralévő lépéseket az alábbi ellenőrzőlistán követheti, mindegyik a megfelelő admin oldalra visz.",
+        "stats": {
+          "services": "Alkalom",
+          "locations": "Helyszín",
+          "people": "Átvett munkatárs",
+          "invites": "Meghívott"
+        },
+        "comingSoon": "Az oldal a „Hamarosan” felirattal látszik, amíg élesíti.",
+        "stillFlagged": "{count} elem még ellenőrzésre vár; az admin felületen később is javíthatja.",
+        "checklist": {
+          "title": "Ellenőrzőlista",
+          "progress": "{done} / {total} lépés kész",
+          "bar": "Az ellenőrzőlista előrehaladása",
+          "done": "Kész",
+          "todo": "Hátravan",
+          "open": "Megnyitás",
+          "items": {
+            "basics": {
+              "title": "Alapadatok ellenőrzése",
+              "help": "A név, az egyházi minta és a megnevezések."
+            },
+            "appearance": {
+              "title": "Arculat jóváhagyása",
+              "help": "Téma, színek és betűk."
+            },
+            "schedule": {
+              "title": "Alkalmak ellenőrzése",
+              "help": "Időpontok és helyszínek az alkalmaknál."
+            },
+            "locations": {
+              "title": "Helyszínek ellenőrzése",
+              "help": "Címek, nyitvatartás és megközelítés."
+            },
+            "staff": {
+              "title": "Munkatársak oldal",
+              "help": "Név és fénykép csak azoktól, akik ehhez hozzájárultak."
+            },
+            "users": {
+              "title": "Felhasználók meghívása",
+              "help": "Szerkesztők, iroda és szolgálattevők."
+            },
+            "workspace": {
+              "title": "Munkatér beállítása",
+              "help": "Naptárak, teremfoglalás és szolgálattervezés."
+            },
+            "domain": {
+              "title": "Saját tartomány és jogi adatok",
+              "help": "Tartomány, impresszum és adatkezelési tájékoztató."
+            },
+            "launch": {
+              "title": "Oldal élesítése",
+              "help": "Amíg nincs élesítve, a látogatók a „Hamarosan” oldalt látják."
+            }
+          }
+        },
+        "openAdmin": "Tovább az admin felületre",
+        "demoNote": "Bemutató: a vázlat még nem kerül mentésre, az admin felület a bemutató saját mintaadatait mutatja."
+      },
+      "preview": {
+        "caption": "Az új oldal előnézete",
+        "photoMark": "Fotó"
+      }
+    },
+    "requests": {
+      "status": {
+        "uj": "Új",
+        "folyamatban": "Folyamatban",
+        "lezart": "Lezárt"
+      },
+      "tabs": {
+        "label": "Kérelmek",
+        "inbox": "Beérkezett kérelmek",
+        "forms": "Űrlapok"
+      },
+      "yes": "Igen",
+      "no": "Nem",
+      "none": "–",
+      "inbox": {
+        "caption": "Beérkezett kérelmek",
+        "empty": "Még nem érkezett kérelem.",
+        "emptyFiltered": "A szűrésnek nincs találata.",
+        "count": "{count} kérelem",
+        "formsButton": "Űrlapok kezelése",
+        "summaryLabel": "Kérelmek állapot szerint",
+        "filters": {
+          "label": "Kérelmek szűrése",
+          "status": "Állapot",
+          "allStatuses": "Mind",
+          "form": "Űrlap",
+          "allForms": "Mind",
+          "assignee": "Felelős",
+          "anyAssignee": "Mind",
+          "unassigned": "Nincs kijelölve",
+          "from": "Beérkezett ettől",
+          "to": "Beérkezett eddig",
+          "apply": "Szűrés",
+          "reset": "Szűrés törlése"
+        },
+        "columns": {
+          "reference": "Hivatkozási szám",
+          "form": "Űrlap",
+          "received": "Beérkezett",
+          "status": "Állapot",
+          "assignee": "Felelős"
+        },
+        "unassigned": "Nincs kijelölve"
+      },
+      "detail": {
+        "title": "Kérelem: {reference}",
+        "metaTitle": "Kérelem",
+        "notFound": "A kérelem nem található.",
+        "privacy": "Személyes adatokat tartalmaz. E-mailben csak a hivatkozási szám és ez a link jár.",
+        "received": "Beérkezett",
+        "form": "Űrlap",
+        "closedAt": "Lezárva",
+        "purgeAfter": "Automatikus törlés:",
+        "dataHeading": "A beküldött adatok",
+        "consent": "Hozzájárulás megadva",
+        "workflowHeading": "Állapot és felelős",
+        "currentStatus": "Jelenlegi állapot",
+        "setStatus": "Állapot módosítása",
+        "toProgress": "Feldolgozás megkezdése",
+        "toClosed": "Lezárás",
+        "reopen": "Újranyitás",
+        "assignee": "Felelős",
+        "assign": "Kijelölés",
+        "unassign": "Nincs felelős",
+        "saved": "Mentve.",
+        "failed": "A művelet nem sikerült.",
+        "notesHeading": "Belső jegyzetek",
+        "notesNone": "Még nincs jegyzet.",
+        "noteLabel": "Új jegyzet",
+        "noteHelp": "Csak a munkatársak látják; a kérelmező nem.",
+        "noteAdd": "Jegyzet rögzítése",
+        "noteBy": "{name}, {date}",
+        "noteSystem": "Rendszer",
+        "replyHeading": "Válaszsablon",
+        "replyHelp": "Az űrlap visszaigazoló szövege; a kérelmező e-mailjében is ez szerepel. A szöveget az Űrlapok menüben állíthatja.",
+        "replyEmpty": "Ehhez az űrlaphoz még nincs válaszsablon.",
+        "replyCopy": "Sablon másolása",
+        "replyCopied": "Másolva",
+        "back": "Vissza a kérelmekhez",
+        "pdfSoon": "PDF-exportálás (később)"
+      },
+      "forms": {
+        "title": "Űrlapok",
+        "lead": "Az online bejelentő űrlapok mezői, értesítései és megőrzési ideje.",
+        "caption": "Bejelentő űrlapok",
+        "empty": "Még nincs űrlap.",
+        "newButton": "Új űrlap",
+        "columns": {
+          "title": "Űrlap",
+          "key": "Azonosító",
+          "fields": "Mezők",
+          "prefix": "Előtag",
+          "active": "Állapot"
+        },
+        "active": "Aktív",
+        "inactive": "Kikapcsolva",
+        "edit": "Szerkesztés",
+        "editItem": "Szerkesztés: {name}",
+        "back": "Vissza az űrlapokhoz",
+        "newTitle": "Új űrlap",
+        "editTitle": "Űrlap szerkesztése",
+        "saved": "Az űrlap elmentve.",
+        "preview": "Nyilvános űrlap megnyitása",
+        "general": {
+          "heading": "Alapadatok",
+          "title": "Az űrlap neve",
+          "key": "Azonosító",
+          "keyHelp": "A weboldal címében szerepel; mentés után nem módosítható. Kisbetű, szám és kötőjel.",
+          "prefix": "Hivatkozási szám előtagja",
+          "prefixHelp": "2–5 nagybetű, például KER (KER-2026-0042).",
+          "notifyEmails": "Értesítendő e-mail-címek",
+          "notifyEmailsHelp": "Vesszővel elválasztva. Az értesítés nem tartalmazza a beküldött adatokat.",
+          "confirmationText": "Visszaigazoló szöveg",
+          "confirmationHelp": "A kérelmező ezt kapja válaszul; a Válaszsablon is ebből készül.",
+          "retentionDays": "Megőrzési idő a lezárás után (nap)",
+          "retentionHelp": "Ennyi nap után a lezárt kérelem törlődik.",
+          "active": "Az űrlap elérhető a weboldalon"
+        },
+        "fields": {
+          "heading": "Mezők",
+          "help": "A kapcsolattartó neve, e-mail-címe és telefonszáma az első lépésben jelenik meg.",
+          "empty": "Még nincs mező.",
+          "item": "{index}. mező: {label}",
+          "label": "Felirat",
+          "key": "Azonosító",
+          "type": "Típus",
+          "required": "Kötelező",
+          "fieldHelp": "Súgószöveg",
+          "options": "Választási lehetőségek",
+          "optionsHelp": "Soronként egy lehetőség.",
+          "multiple": "Több is választható",
+          "maxMb": "Legnagyobb méret (MB)",
+          "remove": "Törlés: {label}",
+          "up": "Mező feljebb: {label}",
+          "down": "Mező lejjebb: {label}",
+          "add": "Mező hozzáadása",
+          "newLabel": "Új mező",
+          "types": {
+            "text": "Szöveg (egy sor)",
+            "textarea": "Hosszú szöveg",
+            "email": "E-mail-cím",
+            "phone": "Telefonszám",
+            "date": "Dátum",
+            "checkbox": "Jelölőnégyzet",
+            "select": "Választólista",
+            "file": "Fájl (legfeljebb 10 MB)"
+          },
+          "removeButton": "Törlés"
+        },
+        "submit": "Űrlap mentése",
+        "delete": "Űrlap törlése",
+        "deleteBlocked": "Az űrlaphoz már érkeztek kérelmek, ezért nem törölhető; kikapcsolhatja.",
+        "errors": {
+          "title": "Adja meg az űrlap nevét.",
+          "key": "Az azonosító csak kisbetűt, számot és kötőjelet tartalmazhat.",
+          "keyTaken": "Ez az azonosító már használatban van.",
+          "prefix": "Az előtag 2–5 nagybetű legyen.",
+          "emails": "Valamelyik e-mail-cím hibás.",
+          "retention": "Adjon meg pozitív egész számot.",
+          "fieldLabel": "Minden mezőnek legyen felirata.",
+          "fieldKey": "A mezőazonosító betűvel kezdődjön, és csak betűt, számot vagy aláhúzást tartalmazzon.",
+          "fieldKeyTaken": "A mezőazonosítók nem ismétlődhetnek.",
+          "options": "A választólistához legalább egy lehetőség kell.",
+          "general": "Az űrlap nem menthető. Kérjük, ellenőrizze az adatokat."
+        }
+      }
+    },
+    "orgLink": {
+      "lead": "A {community.nom} kapcsolata az egyházmegyei HR-portállal: jóváhagyás, delegált kategóriák, megszüntetés.",
+      "noneTitle": "Nincs egyházmegyei kapcsolat",
+      "noneBody": "Ha az egyházmegye kapcsolatot kér, a kérelem itt jelenik meg jóváhagyásra.",
+      "diocese": "Egyházmegye",
+      "status": {
+        "active": "Aktív",
+        "requested": "Kérelem folyamatban",
+        "revoked": "Megszüntetve"
+      },
+      "waitsForOrg": "Az egyházmegye jóváhagyására vár.",
+      "approveLead": "Az egyházmegye kapcsolatot kért. Jóváhagyás előtt válassza ki, mely HR-kategóriák ügyeit kezelheti.",
+      "activeLead": "A kapcsolat aktív. Az egyházmegye csak az alább kijelölt kategóriák ügyeit éri el.",
+      "delegateLegend": "Delegált HR-kategóriák",
+      "confidentialHelp": "Bizalmas kategória: csak az egyházmegye bizalmas ügyek felelőse érheti el, és a portál jelenleg nem jeleníti meg.",
+      "approve": "Jóváhagyás",
+      "save": "Delegálás mentése",
+      "revoke": "Kapcsolat megszüntetése",
+      "decline": "Kérelem elutasítása",
+      "withdraw": "Kérelem visszavonása",
+      "failed": "A művelet nem sikerült",
+      "failedBody": "Frissítse az oldalt, és próbálja újra.",
+      "accessTitle": "Egyházmegyei hozzáférések",
+      "accessLead": "Az egyházmegye minden megnyitása és művelete itt látszik, csak az ügyszámmal.",
+      "accessNone": "Az egyházmegye még nem nyitott meg ügyet.",
+      "accessEntry": "Egyházmegye: {kind} — {reference}",
+      "kind": {
+        "read": "megnyitás",
+        "take": "átvétel",
+        "close": "lezárás",
+        "reply": "válasz"
+      }
+    },
+    "users": {
+      "lead": "Hívjon meg munkatársakat, módosítsa a szerepköreiket, vagy függessze fel a hozzáférésüket.",
+      "newButton": "Új felhasználó meghívása",
+      "inviteTitle": "Felhasználó meghívása",
+      "inviteLead": "A meghívott e-mailben kap hívást a belépéshez. A szerepkört később bármikor módosíthatja.",
+      "inviteSubmit": "Meghívó küldése",
+      "editTitle": "Szerepkörök módosítása",
+      "editLead": "{name} ({email}) hozzáférése",
+      "save": "Mentés",
+      "empty": "Még nincs felhasználó.",
+      "notYours": "Nem módosíthatja",
+      "edit": "Szerkesztés",
+      "editAria": "Szerkesztés: {name}",
+      "lastOwner": "Ön az utolsó aktív tulajdonos, nem függesztheti fel. Előbb nevezzen ki másik tulajdonost.",
+      "mockTitle": "Bemutató",
+      "mockNote": "Bemutató: a meghívót nem küldjük el. Kitalált e-mail-címeket használjon.",
+      "table": {
+        "caption": "Felhasználók és szerepköreik",
+        "name": "Név",
+        "role": "Weboldali szerepkör",
+        "workspace": "Munkatér szerepkörök",
+        "state": "Állapot",
+        "actions": "Teendők"
+      },
+      "states": {
+        "active": "Aktív",
+        "invited": "Meghívva",
+        "inactive": "Felfüggesztve"
+      },
+      "roles": {
+        "owner": "Tulajdonos",
+        "admin": "Adminisztrátor",
+        "editor": "Szerkesztő",
+        "office": "Iroda",
+        "groupLeader": "Csoportvezető"
+      },
+      "wsRoles": {
+        "leader": "Vezető",
+        "employee": "Munkatárs",
+        "volunteer": "Önkéntes",
+        "teamLeader": "Csapatvezető",
+        "musicLeader": "Zenei vezető",
+        "roomManager": "Teremfelelős",
+        "hrHandler": "HR-felelős",
+        "confidentialHandler": "Bizalmas ügyek felelőse"
+      },
+      "fields": {
+        "name": "Név",
+        "email": "E-mail-cím",
+        "role": "Weboldali szerepkör",
+        "roleHelp": "A weboldal szerkesztéséhez szükséges. Üresen hagyva csak a munkatérhez kap hozzáférést.",
+        "roleNone": "Nincs (csak munkatér)",
+        "groups": "Csoportok",
+        "groupsHelp": "Csoportvezetőnél: azok a csoportok, amelyek eseményeit kezelheti. Vesszővel válassza el őket.",
+        "wsHeading": "Munkatér szerepkörök"
+      },
+      "tier": {
+        "upgrade": "Csomagok megtekintése",
+        "warning": {
+          "title": "A munkatér-felhasználók keretének 90%-a betelt",
+          "body": "Jelenleg {used} aktív felhasználó van a csomag {cap} fős keretéből. Újabb meghívás előtt érdemes nagyobb csomagot választani, vagy felfüggeszteni a már nem használt hozzáféréseket."
+        },
+        "full": {
+          "title": "A munkatér-felhasználók kerete betelt",
+          "body": "A csomag {cap} fős kerete elfogyott ({used} aktív felhasználó), új munkatér-felhasználót nem hívhat meg. Függesszen fel egy hozzáférést, vagy válasszon nagyobb csomagot."
+        }
+      },
+      "editors": {
+        "warning": {
+          "title": "A szerkesztők keretének 90%-a betelt",
+          "body": "Jelenleg {used} szerkesztő van a csomag {cap} fős keretéből."
+        },
+        "full": {
+          "title": "A szerkesztők kerete betelt",
+          "body": "A csomag legfeljebb {cap} szerkesztőt enged ({used} aktív van), újabb szerkesztő nem hívható meg."
+        }
+      },
+      "errors": {
+        "unknownRole": "Ez a szerepkör nem választható.",
+        "needRole": "Adjon meg weboldali szerepkört vagy legalább egy munkatér szerepkört.",
+        "alreadyMember": "Ez az e-mail-cím már szerepel a felhasználók között.",
+        "lastOwner": "Legalább egy aktív tulajdonosnak maradnia kell, ezért ez a módosítás nem végezhető el.",
+        "wsFull": "A munkatér-felhasználók kerete betelt, új munkatér szerepkör nem adható. Válasszon nagyobb csomagot, vagy függesszen fel egy hozzáférést.",
+        "wsDisabled": "A jelenlegi csomag nem tartalmazza a munkatért, ezért munkatér szerepkör nem adható.",
+        "editorsFull": "A szerkesztők kerete betelt, új weboldali szerepkör nem adható. Válasszon nagyobb csomagot, vagy függesszen fel egy hozzáférést.",
+        "notFound": "A felhasználó nem található."
+      },
+      "active": {
+        "close": "Bezárás",
+        "cancel": "Mégse",
+        "deactivate": {
+          "button": "Felfüggesztés",
+          "trigger": "Felfüggesztés: {name}",
+          "title": "Hozzáférés felfüggesztése",
+          "question": "Felfüggeszti {name} hozzáférését?",
+          "body": "A felhasználó nem tud belépni, de a korábbi munkája megmarad. A hozzáférést később visszaállíthatja.",
+          "confirm": "Felfüggesztés"
+        },
+        "activate": {
+          "button": "Visszaállítás",
+          "trigger": "Visszaállítás: {name}",
+          "title": "Hozzáférés visszaállítása",
+          "question": "Visszaállítja {name} hozzáférését?",
+          "body": "A felhasználó újra beléphet a korábbi szerepköreivel.",
+          "confirm": "Visszaállítás"
+        },
+        "problems": {
+          "lastOwner": "Legalább egy aktív tulajdonosnak maradnia kell.",
+          "limit": "A csomag kerete betelt, ezért a hozzáférés nem állítható vissza.",
+          "failed": "A művelet nem sikerült."
+        }
+      }
+    },
+    "modules": {
+      "lead": "Kapcsolja be azokat a részeket, amelyeket használni szeretne. A kikapcsolt modul eltűnik a menüből, a kezdőoldalról és az oldaltérképről; a tartalma megmarad.",
+      "save": "Mentés",
+      "offTitle": "Kikapcsolás nem töröl semmit",
+      "offBody": "Ha kikapcsol egy modult, az oldalai nem érhetők el. Bekapcsoláskor minden tartalom újra megjelenik.",
+      "securityTitle": "Éles használat csak biztonsági átvétel után",
+      "securityBody": "A HR-modulok személyes adatot kezelnek. Valós adatot csak a hozzáférés-védelem és a titkosítás ellenőrzése után szabad bevinni; addig csak mintaadatokkal próbálható.",
+      "website": {
+        "title": "Weboldal modulok",
+        "items": {
+          "news": {
+            "title": "Hírek",
+            "help": "Cikkek és beszámolók a közösség életéről."
+          },
+          "announcements": {
+            "title": "Heti hirdetések",
+            "help": "A heti hirdetések közzététele és archívuma."
+          },
+          "events": {
+            "title": "Események",
+            "help": "Naptár, ismétlődő alkalmak és iCal-feliratkozás."
+          },
+          "schedule": {
+            "title": "{serviceSchedule.nom}",
+            "help": "A rendszeres és ünnepi alkalmak heti rendje."
+          },
+          "locations": {
+            "title": "Helyszínek",
+            "help": "Templomok, imaházak és egyéb helyszínek térképpel."
+          },
+          "staff": {
+            "title": "{staffSection.nom}",
+            "help": "A lelkészek és munkatársak bemutatkozó oldala."
+          },
+          "rites": {
+            "title": "{ritesSection.nom}",
+            "help": "Tájékoztató oldalak és online bejelentők."
+          },
+          "groups": {
+            "title": "Közösségek",
+            "help": "Csoportok és közösségek oldalai."
+          },
+          "sermons": {
+            "title": "Igehirdetések",
+            "help": "Hang- és videófelvételek, szöveges összefoglalók."
+          },
+          "livestream": {
+            "title": "Élő közvetítés",
+            "help": "Beágyazott közvetítés a kezdőoldalon."
+          },
+          "gallery": {
+            "title": "Képtár",
+            "help": "Albumok az eseményekről."
+          },
+          "documents": {
+            "title": "Dokumentumok",
+            "help": "Letölthető tájékoztatók és űrlapok."
+          },
+          "giving": {
+            "title": "Támogatás",
+            "help": "Adományozási tudnivalók, számlaszám és QR-kód."
+          },
+          "onlineGiving": {
+            "title": "Online adományozás",
+            "help": "Adományozás bankkártyával a weboldalon."
+          },
+          "massIntentions": {
+            "title": "Imaszándékok",
+            "help": "Szándékok felvétele és a heti lista."
+          },
+          "funeralNotices": {
+            "title": "Gyászhírek",
+            "help": "Gyászhírek közzététele."
+          },
+          "newsletter": {
+            "title": "Hírlevél",
+            "help": "Feliratkozás és hírlevél-küldés."
+          },
+          "search": {
+            "title": "Keresés",
+            "help": "Keresés az oldal tartalmában."
+          },
+          "liturgicalCalendar": {
+            "title": "Egyházi naptár",
+            "help": "Ünnepek és liturgikus napok az oldalon."
+          }
+        }
+      },
+      "workspace": {
+        "title": "Munkatér modulok",
+        "items": {
+          "calendar": {
+            "title": "Naptárak",
+            "help": "Közös és személyes naptárak a munkatársaknak."
+          },
+          "rooms": {
+            "title": "Teremfoglalás",
+            "help": "Termek, foglalási kérések és jóváhagyás."
+          },
+          "worship": {
+            "title": "Szolgálattervezés",
+            "help": "Az alkalmak menete, énekek és szolgálati beosztás."
+          },
+          "rota": {
+            "title": "Szolgálati beosztás",
+            "help": "Ki mikor szolgál."
+          },
+          "hr": {
+            "title": "HR-kérelmek",
+            "help": "Kérelmek és jóváhagyási láncok a munkatársaknak."
+          },
+          "hr_leave": {
+            "title": "Szabadság és távollét",
+            "help": "Szabadságkérelmek, egyenleg és távolléti naptár."
+          },
+          "hr_confidential": {
+            "title": "Bizalmas bejelentések",
+            "help": "Szigorúbb védelemmel kezelt bejelentések."
+          },
+          "docs": {
+            "title": "Belső dokumentumok",
+            "help": "Csak a munkatársak számára elérhető dokumentumtár."
+          },
+          "board": {
+            "title": "Hirdetőtábla",
+            "help": "Belső hirdetések és közlemények."
+          }
+        }
+      },
+      "locked": {
+        "title": "A csomagban nem szereplő modulok",
+        "lead": "Ezek a modulok a jelenlegi csomaggal nem kapcsolhatók be. Tartalmuk megmarad, és csomagváltás után újra használhatók.",
+        "badge": "Nem része a csomagnak",
+        "upgrade": "Csomagok megtekintése és váltás"
+      }
+    },
+    "plan": {
+      "lead": "Itt látja, melyik csomagot használja, mennyit használt a keretekből, és mit érhet el nagyobb csomaggal.",
+      "toBilling": "Számlázás",
+      "current": {
+        "title": "Jelenlegi csomag",
+        "website": "Weboldal csomag",
+        "workspace": "Munkatér",
+        "noWorkspace": "Nincs munkatér",
+        "renews": "Következő megújítás"
+      },
+      "deal": {
+        "title": "Egyházmegyei megállapodás",
+        "body": "A csomagot az egyházmegyei megállapodás fedezi, a számlázást az egyházmegye intézi. A csomagváltást az egyházmegyén keresztül kérheti."
+      },
+      "limits": {
+        "title": "Keretek",
+        "storage": "Tárhely",
+        "storageUsed": "{used} GB a(z) {cap} GB-ból",
+        "storageAlert": {
+          "warning": "A tárhely 90%-a betelt. Hamarosan nem tölthet fel újabb fájlt.",
+          "full": "A tárhely betelt, új fájl feltöltése le van tiltva. A meglévő tartalom megmarad."
+        },
+        "editors": "Szerkesztők",
+        "editorsUsed": "{used} szerkesztő a(z) {cap} főből",
+        "editorsUnlimited": "{used} szerkesztő, korlátlan keretből",
+        "editorsAlert": {
+          "warning": "A szerkesztők keretének 90%-a betelt.",
+          "full": "A szerkesztők kerete betelt, újabb szerkesztő nem hívható meg."
+        },
+        "workspaceUsers": "Munkatér-felhasználók",
+        "workspaceUsed": "{used} aktív felhasználó a(z) {cap} főből",
+        "workspaceAlert": {
+          "warning": "A munkatér-felhasználók keretének 90%-a betelt.",
+          "full": "A munkatér-felhasználók kerete betelt, újabb munkatér-felhasználó nem hívható meg."
+        },
+        "noWorkspace": "A csomag nem tartalmazza a munkatért.",
+        "upgrade": {
+          "storage": "Nagyobb tárhely a Teljes csomaggal",
+          "editors": "Korlátlan szerkesztő a Teljes csomaggal",
+          "workspace": "Nagyobb munkatér-csomag"
+        }
+      },
+      "features": {
+        "domain": "Saját webcím",
+        "included": "A csomag tartalmazza",
+        "notIncluded": "Nem része a csomagnak",
+        "domainUpgrade": "A saját webcím a Teljes csomaggal használható; addig az oldal a semleges címen érhető el.",
+        "credit": "„Készült a Churchy-vel” felirat a láblécben",
+        "creditShown": "Látszik",
+        "creditHidden": "Nem látszik"
+      },
+      "modules": {
+        "title": "Elérhető modulok",
+        "lead": "Ami nincs a csomagban, az zárolva van, de a tartalma megmarad.",
+        "available": "Elérhető",
+        "locked": "Nem része a csomagnak",
+        "toToggles": "Modulok be- és kikapcsolása",
+        "website": {
+          "news": "Hírek",
+          "announcements": "Heti hirdetések",
+          "events": "Események",
+          "schedule": "{serviceSchedule.nom}",
+          "locations": "Helyszínek",
+          "staff": "{staffSection.nom}",
+          "rites": "{ritesSection.nom}",
+          "groups": "Közösségek",
+          "sermons": "Igehirdetések",
+          "livestream": "Élő közvetítés",
+          "gallery": "Képtár",
+          "documents": "Dokumentumok",
+          "giving": "Támogatás",
+          "onlineGiving": "Online adományozás",
+          "massIntentions": "Imaszándékok",
+          "funeralNotices": "Gyászhírek",
+          "newsletter": "Hírlevél",
+          "search": "Keresés",
+          "liturgicalCalendar": "Egyházi naptár"
+        },
+        "workspace": {
+          "calendar": "Naptárak (munkatér)",
+          "rooms": "Teremfoglalás (munkatér)",
+          "worship": "Szolgálattervezés (munkatér)",
+          "rota": "Szolgálati beosztás (munkatér)",
+          "hr": "HR-kérelmek (munkatér)",
+          "hr_leave": "Szabadság és távollét (munkatér)",
+          "hr_confidential": "Bizalmas bejelentések (munkatér)",
+          "docs": "Belső dokumentumok (munkatér)",
+          "board": "Hirdetőtábla (munkatér)"
+        }
+      },
+      "catalog": {
+        "title": "Csomagok",
+        "lead": "A munkatér a Teljes csomaghoz választható kiegészítés. Csomagváltáskor semmilyen tartalom nem törlődik.",
+        "ownerOnly": "A csomagot a tulajdonos válthatja.",
+        "current": "Jelenlegi csomag",
+        "perMonth": "havonta",
+        "perYear": "vagy {price} évente",
+        "storage": "{gb} GB tárhely",
+        "editors": "Legfeljebb {count} szerkesztő",
+        "editorsUnlimited": "Korlátlan szerkesztő",
+        "modules": "{count} weboldal modul",
+        "domainYes": "Saját webcím",
+        "domainNo": "Csak semleges webcím",
+        "creditYes": "„Készült a Churchy-vel” felirat",
+        "creditNo": "Felirat nélkül",
+        "wsUsers": "Legfeljebb {count} munkatér-felhasználó",
+        "wsModules": "{count} munkatér modul",
+        "workspaceNeedsPaid": "A munkatér a Teljes csomaggal együtt választható."
+      },
+      "change": {
+        "close": "Bezárás",
+        "cancel": "Mégse",
+        "confirm": "Csomagváltás",
+        "failed": "A csomagváltás nem sikerült.",
+        "demoNote": "Bemutató: a váltás azonnal érvénybe lép, fizetés nélkül. Éles működésben a fizetés visszaigazolása után, legfeljebb egy percen belül.",
+        "upgrade": {
+          "button": "Váltás",
+          "trigger": "Váltás a(z) {plan} csomagra",
+          "title": "Váltás: {plan}",
+          "question": "Átvált a(z) {plan} csomagra?",
+          "body": "A csomag új lehetőségei azonnal elérhetők lesznek."
+        },
+        "downgrade": {
+          "button": "Váltás",
+          "trigger": "Váltás a(z) {plan} csomagra",
+          "title": "Váltás: {plan}",
+          "question": "Átvált a(z) {plan} csomagra?",
+          "body": "Nem törlődik tartalom. A csomagban nem szereplő modulok elrejtésre kerülnek, a saját webcím a semleges címre irányít át, és a keret felett nem tölthető fel új fájl."
+        }
+      }
+    },
+    "billing": {
+      "lead": "Az előfizetés, a számlázási adatok és a számlák egy helyen.",
+      "toPlan": "Csomag",
+      "mockTitle": "Bemutató",
+      "mockNote": "A bemutatóban nincs valódi fizetés: a „Fizetés Barionnal” gomb csak egy kitalált megerősítő oldalra visz. Bankkártya-adatot a Churchy soha nem lát és nem tárol.",
+      "covered": {
+        "title": "A számlázást az egyházmegye intézi",
+        "body": "A csomagot az egyházmegyei megállapodás fedezi, ezért a számlák és a számlázási adatok az egyházmegyei számlán szerepelnek."
+      },
+      "dunning": {
+        "title": "Lejárt fizetés",
+        "body": "Az utolsó számla kifizetetlen. Emlékeztetőt a határidőn, 7 és 14 nappal utána küldünk; 30 napos türelmi idő után a weboldal az Ingyenes csomagra vált, a tartalom megmarad."
+      },
+      "period": {
+        "monthly": "Havi",
+        "yearly": "Éves"
+      },
+      "subscriptionStates": {
+        "trialing": "Próbaidőszak",
+        "active": "Aktív",
+        "past_due": "Lejárt fizetés",
+        "cancelled": "Lemondva"
+      },
+      "subscriptions": {
+        "title": "Előfizetés",
+        "empty": "Nincs aktív előfizetés.",
+        "plan": "Csomag",
+        "period": "Számlázás",
+        "status": "Állapot",
+        "renews": "Következő megújítás"
+      },
+      "invoiceStates": {
+        "proforma": "Díjbekérő",
+        "issued": "Kiállítva",
+        "paid": "Kifizetve",
+        "void": "Érvénytelenítve"
+      },
+      "invoices": {
+        "title": "Számlák",
+        "empty": "Még nincs számla.",
+        "number": "Sorszám",
+        "issued": "Kelt",
+        "amount": "Összeg",
+        "status": "Állapot",
+        "actions": "Teendők",
+        "pay": "Fizetés Barionnal",
+        "payAria": "Fizetés Barionnal: {number}",
+        "note": "A számlák PDF-je a fizetés után e-mailben érkezik, és itt is letölthető lesz."
+      },
+      "details": {
+        "title": "Számlázási adatok",
+        "lead": "Ezek az adatok szerepelnek a számlákon.",
+        "save": "Mentés"
+      },
+      "fields": {
+        "name": "Számlázási név",
+        "taxNumber": "Adószám",
+        "taxNumberHelp": "Például 12345678-1-42. Egyházi szervezetnél elhagyható.",
+        "postalCode": "Irányítószám",
+        "city": "Település",
+        "line1": "Utca, házszám",
+        "email": "A számlák e-mail-címe",
+        "emailHelp": "Ide küldjük a számlákat és a fizetési emlékeztetőket.",
+        "paymentMethod": "Fizetési mód",
+        "card": "Bankkártya (Barion)",
+        "transfer": "Banki átutalás (díjbekérő alapján)"
+      },
+      "errors": {
+        "taxNumber": "Az adószám formátuma 12345678-1-42."
+      },
+      "barion": {
+        "title": "Fizetés Barionnal",
+        "lead": "Ez a bemutató fizetési oldala.",
+        "mockTitle": "Kitalált fizetési oldal",
+        "mockBody": "Ez nem a valódi Barion oldal, és nem történik valódi fizetés. A bemutatóban a gomb csak megerősíti a lépést.",
+        "merchant": "Fizetés címzettje",
+        "merchantName": "Churchy (bemutató)",
+        "invoice": "Számla",
+        "amount": "Fizetendő összeg",
+        "noCardData": "A valódi fizetésnél a kártyaadatokat a Barion kezeli; a Churchy azokat sosem látja.",
+        "confirm": "Fizetés jóváhagyása (bemutató)",
+        "cancel": "Mégse",
+        "doneTitle": "A fizetés visszaigazolva (bemutató)",
+        "doneHeading": "A(z) {number} számla fizetése megerősítve",
+        "doneBody": "Ez csak bemutató: nem történt valódi fizetés, és a számla állapota sem változott.",
+        "backToBilling": "Vissza a számlázáshoz"
+      }
+    }
+  },
+  "munkater": {
+    "home": {
+      "title": "Munkatér",
+      "lead": "Naptár, teremfoglalás, szolgálatok és HR-ügyek egy helyen.",
+      "greeting": {
+        "morning": "Jó reggelt",
+        "day": "Jó napot",
+        "evening": "Jó estét"
+      },
+      "greetingName": "{greeting}, {name}!",
+      "tier": {
+        "warningTitle": "Közel a felhasználói korláthoz",
+        "fullTitle": "Elérte a felhasználói korlátot",
+        "body": "A Munkatérnek jelenleg {used} aktív felhasználója van a csomagban foglalt {cap} főből. A korlát elérésekor új meghívó már nem küldhető."
+      },
+      "approvals": {
+        "title": "Jóváhagyásra vár",
+        "open": "Megnyitom",
+        "hr": "Munkatársi kérés"
+      },
+      "todos": {
+        "title": "Teendők",
+        "accept": "Elfogadom",
+        "decline": "Nem tudok",
+        "failedTitle": "A válasz nem sikerült",
+        "failedBody": "Kérjük, próbálja újra egy pillanat múlva."
+      },
+      "today": {
+        "title": "Ma"
+      },
+      "week": {
+        "title": "Ezen a héten",
+        "all": "Teljes naptár"
+      },
+      "requests": {
+        "title": "Kéréseim",
+        "hrStatus": {
+          "uj": "Új",
+          "folyamatban": "Folyamatban",
+          "jovahagyasra_var": "Jóváhagyásra vár",
+          "jovahagyva": "Jóváhagyva",
+          "elutasitva": "Elutasítva",
+          "lezart": "Lezárva"
+        }
+      },
+      "quick": {
+        "title": "Gyors műveletek",
+        "room": "Terem foglalása",
+        "request": "Új kérés",
+        "event": "Új esemény"
+      }
+    },
+    "shell": {
+      "navigation": "Munkatér menü"
+    },
+    "entry": {
+      "allDay": "Egész nap",
+      "absent": "Távol",
+      "cancelled": "Elmarad",
+      "draft": "Tervezet",
+      "publicHoliday": "Munkaszüneti nap",
+      "layers": {
+        "events": "Események",
+        "services": "{serviceSchedule.nom}",
+        "bookings": "Teremfoglalások",
+        "assignments": "Szolgálataim",
+        "absences": "Távollétek",
+        "holidays": "Ünnepek"
+      },
+      "planStatus": {
+        "draft": "Tervezet",
+        "in_review": "Véleményezés alatt",
+        "approved": "Jóváhagyva",
+        "locked": "Lezárva"
+      },
+      "bookingStatus": {
+        "pending": "Elbírálásra vár",
+        "approved": "Jóváhagyva",
+        "rejected": "Elutasítva",
+        "cancelled": "Lemondva"
+      },
+      "assignmentStatus": {
+        "requested": "Válaszra vár",
+        "accepted": "Elfogadva",
+        "declined": "Elutasítva",
+        "swap_requested": "Csere kérve",
+        "cancelled": "Törölve"
+      },
+      "visibility": {
+        "private": "Privát",
+        "team": "Csapat",
+        "staff": "Minden munkatárs",
+        "public": "Nyilvános"
+      }
+    },
+    "calendar": {
+      "title": "Naptár",
+      "views": {
+        "nap": "Nap",
+        "het": "Hét",
+        "honap": "Hónap",
+        "napirend": "Napirend"
+      },
+      "today": "Ma",
+      "emptyDay": "Erre a napra nincs program.",
+      "emptyAgenda": "A következő napokra nincs program.",
+      "dayCount": "{count} bejegyzés",
+      "more": "+{count} további",
+      "viewSwitcher": "Nézet",
+      "previous": "Előző",
+      "next": "Következő",
+      "newEvent": "Új esemény",
+      "filter": "Szűrők",
+      "layersLegend": "Rétegek",
+      "calendarsLegend": "Naptárak",
+      "applyFilter": "Szűrés"
+    },
+    "event": {
+      "title": "Esemény",
+      "newTitle": "Új esemény",
+      "editTitle": "Esemény szerkesztése",
+      "back": "Vissza a naptárhoz",
+      "when": "Mikor",
+      "where": "Hol",
+      "about": "Részletek",
+      "fields": {
+        "title": "Cím",
+        "calendarId": "Naptár",
+        "visibility": "Láthatóság",
+        "visibilityHelp": "A „Nyilvános” esemény a weboldalon is megjelenik.",
+        "teamId": "Csapat",
+        "teamHelp": "Csak csapat láthatóságnál szükséges.",
+        "teamNone": "Nincs",
+        "startsAt": "Kezdés",
+        "endsAt": "Befejezés",
+        "locationId": "Helyszín",
+        "locationNone": "Nincs megadva",
+        "body": "Leírás",
+        "roomId": "Terem foglalása",
+        "roomHelp": "Az esemény mentésével a terem is lefoglalódik.",
+        "roomNone": "Nem foglalok termet"
+      }
+    },
+    "errors": {
+      "required": "Ez a mező kötelező.",
+      "slugTaken": "Ez a cím már foglalt.",
+      "slugFormat": "A cím nem alakítható át érvényes webcímmé.",
+      "endBeforeStart": "A befejezés nem lehet a kezdés előtt.",
+      "notFound": "A keresett elem nem található.",
+      "general": "A mentés nem sikerült.",
+      "roomUnavailable": "A terem ebben az időpontban nem foglalható. Kérjük, válasszon másik termet vagy időpontot a Termek menüben."
+    },
+    "directory": {
+      "title": "Névjegyzék",
+      "lead": "Munkatársak és önkéntesek elérhetőségei, csapatai és szolgálatai.",
+      "search": "Keresés a névjegyzékben",
+      "q": "Név vagy beosztás",
+      "team": "Csapat",
+      "position": "Szolgálat",
+      "skill": "Képesség",
+      "any": "Mind",
+      "apply": "Szűrés",
+      "count": "{count} találat",
+      "empty": "A névjegyzék még üres.",
+      "emptyFiltered": "Nincs a keresésnek megfelelő személy.",
+      "leader": "vezető",
+      "hiddenContact": "Egyes elérhetőségeket a személy nem tett láthatóvá Ön számára.",
+      "teams": "Csapatok",
+      "back": "Vissza a névjegyzékhez",
+      "contact": "Elérhetőség",
+      "noContact": "Nincs megadott elérhetőség."
+    },
+    "teams": {
+      "title": "Csapatok",
+      "lead": "Szolgálati csoportok, vezetőik és tagjaik.",
+      "empty": "Még nincs csapat.",
+      "members": "{count} tag",
+      "back": "Vissza a csapatokhoz",
+      "positions": "Szolgálatok",
+      "noPositions": "Ehhez a csapathoz még nincs szolgálat felvéve.",
+      "needed": "legalább {min} fő",
+      "membersHeading": "Tagok",
+      "noMembers": "Nincs Ön számára látható tag.",
+      "leader": "vezető",
+      "hiddenContact": "Egyes elérhetőségeket a személy nem tett láthatóvá Ön számára.",
+      "form": {
+        "person": "Személy",
+        "choose": "Válasszon…",
+        "position": "Szolgálat",
+        "noPosition": "Nincs",
+        "isLeader": "A csapat vezetője",
+        "positionName": "A szolgálat neve",
+        "minCount": "Legalább hány fő",
+        "maxCount": "Legfeljebb hány fő",
+        "addPosition": "Új szolgálat",
+        "addMember": "Új tag",
+        "add": "Hozzáadás"
+      }
+    },
+    "placeholder": {
+      "title": "Hamarosan",
+      "body": "Ez a rész a következő fejlesztési lépésben készül el; a helye és a jogosultsága már megvan.",
+      "toToday": "Vissza a Ma oldalra",
+      "foglalas": {
+        "title": "Termek",
+        "lead": "Teremfoglalás és terembeosztás."
+      },
+      "liturgia": {
+        "title": "Liturgia",
+        "lead": "Szolgálati tervek és beosztások."
+      },
+      "enektar": {
+        "title": "Énektár",
+        "lead": "Énekek és énekrendek."
+      },
+      "tavollet": {
+        "title": "Távollétek",
+        "lead": "Távollétek és szabadságok."
+      },
+      "hr": {
+        "title": "HR-ügyintézés",
+        "lead": "Kérések és ügyintézés."
+      }
+    },
+    "songs": {
+      "title": "Énektár",
+      "lead": "{count} ének a könyvtárban — keresés cím, első sor, énekeskönyvi szám (pl. RÉ 42), téma és egyházi év szerint.",
+      "new": "Új ének",
+      "edit": "Ének szerkesztése",
+      "back": "Vissza az énektárhoz",
+      "results": "{count} találat",
+      "empty": "Nincs a keresésnek megfelelő ének.",
+      "hymnals": "Énekeskönyvek",
+      "hymnalsLead": "A platform csak az énekeskönyvek nevét tartalmazza, az énekek az Önök saját gyűjteményei.",
+      "lyrics": "Szöveg",
+      "arrangements": "Feldolgozások",
+      "noArrangements": "Ehhez az énekhez még nincs feldolgozás.",
+      "noChords": "Ehhez a feldolgozáshoz nincs akkordszöveg.",
+      "search": {
+        "label": "Keresés az énektárban",
+        "query": "Keresés",
+        "placeholder": "Cím, első sor vagy pl. RÉ 42",
+        "hymnal": "Énekeskönyv",
+        "theme": "Téma",
+        "season": "Egyházi év",
+        "notation": "Hangjelölés",
+        "any": "Mind",
+        "submit": "Keresés"
+      },
+      "notation": {
+        "hu": "H / B (magyar)",
+        "en": "B / B♭ (angol)"
+      },
+      "meta": {
+        "firstLine": "Első sor",
+        "authors": "Szerző",
+        "composers": "Zeneszerző",
+        "licence": "Jogállás",
+        "key": "Alaphang",
+        "tempo": "Tempó (BPM)",
+        "time": "Ütemmutató",
+        "seasons": "Egyházi év"
+      },
+      "transpose": {
+        "key": "Hangnem",
+        "capo": "Capo",
+        "noCapo": "Nincs",
+        "apply": "Átír",
+        "capoNote": "Capo {fret}. fret, hangzó hangnem: {key}; a kijelzett akkordok a fogások."
+      },
+      "arr": {
+        "name": "Megnevezés",
+        "key": "Hangnem",
+        "structure": "Szerkezet",
+        "chordpro": "Akkordszöveg (ChordPro)",
+        "chordproHelp": "Az akkordok szögletes zárójelben, angol betűjelöléssel, pl. [G]Szent vagy.",
+        "add": "Új feldolgozás",
+        "save": "Feldolgozás mentése"
+      },
+      "form": {
+        "title": "Cím",
+        "firstLine": "Első sor",
+        "hymnal1": "Énekeskönyv",
+        "number1": "Szám",
+        "numberHelp": "Például 42 vagy 42a.",
+        "hymnal2": "Második énekeskönyv",
+        "number2": "Második szám",
+        "none": "Nincs",
+        "defaultKey": "Alaphang",
+        "tempoBpm": "Tempó (BPM)",
+        "timeSignature": "Ütemmutató",
+        "timeHelp": "Például 4/4.",
+        "themes": "Témák",
+        "seasons": "Egyházi év",
+        "listHelp": "Vesszővel elválasztva.",
+        "authors": "Szövegírók",
+        "composers": "Zeneszerzők",
+        "licence": "Jogállás",
+        "licences": {
+          "public_domain": "Közkincs",
+          "licensed": "Licenccel",
+          "permission": "Engedéllyel",
+          "own": "Saját",
+          "unknown": "Ismeretlen"
+        },
+        "lyrics": "Szöveg",
+        "notes": "Megjegyzés",
+        "save": "Ének mentése"
+      }
+    },
+    "worship": {
+      "title": "Liturgia",
+      "lead": "Szolgálati tervek: énekrend, beosztás, véleményezés és jóváhagyás.",
+      "templates": "Sablonok",
+      "back": "Vissza a tervekhez",
+      "upcoming": "Soron következő alkalmak",
+      "noPlan": "Nincs terv",
+      "openPlan": "Terv megnyitása",
+      "allPlans": "Tervek",
+      "filter": "Szűrés állapot szerint",
+      "all": "Mind",
+      "noPlans": "Nincs megjeleníthető terv.",
+      "preset": "Előre elkészített",
+      "own": "Saját",
+      "leader": "Felelős: {name}",
+      "lockedTitle": "A terv lezárt",
+      "lockedBody": "Az alkalom után a terv csak olvasható, az énekek felhasználása rögzült.",
+      "reviewTitle": "Véleményezés alatt",
+      "reviewBody": "A tervet a jóváhagyók véleményezik; megjegyzést írhat hozzá.",
+      "reviewBodyApprover": "Jóváhagyhatja a tervet, vagy megjegyzéssel visszaküldheti a piszkozathoz.",
+      "items": "Elemek",
+      "diff": {
+        "title": "Változások a jóváhagyás óta",
+        "lead": "A csapat egyetlen összesített értesítést kap ezekről.",
+        "added": "Új elem: {title}",
+        "removed": "Törölt elem: {title}",
+        "moved": "{title}: {from}. helyről a(z) {to}. helyre került",
+        "key": "{title}: hangnem {from} helyett {to}",
+        "defaultKey": "alaphang"
+      },
+      "create": {
+        "template": "Sablon",
+        "empty": "Üres terv",
+        "submit": "Terv létrehozása",
+        "failed": "Nem sikerült",
+        "failedBody": "A terv létrehozása nem sikerült. Kérjük, próbálja újra."
+      },
+      "actions": {
+        "submit": "Véleményezésre küldés",
+        "approve": "Jóváhagyás",
+        "sendBack": "Visszaküldés",
+        "failedTitle": "Nem sikerült",
+        "failedBody": "Az állapot módosítása nem sikerült."
+      },
+      "editor": {
+        "types": {
+          "song": "Ének",
+          "liturgy": "Liturgia",
+          "reading": "Olvasmány",
+          "prayer": "Ima",
+          "sermon": "Igehirdetés",
+          "announcement": "Hirdetés",
+          "other": "Egyéb"
+        },
+        "moved": "{title} a(z) {position}. helyre került",
+        "empty": "A tervben még nincs elem.",
+        "drag": "Húzza az átrendezéshez",
+        "minutesShort": "{minutes} perc",
+        "up": "Fel: {title}",
+        "upShort": "Fel",
+        "down": "Le: {title}",
+        "downShort": "Le",
+        "edit": "Szerkesztés: {title}",
+        "editShort": "Szerkesztés",
+        "fields": {
+          "type": "Típus",
+          "title": "Megnevezés",
+          "arrangement": "Feldolgozás",
+          "noArrangement": "Nincs",
+          "key": "Hangnem",
+          "keyDefault": "Alaphang ({key})",
+          "keyNone": "Nincs megadva",
+          "verses": "Versszakok",
+          "minutes": "Időtartam (perc)",
+          "responsible": "Felelős",
+          "nobody": "Senki",
+          "notes": "Megjegyzés",
+          "song": "Ének",
+          "songSearch": "Ének keresése",
+          "noSong": "Nincs kiválasztva"
+        },
+        "remove": "Elem törlése",
+        "addType": "Új elem típusa",
+        "add": "Elem hozzáadása",
+        "total": "Összesen: {minutes} perc",
+        "save": "Mentés",
+        "saved": "Mentve",
+        "failedTitle": "A mentés nem sikerült",
+        "failedBody": "Kérjük, ellenőrizze az elemeket, és próbálja újra.",
+        "lastUsed": "utoljára: {date}"
+      },
+      "comments": {
+        "title": "Megjegyzések",
+        "empty": "Még nincs megjegyzés.",
+        "onItem": "Elem: {title}",
+        "resolved": "Megoldva",
+        "resolve": "Megoldva",
+        "reopen": "Újranyitás",
+        "body": "Új megjegyzés",
+        "required": "Kérjük, írjon megjegyzést.",
+        "item": "Melyik elemhez",
+        "wholePlan": "Az egész tervhez",
+        "mention": "Megemlítés",
+        "nobody": "Senki",
+        "add": "Megjegyzés küldése",
+        "failed": "A megjegyzés küldése nem sikerült."
+      },
+      "assignments": {
+        "title": "Beosztás",
+        "empty": "Ehhez a tervhez még nincs beosztás.",
+        "requestSwap": "Cserét kérek",
+        "takeOver": "Átvállalom",
+        "failed": "Nem sikerült",
+        "failedBody": "A beosztás módosítása nem sikerült.",
+        "noCandidates": "Nincs beosztható jelölt.",
+        "candidate": "Jelölt: {position}",
+        "choose": "Válasszon",
+        "assignFor": "Beosztás: {position}",
+        "assign": "Beosztás",
+        "reasons": {
+          "notServed": "{weeks} hete nem szolgált",
+          "servedRecently": "az elmúlt 8 hétben {count}× szolgált",
+          "overMonthlyMax": "a havi maximumán felül"
+        }
+      }
+    },
+    "rooms": {
+      "title": "Termek",
+      "capacity": "{count} fő",
+      "resource": "Eszköz / erőforrás",
+      "empty": "Még nincs foglalható terem.",
+      "tabs": {
+        "label": "Teremfoglalás menü",
+        "board": "Foglaltság",
+        "rooms": "Termek",
+        "mine": "Foglalásaim",
+        "approvals": "Jóváhagyás"
+      },
+      "status": {
+        "pending": "Jóváhagyásra vár",
+        "approved": "Jóváhagyva",
+        "rejected": "Elutasítva",
+        "cancelled": "Lemondva"
+      },
+      "board": {
+        "lead": "Egy napra látja, mikor szabad vagy foglalt a terem. A szolgálatok (misék, istentiszteletek) automatikusan blokkolják a hozzájuk rendelt termeket.",
+        "previous": "Előző nap",
+        "today": "Ma",
+        "next": "Következő nap",
+        "pickDate": "Dátum",
+        "show": "Megjelenítés",
+        "book": "Foglalás",
+        "freeAllDay": "Egész nap szabad.",
+        "service": "Szolgálat",
+        "legend": "Jelmagyarázat",
+        "legendFree": "Szabad",
+        "legendBooked": "Foglalt"
+      },
+      "rules": {
+        "bookableHours": "A terem ezen a napon, ebben az időben nem foglalható.",
+        "minNotice": "Legalább {detail} órával előre kell foglalni.",
+        "maxDuration": "Egy foglalás legfeljebb {detail} percig tarthat.",
+        "horizon": "A terem legfeljebb {detail} nappal előre foglalható.",
+        "blackout": "A terem ekkor zárva van: {detail}."
+      },
+      "clash": {
+        "booking": "Ütközik egy meglévő foglalással: {title}.",
+        "service": "A terem ekkor a következő szolgálat miatt le van foglalva: {title}."
+      },
+      "catalog": {
+        "title": "Termek és eszközök",
+        "lead": "A közösség termei, felszereltségük és foglalási szabályaik.",
+        "equipment": "Felszerelés",
+        "wheelchair": "Kerekesszékkel megközelíthető",
+        "toilet": "Akadálymentes mosdó",
+        "hearingLoop": "Indukciós hurok",
+        "managers": "Felelős: {names}",
+        "approvalAuto": "A vezető azonnal foglalhat, mások jóváhagyással.",
+        "approvalManual": "Minden foglalás jóváhagyást igényel.",
+        "maxDuration": "legfeljebb {hours} óra"
+      },
+      "form": {
+        "newTitle": "Új foglalás",
+        "denied": "A foglalás nem sikerült: ehhez nincs jogosultsága.",
+        "room": "Terem",
+        "date": "Dátum",
+        "from": "Kezdés",
+        "to": "Befejezés",
+        "timeError": "Kérjük, adjon meg érvényes időpontot: a befejezés legyen a kezdés után.",
+        "title": "Cím",
+        "titleError": "Kérjük, adja meg a foglalás címét.",
+        "alternatives": "Szabad alternatívák:",
+        "otherRoom": "Másik terem: {name}",
+        "free": "A terem szabad.",
+        "willApprove": "A foglalás azonnal jóváhagyásra kerül.",
+        "willHold": "A foglalás jóváhagyásra vár, addig {hours} óráig lefoglalva tartjuk.",
+        "seriesConflicts": "{total} alkalomból {count} ütközik",
+        "seriesFree": "Mind a(z) {total} alkalom szabad.",
+        "purpose": "Cél",
+        "optional": "(nem kötelező)",
+        "attendees": "Létszám",
+        "team": "Csapat",
+        "noTeam": "Nincs",
+        "setup": "Előkészítési megjegyzés",
+        "repeatLegend": "Ismétlődés",
+        "repeat": "Ismétlés",
+        "repeatNone": "Egyszeri",
+        "repeatWeekly": "Hetente",
+        "weekdays": "Hét napjai",
+        "weekday": {
+          "1": "Hétfő",
+          "2": "Kedd",
+          "3": "Szerda",
+          "4": "Csütörtök",
+          "5": "Péntek",
+          "6": "Szombat",
+          "7": "Vasárnap"
+        },
+        "until": "Utolsó nap",
+        "untilHelp": "Legfeljebb 12 hónapra előre foglalhat.",
+        "skipConflicts": "Ütközők kihagyása: csak a szabad alkalmakat foglalom le",
+        "submit": "Foglalás",
+        "submitRequest": "Foglalás kérése",
+        "cancel": "Mégse"
+      },
+      "mine": {
+        "title": "Foglalásaim",
+        "lead": "Az Ön foglalásai és kérései.",
+        "savedRequest": "A kérés elküldve, jóváhagyásra vár.",
+        "savedApproved": "A foglalás elkészült.",
+        "savedSkipped": "{created} alkalom lefoglalva, {skipped} kihagyva.",
+        "cancelled": "A foglalás lemondva.",
+        "edited": "A foglalás módosítva.",
+        "empty": "Még nincs foglalása.",
+        "series": "{count} alkalom",
+        "new": "Új foglalás"
+      },
+      "approvals": {
+        "title": "Jóváhagyás",
+        "lead": "A kezelt termekre érkezett, még el nem döntött kérések.",
+        "empty": "Nincs jóváhagyásra váró kérés.",
+        "pending": "Vár",
+        "holdUntil": "Fenntartva eddig:",
+        "clashesTitle": "Szolgálati ütközések",
+        "clashesNote": "Ezek a foglalások szolgálatok idejére esnek. Semmit nem mondtunk le automatikusan: kérjük, egyeztessen a foglalóval.",
+        "approve": "Jóváhagyás",
+        "reject": "Elutasítás",
+        "approveFor": "Jóváhagyás: {name}",
+        "rejectFor": "Elutasítás: {name}"
+      },
+      "detail": {
+        "title": "Foglalás",
+        "recurring": "Ismétlődő",
+        "requestedBy": "Foglalta: {name}",
+        "attendees": "Létszám: {count} fő",
+        "setup": "Előkészítés: {notes}",
+        "editHeading": "Módosítás és lemondás"
+      },
+      "edit": {
+        "denied": "Ezt a foglalást nem módosíthatja.",
+        "missing": "Kérjük, adjon meg címet és érvényes időpontot.",
+        "refused": "A módosítás nem lehetséges.",
+        "title": "Cím",
+        "date": "Dátum",
+        "from": "Kezdés",
+        "to": "Befejezés",
+        "purpose": "Cél",
+        "optional": "(nem kötelező)",
+        "attendees": "Létszám",
+        "setup": "Előkészítési megjegyzés",
+        "scope": "Mire vonatkozzon?",
+        "scopeHelp": "Ismétlődő foglalásnál választhat.",
+        "scopeThis": "Csak erre az alkalomra",
+        "scopeFollowing": "Erre és a következőkre",
+        "scopeAll": "Az összesre",
+        "save": "Mentés",
+        "cancelBooking": "Foglalás lemondása"
+      }
+    },
+    "hr": {
+      "list": {
+        "title": "HR-ügyintézés",
+        "lead": "Szabadság, költségtérítés, igények és bizalmas bejelentések egy helyen.",
+        "newRequest": "Új kérés",
+        "anonymousSent": "Névtelen bejelentés elküldve",
+        "anonymousBody": "Hivatkozási szám: {reference}. Egyszeri hozzáférési kódja: {code}. Jegyezze fel, később nem jelenítjük meg újra.",
+        "dashboard": "Áttekintés",
+        "dashboardSummary": "Nyitott kérések: {open, number}. Határidőn túli: {overdue, number}. Medián megoldási idő: {median} munkaóra.",
+        "colCategory": "Kategória",
+        "colOpen": "Nyitott",
+        "colOverdue": "Határidőn túli",
+        "colMedian": "Medián megoldási idő",
+        "hours": "{count, number} munkaóra",
+        "approvals": "Jóváhagyásomra vár",
+        "inbox": "Beérkezett kérések",
+        "filter": "Szűrés állapot szerint",
+        "all": "Mind",
+        "emptyFiltered": "Nincs ilyen állapotú kérés.",
+        "mine": "Saját kéréseim",
+        "emptyMine": "Még nem küldött kérést.",
+        "anonymous": "névtelen"
+      },
+      "status": {
+        "uj": "Új",
+        "folyamatban": "Folyamatban",
+        "jovahagyasra_var": "Jóváhagyásra vár",
+        "jovahagyva": "Jóváhagyva",
+        "elutasitva": "Elutasítva",
+        "lezart": "Lezárt"
+      },
+      "sla": {
+        "none": "Nincs határidő",
+        "ok": "Határidőn belül",
+        "reminder": "Hamarosan lejár",
+        "overdue": "Határidőn túl",
+        "metOnTime": "Időben teljesítve",
+        "metLate": "Késve teljesítve"
+      },
+      "new": {
+        "title": "Új kérés",
+        "absenceTitle": "Szabadság vagy távollét kérése",
+        "lead": "Válassza ki, mit szeretne kérni.",
+        "confidential": "Bizalmas",
+        "needsApproval": "Jóváhagyással",
+        "anonymousPossible": "Névtelenül is küldhető",
+        "confidentialTitle": "Bizalmas kategória",
+        "confidentialBody": "Ezt a bejelentést csak a kijelölt bizalmas ügyek kezelője láthatja, a vezetők és a többi HR-munkatárs nem."
+      },
+      "form": {
+        "optional": "(nem kötelező)",
+        "subject": "Tárgy",
+        "subjectHelp": "Rövid cím. Kérjük, ne írjon bele személyes vagy egészségügyi részleteket.",
+        "choose": "Válasszon",
+        "fileHelp": "A bemutatóban csak a fájl neve kerül rögzítésre.",
+        "halfStart": "Az első nap fél nap",
+        "halfEnd": "Az utolsó nap fél nap",
+        "anonymous": "Névtelenül küldöm",
+        "anonymousHelp": "A bejelentés nem őrzi meg az Ön azonosítóját. Egyszeri hozzáférési kódot kap.",
+        "submit": "Küldés",
+        "cancel": "Mégse",
+        "errorTitle": "A kérést nem sikerült elküldeni",
+        "errorBody": "Kérjük, javítsa a megjelölt mezőket.",
+        "calcTitle": "Munkanapok",
+        "calcHint": "Adja meg az első és az utolsó napot, és itt látja a levonandó munkanapokat.",
+        "calcDays": "Levonandó munkanap: {count, number}",
+        "calcHolidays": "Munkaszüneti napok az időszakban: {days}",
+        "calcRemaining": "Ennyi marad a kerete: {count, number} nap"
+      },
+      "errors": {
+        "required": "Ez a mező kötelező.",
+        "invalid": "Ez az érték nem megfelelő.",
+        "tooLarge": "A fájl túl nagy.",
+        "general": "A kérést most nem lehet elküldeni.",
+        "endBeforeStart": "Az utolsó nap nem lehet az első nap előtt.",
+        "reasonRequired": "Kérjük, írja le a betekintés okát (legalább néhány szóban)."
+      },
+      "controls": {
+        "title": "Teendők",
+        "take": "Átveszem",
+        "startApproval": "Jóváhagyási lánc indítása",
+        "close": "Lezárás",
+        "approve": "Jóváhagyom",
+        "reject": "Elutasítom",
+        "comment": "Megjegyzés",
+        "optional": "(nem kötelező)",
+        "failed": "A művelet nem sikerült",
+        "failedBody": "Az állapot közben megváltozott, vagy nincs jogosultsága hozzá. Frissítse az oldalt.",
+        "message": "Üzenet",
+        "attach": "Minta melléklet csatolása",
+        "attachHelp": "A bemutatóban egy tárolt mintadokumentum kerül az üzenethez.",
+        "internal": "Belső jegyzet",
+        "internalHelp": "A kérelmező nem látja.",
+        "send": "Küldés"
+      },
+      "confidential": {
+        "reason": "Betekintés oka",
+        "reasonHelp": "Minden megnyitás naplózásra kerül az okkal együtt.",
+        "open": "Megnyitás",
+        "recipient": "Átvevő szerv",
+        "summary": "Mi került átadásra",
+        "optional": "(nem kötelező)",
+        "handover": "Átadás rögzítése",
+        "gateTitle": "Bizalmas ügy",
+        "gateAlert": "A megnyitáshoz meg kell adnia a betekintés okát",
+        "gateBody": "Az ügy tartalma és címe csak ezután jelenik meg, és a megnyitás bekerül a naplóba.",
+        "handedTitle": "Az ügy átadásra került",
+        "handedBody": "Átvevő: {recipient}. Az ügy csak olvasható. Dátum:",
+        "readLog": "Betekintési napló"
+      },
+      "detail": {
+        "title": "Kérés",
+        "historyCreated": "Beküldve",
+        "historyApproval": "{decision}: {step}. lépés, {name}",
+        "historyClosed": "Lezárva",
+        "historyHandover": "Átadva: {recipient}",
+        "decision": {
+          "approved": "Jóváhagyva",
+          "rejected": "Elutasítva",
+          "delegated": "Átruházva"
+        },
+        "confidential": "Bizalmas",
+        "readOnly": "Csak olvasható",
+        "anonymousRequester": "Névtelen bejelentés",
+        "requester": "Kérelmező: {name}",
+        "due": "Határidő:",
+        "sentTitle": "A kérés elküldve",
+        "sentBody": "Hivatkozási száma: {reference}. Állapotváltozásról csak a hivatkozási számot tartalmazó értesítést küldünk.",
+        "details": "Adatok",
+        "yes": "Igen",
+        "no": "Nem",
+        "absence": "Távollét",
+        "workingDays": "({count, number} munkanap)",
+        "absenceApproved": "Rögzítve a naptárban",
+        "chain": "Jóváhagyási lánc",
+        "stepLabel": "{n, number}. lépés",
+        "step": {
+          "manager": "Közvetlen vezető",
+          "person": "Kijelölt személy",
+          "leader": "Vezető",
+          "hrHandler": "HR-felelős"
+        },
+        "outcome": {
+          "skippedSelf": "Kihagyva: saját kérés nem hagyható jóvá saját kezűleg.",
+          "routedToHr": "Nincs megfelelő jóváhagyó, a HR dönt:",
+          "delegated": "Távollét miatt helyettes dönt:"
+        },
+        "waiting": "Döntésre vár",
+        "thread": "Üzenetek",
+        "noMessages": "Még nincs üzenet.",
+        "anonymousAuthor": "Névtelen",
+        "internalNote": "Belső jegyzet",
+        "attachment": "Melléklet",
+        "history": "Állapotváltozások",
+        "statusNow": "Jelenlegi állapot: {status}"
+      }
+    },
+    "absence": {
+      "title": "Távollétek",
+      "lead": "Ki van távol, mennyi szabadsága maradt, és mely szolgálatok érintettek.",
+      "request": "Szabadság vagy távollét kérése",
+      "balanceTitle": "Szabadságkeretem, {year}",
+      "balanceLine": "Alap: {entitlement, number} nap, áthozott: {carried, number} nap, módosítás: {adjustments, number} nap, felhasznált: {used, number} nap.",
+      "balanceRemaining": "Hátralévő szabadság: {count, number} nap",
+      "balancePlanned": "Jóváhagyásra váró: {count, number} nap",
+      "gridTitle": "Távollétek a következő négy hétben",
+      "none": "Ebben az időszakban nincs távollét.",
+      "person": "Munkatárs",
+      "someone": "Munkatárs",
+      "away": "Távol",
+      "awayShort": "T",
+      "legend": "T: távol. Szürke: munkaszüneti nap. A távollét okát csak az illetékes HR-felelős látja.",
+      "conflictsTitle": "Beosztási ütközések",
+      "findSubstitute": "Helyettes keresése",
+      "allBalances": "Szabadságkeretek, {year}",
+      "colTotal": "Keret",
+      "colUsed": "Felhasznált",
+      "colRemaining": "Hátralévő",
+      "substituteTitle": "Helyettes keresése",
+      "noCandidates": "Nincs szabad csapattag erre az időpontra.",
+      "askSubstitute": "Felkérem",
+      "failed": "A felkérés nem sikerült",
+      "failedBody": "A beosztás közben megváltozott, vagy nincs jogosultsága hozzá."
+    }
+  },
+  "portal": {
+    "home": {
+      "title": "Egyházmegyei portál",
+      "lead": "A kapcsolt {community.plural} által delegált HR-ügyek kezelése."
+    },
+    "shell": {
+      "navigation": "Egyházmegyei portál menü"
+    },
+    "scope": {
+      "title": "Az Ön hatóköre",
+      "lead": "Csak azok a kategóriák láthatók, amelyeket a {community.nom} átruházott, és amelyekhez Önnek jogosultsága van. A bizalmas ügyek ebben a portálban nem jelennek meg.",
+      "categories": "Látható kategóriák:",
+      "noneTitle": "Még nincs látható ügy",
+      "noneBody": "Önnek jelenleg egyetlen kapcsolt {community.lower} egyetlen kategóriájához sincs hozzáférése."
+    },
+    "overview": {
+      "title": "Áttekintés",
+      "lead": "A kapcsolt {community.plural} által delegált HR-ügyek összesítése.",
+      "toRequests": "Kérések megnyitása",
+      "figures": "Főbb számok",
+      "open": "Nyitott ügyek",
+      "overdue": "Határidőn túl",
+      "waiting": "Jóváhagyásra vár",
+      "median": "Medián megoldási idő",
+      "hours": "{count} óra",
+      "byParish": "{community.nom} szerint",
+      "colParish": "{community.nom}",
+      "colOpen": "Nyitott",
+      "colOverdue": "Határidőn túl",
+      "colTotal": "Összes",
+      "overdueList": "Határidőn túli ügyek",
+      "noOverdue": "Nincs határidőn túli ügy.",
+      "emptyTitle": "Még nincs látható ügy",
+      "emptyBody": "Amint egy {community.lower} összekapcsolódik az egyházmegyével és HR-kategóriákat delegál, az ügyei itt jelennek meg."
+    },
+    "requests": {
+      "title": "Kérések",
+      "lead": "A kapcsolt {community.plural} delegált HR-ügyei egy helyen.",
+      "filterParish": "Szűrés: {community.nom}",
+      "filterStatus": "Szűrés: állapot",
+      "allParishes": "Minden {community.lower}",
+      "allStatuses": "Minden állapot",
+      "count": "{count} ügy",
+      "empty": "Nincs a szűrésnek megfelelő ügy."
+    },
+    "ticket": {
+      "title": "Egyházmegyei ügykezelés",
+      "back": "Vissza a kérésekhez",
+      "readOnly": "Csak olvasható",
+      "requesterPosition": "Kérelmező beosztása: {position}",
+      "requesterUnknown": "Kérelmező: a {community.lower} munkatársa",
+      "scopeTitle": "Hatókör",
+      "scopeBody": "Ezt az ügyet azért látja, mert a(z) {parish} a(z) „{category}” kategóriát átruházta az egyházmegyére. Minden megnyitás és művelet bekerül a {community.lower} naplójába.",
+      "approvalAtParish": "A jóváhagyási lépéseket a {community.lower} végzi.",
+      "authorOrg": "Egyházmegye",
+      "authorRequester": "Kérelmező",
+      "authorParish": "{community.nom} ügyintézője"
+    },
+    "parishes": {
+      "title": "Kapcsolt {community.plural}",
+      "lead": "A kapcsolat állapota és a delegált HR-kategóriák {community.plural} szerint.",
+      "rulesTitle": "A kapcsolódás szabályai",
+      "rulesBody": "A kapcsolat akkor lép életbe, ha a {community.nom} tulajdonosa és az egyházmegye is jóváhagyta. Bármelyik fél megszüntetheti, a hozzáférés ilyenkor azonnal megszűnik. A delegált kategóriákról a {community.nom} dönt.",
+      "status": {
+        "active": "Aktív",
+        "requested": "Kérelem folyamatban",
+        "revoked": "Megszüntetve",
+        "none": "Nincs kapcsolat"
+      },
+      "waitsForParish": "A {community.nom} jóváhagyására vár.",
+      "waitsForOrg": "Az Ön jóváhagyására vár.",
+      "delegated": "Delegált kategóriák",
+      "delegatedNone": "Nincs delegált, nem bizalmas kategória.",
+      "delegatedNote": "A {community.nom} további kategóriái itt nem láthatók és nem számítanak bele az összesítésekbe.",
+      "request": "Kapcsolat kérése",
+      "approve": "Jóváhagyás",
+      "revoke": "Kapcsolat megszüntetése",
+      "withdraw": "Kérelem visszavonása"
+    },
+    "absences": {
+      "title": "Távollétek",
+      "lead": "A kapcsolt {community.plural} jóváhagyott távollétei a következő {days} napra. Név helyett a munkatárs beosztása látható.",
+      "empty": "Nincs jóváhagyott távollét a következő időszakban.",
+      "colParish": "{community.nom}",
+      "colPosition": "Beosztás",
+      "colPeriod": "Időszak",
+      "colReason": "Ok",
+      "away": "Távol"
+    },
+    "reports": {
+      "title": "Jelentések",
+      "lead": "{year}. évi összesítés {community.plural} szerint, csak a delegált ügyekről.",
+      "emptyTitle": "Nincs jelenthető adat",
+      "emptyBody": "Jelentés csak aktív kapcsolat és HR-jelentési jogosultság esetén készül.",
+      "colParish": "{community.nom}",
+      "colOpen": "Nyitott ügy",
+      "colOverdue": "Határidőn túl",
+      "colSla": "Határidőre megoldva",
+      "colMedian": "Medián megoldási idő",
+      "colDays": "Jóváhagyott távollét (munkanap)",
+      "slaMet": "{met} / {closed}",
+      "hours": "{count} óra",
+      "note": "A havi bérszámfejtési CSV és a szabadságegyenlegek a sablonokkal együtt egy későbbi lépésben érkeznek."
+    },
+    "placeholder": {
+      "title": "Hamarosan",
+      "orgTemplates": "A HR-kategóriasablonok verziózott kezelése egy későbbi fejlesztési lépésben érkezik.",
+      "orgMembers": "A portál munkatársainak és hatókörüknek kezelése egy későbbi fejlesztési lépésben érkezik."
+    }
+  }
+}

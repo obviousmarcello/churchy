@@ -1,0 +1,32 @@
+{
+  "name": "@churchy/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./register": "./src/register.ts",
+    "./schema": "./src/schema/index.ts",
+    "./seed": "./src/seed/index.ts"
+  },
+  "scripts": {
+    "db": "tsx src/cli.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:check": "drizzle-kit check",
+    "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
+    "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
+    "test:isolation": "REQUIRE_TEST_DATABASE=1 TZ=Europe/Budapest vitest run src/isolation.db.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@churchy/contracts": "workspace:*",
+    "drizzle-orm": "0.45.4",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@churchy/data-mock": "workspace:*",
+    "@types/pg": "8.23.1",
+    "drizzle-kit": "0.31.11",
+    "tsx": "4.23.15"
+  }
+}

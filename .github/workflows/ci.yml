@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TZ: Europe/Budapest
+
+jobs:
+  checks:
+    name: Lint, typecheck, unit & contract tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm test:coverage
+      - run: pnpm test:contract
+
+  database:
+    name: Database migrations, schema checks, seed & DB contract suites
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        # Same major version as Supabase (SDD §3); the official image is built with ICU.
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: churchy_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s
+          --health-retries 10
+    env:
+      # Disposable CI database only — never a Supabase project.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/churchy_ci
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/churchy_ci
+      # The tenant isolation suite (D-03) fails instead of skipping when the database is missing.
+      REQUIRE_TEST_DATABASE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Migrations are generated from the current schema (no drift)
+        run: |
+          pnpm --filter @churchy/db db:generate
+          pnpm --filter @churchy/db db:check
+          git diff --exit-code -- packages/db/migrations
+          test -z "$(git status --porcelain -- packages/db/migrations)"
+      - name: Supabase auth stub (plain Postgres only)
+        run: pnpm --filter @churchy/db db auth-stub
+      # Runs on every PR. Includes the tenant isolation suite (`pnpm test:isolation`, D-03):
+      # RLS catalog check + cross-tenant SELECT/INSERT/UPDATE/DELETE on every tenant table.
+      - name: Integration tests (migrations, schema checks, seed, RLS & tenant isolation suite)
+        run: pnpm --filter @churchy/db test:coverage
+      # D-90 [BE]: every contract suite of a module with a DB adapter (`DB_MODULES`) runs against
+      # this Postgres as `churchy_app` (RLS on), next to the mock and reference adapters. With
+      # REQUIRE_TEST_DATABASE=1 a missing database fails instead of skipping; any failure fails CI.
+      - name: Contract suites against Postgres (DB adapter) and the mock
+        run: pnpm test:contract
+      - name: Migrate and seed via the CLI
+        run: |
+          pnpm --filter @churchy/db db up
+          pnpm --filter @churchy/db db seed
+          pnpm --filter @churchy/db db status
+
+  e2e:
+    name: Build & E2E smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter @churchy/web exec playwright install --with-deps chromium
+      - run: pnpm e2e --trace off
+
+  audit:
+    name: Dependency scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --audit-level high --prod
