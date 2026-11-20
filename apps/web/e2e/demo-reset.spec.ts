@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { PERSONAS, switchPersona, type PersonaKey } from "./demo-helpers";
+import { PERSONAS, resetDemoData, switchPersona, type PersonaKey } from "./demo-helpers";
 
 /**
  * D-92 *Visszaállítás*: restores the seed data of the visitor's demo session from any persona.
@@ -21,7 +21,7 @@ async function submitSample(page: Page, expectedRows: number): Promise<string> {
 }
 
 async function reset(page: Page) {
-  await page.getByTestId("demo-reset").click();
+  await resetDemoData(page);
   await expect(page.getByTestId("demo-reset-status")).toHaveText(
     "A bemutató adatai visszaálltak az eredeti állapotra.",
   );

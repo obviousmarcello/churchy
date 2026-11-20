@@ -28,7 +28,7 @@
   --c-accent-soft: color-mix(in oklab, var(--c-accent) 24%, var(--c-surface-raised));
 
   /* Lines */
-  --c-border: #e6d7bf; /* decorative hairlines */
+  --c-border: #ecdfca; /* decorative hairlines (cards, dividers) */
   --c-border-strong: #85705a; /* control borders: 3:1 against surfaces */
   --c-focus: #1b4f9c;
 
@@ -55,13 +55,15 @@
   --font-body:
     "Nunito Sans", "Nunito Sans Fallback", system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
-  --fw-heading: 800;
+  --fw-heading: 700;
   --heading-tracking: 0;
 
   /* Shape */
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 28px;
-  --shadow-card: 0 2px 4px rgb(90 60 20 / 0.06), 0 10px 24px rgb(90 60 20 / 0.09);
-  --shadow-raised: 0 4px 8px rgb(90 60 20 / 0.08), 0 20px 44px rgb(90 60 20 / 0.2);
+  --shadow-xs: 0 1px 2px rgb(90 60 20 / 0.06);
+  --shadow-card: 0 1px 3px rgb(90 60 20 / 0.05), 0 4px 14px rgb(90 60 20 / 0.06);
+  --shadow-raised: 0 3px 8px rgb(90 60 20 / 0.07), 0 16px 36px rgb(90 60 20 / 0.12);
+  --shadow-overlay: 0 8px 24px rgb(90 60 20 / 0.12), 0 32px 64px rgb(90 60 20 / 0.2);
 }

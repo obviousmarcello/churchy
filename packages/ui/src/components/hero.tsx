@@ -75,11 +75,9 @@ export function Hero({
         <Container className="flex min-h-[26rem] flex-col justify-end py-10 sm:min-h-[30rem] sm:py-14 lg:min-h-[34rem] lg:py-20">
           <div className="max-w-2xl text-white">
             {eyebrow ? (
-              <p className="mb-3 text-fs-1 font-bold tracking-[0.16em] text-inverse-accent uppercase">
-                {eyebrow}
-              </p>
+              <p className="mb-3 text-fs-2 font-semibold text-inverse-accent">{eyebrow}</p>
             ) : null}
-            <Heading className="font-heading text-fs-7 leading-[1.02] font-bold text-balance">
+            <Heading className="font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-balance">
               {title}
             </Heading>
             {lead ? (
@@ -98,11 +96,9 @@ export function Hero({
         <Container className="grid items-center gap-8 py-8 md:grid-cols-2 md:gap-12 lg:py-14">
           <div className="order-2 md:order-1">
             {eyebrow ? (
-              <p className="mb-3 text-fs-1 font-bold tracking-[0.16em] text-accent-text uppercase">
-                {eyebrow}
-              </p>
+              <p className="mb-3 text-fs-2 font-semibold text-accent-text">{eyebrow}</p>
             ) : null}
-            <Heading className="font-heading text-fs-7 leading-[1.02] font-bold text-primary">
+            <Heading className="font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-primary">
               {title}
             </Heading>
             <Ornament className="mt-5" />
@@ -128,11 +124,9 @@ export function Hero({
       <Container className={cn("flex flex-col items-center py-14 text-center lg:py-20")}>
         <Ornament className="mb-6" />
         {eyebrow ? (
-          <p className="mb-3 text-fs-1 font-bold tracking-[0.16em] text-accent-text uppercase">
-            {eyebrow}
-          </p>
+          <p className="mb-3 text-fs-2 font-semibold text-accent-text">{eyebrow}</p>
         ) : null}
-        <Heading className="max-w-[18ch] font-heading text-fs-7 leading-[1.02] font-bold text-primary">
+        <Heading className="max-w-[18ch] font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-primary">
           {title}
         </Heading>
         {lead ? <p className="mt-5 max-w-[52ch] text-fs-4 leading-snug text-text">{lead}</p> : null}

@@ -5,10 +5,10 @@ import { DangerIcon, InfoIcon, SuccessIcon, WarningIcon } from "../icons";
 export type AlertTone = "info" | "success" | "warning" | "danger";
 
 const tones: Record<AlertTone, { box: string; icon: typeof InfoIcon }> = {
-  info: { box: "border-info bg-info-soft text-info", icon: InfoIcon },
-  success: { box: "border-success bg-success-soft text-success", icon: SuccessIcon },
-  warning: { box: "border-warning bg-warning-soft text-warning", icon: WarningIcon },
-  danger: { box: "border-danger bg-danger-soft text-danger", icon: DangerIcon },
+  info: { box: "border-info/35 bg-info-soft text-info", icon: InfoIcon },
+  success: { box: "border-success/35 bg-success-soft text-success", icon: SuccessIcon },
+  warning: { box: "border-warning/35 bg-warning-soft text-warning", icon: WarningIcon },
+  danger: { box: "border-danger/35 bg-danger-soft text-danger", icon: DangerIcon },
 };
 
 export interface AlertProps {
@@ -47,7 +47,7 @@ export function Alert({
       role={role}
       data-testid={testId}
       className={cn(
-        "flex items-start gap-3 border-2 px-4 py-3 text-fs-3",
+        "flex flex-wrap items-start gap-x-3 gap-y-2 border px-4 py-3 text-fs-3 sm:flex-nowrap",
         variant === "inline"
           ? "rounded-md"
           : "justify-center rounded-none border-x-0 border-t-0 px-(--gutter) py-3",
@@ -55,12 +55,12 @@ export function Alert({
         className,
       )}
     >
-      <Icon className="mt-0.5 size-6 shrink-0" />
-      <div className="min-w-0 flex-1 text-text">
-        {title ? <p className="font-bold text-current">{title}</p> : null}
+      <Icon className="mt-0.5 size-5 shrink-0" />
+      <div className="min-w-0 flex-1 basis-48 text-text">
+        {title ? <p className="font-semibold text-current">{title}</p> : null}
         {children ? <div className={cn(title && "mt-0.5")}>{children}</div> : null}
       </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
+      {action ? <div className="shrink-0 max-sm:pl-8">{action}</div> : null}
     </div>
   );
 }

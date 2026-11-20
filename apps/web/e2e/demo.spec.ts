@@ -6,8 +6,13 @@ import {
   axeSeriousOrCritical,
   banner,
   contextSwitcher,
+  currentContext,
+  currentPersona,
+  demoMenu,
+  openDemoMenu,
   optionName,
   personaSwitcher,
+  resetDemoData,
   switchContext,
   switchPersona,
   type PersonaKey,
@@ -121,14 +126,14 @@ test.describe("demo role switcher", () => {
   test("the banner, the persona and the church are shown on the first visit", async ({ page }) => {
     await page.goto("/");
     await expect(banner(page)).toContainText(BANNER_TEXT);
-    await expect(personaSwitcher(page).locator("summary")).toContainText(PERSONAS.latogato);
-    await expect(contextSwitcher(page).locator("summary")).toContainText(CHURCHES.catholic);
+    await expect(currentPersona(page)).toHaveText(PERSONAS.latogato);
+    await expect(currentContext(page)).toHaveText(CHURCHES.catholic);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   });
 
   test("has at least 10 personas", async ({ page }) => {
     await page.goto("/");
-    await personaSwitcher(page).locator("summary").click();
+    await openDemoMenu(page);
     const buttons = personaSwitcher(page).getByRole("button");
     await expect(buttons).toHaveCount(Object.keys(PERSONAS).length);
     expect(await buttons.count()).toBeGreaterThanOrEqual(10);
@@ -150,12 +155,12 @@ test.describe("demo role switcher", () => {
     ).toBeVisible();
     // Switching to the diocese takes the diocesan persona; back to a church takes the visitor.
     expect(await switchContext(page, CHURCHES.diocese)).toBeLessThanOrEqual(2);
-    await expect(personaSwitcher(page).locator("summary")).toContainText(PERSONAS.egyhazmegyeiHr);
+    await expect(currentPersona(page)).toHaveText(PERSONAS.egyhazmegyeiHr);
     expect(await switchContext(page, CHURCHES.catholic)).toBeLessThanOrEqual(2);
-    await expect(personaSwitcher(page).locator("summary")).toContainText(PERSONAS.latogato);
+    await expect(currentPersona(page)).toHaveText(PERSONAS.latogato);
     // Picking the diocesan persona moves to the diocese.
     expect(await switchPersona(page, "egyhazmegyeiHr")).toBeLessThanOrEqual(2);
-    await expect(contextSwitcher(page).locator("summary")).toContainText(CHURCHES.diocese);
+    await expect(currentContext(page)).toHaveText(CHURCHES.diocese);
   });
 
   test("the selection survives navigation and reloads", async ({ page }) => {
@@ -164,8 +169,8 @@ test.describe("demo role switcher", () => {
     await switchContext(page, CHURCHES.reformed);
     await page.goto("/admin");
     await page.reload();
-    await expect(personaSwitcher(page).locator("summary")).toContainText(PERSONAS.iroda);
-    await expect(contextSwitcher(page).locator("summary")).toContainText(CHURCHES.reformed);
+    await expect(currentPersona(page)).toHaveText(PERSONAS.iroda);
+    await expect(currentContext(page)).toHaveText(CHURCHES.reformed);
     await expect(page.locator('[data-section="announcements"]')).toBeVisible();
   });
 
@@ -197,17 +202,13 @@ test.describe("demo bar accessibility", () => {
     await page.goto("/");
     expect(await axeSeriousOrCritical(page)).toEqual([]);
 
-    await personaSwitcher(page).locator("summary").click();
+    // The open menu shows both switchers and the reset button at once.
+    await openDemoMenu(page);
     await expect(personaSwitcher(page).getByRole("button").first()).toBeVisible();
-    expect(await axeSeriousOrCritical(page)).toEqual([]);
-    await personaSwitcher(page).locator("summary").click();
-
-    await contextSwitcher(page).locator("summary").click();
     await expect(contextSwitcher(page).getByRole("button").first()).toBeVisible();
     expect(await axeSeriousOrCritical(page)).toEqual([]);
-    await contextSwitcher(page).locator("summary").click();
 
-    await page.getByTestId("demo-reset").click();
+    await resetDemoData(page);
     await expect(page.getByTestId("demo-reset-status")).toContainText("visszaálltak");
     // The refresh after a reset briefly drops <title>; wait for it before running axe.
     await expect(page).toHaveTitle(/.+/);
@@ -222,15 +223,21 @@ test.describe("demo bar accessibility", () => {
     page,
   }) => {
     await page.goto("/");
-    const summary = personaSwitcher(page).locator("summary");
+    const summary = demoMenu(page).locator("summary");
     await summary.focus();
     await page.keyboard.press("Enter");
-    await expect(personaSwitcher(page)).toHaveAttribute("open", "");
+    await expect(demoMenu(page)).toHaveAttribute("open", "");
     const current = personaSwitcher(page).locator('[aria-current="true"]');
     await expect(current).toHaveAccessibleName(/Látogató \(jelenlegi\)/);
+    // Escape closes the menu and returns focus to its button.
+    await page.keyboard.press("Escape");
+    await expect(demoMenu(page)).not.toHaveAttribute("open");
+    await expect(summary).toBeFocused();
+    await page.keyboard.press("Enter");
     await personaSwitcher(page).getByRole("button", { name: PERSONAS.szerkeszto }).focus();
     await page.keyboard.press("Enter");
-    await expect(summary).toContainText(PERSONAS.szerkeszto);
+    await expect(currentPersona(page)).toHaveText(PERSONAS.szerkeszto);
+    await expect(summary).toBeFocused();
   });
 
   test("the bar does not scroll horizontally at 360 px, closed or open", async ({ page }) => {
@@ -241,7 +248,23 @@ test.describe("demo bar accessibility", () => {
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       );
     expect(await overflow()).toBeLessThanOrEqual(0);
-    await personaSwitcher(page).locator("summary").click();
+    await openDemoMenu(page);
     expect(await overflow()).toBeLessThanOrEqual(0);
+  });
+
+  test("the bar is one thin line: ≤ 40 px from 1024 px, ≤ 44 px on phones", async ({ page }) => {
+    for (const [width, max] of [
+      [360, 44],
+      [768, 44],
+      [1024, 40],
+      [1440, 40],
+    ] as const) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto("/");
+      const box = await banner(page).boundingBox();
+      expect(box!.height, `${width}px`).toBeLessThanOrEqual(max);
+      await expect(banner(page)).toContainText(BANNER_TEXT);
+      await expect(banner(page).getByText(BANNER_TEXT)).toBeVisible();
+    }
   });
 });

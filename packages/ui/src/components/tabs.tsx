@@ -3,11 +3,16 @@
 import * as RadixTabs from "@radix-ui/react-tabs";
 import type { ReactNode } from "react";
 import { cn } from "../cn";
+import { tabListClass, tabTriggerClass, TabLabel } from "./tab-styles";
 
 export interface TabItem {
   value: string;
   label: string;
   content: ReactNode;
+  /** Decorative icon before the label. */
+  icon?: ReactNode;
+  /** Count shown after the label (e.g. open requests). Part of the accessible name. */
+  count?: number;
 }
 
 export interface TabsProps {
@@ -29,26 +34,22 @@ export function Tabs({ label, tabs, defaultValue, value, onValueChange, classNam
       onValueChange={onValueChange}
       className={cn("min-w-0", className)}
     >
-      <RadixTabs.List
-        aria-label={label}
-        className="flex gap-1 overflow-x-auto border-b-2 border-border"
-      >
+      <RadixTabs.List aria-label={label} className={tabListClass}>
         {tabs.map((tab) => (
           <RadixTabs.Trigger
             key={tab.value}
             value={tab.value}
             className={cn(
-              "-mb-0.5 min-h-(--control-h-md) shrink-0 cursor-pointer border-b-[3px] border-transparent px-5",
-              "text-fs-3 font-semibold text-muted transition-colors duration-(--duration)",
-              "hover:text-primary data-[state=active]:border-primary data-[state=active]:text-primary",
+              tabTriggerClass,
+              "data-[state=active]:border-primary data-[state=active]:text-text",
             )}
           >
-            {tab.label}
+            <TabLabel label={tab.label} icon={tab.icon} count={tab.count} />
           </RadixTabs.Trigger>
         ))}
       </RadixTabs.List>
       {tabs.map((tab) => (
-        <RadixTabs.Content key={tab.value} value={tab.value} className="pt-5">
+        <RadixTabs.Content key={tab.value} value={tab.value} className="pt-6">
           {tab.content}
         </RadixTabs.Content>
       ))}

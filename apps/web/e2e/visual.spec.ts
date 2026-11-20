@@ -65,6 +65,34 @@ for (const width of WIDTHS) {
       await expect(cards).toHaveScreenshot(`cards-${width}.png`);
     });
 
+    test("demo bar", async ({ page }) => {
+      await expect(page.getByTestId("demo-banner")).toHaveScreenshot(`demo-bar-${width}.png`);
+    });
+
+    test("buttons", async ({ page }) => {
+      const buttons = page.getByTestId("showcase-icon-buttons");
+      await buttons.scrollIntoViewIfNeeded();
+      await expect(buttons).toHaveScreenshot(`buttons-${width}.png`);
+    });
+
+    test("card variants", async ({ page }) => {
+      const cards = page.getByTestId("showcase-card-variants");
+      await cards.scrollIntoViewIfNeeded();
+      await expect(cards).toHaveScreenshot(`card-variants-${width}.png`);
+    });
+
+    test("table", async ({ page }) => {
+      const table = page.getByTestId("showcase-table");
+      await table.scrollIntoViewIfNeeded();
+      await expect(table).toHaveScreenshot(`table-${width}.png`);
+    });
+
+    test("page header", async ({ page }) => {
+      const header = page.getByTestId("showcase-page-header");
+      await header.scrollIntoViewIfNeeded();
+      await expect(header).toHaveScreenshot(`page-header-${width}.png`);
+    });
+
     test("footer", async ({ page }) => {
       const footer = page.getByRole("contentinfo");
       await footer.scrollIntoViewIfNeeded();

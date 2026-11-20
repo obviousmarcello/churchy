@@ -187,6 +187,13 @@ describe.each(THEME_IDS)("%s stylesheet stays in sync with the registry", (theme
     for (let i = 1; i <= 7; i += 1) expect(tokens[`--fs-${i}`], `--fs-${i}`).toBeDefined();
     for (let i = 1; i <= 12; i += 1) expect(tokens[`--space-${i}`], `--space-${i}`).toBeDefined();
     expect(tokens["--fs-3"]).toBe("1.0625rem"); // 17 px base
+    expect(tokens["--fs-8"], "--fs-8 (hero display)").toBeDefined();
+    for (const role of ["page-title", "section-title", "card-title", "body", "caption"]) {
+      expect(tokens[`--fs-${role}`], role).toBeDefined();
+    }
+    for (const name of ["--c-divider", "--c-hover", "--c-selected", "--demo-bar-h"]) {
+      expect(tokens[name], name).toBeDefined();
+    }
     for (const name of [
       "--c-primary",
       "--c-primary-contrast",
@@ -198,7 +205,15 @@ describe.each(THEME_IDS)("%s stylesheet stays in sync with the registry", (theme
     ]) {
       expect(klasszikus[name], name).toBeDefined();
     }
-    for (const name of ["--radius-sm", "--radius-md", "--radius-lg", "--shadow-card"]) {
+    for (const name of [
+      "--radius-sm",
+      "--radius-md",
+      "--radius-lg",
+      "--shadow-xs",
+      "--shadow-card",
+      "--shadow-raised",
+      "--shadow-overlay",
+    ]) {
       expect(klasszikus[name], name).toBeDefined();
     }
   });
@@ -259,7 +274,13 @@ describe("shared stylesheet", () => {
     ] as const) {
       expect(contrastRatio(admin[fg]!, admin[bg]!), `${fg} on ${bg}`).toBeGreaterThanOrEqual(7);
     }
-    expect(contrastRatio(admin["--c-border"]!, admin["--c-surface"]!)).toBeGreaterThanOrEqual(3);
+    // Control borders reach 3:1 (WCAG 1.4.11); --c-border is a decorative hairline only.
+    expect(
+      contrastRatio(admin["--c-border-strong"]!, admin["--c-surface"]!),
+    ).toBeGreaterThanOrEqual(3);
+    expect(
+      contrastRatio(admin["--c-border-strong"]!, admin["--c-surface-sunken"]!),
+    ).toBeGreaterThanOrEqual(3);
   });
 
   it("ships latin and latin-ext faces with font-display: swap", () => {

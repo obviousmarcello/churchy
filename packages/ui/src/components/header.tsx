@@ -145,7 +145,7 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
             setSubOpen(null);
             setOpen((value) => !value);
           }}
-          className="ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-md border-2 border-border-strong text-primary hover:bg-primary-soft lg:hidden"
+          className="ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-md border border-border text-primary hover:bg-primary-soft lg:hidden"
         >
           {open ? <CloseIcon className="size-6" /> : <MenuIcon className="size-6" />}
         </button>
