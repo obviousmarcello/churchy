@@ -2,18 +2,22 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import {
+  Avatar,
+  EmptyState,
   ObfuscatedEmail,
   PageShell,
   PersonName,
   Phone,
   SectionHeading,
+  UsersIcon,
   encodeEmail,
 } from "@churchy/ui";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { groupStaff } from "@/lib/pages/public-pages";
 import { TERM_ROUTE_HEADER, termRoutePath } from "@/lib/term-routes";
 import { getPublicSite, listPublicStaff } from "@/server/public-pages";
+import { PublicPageHeader } from "@/components/public/public-page-header";
 
 /**
  * *Munkatársaink* (FR-009, SDD §7.5, D-16): the people a church marked public, grouped as clergy,
@@ -46,16 +50,16 @@ export default async function StaffPage() {
   const path = termRoutePath(t, "staffSection");
 
   return (
-    <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader currentHref={path} />}>
+    <PageShell
+      skipLinkLabel={common("skipToContent")}
+      header={<PublicSiteHeader currentHref={path} />}
+    >
       <div className="mx-auto flex w-full max-w-(--content-max) flex-col gap-12 px-(--gutter) py-10">
-        <header className="flex max-w-prose flex-col gap-3">
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
-            {t("title")}
-          </h1>
-          <p className="text-fs-4 text-muted">{t("lead")}</p>
-        </header>
+        <PublicPageHeader title={t("title")} lead={t("lead")} />
 
-        {groups.length === 0 ? <p className="text-fs-4">{t("empty")}</p> : null}
+        {groups.length === 0 ? (
+          <EmptyState icon={<UsersIcon />} title={t("empty")} data-testid="staff-empty" />
+        ) : null}
 
         {groups.map(({ group, people }) => (
           <section
@@ -65,30 +69,37 @@ export default async function StaffPage() {
             data-testid={`staff-group-${group}`}
           >
             <SectionHeading id={`staff-${group}`} title={t(`groups.${group}`)} />
-            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {people.map((person) => (
                 <li
                   key={person.id}
-                  className="flex flex-col gap-3 rounded-md border-2 border-border bg-surface-raised p-5"
+                  className="flex flex-col gap-3 rounded-card border border-hairline bg-surface-raised p-5 shadow-xs"
                   data-testid="staff-person"
                 >
-                  <div className="flex flex-col gap-1">
-                    <h3 className="font-heading text-fs-5 leading-tight font-bold">
-                      <PersonName
-                        name={{
-                          familyName: person.familyName,
-                          givenName: person.givenName,
-                          prefix: person.prefix ?? undefined,
-                          suffix: person.suffix ?? undefined,
-                        }}
-                        data-testid="staff-name"
-                      />
-                    </h3>
-                    {person.roleTitle ? (
-                      <p className="text-fs-3 text-muted" data-testid="staff-role">
-                        {person.roleTitle}
-                      </p>
-                    ) : null}
+                  <div className="flex items-start gap-4">
+                    <Avatar
+                      initials={`${person.familyName.charAt(0)}${person.givenName.charAt(0)}`}
+                      size="lg"
+                      shape="circle"
+                    />
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <h3 className="font-heading text-card-title [font-weight:var(--fw-heading-sm,var(--fw-heading))]">
+                        <PersonName
+                          name={{
+                            familyName: person.familyName,
+                            givenName: person.givenName,
+                            prefix: person.prefix ?? undefined,
+                            suffix: person.suffix ?? undefined,
+                          }}
+                          data-testid="staff-name"
+                        />
+                      </h3>
+                      {person.roleTitle ? (
+                        <p className="text-fs-3 text-muted" data-testid="staff-role">
+                          {person.roleTitle}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
                   {person.email || person.phone ? (
                     <dl className="grid gap-1 text-fs-3">

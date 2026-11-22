@@ -118,7 +118,11 @@
       "eventsEmpty": "A következő időszakra nincs meghirdetett esemény.",
       "mapTitle": "Hol talál meg minket?",
       "mapAddressLabel": "Cím",
-      "quoteSource": "Forrás:"
+      "quoteSource": "Forrás:",
+      "moreServices": "és még {count} alkalom",
+      "changesMoreShort": "és még {count}",
+      "newsEmptyHint": "Amint új hír jelenik meg, itt találja.",
+      "eventsEmptyHint": "Nézzen vissza később, vagy böngésszen a naptárban."
     },
     "schedule": {
       "metaDescription": "Heti {serviceSchedule.lower} és általános {serviceSchedule.lower} helyszínenként, a változásokkal együtt.",
@@ -487,6 +491,13 @@
           "failed": "A bejelentést most nem sikerült elküldeni. Kérjük, próbálja újra később."
         }
       }
+    },
+    "chrome": {
+      "breadcrumbs": "Morzsamenü",
+      "home": "Főoldal",
+      "ctaCaption": "Szeretettel várjuk",
+      "ctaWhen": "{day} {time}",
+      "ctaFallback": "{serviceSchedule.nom}"
     }
   },
   "dev": {

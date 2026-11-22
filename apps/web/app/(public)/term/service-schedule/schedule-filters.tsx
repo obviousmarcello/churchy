@@ -102,7 +102,7 @@ export async function ScheduleFilters({
                     href={scheduleHref(basePath, { date: shownWeek, location: l?.slug })}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "inline-flex min-h-11 items-center rounded-full border-2 px-4 text-fs-2 font-semibold no-underline",
+                      "inline-flex min-h-11 items-center rounded-full border px-4 text-fs-2 font-semibold no-underline",
                       active
                         ? "border-primary bg-primary text-primary-contrast"
                         : "border-border-strong bg-surface-raised text-text hover:border-primary hover:text-primary",

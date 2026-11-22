@@ -166,7 +166,7 @@ export function OpeningHours({
               return (
                 <li
                   key={`${e.from}-${e.to}`}
-                  className="rounded-md border-l-4 border-warning bg-warning-soft px-3 py-2"
+                  className="rounded-control border-l-4 border-warning bg-warning-soft px-3 py-2"
                 >
                   <span className="font-semibold">
                     {e.closed

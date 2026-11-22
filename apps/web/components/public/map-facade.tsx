@@ -33,7 +33,7 @@ export function MapFacade({ name, geo }: { name: string; geo: GeoPoint }) {
 
   return (
     <div
-      className="overflow-hidden rounded-md border-2 border-border bg-surface-sunken"
+      className="overflow-hidden rounded-card border border-hairline bg-surface-sunken"
       data-testid="map-facade"
     >
       <svg

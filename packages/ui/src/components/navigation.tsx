@@ -127,7 +127,13 @@ export interface PageHeaderProps {
   id?: string;
   /** Decorative icon in a tinted tile before the title (design v2), e.g. `<InboxIcon />`. */
   icon?: ReactNode;
+  /**
+   * `default` for admin / workspace; `public` for church sites: the title in the brand colour, a
+   * larger lead and no bottom margin (public pages space their sections with a gap).
+   */
+  variant?: "default" | "public";
   className?: string;
+  "data-testid"?: string;
 }
 
 /**
@@ -143,11 +149,19 @@ export function PageHeader({
   tabs,
   id,
   icon,
+  variant = "default",
   className,
+  "data-testid": testId,
 }: PageHeaderProps) {
+  const isPublic = variant === "public";
   return (
     <header
-      className={cn("grid grid-cols-[minmax(0,1fr)] gap-3", tabs ? "mb-6" : "mb-8", className)}
+      data-testid={testId}
+      className={cn(
+        "grid grid-cols-[minmax(0,1fr)] gap-3",
+        isPublic ? null : tabs ? "mb-6" : "mb-8",
+        className,
+      )}
     >
       {breadcrumbs}
       <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
@@ -156,11 +170,18 @@ export function PageHeader({
           <div className="grid max-w-(--measure) min-w-0 gap-2">
             <h1
               id={id}
-              className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-text"
+              className={cn(
+                "font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance",
+                isPublic ? "text-primary" : "text-text",
+              )}
             >
               {title}
             </h1>
-            {description ? <div className="text-fs-3 text-muted">{description}</div> : null}
+            {description ? (
+              <div className={cn("text-muted", isPublic ? "text-fs-4 leading-snug" : "text-fs-3")}>
+                {description}
+              </div>
+            ) : null}
             {meta ? <div className="flex flex-wrap items-center gap-2">{meta}</div> : null}
           </div>
         </div>

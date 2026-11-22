@@ -6,7 +6,7 @@ import { RouteLinks } from "@/components/public/location-access";
 import { LocationList } from "@/components/public/location-list";
 import { MapFacade } from "@/components/public/map-facade";
 import { OpeningHours } from "@/components/public/opening-hours";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { jsonLdScript, toHuAddress } from "@/lib/locations";
 import { CONTACT_PATH } from "@/lib/seo";
@@ -14,6 +14,7 @@ import { getChurchJsonLd } from "@/server/public-seo";
 import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 import { sendContactMessage } from "./actions";
+import { PublicPageHeader } from "@/components/public/public-page-header";
 
 /** Privacy notice (SDD §6 legal pages). */
 const PRIVACY_PATH = "/adatkezeles";
@@ -48,7 +49,7 @@ export default async function ContactPage() {
   const mapped = locations.find((l): l is Location & { geo: GeoPoint } => l.geo !== null);
 
   return (
-    <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader />}>
+    <PageShell skipLinkLabel={common("skipToContent")} header={<PublicSiteHeader />}>
       {churchJsonLd ? (
         <script
           type="application/ld+json"
@@ -57,12 +58,7 @@ export default async function ContactPage() {
         />
       ) : null}
       <div className="mx-auto grid w-full max-w-(--content-max) gap-12 px-(--gutter) py-10">
-        <header className="grid gap-3">
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
-            {t("title")}
-          </h1>
-          <p className="max-w-prose text-fs-4 text-muted">{t("lead")}</p>
-        </header>
+        <PublicPageHeader title={t("title")} lead={t("lead")} />
 
         <div className="grid gap-12 lg:grid-cols-2">
           <section aria-labelledby="contact-details" className="grid content-start gap-4">

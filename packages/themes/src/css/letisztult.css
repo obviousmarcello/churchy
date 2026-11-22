@@ -77,4 +77,18 @@
   --shadow-card: 0 1px 2px rgb(28 27 26 / 0.04), 0 10px 28px -12px rgb(28 27 26 / 0.12);
   --shadow-raised: 0 2px 6px rgb(28 27 26 / 0.04), 0 22px 48px -16px rgb(28 27 26 / 0.18);
   --shadow-overlay: 0 12px 32px -8px rgb(28 27 26 / 0.14), 0 44px 88px -24px rgb(28 27 26 / 0.28);
+  /* Home hero without a photo (UI-02): warm white with a quiet vertical rhythm (organ pipes). */
+  --hero-bg: var(--c-surface-sunken);
+  --hero-fg: var(--c-primary);
+  --hero-ornament: var(--c-primary);
+  --hero-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='8'%3E%3Cpath d='M.5 0v8' stroke='%23000'/%3E%3C/svg%3E");
+  --hero-pattern-size: 18px 8px;
+  --hero-pattern-position: right top;
+  --hero-pattern-repeat: repeat;
+  --hero-pattern-opacity: 0.16;
+  --ornament-display: none;
+  --hero-action-bg: var(--c-primary);
+  --hero-action-fg: var(--c-primary-contrast);
+  --hero-action-hover: var(--c-primary-hover);
+  --hero-action-soft: var(--c-primary-soft);
 }

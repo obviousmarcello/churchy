@@ -1,5 +1,12 @@
 import type { Location, ScheduleData } from "@churchy/contracts";
-import { todayInBudapest } from "@churchy/hu";
+import {
+  daysBetween,
+  formatMonthDay,
+  formatRelativeDay,
+  formatTime,
+  todayInBudapest,
+  weekdayName,
+} from "@churchy/hu";
 import {
   nextServices,
   upcomingExceptions,
@@ -18,8 +25,16 @@ import { scheduleInput } from "@/lib/service-schedule/view";
 
 /** Days ahead the block looks for exceptions to highlight. */
 export const EXCEPTION_DAYS = 14;
-/** Most exception lines the block shows (the schedule page lists them all). */
-export const EXCEPTION_LINES = 3;
+/**
+ * Most exception lines the block shows (the schedule page lists them all). Two, plus an
+ * *és még N* line, keep the block within one phone screen below the hero on any date (UI-02).
+ */
+export const EXCEPTION_LINES = 2;
+/**
+ * Most service rows the block shows. A Saturday evening at a parish with five Sunday masses would
+ * otherwise list seven rows; the rest is summed up as *és még N alkalom* with the schedule link.
+ */
+export const SERVICE_ROWS = 5;
 
 export interface DayGroup {
   /** `YYYY-MM-DD` (Europe/Budapest). */
@@ -38,8 +53,12 @@ export interface ExceptionLine {
 export interface NextServicesView {
   /** Budapest date of `now`. */
   today: string;
-  /** The services to show, grouped by day, in order. */
+  /** The services to show (at most {@link SERVICE_ROWS}), grouped by day, in order. */
   days: DayGroup[];
+  /** How many more services the engine selected than are shown. */
+  moreServices: number;
+  /** The next service that has not started yet (the header's call to action), or null. */
+  next: NextService | null;
   /** Upcoming exceptions within {@link EXCEPTION_DAYS} days, at most {@link EXCEPTION_LINES}. */
   exceptions: ExceptionLine[];
   /** How many more exception lines exist than are shown. */
@@ -79,9 +98,30 @@ export function buildNextServices(
   const lines = exceptionLines(upcomingExceptions(input, instant, EXCEPTION_DAYS));
   return {
     today: todayInBudapest(now),
-    days: groupByDate(services),
+    days: groupByDate(services.slice(0, SERVICE_ROWS)),
+    moreServices: Math.max(0, services.length - SERVICE_ROWS),
+    next: services.find((s) => !s.inProgress && s.status !== "cancelled") ?? null,
     exceptions: lines.slice(0, EXCEPTION_LINES),
     moreExceptions: Math.max(0, lines.length - EXCEPTION_LINES),
     live: services.find((s) => s.inProgress) ?? null,
   };
+}
+
+/**
+ * When a service is, short and lower-case, for running text and the header's call to action:
+ * `ma`, `holnap`, the weekday within the coming week (`vasárnap`), else the date (`nov. 30.`);
+ * plus the time (`10:00`). Relative to `now` in Budapest time.
+ */
+export function serviceWhen(
+  service: { date: string; time: string },
+  now: Date,
+): { day: string; time: string } {
+  const diff = daysBetween(now, service.date);
+  const day =
+    diff <= 1
+      ? formatRelativeDay(service.date, now, { lowercase: true })
+      : diff < 7
+        ? weekdayName(service.date)
+        : formatMonthDay(service.date);
+  return { day, time: formatTime(service.time) };
 }

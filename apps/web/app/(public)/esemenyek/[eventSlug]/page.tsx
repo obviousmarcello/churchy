@@ -17,7 +17,7 @@ import {
   occurrenceHref,
   recurrenceText,
 } from "@/components/events/event-parts";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { eventJsonLd, jsonLdScript } from "@/lib/events/json-ld";
 import {
@@ -38,6 +38,7 @@ import {
   type PublicOccurrence,
 } from "@/server/public-events";
 import { requirePublicModule } from "@/server/plans";
+import { PublicBreadcrumbs } from "@/components/public/public-page-header";
 
 type Params = Promise<{ eventSlug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -131,7 +132,7 @@ export default async function EventDetailPage({
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref="/esemenyek" />}
+      header={<PublicSiteHeader currentHref="/esemenyek" />}
     >
       <script
         type="application/ld+json"
@@ -139,14 +140,12 @@ export default async function EventDetailPage({
         dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
       <article className="mx-auto flex w-full max-w-(--content-max) flex-col gap-8 px-(--gutter) py-10">
-        <p>
-          <a href="/esemenyek" className={`${LINK_CLASS} text-fs-2`}>
-            <span aria-hidden="true">← </span>
-            {t("back")}
-          </a>
-        </p>
+        <PublicBreadcrumbs
+          trail={[{ label: t("title"), href: "/esemenyek" }]}
+          current={event.title}
+        />
         <header className="flex flex-col gap-3">
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
+          <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
             {event.title}
           </h1>
           <OccurrenceBadges occ={selected} category={event.category} />
@@ -155,7 +154,7 @@ export default async function EventDetailPage({
         <div className="grid gap-6 md:grid-cols-2">
           <section
             aria-labelledby="event-when"
-            className="flex flex-col gap-2 rounded-lg border border-border bg-surface-raised p-5 shadow-card"
+            className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised p-5 shadow-card"
             data-testid="event-when"
           >
             <h2 id="event-when" className="font-heading text-fs-4 font-bold">
@@ -198,7 +197,7 @@ export default async function EventDetailPage({
           {location ? (
             <section
               aria-labelledby="event-where"
-              className="flex flex-col gap-2 rounded-lg border border-border bg-surface-raised p-5 shadow-card"
+              className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised p-5 shadow-card"
               data-testid="event-where"
             >
               <h2 id="event-where" className="font-heading text-fs-4 font-bold">

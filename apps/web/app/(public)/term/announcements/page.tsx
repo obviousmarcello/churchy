@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import type { Announcement } from "@churchy/contracts";
 import { Alert, PageShell } from "@churchy/ui";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import {
   ARCHIVE_PAGE_SIZE,
@@ -132,7 +132,7 @@ export default async function AnnouncementsPage({
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref={basePath} />}
+      header={<PublicSiteHeader currentHref={basePath} />}
     >
       <div
         data-print-page="announcements"

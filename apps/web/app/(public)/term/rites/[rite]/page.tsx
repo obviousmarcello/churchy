@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { PageShell, buttonClasses } from "@churchy/ui";
 import { PublicBlocks } from "@/components/pages/public-blocks";
 import { RiteContact } from "@/components/pages/rite-contact";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { hasCtaTo, ritePath, riteRequestPath, ritesPath } from "@/lib/pages/public-pages";
 import { TERM_ROUTE_HEADER } from "@/lib/term-routes";
 import { getPublicSite, getRitePage } from "@/server/public-pages";
+import { PublicBreadcrumbs } from "@/components/public/public-page-header";
 
 /**
  * A rite information page (FR-010, SDD §7.4, D-16), e.g. `/szentsegek/keresztelo` or
@@ -51,19 +52,17 @@ export default async function RitePage({ params }: { params: Params }) {
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref={sectionPath} />}
+      header={<PublicSiteHeader currentHref={sectionPath} />}
     >
       <article
         className="mx-auto flex w-full max-w-(--content-max) flex-col gap-8 px-(--gutter) py-10"
         data-testid="rite-page"
       >
-        <p>
-          <a href={sectionPath} className="text-fs-2 font-semibold text-primary underline">
-            <span aria-hidden="true">← </span>
-            {t("back")}
-          </a>
-        </p>
-        <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
+        <PublicBreadcrumbs
+          trail={[{ label: t("title"), href: sectionPath }]}
+          current={rite.forms.nom}
+        />
+        <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
           {rite.forms.nom}
         </h1>
         {blocks.length > 0 ? (

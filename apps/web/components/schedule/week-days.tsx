@@ -79,7 +79,7 @@ export function WeekDays({
             data-date={day.date}
             aria-current={isToday ? "date" : undefined}
             className={cn(
-              "rounded-md border border-border bg-surface-raised p-4 break-inside-avoid",
+              "rounded-card border border-hairline bg-surface-raised p-4 shadow-xs break-inside-avoid",
               "print:mb-2 print:rounded-none print:border-0 print:border-b print:bg-transparent print:p-0 print:pb-1",
               isToday && "border-l-4 border-l-primary",
             )}

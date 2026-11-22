@@ -12,7 +12,7 @@ import {
 import { monthName, todayInBudapest, weekdayName } from "@churchy/hu";
 import { FormattedDate, FormattedTime, PageShell, cn } from "@churchy/ui";
 import { EventsHeader, LINK_CLASS, occurrenceHref } from "@/components/events/event-parts";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { getPublicTenantName, publicOccurrences } from "@/server/public-events";
 import { requirePublicModule } from "@/server/plans";
@@ -65,7 +65,7 @@ export default async function EventsMonthPage({ searchParams }: { searchParams: 
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref="/esemenyek" />}
+      header={<PublicSiteHeader currentHref="/esemenyek" />}
     >
       <div className="mx-auto flex w-full max-w-(--content-max) flex-col gap-8 px-(--gutter) py-10">
         <EventsHeader view="month" />
@@ -120,7 +120,7 @@ export default async function EventsMonthPage({ searchParams }: { searchParams: 
             ))}
           </div>
           <ol
-            className="grid grid-cols-1 gap-2 md:grid-cols-7 md:gap-px md:overflow-hidden md:rounded-lg md:border md:border-border md:bg-border"
+            className="grid grid-cols-1 gap-2 md:grid-cols-7 md:gap-px md:overflow-hidden md:rounded-card md:border md:border-hairline md:bg-hairline"
             data-testid="month-grid"
           >
             {grid.weeks.flat().map((date, i) => {
@@ -142,7 +142,7 @@ export default async function EventsMonthPage({ searchParams }: { searchParams: 
                   data-date={date}
                   aria-current={isToday ? "date" : undefined}
                   className={cn(
-                    "flex min-h-24 flex-col gap-1 rounded-md border border-border bg-surface-raised p-2 md:rounded-none md:border-0",
+                    "flex min-h-24 flex-col gap-1 rounded-control border border-hairline bg-surface-raised p-2 md:rounded-none md:border-0",
                     items.length === 0 && "hidden md:flex",
                     isToday && "ring-2 ring-accent ring-inset",
                   )}

@@ -4,12 +4,13 @@ import { Address, PageShell, SectionHeading } from "@churchy/ui";
 import { AccessibilityInfo, RouteLinks } from "@/components/public/location-access";
 import { MapFacade } from "@/components/public/map-facade";
 import { OpeningHours } from "@/components/public/opening-hours";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { LOCATIONS_PATH, jsonLdScript, locationJsonLd, toHuAddress } from "@/lib/locations";
 import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 import { requirePublicModule } from "@/server/plans";
+import { PublicBreadcrumbs } from "@/components/public/public-page-header";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -50,7 +51,7 @@ export default async function LocationPage({ params }: Params) {
   if (location === null) notFound();
 
   return (
-    <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader />}>
+    <PageShell skipLinkLabel={common("skipToContent")} header={<PublicSiteHeader />}>
       <script
         type="application/ld+json"
         // Escaped JSON from our own data (no user HTML), see `jsonLdScript`.
@@ -60,13 +61,12 @@ export default async function LocationPage({ params }: Params) {
       />
       <div className="mx-auto grid w-full max-w-(--content-max) gap-10 px-(--gutter) py-10">
         <header className="grid gap-3">
-          <a href={LOCATIONS_PATH} className="text-fs-2 font-semibold text-primary underline">
-            {t("backToList")}
-          </a>
-          <p className="text-fs-2 font-semibold tracking-wide text-muted uppercase">
-            {t(`kind.${location.kind}`)}
-          </p>
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
+          <PublicBreadcrumbs
+            trail={[{ label: t("title"), href: LOCATIONS_PATH }]}
+            current={location.name}
+          />
+          <p className="text-fs-2 font-semibold text-accent-text">{t(`kind.${location.kind}`)}</p>
+          <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
             {location.name}
           </h1>
         </header>

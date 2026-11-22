@@ -6,6 +6,11 @@ import type { EffectiveConfig } from "@churchy/presets";
 import {
   Address,
   Alert,
+  ArrowRightIcon,
+  CalendarIcon,
+  EmptyState,
+  NewspaperIcon,
+  Stagger,
   ButtonLink,
   Card,
   FormattedDate,
@@ -80,7 +85,23 @@ export async function LiveBanner({ config }: { config: EffectiveConfig }) {
   );
 }
 
-/** Latest news cards (`settings.count`, default 3) with an *Összes hír* link and an empty state. */
+/** A quiet "see all" link with an arrow icon, for section headings. */
+function SeeAll({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <a
+      href={href}
+      className="inline-flex min-h-11 items-center gap-1.5 text-fs-3 font-semibold text-primary underline decoration-1 underline-offset-4 hover:decoration-2"
+    >
+      {children}
+      <ArrowRightIcon size="sm" />
+    </a>
+  );
+}
+
+/**
+ * Latest news (`settings.count`, default 3) as a calm list without boxes: date and category,
+ * title, lead; an *Összes hír* link and an empty state.
+ */
 export async function NewsSection({ section }: { section: HomeSection }) {
   const [t, result] = await Promise.all([getT("public.home"), listPublicNews(1)]);
   const posts = result.items.slice(0, sectionCount(section.settings, DEFAULT_COUNT.news));
@@ -89,17 +110,17 @@ export async function NewsSection({ section }: { section: HomeSection }) {
       <SectionHeading
         id="home-news"
         title={t("newsTitle")}
-        action={
-          <a href={NEWS_PATH} className="text-fs-3 font-semibold text-primary underline">
-            {t("newsAll")}
-            <span aria-hidden="true"> →</span>
-          </a>
-        }
+        action={<SeeAll href={NEWS_PATH}>{t("newsAll")}</SeeAll>}
       />
       {posts.length === 0 ? (
-        <p className="text-fs-3 text-muted">{t("newsEmpty")}</p>
+        <EmptyState
+          size="sm"
+          icon={<NewspaperIcon />}
+          title={t("newsEmpty")}
+          description={t("newsEmptyHint")}
+        />
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3">
+        <Stagger as="ul" className="grid gap-4">
           {posts.map((post) => (
             <Card
               key={post.id}
@@ -107,21 +128,17 @@ export async function NewsSection({ section }: { section: HomeSection }) {
               title={post.title}
               headingLevel={3}
               href={newsPath(post)}
-              {...(post.categories.length > 0 ? { eyebrow: post.categories.join(" · ") } : {})}
-              className="h-full"
+              {...(post.categories.length > 0 ? { eyebrow: post.categories.join(", ") } : {})}
             >
-              <div className="flex flex-col gap-2" data-testid="home-news-item">
+              <div className="flex flex-col gap-1" data-testid="home-news-item">
                 {post.publishedAt ? (
-                  <FormattedDate
-                    value={post.publishedAt}
-                    className="text-fs-2 font-semibold text-muted"
-                  />
+                  <FormattedDate value={post.publishedAt} className="text-fs-2 text-muted" />
                 ) : null}
-                {post.lead ? <p>{post.lead}</p> : null}
+                {post.lead ? <p className="line-clamp-2">{post.lead}</p> : null}
               </div>
             </Card>
           ))}
-        </ul>
+        </Stagger>
       )}
     </section>
   );
@@ -148,15 +165,15 @@ export async function EventsSection({ section }: { section: HomeSection }) {
       <SectionHeading
         id="home-events"
         title={t("eventsTitle")}
-        action={
-          <a href={EVENTS_CALENDAR_PATH} className="text-fs-3 font-semibold text-primary underline">
-            {t("eventsCalendar")}
-            <span aria-hidden="true"> →</span>
-          </a>
-        }
+        action={<SeeAll href={EVENTS_CALENDAR_PATH}>{t("eventsCalendar")}</SeeAll>}
       />
       {upcoming.length === 0 ? (
-        <p className="text-fs-3 text-muted">{t("eventsEmpty")}</p>
+        <EmptyState
+          size="sm"
+          icon={<CalendarIcon />}
+          title={t("eventsEmpty")}
+          description={t("eventsEmptyHint")}
+        />
       ) : (
         <ol className="flex flex-col gap-3">
           {upcoming.map((occ) => {
@@ -166,35 +183,35 @@ export async function EventsSection({ section }: { section: HomeSection }) {
                 key={`${occ.event.id}-${occ.start}`}
                 data-testid="home-event"
                 data-date={occ.date}
-                className="relative flex gap-4 rounded-lg border border-border bg-surface-raised p-3 shadow-card"
+                className="relative flex gap-4 rounded-card border border-hairline bg-surface-raised p-3 shadow-xs transition-[translate,box-shadow] duration-(--dur-3) ease-spring hover:translate-y-(--motion-lift) hover:shadow-raised has-[a:focus-visible]:translate-y-(--motion-lift)"
               >
                 <div
                   aria-hidden="true"
-                  className="flex w-14 shrink-0 flex-col items-center justify-center rounded-md bg-primary-soft py-1.5 text-primary"
+                  className="flex w-14 shrink-0 flex-col items-center justify-center rounded-tile bg-primary-soft py-2 text-primary"
                 >
-                  <span className="font-heading text-fs-5 leading-none font-bold">
+                  <span className="font-heading text-fs-5 leading-none [font-weight:var(--fw-heading)]">
                     {Number(occ.date.slice(8, 10))}
                   </span>
-                  <span className="text-fs-1 font-semibold">{weekdayName(occ.date)}</span>
+                  <span className="text-fs-1">{weekdayName(occ.date)}</span>
                 </div>
                 <div className="flex min-w-0 flex-col gap-0.5">
-                  <h3 className="font-heading text-fs-4 leading-tight font-bold">
+                  <h3 className="font-heading text-card-title [font-weight:var(--fw-heading-sm,var(--fw-heading))]">
                     <a
                       href={occurrenceHref(occ)}
-                      className="text-primary no-underline after:absolute after:inset-0 hover:underline"
+                      className="text-primary no-underline after:absolute after:inset-0 hover:underline hover:underline-offset-4"
                     >
                       {occ.event.title}
                     </a>
                   </h3>
-                  <p className="text-fs-3">
+                  <p className="text-fs-2 text-muted">
                     <FormattedDate value={occ.date} format="monthDay" />
                     {occ.allDay ? null : (
                       <>
-                        {" · "}
+                        {", "}
                         <FormattedTime value={occ.start} />
                       </>
                     )}
-                    {place ? <span className="text-muted">{` · ${place.name}`}</span> : null}
+                    {place ? `, ${place.name}` : null}
                   </p>
                   <OccurrenceBadges occ={occ} category={occ.event.category} />
                 </div>
@@ -236,7 +253,7 @@ export async function QuoteSection({ section }: { section: HomeSection }) {
   if (quote === null) return null;
   const t = await getT("public.home");
   return (
-    <figure className="rounded-lg border-l-[6px] border-accent bg-surface-sunken p-6">
+    <figure className="rounded-card bg-surface-tint p-6 sm:p-8">
       <blockquote className="font-heading text-fs-5 leading-snug text-primary italic">
         {quote.text}
       </blockquote>
@@ -257,7 +274,7 @@ export function CtaSection({ section }: { section: HomeSection }): ReactNode {
   return (
     <section
       aria-label={cta.title ?? cta.label}
-      className="flex flex-col items-start gap-3 rounded-lg bg-primary-soft p-6"
+      className="flex flex-col items-start gap-3 rounded-card bg-primary-soft p-6 sm:p-8"
     >
       {cta.title ? (
         <h2 className="font-heading text-fs-5 font-bold text-primary">{cta.title}</h2>

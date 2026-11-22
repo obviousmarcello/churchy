@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { formatDateLong } from "@churchy/hu";
 import { BankAccount, PageShell, SectionHeading } from "@churchy/ui";
 import { CopyButton } from "@/components/public/copy-button";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { qrSvg, supportDetails } from "@/lib/giving";
 import { TERM_ROUTE_HEADER, termRoutePath } from "@/lib/term-routes";
 import { getPublicSite } from "@/server/public-seo";
+import { PublicPageHeader } from "@/components/public/public-page-header";
 
 /**
  * Support / giving page (FR-015, SDD §7.5, D-17): the church's account number (8-8-8) with a copy
@@ -54,15 +55,10 @@ export default async function GivingPage() {
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref={termRoutePath(t, "givingSection")} />}
+      header={<PublicSiteHeader currentHref={termRoutePath(t, "givingSection")} />}
     >
       <div className="mx-auto grid w-full max-w-(--content-max) gap-12 px-(--gutter) py-10">
-        <header className="grid gap-3">
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
-            {t("title")}
-          </h1>
-          <p className="max-w-prose text-fs-4 text-muted">{t("lead")}</p>
-        </header>
+        <PublicPageHeader title={t("title")} lead={t("lead")} />
 
         {!hasTransfer && !hasSzja ? (
           <p className="text-fs-3" data-testid="giving-empty">
@@ -137,7 +133,7 @@ export default async function GivingPage() {
             {qr ? (
               <section
                 aria-labelledby="giving-qr"
-                className="grid content-start gap-4 self-start rounded-lg border border-border bg-surface-raised p-6"
+                className="grid content-start gap-4 self-start rounded-card border border-hairline bg-surface-raised p-6"
                 data-testid="giving-qr"
               >
                 <h2 id="giving-qr" className="font-heading text-fs-5 font-bold">

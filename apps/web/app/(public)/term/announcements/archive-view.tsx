@@ -28,7 +28,7 @@ export async function ArchiveView({
     <section aria-labelledby="archive-heading" data-testid="announcements-archive">
       <h1
         id="archive-heading"
-        className="font-heading text-fs-7 leading-[1.05] font-bold text-primary print:text-[20pt]"
+        className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary print:text-[20pt]"
       >
         {t("archiveTitle")}
       </h1>

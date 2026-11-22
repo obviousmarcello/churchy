@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { richTextPlain } from "@churchy/events";
-import { Card, FormattedDate, PageShell } from "@churchy/ui";
+import { ArrowLeftIcon, Card, FormattedDate, PageShell } from "@churchy/ui";
+import { PublicBreadcrumbs } from "@/components/public/public-page-header";
 import { LINK_CLASS } from "@/components/events/event-parts";
 import { NewsArticleBody } from "@/components/news/news-article";
 import { ShareLinks } from "@/components/news/share-links";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { jsonLdScript } from "@/lib/events/json-ld";
 import { NEWS_PATH, newsArticleJsonLd, newsOpenGraph, newsPath } from "@/lib/news/public-news";
@@ -59,34 +60,48 @@ export default async function NewsPostPage({ params }: { params: Params }) {
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref={NEWS_PATH} />}
+      header={<PublicSiteHeader currentHref={NEWS_PATH} />}
     >
       <script
         type="application/ld+json"
         // Built from public fields only and escaped by `jsonLdScript` (no user HTML).
         dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
-      <article className="mx-auto flex w-full max-w-(--content-max) flex-col gap-8 px-(--gutter) py-10">
-        <p>
-          <a href={NEWS_PATH} className={`${LINK_CLASS} text-fs-2`}>
-            <span aria-hidden="true">← </span>
-            {t("back")}
-          </a>
-        </p>
+      <article className="mx-auto flex w-full max-w-(--content-max) flex-col gap-8 px-(--gutter) pt-6 pb-16 lg:pt-8">
+        <PublicBreadcrumbs trail={[{ label: t("title"), href: NEWS_PATH }]} current={post.title} />
         <NewsArticleBody post={post} />
 
-        <div className="max-w-prose border-t border-border pt-6">
+        <div className="flex max-w-prose flex-col gap-4 border-t border-divider pt-6">
           <ShareLinks url={url} headingId="news-share" />
+          <p>
+            <a
+              href={NEWS_PATH}
+              className={`${LINK_CLASS} inline-flex items-center gap-1.5 text-fs-2`}
+            >
+              <ArrowLeftIcon size="sm" />
+              {t("back")}
+            </a>
+          </p>
         </div>
 
         {related.length > 0 ? (
-          <section aria-labelledby="news-related" className="flex flex-col gap-4">
-            <h2 id="news-related" className="font-heading text-fs-5 font-bold">
+          <section aria-labelledby="news-related" className="flex flex-col gap-4 pt-4">
+            <h2
+              id="news-related"
+              className="font-heading text-section-title [font-weight:var(--fw-heading)] text-primary"
+            >
               {t("relatedHeading")}
             </h2>
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-testid="news-related">
+            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-testid="news-related">
               {related.map((r) => (
-                <Card key={r.id} as="li" title={r.title} headingLevel={3} href={newsPath(r)}>
+                <Card
+                  key={r.id}
+                  as="li"
+                  title={r.title}
+                  headingLevel={3}
+                  href={newsPath(r)}
+                  className="h-full"
+                >
                   {r.publishedAt ? (
                     <FormattedDate value={r.publishedAt} className="text-fs-2 text-muted" />
                   ) : null}

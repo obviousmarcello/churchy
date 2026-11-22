@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageShell } from "@churchy/ui";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { CONTACT_PATH } from "@/lib/seo";
 import { getPublicTenantName } from "@/server/public-events";
@@ -26,9 +26,9 @@ export async function legalMetadata(page: LegalPage, path: string): Promise<Meta
 export async function LegalPlaceholder({ page }: { page: LegalPage }) {
   const [t, common] = await Promise.all([getT("public.legal"), getT("common")]);
   return (
-    <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader />}>
+    <PageShell skipLinkLabel={common("skipToContent")} header={<PublicSiteHeader />}>
       <div className="mx-auto grid w-full max-w-(--content-max) gap-6 px-(--gutter) py-10">
-        <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
+        <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
           {t(TITLE_KEY[page])}
         </h1>
         <div className="grid max-w-prose gap-3 text-fs-3" data-testid="legal-placeholder">

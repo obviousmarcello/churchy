@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { PageShell } from "@churchy/ui";
 import { LocationList } from "@/components/public/location-list";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { LOCATIONS_PATH } from "@/lib/locations";
 import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 import { requirePublicModule } from "@/server/plans";
+import { PublicPageHeader } from "@/components/public/public-page-header";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [t, { tenants }, ctx] = await Promise.all([
@@ -32,14 +33,9 @@ export default async function LocationsPage() {
   ]);
   const list = await locations.list(ctx);
   return (
-    <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader />}>
+    <PageShell skipLinkLabel={common("skipToContent")} header={<PublicSiteHeader />}>
       <div className="mx-auto grid w-full max-w-(--content-max) gap-8 px-(--gutter) py-10">
-        <header className="grid gap-3">
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
-            {t("title")}
-          </h1>
-          <p className="max-w-prose text-fs-4 text-muted">{t("lead")}</p>
-        </header>
+        <PublicPageHeader title={t("title")} lead={t("lead")} />
         <LocationList locations={list} />
       </div>
     </PageShell>

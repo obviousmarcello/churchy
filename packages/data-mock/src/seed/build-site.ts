@@ -66,7 +66,8 @@ export function buildTenant(b: Build): void {
       name: t.name,
       shortName: t.shortName,
       tagline: t.tagline,
-      heroMediaIds: [b.imageIds[0] as string],
+      // No hero photo: the demo has only an illustrated placeholder, and the typographic hero
+      // with the theme's pattern looks calmer than a cartoon (UI-02). A real church uploads one.
     },
     denomination: t.denomination,
     theme: {

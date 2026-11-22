@@ -76,4 +76,18 @@
   --shadow-card: 0 1px 3px rgb(90 60 20 / 0.05), 0 10px 26px -10px rgb(90 60 20 / 0.16);
   --shadow-raised: 0 3px 8px rgb(90 60 20 / 0.06), 0 24px 48px -14px rgb(90 60 20 / 0.24);
   --shadow-overlay: 0 12px 32px -8px rgb(90 60 20 / 0.18), 0 44px 88px -24px rgb(90 60 20 / 0.34);
+  /* Home hero without a photo (UI-02): cream with soft amber rings, like light spreading out. */
+  --hero-bg: var(--c-surface-sunken);
+  --hero-fg: var(--c-primary);
+  --hero-ornament: var(--c-accent);
+  --hero-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='560' viewBox='0 0 560 560' fill='none' stroke='%23000' stroke-width='14'%3E%3Ccircle cx='280' cy='280' r='60' fill='%23000'/%3E%3Ccircle cx='280' cy='280' r='110'/%3E%3Ccircle cx='280' cy='280' r='160'/%3E%3Ccircle cx='280' cy='280' r='210'/%3E%3Ccircle cx='280' cy='280' r='260'/%3E%3C/svg%3E");
+  --hero-pattern-size: 520px 520px;
+  --hero-pattern-position: right -160px bottom -220px;
+  --hero-pattern-repeat: no-repeat;
+  --hero-pattern-opacity: 0.32;
+  --ornament-display: none;
+  --hero-action-bg: var(--c-primary);
+  --hero-action-fg: var(--c-primary-contrast);
+  --hero-action-hover: var(--c-primary-hover);
+  --hero-action-soft: var(--c-primary-soft);
 }

@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { PageShell } from "@churchy/ui";
 import { PublicBlocks } from "@/components/pages/public-blocks";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { getTerms } from "@/i18n/terms";
 import { canonicalPagePath, isReservedPageSlug, pagePath } from "@/lib/pages/public-pages";
 import { getPublicSite, getPublishedPage, listPublishedPages } from "@/server/public-pages";
+import { PublicBreadcrumbs } from "@/components/public/public-page-header";
 
 /**
  * Static pages at `/<page-slug>` (*Rólunk*, *Történetünk*…; FR-007, SDD §6, D-16), built from
@@ -50,13 +51,14 @@ export default async function StaticPage({ params }: { params: Params }) {
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref={data.path} />}
+      header={<PublicSiteHeader currentHref={data.path} />}
     >
       <article
         className="mx-auto flex w-full max-w-(--content-max) flex-col gap-8 px-(--gutter) py-10"
         data-testid="static-page"
       >
-        <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
+        <PublicBreadcrumbs trail={[]} current={page.title} />
+        <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
           {page.title}
         </h1>
         <PublicBlocks blocks={page.blocks} className="max-w-prose" />

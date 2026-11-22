@@ -74,10 +74,11 @@ export interface PlacedSection {
 export type Band =
   /** Full-bleed or full-width section (hero, livestream, map, quote, call to action, text). */
   | { kind: "wide"; section: HomeSection }
-  /** Two columns from 1024 px (SDD §7.1): services and announcements left, news and events right. */
+  /** Two columns from 1024 px (SDD §7.1): announcements left, news and events right. */
   | { kind: "columns"; left: PlacedSection[]; right: PlacedSection[] };
 
-const LEFT: ReadonlySet<HomeSection["type"]> = new Set(["nextServices", "announcements"]);
+// *Next services* is a full-width strip right below the hero (UI-02), not a column card.
+const LEFT: ReadonlySet<HomeSection["type"]> = new Set(["announcements"]);
 const RIGHT: ReadonlySet<HomeSection["type"]> = new Set(["news", "events"]);
 
 /**

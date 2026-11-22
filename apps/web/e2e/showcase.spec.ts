@@ -195,7 +195,8 @@ test.describe("runtime theming (no rebuild)", () => {
     }));
     expect(vars).toEqual({ primary: "#0b3c5d", accent: "#f2c14e" });
     // The tokens flow into other components too (header call to action, hero, cards).
-    const cta = page.getByTestId("showcase-header").locator('a[href="#tamogatas"]');
+    // The bar's call to action (the menu repeats it below 640 px).
+    const cta = page.getByTestId("showcase-header").locator('a[href="#tamogatas"]').first();
     expect(await bgOf(cta)).toBe("rgb(11, 60, 93)");
   });
 
