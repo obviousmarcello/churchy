@@ -21,6 +21,9 @@ export const RESERVED_PAGE_SLUGS: ReadonlySet<string> = new Set([
   "term",
   "api",
   "demo",
+  "belepes",
+  "uj-egyhaz",
+  "site-home",
   // Public sections and pages with fixed paths (SDD §6).
   "hirek",
   "esemenyek",

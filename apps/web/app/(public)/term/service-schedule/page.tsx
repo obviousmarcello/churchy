@@ -26,6 +26,7 @@ import { RegularSchedule } from "./regular-schedule";
 import { ScheduleFilters } from "./schedule-filters";
 import { WeekView } from "./week-view";
 import "./print.css";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * Public service schedule (D-11, SDD §7.2): the week resolved by `@churchy/schedule`, week
@@ -40,11 +41,11 @@ import "./print.css";
 type SearchParams = Record<string, string | string[] | undefined>;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getT("public.schedule");
+  const [t, siteHref] = await Promise.all([getT("public.schedule"), getSiteHref()]);
   return {
     title: t.term("serviceSchedule").nom,
     description: t("metaDescription"),
-    alternates: { canonical: termRoutePath(t, "serviceSchedule") },
+    alternates: { canonical: siteHref(termRoutePath(t, "serviceSchedule")) },
   };
 }
 
@@ -65,13 +66,14 @@ export default async function ServiceSchedulePage({
   if (request.tenantId === undefined) notFound();
   const ctx = publicCtx(request.tenantId);
   const repos = await getRequestRepositories();
-  const [tenant, allLocations, data, params, t, common] = await Promise.all([
+  const [tenant, allLocations, data, params, t, common, siteHref] = await Promise.all([
     repos.tenants.current(ctx),
     repos.locations.list(ctx),
     repos.schedule.getScheduleData(ctx),
     searchParams,
     getT("public.schedule"),
     getT("common"),
+    getSiteHref(),
   ]);
   if (tenant === null) notFound();
   const config = effectiveConfig({
@@ -93,7 +95,7 @@ export default async function ServiceSchedulePage({
     ? (allLocations.find((l) => l.slug === locationSlug) ?? null)
     : null;
   if (dateParam.kind === "date" && !dateParam.canonical) {
-    redirect(scheduleHref(basePath, { date: dateParam.date, location: location?.slug }));
+    redirect(scheduleHref(siteHref(basePath), { date: dateParam.date, location: location?.slug }));
   }
   const week = weekOf(dateParam.kind === "date" ? dateParam.date : today, today);
   const locations = location ? [location] : allLocations;
@@ -133,7 +135,7 @@ export default async function ServiceSchedulePage({
         </h1>
 
         <ScheduleFilters
-          basePath={basePath}
+          basePath={siteHref(basePath)}
           week={week}
           locations={allLocations}
           location={location}

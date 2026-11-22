@@ -63,7 +63,8 @@
       "upcomingNote": "Ezek a részek a következő fejlesztési lépésekben készülnek el.",
       "noAccessTitle": "Ehhez a felülethez nincs jogosultsága",
       "noAccessBody": "A jelenlegi szerepkörrel nem érhető el ez a rész.",
-      "noAccessDemoHint": "Bemutató módban a fenti sávban válthat szerepet vagy egyházat."
+      "noAccessDemoHint": "Bemutató módban a bal alsó „Demo” gombbal válthat szerepet vagy egyházat.",
+      "noAccessLogin": "Belépés"
     },
     "demo": {
       "regionLabel": "Bemutató mód",
@@ -94,8 +95,13 @@
         "bizalmas": "Bizalmas ügyek felelőse",
         "egyhazmegyeiHr": "Egyházmegyei HR",
         "egyhazmegyeiUgyintezo": "Egyházmegyei ügyintéző"
-      }
-    }
+      },
+      "chip": "Demo",
+      "chipMenuHint": "Kattintson a szerep és az egyház váltásához.",
+      "footerLink": "Demo",
+      "now": "Jelenleg"
+    },
+    "signOut": "Kilépés"
   },
   "public": {
     "home": {
@@ -407,7 +413,8 @@
       "opensInNewTab": "(új lapon nyílik meg)",
       "impresszum": "Impresszum",
       "privacy": "Adatkezelési tájékoztató",
-      "copyright": "© {year} {name}"
+      "copyright": "© {year} {name}",
+      "staffLogin": "Munkatársaknak: Belépés"
     },
     "blocks": {
       "gallery": "Képgaléria",
@@ -497,7 +504,151 @@
       "home": "Főoldal",
       "ctaCaption": "Szeretettel várjuk",
       "ctaWhen": "{day} {time}",
-      "ctaFallback": "{serviceSchedule.nom}"
+      "ctaFallback": "{serviceSchedule.nom}",
+      "login": "Belépés"
+    },
+    "landing": {
+      "metaTitle": "Churchy – az egyházközség weboldala és belső munkatere",
+      "metaDescription": "Írja be a jelenlegi weboldal címét, mi pedig felépítjük belőle az egyházközség új oldalát. Hozzá belső munkatér: naptárak, teremfoglalás, liturgikus tervezés és HR-ügyintézés.",
+      "nav": {
+        "label": "Főmenü",
+        "home": "Churchy – kezdőlap",
+        "how": "Hogyan működik",
+        "features": "Funkciók",
+        "examples": "Példa weboldalak",
+        "faq": "Kérdések",
+        "login": "Belépés"
+      },
+      "hero": {
+        "title": "Az egyházközség új weboldala, pár perc alatt",
+        "lead": "Írja be a jelenlegi weboldal címét. A kis robotjaink kiolvassák belőle az alkalmakat, a helyszíneket és az elérhetőségeket, és elkészítik az új oldal vázlatát. Az eredményt Ön nézi át, mielőtt bármi élesre kerülne.",
+        "label": "Írja be a jelenlegi weboldalának címét",
+        "placeholder": "Írja be a jelenlegi weboldalának címét",
+        "start": "Beállítás indítása",
+        "note": "Csak a nyilvánosan látható tartalmat olvassuk be. Regisztráció nélkül kipróbálhatja."
+      },
+      "how": {
+        "title": "Hogyan működik",
+        "steps": {
+          "paste": {
+            "title": "Beírja a jelenlegi címet",
+            "text": "Nem kell semmit feltöltenie vagy átmásolnia: elég a régi weboldal címe."
+          },
+          "build": {
+            "title": "A robotok felépítik az oldalt",
+            "text": "Beolvassuk az alkalmakat, a helyszíneket, az elérhetőségeket és a színeket. Ön átnézi a vázlatot, és javít, amit szeretne."
+          },
+          "team": {
+            "title": "Kiválasztja a belső modulokat, és meghívja a csapatot",
+            "text": "Eldönti, melyik munkatér-modult használják, és e-mailben meghívja a munkatársait. Mindenki csak azt látja, amihez jogosultsága van."
+          }
+        }
+      },
+      "features": {
+        "title": "Egy rendszer, négy terület",
+        "lead": "Kezdje a weboldallal, és bővítse akkor, amikor a közösségnek szüksége van rá.",
+        "site": {
+          "title": "Weboldal",
+          "text": "Heti alkalmak, hirdetések, hírek, események, szentségek és adományozás: saját címen, telefonon is jól olvasható, akadálymentes oldalon."
+        },
+        "workspace": {
+          "title": "Munkatér",
+          "text": "Közös naptár, teremfoglalás, liturgikus tervezés és énektár a munkatársaknak, egy helyen, a weboldaltól elválasztva."
+        },
+        "hr": {
+          "title": "HR-ügyintézés",
+          "text": "Szabadság- és távolléti kérelmek jóváhagyási lánccal. A bizalmas ügyeket csak a kijelölt felelős látja."
+        },
+        "diocese": {
+          "title": "Egyházmegyei portál",
+          "text": "Az egyházmegye a hozzá kapcsolt plébániák kérelmeit és távolléteit látja, de csak azt, amit a plébánia megenged."
+        }
+      },
+      "examples": {
+        "title": "Példa weboldalak",
+        "lead": "Három kitalált egyház, valódi működéssel. Nézzen körül, kattintson bátran: minden név és adat kitalált.",
+        "open": "Megnyitás",
+        "kinds": {
+          "szent-tivadar": "Római katolikus plébánia",
+          "dunaligeti-reformatus": "Református egyházközség",
+          "dunaligeti-baptista": "Baptista gyülekezet"
+        },
+        "kindFallback": "Példa egyház"
+      },
+      "faq": {
+        "title": "Amit az adatokról tudnia kell",
+        "lead": "Az egyházi adatok különösen érzékenyek, ezért ezt a kérdést előre megválaszoljuk.",
+        "items": {
+          "hosting": {
+            "q": "Hol tároljuk az adatokat?",
+            "a": "Magyarországi és más uniós tárhelyen. Az adatok az Európai Unió területén maradnak."
+          },
+          "gdpr": {
+            "q": "Megfelel a GDPR-nak?",
+            "a": "A rendszert az adatvédelmi rendelet szerint terveztük: csak a szükséges adatot kezeljük, minden adatkezelésnek célja van, és kérésre töröljük. A jogi szövegeket a bevezetéskor együtt véglegesítjük."
+          },
+          "sensitive": {
+            "q": "Ki láthatja a kérelmeket és a HR-adatokat?",
+            "a": "Csak az, akinek a szerepköre ezt megengedi. A pasztorális kérelmeket és a HR-ügyeket titkosítva tároljuk, a hozzáférést naplózzuk, az e-mailek pedig csak hivatkozási számot tartalmaznak."
+          },
+          "import": {
+            "q": "Mit olvas be a rendszer a régi weboldalból?",
+            "a": "Csak a nyilvánosan látható tartalmat. A régi oldalon semmit nem módosítunk, nevet és fényképet pedig csak akkor veszünk át, ha Ön külön engedélyezi."
+          }
+        }
+      },
+      "footer": {
+        "tagline": "Weboldal és belső munkatér magyar egyházközségeknek.",
+        "demoNotice": "Bemutató változat: minden név és adat kitalált.",
+        "navLabel": "Lábléc menü",
+        "copyright": "© {year} Churchy"
+      }
+    },
+    "login": {
+      "metaTitle": "Belépés",
+      "title": "Belépés",
+      "lead": "Szolgálóknak és munkatársaknak. Az egyház nyilvános oldalának megtekintéséhez nem kell belépnie.",
+      "email": "E-mail-cím",
+      "emailHelp": "Azzal a címmel lépjen be, amelyre a meghívót kapta.",
+      "password": "Jelszó",
+      "submit": "Belépés",
+      "submitting": "Belépés…",
+      "magicLink": "Belépési link küldése",
+      "magicLinkHelp": "Jelszó helyett e-mailben küldünk egy egyszer használható linket.",
+      "forgot": "Elfelejtett jelszó",
+      "forgotNotice": "A jelszó-visszaállítás hamarosan elérhető lesz. Addig kérjen belépési linket a fenti e-mail-címmel.",
+      "back": "Vissza a kezdőlapra",
+      "errors": {
+        "emailRequired": "Adja meg az e-mail-címét.",
+        "emailInvalid": "Ez nem tűnik e-mail-címnek. Adjon meg például nev@example.hu alakú címet.",
+        "passwordRequired": "Adja meg a jelszavát.",
+        "invalid": "Az e-mail-cím vagy a jelszó nem megfelelő. Ellenőrizze az adatokat, vagy kérjen belépési linket.",
+        "generic": "A belépés most nem sikerült. Kérjük, próbálja újra."
+      },
+      "linkSent": {
+        "title": "Elküldtük a belépési linket",
+        "body": "Ha ez a cím szerepel a rendszerben, a postaládájában megtalálja a linket. Bemutató módban nem megy ki valódi levél."
+      },
+      "unavailable": {
+        "title": "A belépés ezen a változaton még nem érhető el",
+        "body": "Az éles bejelentkezés még nem indult el. A kipróbálható bemutatóban a „Demo fiókok” panelben talál belépési adatokat."
+      },
+      "demo": {
+        "summary": "Demo fiókok",
+        "lead": "A bemutatóban bármelyik fiókkal beléphet, jelszónak bármilyen nem üres szöveg megfelel. Minden cím kitalált.",
+        "fill": "Kitöltés",
+        "fillNamed": "{role}: a belépési adatok kitöltése",
+        "password": "bemutato",
+        "listLabel": "Demo fiókok",
+        "role": "Szerep",
+        "email": "E-mail-cím",
+        "goesTo": "Belépés után",
+        "destinations": {
+          "admin": "Weboldal kezelése",
+          "workspace": "Munkatér",
+          "diocese": "Egyházmegyei portál"
+        }
+      }
     }
   },
   "dev": {
@@ -1429,7 +1580,8 @@
         "appearance": "Megjelenés",
         "settings": "Beállítások",
         "other": "Egyéb"
-      }
+      },
+      "signOut": "Kilépés"
     },
     "page": {
       "noAccessTitle": "Ehhez a részhez nincs jogosultsága",
@@ -2645,7 +2797,9 @@
           }
         },
         "openAdmin": "Tovább az admin felületre",
-        "demoNote": "Bemutató: a vázlat még nem kerül mentésre, az admin felület a bemutató saját mintaadatait mutatja."
+        "demoNote": "Bemutató: a vázlat még nem kerül mentésre, az admin felület a bemutató saját mintaadatait mutatja.",
+        "viewSite": "Weboldal megtekintése",
+        "viewSiteHint": "Megnézheti, hogyan néz ki egy kész példa-oldal."
       },
       "preview": {
         "caption": "Az új oldal előnézete",

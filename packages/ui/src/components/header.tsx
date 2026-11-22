@@ -53,6 +53,11 @@ export interface HeaderProps {
   };
   /** Sticky at the top of the viewport (default). Turn off for previews. */
   sticky?: boolean;
+  /**
+   * An extra control after the navigation items (e.g. *Kilépés*): the last item of the menu panel
+   * on phones, the end of the bar from 1024 px.
+   */
+  extra?: ReactNode;
 }
 
 // Design v2: rounded pill items; the current page sits on a soft brand-tinted pill.
@@ -68,7 +73,7 @@ const linkBase =
  * returns focus to the toggle, and it closes when focus leaves the header or a link is followed.
  * Items with `children` are disclosure buttons themselves (same keyboard behaviour).
  */
-export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) {
+export function Header({ brand, nav, cta, labels, sticky = true, extra }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [subOpen, setSubOpen] = useState<number | null>(null);
   const rootRef = useRef<HTMLElement>(null);
@@ -248,6 +253,7 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
                 )}
               </li>
             ))}
+            {extra ? <li className="p-1 lg:p-0 lg:pl-1">{extra}</li> : null}
             {cta ? (
               // Below 640 px the call-to-action lives in the menu (the bar has no room for it).
               <li className="p-1 pt-2 sm:hidden">

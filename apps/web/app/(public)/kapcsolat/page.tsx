@@ -15,6 +15,7 @@ import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 import { sendContactMessage } from "./actions";
 import { PublicPageHeader } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 /** Privacy notice (SDD §6 legal pages). */
 const PRIVACY_PATH = "/adatkezeles";
@@ -29,20 +30,25 @@ async function load() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [{ tenant }, t] = await Promise.all([load(), getT("public.contact")]);
+  const [{ tenant }, t, siteHref] = await Promise.all([
+    load(),
+    getT("public.contact"),
+    getSiteHref(),
+  ]);
   return {
     title: tenant ? `${t("title")} · ${tenant.name}` : t("title"),
-    alternates: { canonical: CONTACT_PATH },
+    alternates: { canonical: siteHref(CONTACT_PATH) },
   };
 }
 
 /** *Kapcsolat* (FR-008, SDD §7.5, D-12): contact details, office hours, map and contact form. */
 export default async function ContactPage() {
-  const [{ tenant, locations }, t, common, churchJsonLd] = await Promise.all([
+  const [{ tenant, locations }, t, common, churchJsonLd, siteHref] = await Promise.all([
     load(),
     getT("public.contact"),
     getT("common"),
     getChurchJsonLd(),
+    getSiteHref(),
   ]);
   const contact = tenant?.siteConfig.contact ?? {};
   const officeHours = OpeningHoursSchema.parse(contact.officeHours ?? {});
@@ -107,7 +113,7 @@ export default async function ContactPage() {
 
         <section aria-labelledby="contact-form-heading" className="grid gap-4">
           <SectionHeading id="contact-form-heading" title={t("form.heading")} />
-          <ContactForm action={sendContactMessage} privacyHref={PRIVACY_PATH} />
+          <ContactForm action={sendContactMessage} privacyHref={siteHref(PRIVACY_PATH)} />
         </section>
 
         {locations.length > 0 ? (

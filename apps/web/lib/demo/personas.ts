@@ -51,6 +51,8 @@ export interface DemoContextOption {
   readonly id: string;
   /** Display name from the demo data (not a UI string). */
   readonly name: string;
+  /** URL slug of a church's demo site (`/demo/<slug>`); the diocese has none. */
+  readonly slug?: string;
 }
 
 /** The known contexts, in switcher order; the first tenant is the default. */

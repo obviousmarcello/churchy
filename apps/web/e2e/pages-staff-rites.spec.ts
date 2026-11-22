@@ -1,3 +1,4 @@
+import { endsWith, gotoHome } from "./site-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { CHURCHES, axeSeriousOrCritical, switchContext } from "./demo-helpers";
 
@@ -43,13 +44,13 @@ const RITES = [
 test.describe("rite pages per preset", () => {
   for (const expected of RITES) {
     test(`${expected.church}: ${expected.rites.length} rites`, async ({ page }) => {
-      await page.goto("/");
+      await gotoHome(page);
       if (expected.church !== CHURCHES.catholic) await switchContext(page, expected.church);
 
       const nav = await mainNav(page);
       await expect(nav.getByRole("link", { name: expected.section, exact: true })).toHaveAttribute(
         "href",
-        expected.path,
+        endsWith(expected.path),
       );
 
       expect((await page.goto(expected.path))?.status()).toBe(200);
@@ -120,7 +121,7 @@ test.describe("staff page", () => {
     test(`${expected.church}: groups, name order, obfuscated emails, tel links`, async ({
       page,
     }) => {
-      await page.goto("/");
+      await gotoHome(page);
       if (expected.church !== CHURCHES.catholic) await switchContext(page, expected.church);
 
       // Grouped under *Rólunk ▾* in the main navigation.
@@ -128,7 +129,7 @@ test.describe("staff page", () => {
       await nav.getByRole("button", { name: "Rólunk" }).click();
       await expect(nav.getByRole("link", { name: "Munkatársaink" })).toHaveAttribute(
         "href",
-        "/munkatarsaink",
+        endsWith("/munkatarsaink"),
       );
 
       // Server HTML: no plain address and no mailto link of any person.
@@ -153,10 +154,10 @@ test.describe("staff page", () => {
       const firstPerson = clergy.getByTestId("staff-person").first();
       await expect(firstPerson.getByRole("link", { name: expected.email })).toHaveAttribute(
         "href",
-        `mailto:${expected.email}`,
+        endsWith(`mailto:${expected.email}`),
       );
       const phone = firstPerson.getByTestId("staff-phone");
-      await expect(phone).toHaveAttribute("href", /^tel:\+36\d{9}$/);
+      await expect(phone).toHaveAttribute("href", endsWith(/^tel:\+36\d{9}$/));
       await expect(phone).toHaveText(/^\+36 \d{2} \d{3} \d{4}$/);
       // Only contact fields marked public are shown (the second priest's phone is not).
       await expect(
@@ -192,7 +193,7 @@ test.describe("static pages and blocks", () => {
     await expect(page_.getByRole("list", { name: "Képgaléria" }).getByRole("img")).toHaveCount(4);
     await expect(page_.getByRole("link", { name: /építéstörténete/ })).toHaveAttribute(
       "href",
-      "/demo/minta-dokumentum.pdf",
+      endsWith("/demo/minta-dokumentum.pdf"),
     );
     expect(await axeSeriousOrCritical(page)).toEqual([]);
 
@@ -212,7 +213,7 @@ test.describe("static pages and blocks", () => {
       [CHURCHES.reformed, "templomunk", "Templomunk"],
       [CHURCHES.baptist, "imahazunk", "Imaházunk"],
     ] as const) {
-      await page.goto("/");
+      await gotoHome(page);
       if (church !== CHURCHES.catholic) await switchContext(page, church);
       const nav = await mainNav(page);
       await nav.getByRole("button", { name: "Rólunk" }).click();

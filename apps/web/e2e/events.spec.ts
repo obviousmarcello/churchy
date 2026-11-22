@@ -1,3 +1,4 @@
+import { gotoHome } from "./site-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { CHURCHES, axeSeriousOrCritical, switchContext } from "./demo-helpers";
 
@@ -29,7 +30,7 @@ test.describe("events list", () => {
   test("is in the main navigation and lists upcoming occurrences with rule text", async ({
     page,
   }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await (await openMainNav(page)).getByRole("link", { name: "Események" }).click();
     await expect(page).toHaveURL(/\/esemenyek$/);
     await expect(page.getByRole("heading", { level: 1, name: "Események" })).toBeVisible();
@@ -73,7 +74,7 @@ test.describe("events list", () => {
       [CHURCHES.reformed, "Nőszövetségi délután"],
       [CHURCHES.baptist, "Baba-mama kör"],
     ];
-    await page.goto("/");
+    await gotoHome(page);
     for (const [church, title] of expected) {
       if (church !== CHURCHES.catholic) await switchContext(page, church);
       await page.goto("/esemenyek");

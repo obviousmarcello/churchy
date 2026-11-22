@@ -1,3 +1,4 @@
+import { getSiteHref } from "@/server/site-base";
 import type { Location } from "@churchy/contracts";
 import { formatTime } from "@churchy/hu";
 import type { NextService, Service } from "@churchy/schedule";
@@ -64,8 +65,12 @@ export async function NextServicesStrip({
   locations: readonly Location[];
   serviceTypes: readonly ServiceTypeOption[];
 }) {
-  const [t, schedule] = await Promise.all([getT("public.home"), getT("public.schedule")]);
-  const href = termRoutePath(t, "serviceSchedule");
+  const [t, schedule, siteHref] = await Promise.all([
+    getT("public.home"),
+    getT("public.schedule"),
+    getSiteHref(),
+  ]);
+  const href = siteHref(termRoutePath(t, "serviceSchedule"));
   const showLocation = locations.length > 1;
   const locationName = new Map(locations.map((l) => [l.id, l.name]));
   const omitType = dominantType(view);

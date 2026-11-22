@@ -25,6 +25,8 @@ async function reset(page: Page) {
   await expect(page.getByTestId("demo-reset-status")).toHaveText(
     "A bemutató adatai visszaálltak az eredeti állapotra.",
   );
+  // The menu stays open after a reset; close it so it does not cover the page.
+  await page.keyboard.press("Escape");
 }
 
 test("reset restores the seed data: outbox and reference numbering start over", async ({

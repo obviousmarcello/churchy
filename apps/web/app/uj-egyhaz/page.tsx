@@ -4,6 +4,8 @@ import { Container, PageShell } from "@churchy/ui";
 import { SetupWizard } from "@/components/setup/setup-wizard";
 import { getT } from "@/i18n/server";
 import { demoModeEnabled } from "@/lib/demo/flag";
+import { demoSiteBase } from "@/lib/site-base";
+import { demoDirectory } from "@/server/data-adapters";
 
 export async function generateMetadata() {
   const [t, common] = await Promise.all([getT("admin.setup"), getT("common")]);
@@ -15,8 +17,19 @@ export async function generateMetadata() {
  * website's address and gets a draft site. Outside demo mode the wizard is in the admin
  * (`/admin/inditas`) and this page does not exist.
  */
-export default async function NewChurchPage() {
+export default async function NewChurchPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   if (!demoModeEnabled()) notFound();
+  // The landing page's field (`?cim=`): the address is filled in and the import starts at once.
+  const { cim } = await searchParams;
+  const initialAddress = typeof cim === "string" ? cim.trim().slice(0, 300) : "";
+  // The wizard's end state links to a finished example site (the demo's default church).
+  const example = demoDirectory().contexts.find(
+    (c) => c.kind === "tenant" && c.id === demoDirectory().defaultTenantId,
+  );
   const [t, common] = await Promise.all([getT("admin.setup"), getT("common")]);
   return (
     <PageShell
@@ -38,7 +51,10 @@ export default async function NewChurchPage() {
           </h1>
           <p className="mt-3 max-w-prose text-fs-4 text-muted">{t("lead")}</p>
         </header>
-        <SetupWizard />
+        <SetupWizard
+          initialAddress={initialAddress}
+          {...(example?.slug ? { exampleSiteHref: demoSiteBase(example.slug) } : {})}
+        />
       </Container>
     </PageShell>
   );

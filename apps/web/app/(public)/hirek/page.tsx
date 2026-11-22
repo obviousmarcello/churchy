@@ -16,6 +16,7 @@ import {
 import { getPublicTenantName } from "@/server/public-events";
 import { listPublicNews } from "@/server/public-news";
 import { requirePublicModule } from "@/server/plans";
+import { getSiteHref } from "@/server/site-base";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -25,11 +26,15 @@ export async function generateMetadata({
   searchParams: SearchParams;
 }): Promise<Metadata> {
   const page = parseNewsPage((await searchParams).oldal);
-  const [t, church] = await Promise.all([getT("public.news"), getPublicTenantName()]);
+  const [t, church, siteHref] = await Promise.all([
+    getT("public.news"),
+    getPublicTenantName(),
+    getSiteHref(),
+  ]);
   return {
     title: page > 1 ? t("metaTitlePaged", { page, church }) : t("metaTitle", { church }),
     description: t("lead"),
-    alternates: { canonical: newsPageHref(page) },
+    alternates: { canonical: siteHref(newsPageHref(page)) },
   };
 }
 
@@ -41,10 +46,11 @@ function PostDate({ post }: { post: Post }) {
 export default async function NewsListPage({ searchParams }: { searchParams: SearchParams }) {
   await requirePublicModule("news");
   const requested = parseNewsPage((await searchParams).oldal);
-  const [t, common, result] = await Promise.all([
+  const [t, common, result, siteHref] = await Promise.all([
     getT("public.news"),
     getT("common"),
     listPublicNews(requested),
+    getSiteHref(),
   ]);
   const pages = pageCount(result.total, result.pageSize);
   // Past the last page: a 404, except page 1 of an empty list (shown with its empty state).
@@ -72,7 +78,7 @@ export default async function NewsListPage({ searchParams }: { searchParams: Sea
                   as="li"
                   title={post.title}
                   headingLevel={3}
-                  href={newsPath(post)}
+                  href={siteHref(newsPath(post))}
                   {...(post.categories.length > 0 ? { eyebrow: post.categories.join(", ") } : {})}
                   className="h-full"
                 >
@@ -100,7 +106,7 @@ export default async function NewsListPage({ searchParams }: { searchParams: Sea
               {requested > 1 ? (
                 <li>
                   <a
-                    href={newsPageHref(requested - 1)}
+                    href={siteHref(newsPageHref(requested - 1))}
                     rel="prev"
                     className={cn(
                       LINK_CLASS,
@@ -115,7 +121,7 @@ export default async function NewsListPage({ searchParams }: { searchParams: Sea
               {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
                 <li key={n}>
                   <a
-                    href={newsPageHref(n)}
+                    href={siteHref(newsPageHref(n))}
                     aria-current={n === requested ? "page" : undefined}
                     aria-label={t("pageLink", { page: n })}
                     className={cn(
@@ -132,7 +138,7 @@ export default async function NewsListPage({ searchParams }: { searchParams: Sea
               {requested < pages ? (
                 <li>
                   <a
-                    href={newsPageHref(requested + 1)}
+                    href={siteHref(newsPageHref(requested + 1))}
                     rel="next"
                     className={cn(
                       LINK_CLASS,

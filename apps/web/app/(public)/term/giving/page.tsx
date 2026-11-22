@@ -10,6 +10,7 @@ import { qrSvg, supportDetails } from "@/lib/giving";
 import { TERM_ROUTE_HEADER, termRoutePath } from "@/lib/term-routes";
 import { getPublicSite } from "@/server/public-seo";
 import { PublicPageHeader } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * Support / giving page (FR-015, SDD §7.5, D-17): the church's account number (8-8-8) with a copy
@@ -29,11 +30,15 @@ async function load() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [t, site] = await Promise.all([getT("public.giving"), getPublicSite()]);
+  const [t, site, siteHref] = await Promise.all([
+    getT("public.giving"),
+    getPublicSite(),
+    getSiteHref(),
+  ]);
   return {
     title: t("metaTitle", { church: site?.tenant.name ?? "" }),
     description: t("metaDescription"),
-    alternates: { canonical: termRoutePath(t, "givingSection") },
+    alternates: { canonical: siteHref(termRoutePath(t, "givingSection")) },
   };
 }
 

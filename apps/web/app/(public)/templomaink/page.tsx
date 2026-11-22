@@ -8,17 +8,19 @@ import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 import { requirePublicModule } from "@/server/plans";
 import { PublicPageHeader } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [t, { tenants }, ctx] = await Promise.all([
+  const [t, { tenants }, ctx, href] = await Promise.all([
     getT("public.locations"),
     getRequestRepositories(),
     getPublicCtx(),
+    getSiteHref(),
   ]);
   const tenant = await tenants.current(ctx);
   return {
     title: tenant ? `${t("title")} · ${tenant.name}` : t("title"),
-    alternates: { canonical: LOCATIONS_PATH },
+    alternates: { canonical: href(LOCATIONS_PATH) },
   };
 }
 

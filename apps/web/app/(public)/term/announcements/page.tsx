@@ -21,6 +21,7 @@ import { getRequestRepositories } from "@/server/repositories";
 import { ArchiveView } from "./archive-view";
 import { WeekView } from "./week-view";
 import "./print.css";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * Public weekly announcements (D-14, SDD §7.3): the latest week by default, any earlier week at
@@ -42,14 +43,15 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<SearchParams>;
 }): Promise<Metadata> {
-  const [t, site, params] = await Promise.all([
+  const [t, site, params, siteHref] = await Promise.all([
     getT("public.announcements"),
     getPublicAnnouncementSite(),
     searchParams,
+    getSiteHref(),
   ]);
   // Canonical (D-17): the latest week at the bare path, an earlier week at its `?het=<Sunday>`.
   const week = parseWeekParam(params[WEEK_PARAM]);
-  const basePath = termRoutePath(t, "announcementsSection");
+  const basePath = siteHref(termRoutePath(t, "announcementsSection"));
   return {
     title: t("metaTitle", { church: site?.tenant.name ?? "" }),
     description: t("metaDescription"),
@@ -69,16 +71,18 @@ export default async function AnnouncementsPage({
   // Only reachable through the public term slug, never at the internal path.
   if ((await headers()).get(TERM_ROUTE_HEADER) !== "announcementsSection") notFound();
 
-  const [site, params, t, common] = await Promise.all([
+  const [site, params, t, common, siteHref] = await Promise.all([
     getPublicAnnouncementSite(),
     searchParams,
     getT("public.announcements"),
     getT("common"),
+    getSiteHref(),
   ]);
   if (site === null || !site.config.modules.announcements) notFound();
   const { ctx, tenant, config } = site;
   const repos = await getRequestRepositories();
-  const basePath = termRoutePath(t, "announcementsSection");
+  const sectionPath = termRoutePath(t, "announcementsSection");
+  const basePath = siteHref(sectionPath);
   const family = config.calendarFamily;
 
   let content;
@@ -132,7 +136,7 @@ export default async function AnnouncementsPage({
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<PublicSiteHeader currentHref={basePath} />}
+      header={<PublicSiteHeader currentHref={sectionPath} />}
     >
       <div
         data-print-page="announcements"

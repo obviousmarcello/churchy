@@ -1,3 +1,4 @@
+import { gotoHome } from "./site-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { CHURCHES, switchContext } from "./demo-helpers";
 
@@ -40,7 +41,7 @@ const PROTESTANT = [
 test.describe("terminology follows the demo church", () => {
   for (const expected of PROTESTANT) {
     test(`${expected.church}: nav label, slug, heading and placeholders`, async ({ page }) => {
-      await page.goto("/");
+      await gotoHome(page);
       const catholicPrimary = await primaryColor(page);
       await switchContext(page, expected.church);
 
@@ -48,7 +49,7 @@ test.describe("terminology follows the demo church", () => {
       const nav = await mainNav(page);
       await expect(nav.getByRole("link", { name: expected.schedule })).toHaveAttribute(
         "href",
-        expected.path,
+        new RegExp(`${expected.path}$`),
       );
       await expect(nav.getByRole("link", { name: "Miserend" })).toHaveCount(0);
 
@@ -81,12 +82,12 @@ test.describe("terminology follows the demo church", () => {
   }
 
   test("the Catholic parish keeps its words and slug", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await switchContext(page, CHURCHES.baptist);
     await switchContext(page, CHURCHES.catholic);
     await expect((await mainNav(page)).getByRole("link", { name: "Miserend" })).toHaveAttribute(
       "href",
-      "/miserend",
+      new RegExp(`/miserend$`),
     );
     await page.goto("/miserend");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Miserend");
@@ -116,13 +117,13 @@ test.describe("terminology follows the demo church", () => {
   });
 
   test("the diocese uses neutral terms, never a denomination's", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await switchContext(page, CHURCHES.diocese);
     const nav = await mainNav(page);
     await expect(nav.getByRole("link", { name: "Miserend" })).toHaveCount(0);
     await expect(nav.getByRole("link", { name: "Alkalmaink" })).toHaveAttribute(
       "href",
-      "/alkalmaink",
+      new RegExp(`/alkalmaink$`),
     );
   });
 });

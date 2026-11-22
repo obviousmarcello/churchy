@@ -15,6 +15,8 @@ import { toHuAddress } from "@/lib/locations";
 import { CONTACT_PATH } from "@/lib/seo";
 import { termRoutePath } from "@/lib/term-routes";
 import { getPublicSite } from "@/server/public-seo";
+import { loginHref } from "@/lib/site-base";
+import { getSiteBase, getSiteHref } from "@/server/site-base";
 import { SOCIAL_ICONS } from "./social-icons";
 
 const day = (weekday: number) => weekdayName(weekday, { capitalize: true });
@@ -27,11 +29,13 @@ const daysOf = (g: HoursGroup) => (g.from === g.to ? day(g.from) : `${day(g.from
  * public layout; hidden when printing.
  */
 export async function SiteFooter() {
-  const [site, t, common, staff] = await Promise.all([
+  const [site, t, common, staff, href, siteBase] = await Promise.all([
     getPublicSite(),
     getT("public.footer"),
     getT("common"),
     getT("public.staff"),
+    getSiteHref(),
+    getSiteBase(),
   ]);
   if (site === null) return null;
   const { tenant, config } = site;
@@ -87,7 +91,7 @@ export async function SiteFooter() {
               ))}
             </ul>
           )}
-          <FooterLink href={CONTACT_PATH}>{t("allHours")}</FooterLink>
+          <FooterLink href={href(CONTACT_PATH)}>{t("allHours")}</FooterLink>
         </div>
       ),
     },
@@ -98,11 +102,19 @@ export async function SiteFooter() {
           <ul className="grid" data-testid="footer-links">
             {config.modules.giving ? (
               <li>
-                <FooterLink href={termRoutePath(t, "givingSection")}>{t("support")}</FooterLink>
+                <FooterLink href={href(termRoutePath(t, "givingSection"))}>
+                  {t("support")}
+                </FooterLink>
               </li>
             ) : null}
             <li>
-              <FooterLink href={CONTACT_PATH}>{t("contact")}</FooterLink>
+              <FooterLink href={href(CONTACT_PATH)}>{t("contact")}</FooterLink>
+            </li>
+            <li>
+              {/* The platform's sign-in (`/belepes`), not a page of the church's site. */}
+              <FooterLink href={loginHref(siteBase)} data-testid="footer-login">
+                {t("staffLogin")}
+              </FooterLink>
             </li>
             {config.footer.dioceseLink ? (
               <li>
@@ -151,8 +163,8 @@ export async function SiteFooter() {
         }}
         columns={columns}
         legal={[
-          { label: t("impresszum"), href: LEGAL_PATHS.impresszum },
-          { label: t("privacy"), href: LEGAL_PATHS.privacy },
+          { label: t("impresszum"), href: href(LEGAL_PATHS.impresszum) },
+          { label: t("privacy"), href: href(LEGAL_PATHS.privacy) },
         ]}
         legalLabel={common("legalNavigation")}
         note={t("copyright", { year, name: tenant.name })}

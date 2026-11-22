@@ -150,6 +150,8 @@ test.describe("Távollétek (D-73)", () => {
   test("HR sees every balance, an employee only their own", async ({ page }) => {
     await as(page, "hr", "/munkater/tavollet");
     await expect(page.getByTestId("all-balances")).toBeVisible();
+    // Switch on a narrow page: the wide table makes phones zoom out, which misplaces the chip.
+    await page.goto("/belepes");
     await switchPersona(page, "iroda");
     await page.goto("/munkater/tavollet");
     await expect(page.getByTestId("all-balances")).toHaveCount(0);

@@ -10,9 +10,10 @@ import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { jsonLdScript } from "@/lib/events/json-ld";
 import { NEWS_PATH, newsArticleJsonLd, newsOpenGraph, newsPath } from "@/lib/news/public-news";
-import { getPublicTenantName, requestOrigin } from "@/server/public-events";
+import { getPublicTenantName } from "@/server/public-events";
 import { getPublicPost, listRelatedNews } from "@/server/public-news";
 import { requirePublicModule } from "@/server/plans";
+import { getSiteHref, siteOrigin } from "@/server/site-base";
 
 type Params = Promise<{ postSlug: string }>;
 
@@ -20,16 +21,17 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { postSlug } = await params;
   const post = await getPublicPost(decodeURIComponent(postSlug));
   if (post === null) return {};
-  const [t, church, origin] = await Promise.all([
+  const [t, church, origin, siteHref] = await Promise.all([
     getT("public.news"),
     getPublicTenantName(),
-    requestOrigin(),
+    siteOrigin(),
+    getSiteHref(),
   ]);
   const url = `${origin}${newsPath(post)}`;
   return {
     title: t("postMetaTitle", { title: post.title, church }),
     ...(post.lead ? { description: post.lead } : {}),
-    alternates: { canonical: newsPath(post) },
+    alternates: { canonical: siteHref(newsPath(post)) },
     openGraph: newsOpenGraph({ post, url, churchName: church }),
   };
 }
@@ -40,12 +42,13 @@ export default async function NewsPostPage({ params }: { params: Params }) {
   const post = await getPublicPost(decodeURIComponent(postSlug));
   if (post === null) notFound();
 
-  const [t, common, church, origin, related] = await Promise.all([
+  const [t, common, church, origin, related, siteHref] = await Promise.all([
     getT("public.news"),
     getT("common"),
     getPublicTenantName(),
-    requestOrigin(),
+    siteOrigin(),
     listRelatedNews(post),
+    getSiteHref(),
   ]);
   const url = `${origin}${newsPath(post)}`;
   const body = richTextPlain(post.body);
@@ -75,7 +78,7 @@ export default async function NewsPostPage({ params }: { params: Params }) {
           <ShareLinks url={url} headingId="news-share" />
           <p>
             <a
-              href={NEWS_PATH}
+              href={siteHref(NEWS_PATH)}
               className={`${LINK_CLASS} inline-flex items-center gap-1.5 text-fs-2`}
             >
               <ArrowLeftIcon size="sm" />
@@ -99,7 +102,7 @@ export default async function NewsPostPage({ params }: { params: Params }) {
                   as="li"
                   title={r.title}
                   headingLevel={3}
-                  href={newsPath(r)}
+                  href={siteHref(newsPath(r))}
                   className="h-full"
                 >
                   {r.publishedAt ? (

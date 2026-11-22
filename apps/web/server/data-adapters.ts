@@ -142,11 +142,10 @@ function seedPersonas(): PersonaUsers {
   if (personaUsers) return personaUsers;
   const { dataset, personas } = createDemoDatasetWithPersonas(new Date());
   const tenantIds = [DEMO_TENANT_IDS.catholic, DEMO_TENANT_IDS.reformed, DEMO_TENANT_IDS.baptist];
-  const contexts: DemoContextOption[] = tenantIds.map((id) => ({
-    kind: "tenant",
-    id,
-    name: dataset.tenants.find((t) => t.id === id)?.name ?? id,
-  }));
+  const contexts: DemoContextOption[] = tenantIds.map((id) => {
+    const tenant = dataset.tenants.find((t) => t.id === id);
+    return { kind: "tenant", id, name: tenant?.name ?? id, slug: tenant?.slug ?? id };
+  });
   contexts.push({
     kind: "org",
     id: DEMO_ORG_ID,

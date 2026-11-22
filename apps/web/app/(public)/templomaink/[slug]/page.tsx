@@ -11,6 +11,7 @@ import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 import { requirePublicModule } from "@/server/plans";
 import { PublicBreadcrumbs } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -28,14 +29,15 @@ async function findLocation(slug: string) {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const [{ location, tenant }, t] = await Promise.all([
+  const [{ location, tenant }, t, href] = await Promise.all([
     findLocation(slug),
     getT("public.locations"),
+    getSiteHref(),
   ]);
   const title = location?.name ?? t("notFoundTitle");
   return {
     title: tenant ? `${title} · ${tenant.name}` : title,
-    ...(location ? { alternates: { canonical: `${LOCATIONS_PATH}/${location.slug}` } } : {}),
+    ...(location ? { alternates: { canonical: href(`${LOCATIONS_PATH}/${location.slug}`) } } : {}),
   };
 }
 
@@ -43,10 +45,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function LocationPage({ params }: Params) {
   await requirePublicModule("locations");
   const { slug } = await params;
-  const [{ location }, t, common] = await Promise.all([
+  const [{ location }, t, common, href] = await Promise.all([
     findLocation(slug),
     getT("public.locations"),
     getT("common"),
+    getSiteHref(),
   ]);
   if (location === null) notFound();
 
@@ -56,7 +59,9 @@ export default async function LocationPage({ params }: Params) {
         type="application/ld+json"
         // Escaped JSON from our own data (no user HTML), see `jsonLdScript`.
         dangerouslySetInnerHTML={{
-          __html: jsonLdScript(locationJsonLd(location, `${LOCATIONS_PATH}/${location.slug}`)),
+          __html: jsonLdScript(
+            locationJsonLd(location, href(`${LOCATIONS_PATH}/${location.slug}`)),
+          ),
         }}
       />
       <div className="mx-auto grid w-full max-w-(--content-max) gap-10 px-(--gutter) py-10">

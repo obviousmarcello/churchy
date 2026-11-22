@@ -7,7 +7,14 @@ import { buildChecklist, checklistProgress, type SetupOutcome } from "@/lib/setu
 import { flaggedKeys, includedStaff } from "@/lib/setup/draft";
 
 /** Step 5: what the wizard did, and the checklist that continues in the admin. */
-export function DoneStep({ outcome }: { outcome: SetupOutcome }) {
+export function DoneStep({
+  outcome,
+  siteHref,
+}: {
+  outcome: SetupOutcome;
+  /** A finished example site to look at (the demo has no real host for the new church yet). */
+  siteHref?: string;
+}) {
   const t = useT("admin.setup.done");
   const items = buildChecklist(outcome);
   const { done, total } = checklistProgress(items);
@@ -81,11 +88,17 @@ export function DoneStep({ outcome }: { outcome: SetupOutcome }) {
         </ol>
       </section>
 
-      <p>
+      <p className="flex flex-wrap gap-3">
         <ButtonLink href="/admin" size="lg" data-testid="open-admin">
           {t("openAdmin")}
         </ButtonLink>
+        {siteHref ? (
+          <ButtonLink href={siteHref} size="lg" variant="outline" data-testid="view-site">
+            {t("viewSite")}
+          </ButtonLink>
+        ) : null}
       </p>
+      {siteHref ? <p className="text-fs-2 text-muted">{t("viewSiteHint")}</p> : null}
       <p className="text-fs-2 text-muted">{t("demoNote")}</p>
     </div>
   );

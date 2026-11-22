@@ -1,3 +1,4 @@
+import { gotoHome } from "./site-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { CHURCHES, axeSeriousOrCritical, switchContext } from "./demo-helpers";
 
@@ -40,9 +41,9 @@ async function openEasterWeek(page: Page) {
 
 test.describe("weekly announcements", () => {
   test("the latest week is one click from the home page's main navigation", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     const link = (await mainNav(page)).getByRole("link", { name: "Hirdetések" });
-    await expect(link).toHaveAttribute("href", PATH);
+    await expect(link).toHaveAttribute("href", new RegExp(`${PATH}$`));
     await link.click(); // the one click (D-14 AC1)
     await expect(page).toHaveURL(new RegExp(`${PATH}$`));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(HEADING);
@@ -79,7 +80,7 @@ test.describe("weekly announcements", () => {
     await expect(page.getByTestId("announcement-latest")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Legfrissebb hirdetések" })).toHaveAttribute(
       "href",
-      PATH,
+      new RegExp(`${PATH}$`),
     );
 
     await weekNav(page)
@@ -136,7 +137,7 @@ test.describe("weekly announcements", () => {
     await expect(attachment).toContainText("heti-hirdetesek-minta.pdf");
     await expect(attachment).toContainText(/PDF, \d+ kB/);
     const open = page.getByTestId("announcement-pdf-open");
-    await expect(open).toHaveAttribute("href", "/demo/minta-dokumentum.pdf");
+    await expect(open).toHaveAttribute("href", new RegExp(`/demo/minta-dokumentum.pdf$`));
 
     const download = page.waitForEvent("download");
     await page.getByTestId("announcement-pdf-download").click();
@@ -160,7 +161,7 @@ test.describe("weekly announcements", () => {
     await page.goto(PATH);
     for (const church of [CHURCHES.reformed, CHURCHES.baptist, CHURCHES.catholic]) {
       await switchContext(page, church);
-      await page.goto("/");
+      await gotoHome(page);
       await (await mainNav(page)).getByRole("link", { name: "Hirdetések" }).click();
       await expect(page.getByTestId("announcements-church")).toHaveText(church);
       await expect(heading(page)).toHaveText(HEADING);

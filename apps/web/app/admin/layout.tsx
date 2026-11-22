@@ -4,6 +4,8 @@ import { AreaHome } from "@/components/area-home";
 import { groupAdminNav } from "@/lib/admin/nav";
 import { getT } from "@/i18n/server";
 import { getAdminSections } from "@/server/admin";
+import { getRequestContext } from "@/server/session";
+import { demoSiteBaseOf } from "@/server/site-base";
 
 /**
  * Shell of every `/admin` route (D-18, SDD §11.1): top bar, sidebar with the sections the actor
@@ -11,11 +13,12 @@ import { getAdminSections } from "@/server/admin";
  * no-access notice of the area landing page instead.
  */
 export default async function AdminLayout({ children }: { children: ReactNode }) {
-  const [sections, t, shell, common] = await Promise.all([
+  const [sections, t, shell, common, context] = await Promise.all([
     getAdminSections(),
     getT("admin.dashboard"),
     getT("admin.shell"),
     getT("common"),
+    getRequestContext(),
   ]);
   if (sections.length === 0) {
     return <AreaHome area="admin" title={t("title")} lead={t("lead")} />;
@@ -35,9 +38,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         closeMenu: shell("closeMenu"),
         dashboard: shell("dashboard"),
         viewSite: shell("viewSite"),
+        signOut: common("signOut"),
       }}
       groups={groups}
-      siteHref="/"
+      // The church's public site: `/demo/<slug>` in the demo, its own host in production.
+      siteHref={demoSiteBaseOf(context.tenantId) || "/"}
     >
       {children}
     </AdminFrame>

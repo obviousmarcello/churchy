@@ -12,7 +12,10 @@ import { listPublishedPages } from "@/server/public-pages";
 import { getHomeNextServices } from "@/server/public-schedule";
 import { getPublicSite } from "@/server/public-seo";
 import { getRequestRepositories } from "@/server/repositories";
+import { SignOutButton } from "@/components/sign-out-button";
 import { getActor, getRequestContext } from "@/server/session";
+import { loginHref } from "@/lib/site-base";
+import { getSiteBase, getSiteHref } from "@/server/site-base";
 
 /**
  * The navigation filtered with `can()` (D-05): the public main navigation, then the app areas the
@@ -21,12 +24,13 @@ import { getActor, getRequestContext } from "@/server/session";
  * church's static pages and the staff page, D-16). `currentHref` marks the item of the current page.
  */
 async function headerNav(currentHref: string | undefined): Promise<NavItem[]> {
-  const [actor, ctx, nav, pages, modules] = await Promise.all([
+  const [actor, ctx, nav, pages, modules, siteHref] = await Promise.all([
     getActor(),
     getRequestContext(),
     getT("common.nav"),
     listPublishedPages(),
     getEnabledPublicModules(),
+    getSiteHref(),
   ]);
   // Modules switched off (D-25) or outside the plan (D-87) leave the public navigation.
   const publicItems = filterNav(buildPublicNav(nav, nav, aboutPages(pages, nav)), actor, {
@@ -35,15 +39,16 @@ async function headerNav(currentHref: string | undefined): Promise<NavItem[]> {
   });
   const appItems = filterNav(buildAppNav(nav), actor, ctx);
   return [
+    // `currentHref` is the church-relative path; the links carry the site's base path (demo).
     ...publicItems.map(({ label, href, children }) => {
       const sub = children?.map((c) => ({
         label: c.label,
-        href: c.href,
+        href: siteHref(c.href),
         current: c.href === currentHref,
       }));
       return sub?.length
-        ? { label, href, current: sub.some((c) => c.current), children: sub }
-        : { label, href, current: href === currentHref };
+        ? { label, href: siteHref(href), current: sub.some((c) => c.current), children: sub }
+        : { label, href: siteHref(href), current: href === currentHref };
     }),
     ...appItems.map(({ label, href }) => ({ label, href, current: href === currentHref })),
   ];
@@ -54,12 +59,14 @@ async function headerNav(currentHref: string | undefined): Promise<NavItem[]> {
  * Renders nothing while the visitor has no navigation item.
  */
 export async function SiteHeader({ currentHref }: { currentHref?: string } = {}) {
-  const [t, items] = await Promise.all([getT("common"), headerNav(currentHref)]);
+  const [t, items, actor] = await Promise.all([getT("common"), headerNav(currentHref), getActor()]);
   if (items.length === 0) return null;
   return (
     <Header
       brand={{ name: t("appName"), href: "/" }}
       nav={items}
+      // Signed in (the demo personas included): *Kilépés* ends the session.
+      {...(actor.kind !== "anonymous" ? { extra: <SignOutButton label={t("signOut")} /> } : {})}
       labels={{
         navigation: t("mainNavigation"),
         openMenu: t("openMenu"),
@@ -76,7 +83,7 @@ export async function SiteHeader({ currentHref }: { currentHref?: string } = {})
  * service (or without the schedule module) the button names the schedule page itself.
  */
 export async function PublicSiteHeader({ currentHref }: { currentHref?: string } = {}) {
-  const [site, t, chrome, items, view, now, repos] = await Promise.all([
+  const [site, t, chrome, items, view, now, repos, siteHref, actor, siteBase] = await Promise.all([
     getPublicSite(),
     getT("common"),
     getT("public.chrome"),
@@ -84,6 +91,9 @@ export async function PublicSiteHeader({ currentHref }: { currentHref?: string }
     getHomeNextServices(),
     getRequestNow(),
     getRequestRepositories(),
+    getSiteHref(),
+    getActor(),
+    getSiteBase(),
   ]);
   if (site === null) return SiteHeader({ ...(currentHref ? { currentHref } : {}) });
   const { identity, modules } = site.config;
@@ -95,7 +105,7 @@ export async function PublicSiteHeader({ currentHref }: { currentHref?: string }
   const next = view?.next ?? null;
   const cta = modules.schedule
     ? {
-        href: termRoutePath(chrome, "serviceSchedule"),
+        href: siteHref(termRoutePath(chrome, "serviceSchedule")),
         icon: <ClockIcon />,
         "data-testid": "header-next-service",
         ...(next
@@ -107,7 +117,7 @@ export async function PublicSiteHeader({ currentHref }: { currentHref?: string }
     <Header
       brand={{
         name,
-        href: "/",
+        href: siteHref("/"),
         ...(logo
           ? {
               logo: (
@@ -123,7 +133,13 @@ export async function PublicSiteHeader({ currentHref }: { currentHref?: string }
             }
           : { monogram: monogramOf(name) }),
       }}
-      nav={items}
+      // Staff sign in from the church's own site; a signed-in person has the app areas instead.
+      nav={
+        actor.kind === "anonymous"
+          ? [...items, { label: chrome("login"), href: loginHref(siteBase), current: false }]
+          : items
+      }
+      {...(actor.kind !== "anonymous" ? { extra: <SignOutButton label={t("signOut")} /> } : {})}
       {...(cta ? { cta } : {})}
       labels={{
         navigation: t("mainNavigation"),

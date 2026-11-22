@@ -18,6 +18,7 @@ import { groupStaff } from "@/lib/pages/public-pages";
 import { TERM_ROUTE_HEADER, termRoutePath } from "@/lib/term-routes";
 import { getPublicSite, listPublicStaff } from "@/server/public-pages";
 import { PublicPageHeader } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * *Munkatársaink* (FR-009, SDD §7.5, D-16): the people a church marked public, grouped as clergy,
@@ -31,19 +32,24 @@ import { PublicPageHeader } from "@/components/public/public-page-header";
  */
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [t, site] = await Promise.all([getT("public.staff"), getPublicSite()]);
+  const [t, site, siteHref] = await Promise.all([
+    getT("public.staff"),
+    getPublicSite(),
+    getSiteHref(),
+  ]);
   return {
     title: t("metaTitle", { church: site?.tenant.name ?? "" }),
-    alternates: { canonical: termRoutePath(t, "staffSection") },
+    alternates: { canonical: siteHref(termRoutePath(t, "staffSection")) },
   };
 }
 
 export default async function StaffPage() {
   if ((await headers()).get(TERM_ROUTE_HEADER) !== "staffSection") notFound();
-  const [site, t, common] = await Promise.all([
+  const [site, t, common, siteHref] = await Promise.all([
     getPublicSite(),
     getT("public.staff"),
     getT("common"),
+    getSiteHref(),
   ]);
   if (site === null || !site.config.modules.staff) notFound();
   const groups = groupStaff(await listPublicStaff());
@@ -138,7 +144,7 @@ export default async function StaffPage() {
 
         <p className="max-w-prose text-fs-3">
           {t("officeHint")}{" "}
-          <a href="/kapcsolat" className="font-semibold text-primary underline">
+          <a href={siteHref("/kapcsolat")} className="font-semibold text-primary underline">
             {t("contactLink")}
           </a>
         </p>
