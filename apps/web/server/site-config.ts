@@ -48,6 +48,9 @@ export const getSiteConfig = cache(async (): Promise<SiteConfig> =>
 );
 
 /** `getSiteConfig()` for the proxy, which has the request's cookies but no `next/headers`. */
-export function siteConfigForRequest(cookie: CookieReader): Promise<SiteConfig> {
-  return siteConfigForDemo(demoStateFrom(cookie));
+export function siteConfigForRequest(
+  cookie: CookieReader,
+  siteTenantId?: string,
+): Promise<SiteConfig> {
+  return siteConfigForDemo(demoStateFrom(cookie, siteTenantId));
 }

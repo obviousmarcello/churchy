@@ -1,3 +1,4 @@
+import { gotoHome } from "./site-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import {
   BANNER_TEXT,
@@ -96,7 +97,8 @@ async function mainNav(page: Page) {
 
 async function expectArea(page: Page, area: Area, visible: boolean) {
   const { path, label } = AREAS[area];
-  await page.goto("/");
+  // Any page with the app header: it lists the areas the persona may open.
+  await page.goto("/munkater");
   const header = page.locator("header").filter({ has: page.getByRole("navigation") });
   if (visible) {
     await expect((await mainNav(page)).getByRole("link", { name: label })).toBeVisible();
@@ -124,7 +126,7 @@ async function expectItem(page: Page, id: string, visible: boolean) {
 
 test.describe("demo role switcher", () => {
   test("the banner, the persona and the church are shown on the first visit", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await expect(banner(page)).toContainText(BANNER_TEXT);
     await expect(currentPersona(page)).toHaveText(PERSONAS.latogato);
     await expect(currentContext(page)).toHaveText(CHURCHES.catholic);
@@ -132,7 +134,7 @@ test.describe("demo role switcher", () => {
   });
 
   test("has at least 10 personas", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await openDemoMenu(page);
     const buttons = personaSwitcher(page).getByRole("button");
     await expect(buttons).toHaveCount(Object.keys(PERSONAS).length);
@@ -145,7 +147,7 @@ test.describe("demo role switcher", () => {
   });
 
   test("switching persona or church takes ≤ 2 clicks", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     expect(await switchPersona(page, "tulajdonos")).toBeLessThanOrEqual(2);
     expect(await switchContext(page, CHURCHES.reformed)).toBeLessThanOrEqual(2);
     expect(await switchContext(page, CHURCHES.baptist)).toBeLessThanOrEqual(2);
@@ -164,7 +166,7 @@ test.describe("demo role switcher", () => {
   });
 
   test("the selection survives navigation and reloads", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await switchPersona(page, "iroda");
     await switchContext(page, CHURCHES.reformed);
     await page.goto("/admin");
@@ -181,7 +183,7 @@ test.describe("demo role switcher", () => {
     test(`${PERSONAS[persona]}: menus and routes follow can()`, async ({ page }) => {
       expect(visible.length + hidden.length).toBeGreaterThanOrEqual(2);
       expect(hidden.length).toBeGreaterThanOrEqual(1);
-      await page.goto("/");
+      await gotoHome(page);
       await switchPersona(page, persona);
       if (persona === "latogato") {
         // Nothing is granted to an anonymous visitor; the public page is what they see.
@@ -199,7 +201,7 @@ test.describe("demo bar accessibility", () => {
   test("axe: 0 serious/critical on the banner, both switchers and after a reset", async ({
     page,
   }) => {
-    await page.goto("/");
+    await gotoHome(page);
     expect(await axeSeriousOrCritical(page)).toEqual([]);
 
     // The open menu shows both switchers and the reset button at once.
@@ -222,7 +224,7 @@ test.describe("demo bar accessibility", () => {
   test("the switchers work with the keyboard and the current option is announced", async ({
     page,
   }) => {
-    await page.goto("/");
+    await gotoHome(page);
     const summary = demoMenu(page).locator("summary");
     await summary.focus();
     await page.keyboard.press("Enter");
@@ -242,7 +244,7 @@ test.describe("demo bar accessibility", () => {
 
   test("the bar does not scroll horizontally at 360 px, closed or open", async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
-    await page.goto("/");
+    await gotoHome(page);
     const overflow = () =>
       page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -252,19 +254,22 @@ test.describe("demo bar accessibility", () => {
     expect(await overflow()).toBeLessThanOrEqual(0);
   });
 
-  test("the bar is one thin line: ≤ 40 px from 1024 px, ≤ 44 px on phones", async ({ page }) => {
-    for (const [width, max] of [
-      [360, 44],
-      [768, 44],
-      [1024, 40],
-      [1440, 40],
-    ] as const) {
+  test("the chip is small, discreet, bottom-left and a 44 px target; the notice is in its menu", async ({
+    page,
+  }) => {
+    for (const width of [360, 768, 1440]) {
       await page.setViewportSize({ width, height: 800 });
-      await page.goto("/");
-      const box = await banner(page).boundingBox();
-      expect(box!.height, `${width}px`).toBeLessThanOrEqual(max);
+      await gotoHome(page);
+      const summary = banner(page).locator("summary");
+      const box = await summary.boundingBox();
+      expect(box!.height, `${width}px`).toBeGreaterThanOrEqual(43.5);
+      expect(box!.height, `${width}px`).toBeLessThanOrEqual(56);
+      expect(box!.width, `${width}px`).toBeLessThanOrEqual(140);
+      expect(box!.x, `${width}px`).toBeLessThanOrEqual(24);
+      await expect(summary).toHaveAttribute("title", BANNER_TEXT);
       await expect(banner(page)).toContainText(BANNER_TEXT);
-      await expect(banner(page).getByText(BANNER_TEXT)).toBeVisible();
+      await openDemoMenu(page);
+      await expect(banner(page).getByText(BANNER_TEXT, { exact: true })).toBeVisible();
     }
   });
 });

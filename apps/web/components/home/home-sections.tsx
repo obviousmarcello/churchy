@@ -39,6 +39,7 @@ import { getPublicLocations, publicOccurrences } from "@/server/public-events";
 import { getPublicSite } from "@/server/public-seo";
 import { listPublicNews } from "@/server/public-news";
 import { getRequestRepositories } from "@/server/repositories";
+import { getSiteHref } from "@/server/site-base";
 
 /** Days ahead the home page looks for events. */
 const EVENT_LOOKAHEAD_DAYS = 90;
@@ -103,14 +104,18 @@ function SeeAll({ href, children }: { href: string; children: ReactNode }) {
  * title, lead; an *Összes hír* link and an empty state.
  */
 export async function NewsSection({ section }: { section: HomeSection }) {
-  const [t, result] = await Promise.all([getT("public.home"), listPublicNews(1)]);
+  const [t, result, href] = await Promise.all([
+    getT("public.home"),
+    listPublicNews(1),
+    getSiteHref(),
+  ]);
   const posts = result.items.slice(0, sectionCount(section.settings, DEFAULT_COUNT.news));
   return (
     <section aria-labelledby="home-news" className="flex flex-col gap-4" data-testid="home-news">
       <SectionHeading
         id="home-news"
         title={t("newsTitle")}
-        action={<SeeAll href={NEWS_PATH}>{t("newsAll")}</SeeAll>}
+        action={<SeeAll href={href(NEWS_PATH)}>{t("newsAll")}</SeeAll>}
       />
       {posts.length === 0 ? (
         <EmptyState
@@ -127,7 +132,7 @@ export async function NewsSection({ section }: { section: HomeSection }) {
               as="li"
               title={post.title}
               headingLevel={3}
-              href={newsPath(post)}
+              href={href(newsPath(post))}
               {...(post.categories.length > 0 ? { eyebrow: post.categories.join(", ") } : {})}
             >
               <div className="flex flex-col gap-1" data-testid="home-news-item">
@@ -148,10 +153,11 @@ export async function NewsSection({ section }: { section: HomeSection }) {
 export async function EventsSection({ section }: { section: HomeSection }) {
   const now = await getRequestNow();
   const today = todayInBudapest(now);
-  const [t, occurrences, locations] = await Promise.all([
+  const [t, occurrences, locations, href] = await Promise.all([
     getT("public.home"),
     publicOccurrences(dayWindow(today, addDays(today, EVENT_LOOKAHEAD_DAYS))),
     getPublicLocations(),
+    getSiteHref(),
   ]);
   const upcoming = occurrences
     .filter((o) => o.endMs > now.getTime())
@@ -165,7 +171,7 @@ export async function EventsSection({ section }: { section: HomeSection }) {
       <SectionHeading
         id="home-events"
         title={t("eventsTitle")}
-        action={<SeeAll href={EVENTS_CALENDAR_PATH}>{t("eventsCalendar")}</SeeAll>}
+        action={<SeeAll href={href(EVENTS_CALENDAR_PATH)}>{t("eventsCalendar")}</SeeAll>}
       />
       {upcoming.length === 0 ? (
         <EmptyState
@@ -197,7 +203,7 @@ export async function EventsSection({ section }: { section: HomeSection }) {
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <h3 className="font-heading text-card-title [font-weight:var(--fw-heading-sm,var(--fw-heading))]">
                     <a
-                      href={occurrenceHref(occ)}
+                      href={href(occurrenceHref(occ))}
                       className="text-primary no-underline after:absolute after:inset-0 hover:underline hover:underline-offset-4"
                     >
                       {occ.event.title}
@@ -268,9 +274,10 @@ export async function QuoteSection({ section }: { section: HomeSection }) {
 }
 
 /** A call to action (`settings.label`, `settings.href`, optional `title` and `text`). */
-export function CtaSection({ section }: { section: HomeSection }): ReactNode {
+export async function CtaSection({ section }: { section: HomeSection }): Promise<ReactNode> {
   const cta = ctaSettings(section.settings);
   if (cta === null) return null;
+  const href = await getSiteHref();
   return (
     <section
       aria-label={cta.title ?? cta.label}
@@ -280,7 +287,7 @@ export function CtaSection({ section }: { section: HomeSection }): ReactNode {
         <h2 className="font-heading text-fs-5 font-bold text-primary">{cta.title}</h2>
       ) : null}
       {cta.text ? <p className="text-fs-3">{cta.text}</p> : null}
-      <ButtonLink href={cta.href}>{cta.label}</ButtonLink>
+      <ButtonLink href={href(cta.href)}>{cta.label}</ButtonLink>
     </section>
   );
 }

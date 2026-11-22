@@ -8,6 +8,7 @@ import { getTerms } from "@/i18n/terms";
 import { canonicalPagePath, isReservedPageSlug, pagePath } from "@/lib/pages/public-pages";
 import { getPublicSite, getPublishedPage, listPublishedPages } from "@/server/public-pages";
 import { PublicBreadcrumbs } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * Static pages at `/<page-slug>` (*Rólunk*, *Történetünk*…; FR-007, SDD §6, D-16), built from
@@ -32,19 +33,19 @@ async function load(params: Params) {
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const data = await load(params);
   if (data === null || data.canonical !== data.path) return {};
-  const t = await getT("public.pages");
+  const [t, siteHref] = await Promise.all([getT("public.pages"), getSiteHref()]);
   const { page, site } = data;
   return {
     title: t("metaTitle", { title: page.seo.title ?? page.title, church: site.tenant.name }),
     ...(page.seo.description ? { description: page.seo.description } : {}),
-    alternates: { canonical: data.path },
+    alternates: { canonical: siteHref(data.path) },
   };
 }
 
 export default async function StaticPage({ params }: { params: Params }) {
   const data = await load(params);
   if (data === null || data.canonical === null) notFound();
-  if (data.canonical !== data.path) permanentRedirect(data.canonical);
+  if (data.canonical !== data.path) permanentRedirect((await getSiteHref())(data.canonical));
   const common = await getT("common");
   const { page } = data;
 

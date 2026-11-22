@@ -43,10 +43,18 @@ type Phase =
  * edits lives in this component's state until a later phase stores it; the import itself is the
  * server's `ImportJob` (mock today) streamed over `IMPORT_ENDPOINT`.
  */
-export function SetupWizard() {
+export function SetupWizard({
+  initialAddress = "",
+  exampleSiteHref,
+}: {
+  /** An address from the landing page: filled in, and the import starts as soon as it is shown. */
+  initialAddress?: string;
+  /** A finished example site, linked from the last step (*Weboldal megtekintése*). */
+  exampleSiteHref?: string;
+} = {}) {
   const t = useT("admin.setup");
   const [step, setStep] = useState<Step>("site");
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(initialAddress);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const [draft, setDraft] = useState<SetupDraft | null>(null);
   const plan = DEFAULT_SETUP_PLAN;
@@ -64,6 +72,16 @@ export function SetupWizard() {
   const readyBox = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => () => abort.current?.abort(), []);
+  // Started from the landing page: the import runs at once (once, even in strict mode).
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (initialAddress !== "" && !autoStarted.current) {
+      autoStarted.current = true;
+      void start();
+    }
+    // `start` reads `address`, which is `initialAddress` on the first render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // Move focus to the new step's heading so keyboard and screen-reader users land on it.
   useEffect(() => {
     if (step !== "site") heading.current?.focus();
@@ -250,7 +268,10 @@ export function SetupWizard() {
       ) : null}
 
       {step === "done" && draft ? (
-        <DoneStep outcome={{ draft, modules, invites, settings }} />
+        <DoneStep
+          outcome={{ draft, modules, invites, settings }}
+          {...(exampleSiteHref ? { siteHref: exampleSiteHref } : {})}
+        />
       ) : null}
     </div>
   );

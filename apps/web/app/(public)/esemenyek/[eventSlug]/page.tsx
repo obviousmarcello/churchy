@@ -33,12 +33,12 @@ import {
   getPublicEventFamily,
   getPublicLocations,
   getPublicTenantName,
-  requestOrigin,
   type PublicEventFamily,
   type PublicOccurrence,
 } from "@/server/public-events";
 import { requirePublicModule } from "@/server/plans";
 import { PublicBreadcrumbs } from "@/components/public/public-page-header";
+import { getSiteHref, siteOrigin } from "@/server/site-base";
 
 type Params = Promise<{ eventSlug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -67,14 +67,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { eventSlug } = await params;
   const family = await getPublicEventFamily(decodeURIComponent(eventSlug), new Date());
   if (family === null) return {};
-  const t = await getT("public.events");
+  const [t, siteHref] = await Promise.all([getT("public.events"), getSiteHref()]);
   const description = family.event.body ? richTextPlain(family.event.body).slice(0, 200) : null;
   return {
     title: t("eventMetaTitle", { title: family.event.title, church: await getPublicTenantName() }),
     ...(description ? { description } : {}),
     alternates: {
-      canonical: eventPath(family.event),
-      types: { "text/calendar": eventIcsPath(family.event) },
+      canonical: siteHref(eventPath(family.event)),
+      types: { "text/calendar": siteHref(eventIcsPath(family.event)) },
     },
   };
 }
@@ -98,12 +98,13 @@ export default async function EventDetailPage({
   const selected = pick(occurrences, typeof datum === "string" ? datum : undefined);
   if (selected === null) notFound();
 
-  const [t, common, locations, organizerName, origin] = await Promise.all([
+  const [t, common, locations, organizerName, origin, siteHref] = await Promise.all([
     getT("public.events"),
     getT("common"),
     getPublicLocations(),
     getPublicTenantName(),
-    requestOrigin(),
+    siteOrigin(),
+    getSiteHref(),
   ]);
   const location = event.locationId ? locations.get(event.locationId) : undefined;
   const address = location ? huAddress(location) : null;
@@ -172,7 +173,7 @@ export default async function EventDetailPage({
               <h3 className="text-fs-2 font-bold">{t("addToCalendar")}</h3>
               <div className="flex flex-wrap gap-2">
                 <ButtonLink
-                  href={eventIcsPath(event)}
+                  href={siteHref(eventIcsPath(event))}
                   variant="secondary"
                   size="sm"
                   download
@@ -204,7 +205,7 @@ export default async function EventDetailPage({
                 {t("whereHeading")}
               </h2>
               <p className="text-fs-4">
-                <a href={locationPath(location)} className={LINK_CLASS}>
+                <a href={siteHref(locationPath(location))} className={LINK_CLASS}>
                   {location.name}
                 </a>
               </p>
@@ -248,7 +249,7 @@ export default async function EventDetailPage({
               <ul className="flex flex-col gap-2" data-testid="event-upcoming">
                 {upcoming.map((occ) => (
                   <li key={`${occ.event.id}-${occ.start}`} className="flex flex-wrap gap-2">
-                    <a href={occurrenceHref(occ)} className={LINK_CLASS}>
+                    <a href={siteHref(occurrenceHref(occ))} className={LINK_CLASS}>
                       <OccurrenceWhen occ={occ} />
                     </a>
                     <OccurrenceBadges occ={occ} />

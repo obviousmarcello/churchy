@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { HomeSection } from "@churchy/contracts";
 import type { EffectiveConfig } from "@churchy/presets";
@@ -18,11 +19,13 @@ import { NextServicesStrip } from "@/components/home/next-services";
 import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { homeBands, type Band } from "@/lib/home/sections";
+import { SITE_BASE_HEADER } from "@/lib/site-base";
 import { jsonLdScript } from "@/lib/locations";
 import { getRequestNow } from "@/server/clock";
 import { getHomeNextServices } from "@/server/public-schedule";
 import { getChurchJsonLd, getPublicSite } from "@/server/public-seo";
 import { getRequestRepositories } from "@/server/repositories";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * Home page of the request's church (D-10, SDD §7.1): the sections of the church's site config
@@ -32,17 +35,24 @@ import { getRequestRepositories } from "@/server/repositories";
  */
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [site, t] = await Promise.all([getPublicSite(), getT("public.home")]);
+  const [site, t, siteHref] = await Promise.all([
+    getPublicSite(),
+    getT("public.home"),
+    getSiteHref(),
+  ]);
   if (site === null) return {};
   const church = site.tenant.name;
   return {
     title: { absolute: church },
     description: t("metaDescription", { church }),
-    alternates: { canonical: "/" },
+    alternates: { canonical: siteHref("/") },
   };
 }
 
 export default async function HomePage() {
+  // The church's home is only served through a church site (the proxy marks it); `/site-home`
+  // itself is not a public URL.
+  if (!(await headers()).has(SITE_BASE_HEADER)) notFound();
   const site = await getPublicSite();
   if (site === null) notFound();
   const { config, tenant } = site;

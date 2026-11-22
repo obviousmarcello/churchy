@@ -10,6 +10,7 @@ import { hasCtaTo, ritePath, riteRequestPath, ritesPath } from "@/lib/pages/publ
 import { TERM_ROUTE_HEADER } from "@/lib/term-routes";
 import { getPublicSite, getRitePage } from "@/server/public-pages";
 import { PublicBreadcrumbs } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * A rite information page (FR-010, SDD §7.4, D-16), e.g. `/szentsegek/keresztelo` or
@@ -31,18 +32,27 @@ async function load(params: Params) {
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const [data, t] = await Promise.all([load(params), getT("public.rites")]);
+  const [data, t, siteHref] = await Promise.all([
+    load(params),
+    getT("public.rites"),
+    getSiteHref(),
+  ]);
   if (data === null) return {};
   return {
     title: t("riteMetaTitle", { rite: data.rite.forms.nom, church: data.site.tenant.name }),
     ...(data.page?.seo.description ? { description: data.page.seo.description } : {}),
-    alternates: { canonical: ritePath(t, data.rite.key) },
+    alternates: { canonical: siteHref(ritePath(t, data.rite.key)) },
   };
 }
 
 export default async function RitePage({ params }: { params: Params }) {
   if ((await headers()).get(TERM_ROUTE_HEADER) !== "ritesSection") notFound();
-  const [data, t, common] = await Promise.all([load(params), getT("public.rites"), getT("common")]);
+  const [data, t, common, siteHref] = await Promise.all([
+    load(params),
+    getT("public.rites"),
+    getT("common"),
+    getSiteHref(),
+  ]);
   if (data === null) notFound();
   const { site, rite, page } = data;
   const blocks = page?.blocks ?? [];
@@ -72,7 +82,7 @@ export default async function RitePage({ params }: { params: Params }) {
         )}
         {hasCtaTo(blocks, requestPath) ? null : (
           <p>
-            <a href={requestPath} className={buttonClasses({ size: "lg" })}>
+            <a href={siteHref(requestPath)} className={buttonClasses({ size: "lg" })}>
               {t("requestButton")}
             </a>
           </p>

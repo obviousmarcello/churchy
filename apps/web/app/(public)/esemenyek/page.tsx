@@ -20,6 +20,7 @@ import {
   type PublicOccurrence,
 } from "@/server/public-events";
 import { requirePublicModule } from "@/server/plans";
+import { getSiteHref } from "@/server/site-base";
 
 /** Days per list page; `?tol=YYYY-MM-DD` pages forward (the month view browses freely). */
 const LIST_DAYS = 28;
@@ -40,11 +41,14 @@ function pageStart(value: string | string[] | undefined, today: string): string 
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getT("public.events");
+  const [t, siteHref] = await Promise.all([getT("public.events"), getSiteHref()]);
   return {
     title: t("metaTitle", { church: await getPublicTenantName() }),
     description: t("lead"),
-    alternates: { canonical: "/esemenyek", types: { "text/calendar": "/esemenyek.ics" } },
+    alternates: {
+      canonical: siteHref("/esemenyek"),
+      types: { "text/calendar": siteHref("/esemenyek.ics") },
+    },
   };
 }
 
@@ -78,11 +82,12 @@ export default async function EventsListPage({ searchParams }: { searchParams: S
   const from = pageStart((await searchParams).tol, today);
   const to = addDays(from, LIST_DAYS - 1);
   const window = dayWindow(from, to);
-  const [t, common, events, locations] = await Promise.all([
+  const [t, common, events, locations, siteHref] = await Promise.all([
     getT("public.events"),
     getT("common"),
     listPublicEvents(window),
     getPublicLocations(),
+    getSiteHref(),
   ]);
   const masters = new Map<string, Event>(events.map((e) => [e.id, e]));
   const occurrences = expandEvents(events, window).filter((o) => o.endMs > now.getTime());
@@ -150,7 +155,7 @@ export default async function EventsListPage({ searchParams }: { searchParams: S
                         <div className="flex min-w-0 flex-col gap-1">
                           <h4 className="font-heading text-fs-5 leading-tight font-bold">
                             <a
-                              href={occurrenceHref(occ)}
+                              href={siteHref(occurrenceHref(occ))}
                               className="text-primary no-underline after:absolute after:inset-0 hover:underline"
                             >
                               {occ.event.title}
@@ -176,7 +181,7 @@ export default async function EventsListPage({ searchParams }: { searchParams: S
               <li>
                 {earlier !== null ? (
                   <a
-                    href={pageHref(earlier)}
+                    href={siteHref(pageHref(earlier))}
                     rel="prev"
                     className={LINK_CLASS}
                     data-testid="events-earlier"
@@ -188,7 +193,7 @@ export default async function EventsListPage({ searchParams }: { searchParams: S
               </li>
               <li>
                 <a
-                  href={pageHref(later)}
+                  href={siteHref(pageHref(later))}
                   rel="next"
                   className={LINK_CLASS}
                   data-testid="events-later"

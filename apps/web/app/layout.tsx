@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { themeAttributes } from "@churchy/themes";
 import { PageTransition } from "@churchy/ui";
-import { DemoBar } from "@/components/demo-bar";
+import { DemoChip } from "@/components/demo-chip";
 import { TermsProvider } from "@/i18n/client";
 import { getTerms } from "@/i18n/terms";
 import { demoModeEnabled } from "@/lib/demo/flag";
@@ -34,9 +34,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body>
         <NextIntlClientProvider>
           <TermsProvider denomination={terms.denomination} terms={terms.all()}>
-            <DemoBar />
             {/* Design v2: animated page changes (View Transitions API; instant when unsupported). */}
             <PageTransition>{children}</PageTransition>
+            {/* Last in the tab order, floating bottom-left; hidden on the landing page. */}
+            <DemoChip />
           </TermsProvider>
         </NextIntlClientProvider>
       </body>

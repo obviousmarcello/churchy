@@ -1,3 +1,4 @@
+import { gotoHome } from "./site-helpers";
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 import { CHURCHES, axeSeriousOrCritical, switchContext } from "./demo-helpers";
 
@@ -27,10 +28,10 @@ const budapestDate = (at: Date) =>
 test.describe("home page", () => {
   test("renders the configured sections in order on the 3 demo churches", async ({ page }) => {
     test.setTimeout(60_000);
-    await page.goto("/");
+    await gotoHome(page);
     for (const church of FLOW) {
       await switchContext(page, church);
-      await page.goto("/");
+      await gotoHome(page);
       await expect(page.getByRole("heading", { level: 1, name: church }), church).toBeVisible();
       expect(await sections(page), church).toEqual(ORDER);
       await expect(page.getByTestId("next-services"), church).toBeVisible();
@@ -42,12 +43,12 @@ test.describe("home page", () => {
   test("terminology follows the church: no szentmise outside the Catholic parish", async ({
     page,
   }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await expect(page.getByTestId("next-services").getByRole("heading", { level: 2 })).toHaveText(
       /szentmis/i,
     );
     await switchContext(page, CHURCHES.reformed);
-    await page.goto("/");
+    await gotoHome(page);
     const text = (await page.getByTestId("next-services").innerText()).toLowerCase();
     expect(text).not.toContain("szentmise");
     await expect(page.getByTestId("next-services-all")).toContainText(
@@ -59,7 +60,7 @@ test.describe("home page", () => {
     page,
     context,
   }) => {
-    await page.goto("/");
+    await gotoHome(page);
     const before = new Date();
     // Just before and just after the next Budapest midnight.
     const today = budapestDate(before);
@@ -70,7 +71,7 @@ test.describe("home page", () => {
     while (budapestDate(new Date(edge)) !== tomorrow) edge += 60_000;
 
     await travelTo(page, context, new Date(edge - 30 * 60_000));
-    await page.goto("/");
+    await gotoHome(page);
     const days = page.getByTestId("next-services-day");
     const first = await days.first().getAttribute("data-date");
     if (first === today) {
@@ -78,7 +79,7 @@ test.describe("home page", () => {
     }
 
     await travelTo(page, context, new Date(edge + 30 * 60_000));
-    await page.goto("/");
+    await gotoHome(page);
     const dates = await days.evaluateAll((els) => els.map((el) => el.getAttribute("data-date")));
     expect(dates).not.toContain(today);
     expect(dates[0]! >= tomorrow).toBe(true);
@@ -95,10 +96,10 @@ test.describe("home page at 360 × 740", () => {
     page,
   }) => {
     test.setTimeout(60_000);
-    await page.goto("/");
+    await gotoHome(page);
     for (const church of FLOW) {
       await switchContext(page, church);
-      await page.goto("/");
+      await gotoHome(page);
       const box = await page.evaluate(() => {
         const hero = document.querySelector("[data-hero]")!.getBoundingClientRect();
         const card = document

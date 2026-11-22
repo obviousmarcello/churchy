@@ -1,3 +1,4 @@
+import { endsWith, gotoHome } from "./site-helpers";
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 import { CHURCHES, axeSeriousOrCritical, switchContext } from "./demo-helpers";
 
@@ -45,7 +46,7 @@ async function allListedSlugs(page: Page): Promise<string[]> {
 
 test.describe("news list", () => {
   test("is in the main navigation and pages 12 posts at a time, newest first", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await (await openMainNav(page)).getByRole("link", { name: "Hírek" }).click();
     await expect(page).toHaveURL(/\/hirek$/);
     await expect(page.getByRole("heading", { level: 1, name: "Hírek" })).toBeVisible();
@@ -66,14 +67,17 @@ test.describe("news list", () => {
 
     // Pagination is plain links (`?oldal=`).
     const next = page.getByRole("link", { name: "Következő oldal" });
-    await expect(next).toHaveAttribute("href", "/hirek?oldal=2");
+    await expect(next).toHaveAttribute("href", endsWith("/hirek?oldal=2"));
     await next.click();
     await expect(page).toHaveURL(/\/hirek\?oldal=2$/);
     await expect(items(page)).toHaveCount(3);
     const secondPage = await items(page).evaluateAll((els) => els.map((el) => el.dataset.slug!));
     expect(secondPage.filter((s) => firstPage.includes(s))).toEqual([]);
     await expect(page.getByRole("link", { name: "Következő oldal" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Előző oldal" })).toHaveAttribute("href", "/hirek");
+    await expect(page.getByRole("link", { name: "Előző oldal" })).toHaveAttribute(
+      "href",
+      endsWith("/hirek"),
+    );
     expect(await axeSeriousOrCritical(page)).toEqual([]);
 
     expect((await page.goto("/hirek?oldal=3"))?.status()).toBe(404);
@@ -133,7 +137,7 @@ test.describe("news post", () => {
     await expect(page.locator("[data-rich-text] p").first()).toContainText("adventi lelkinapot");
     await expect(page.getByRole("link", { name: "Vissza a hírekhez" })).toHaveAttribute(
       "href",
-      "/hirek",
+      endsWith("/hirek"),
     );
 
     const og = async (property: string) =>
@@ -218,7 +222,7 @@ test.describe("news post", () => {
 
 test("news work on the 3 demo churches", async ({ page }) => {
   test.setTimeout(60_000);
-  await page.goto("/");
+  await gotoHome(page);
   for (const church of [CHURCHES.catholic, CHURCHES.reformed, CHURCHES.baptist]) {
     await switchContext(page, church);
     await page.goto("/hirek");

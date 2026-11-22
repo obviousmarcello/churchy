@@ -4,6 +4,7 @@ import { getT } from "@/i18n/server";
 import { announcementWeek, teaserLines } from "@/lib/announcements/view";
 import { termRoutePath } from "@/lib/term-routes";
 import { getLatestAnnouncement } from "@/server/public-announcements";
+import { getSiteHref } from "@/server/site-base";
 
 /** Lines of the latest announcement the teaser shows. */
 const TEASER_LINES = 3;
@@ -17,10 +18,10 @@ const TEASER_LINES = 3;
 export async function LatestAnnouncementTeaser({ empty }: { empty?: ReactNode } = {}) {
   const latest = await getLatestAnnouncement();
   if (latest === null) return empty ?? null;
-  const t = await getT("public.announcements");
+  const [t, siteHref] = await Promise.all([getT("public.announcements"), getSiteHref()]);
   const { announcement, file, config } = latest;
   const week = announcementWeek(announcement.weekSunday, config.calendarFamily);
-  const href = termRoutePath(t, "announcementsSection");
+  const href = siteHref(termRoutePath(t, "announcementsSection"));
   const lines = teaserLines(announcement.body, TEASER_LINES);
 
   return (

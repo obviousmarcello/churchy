@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { AdminScope, CloseIcon, MenuIcon, SkipLink, cn, pageTransitionTypes } from "@churchy/ui";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export interface AdminFrameNavItem {
   readonly id: string;
@@ -27,6 +28,7 @@ export interface AdminFrameProps {
     closeMenu: string;
     dashboard: string;
     viewSite: string;
+    signOut: string;
   };
   /** Permission-filtered sections, already grouped (see `groupAdminNav()`). */
   groups: readonly AdminFrameNavGroup[];
@@ -104,6 +106,7 @@ export function AdminFrame({
         >
           {labels.viewSite}
         </a>
+        <SignOutButton label={labels.signOut} />
       </header>
 
       <div className="lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">

@@ -11,8 +11,9 @@ import { requestContextFrom } from "@/server/session";
 export async function redirectForRequest(
   cookie: CookieReader,
   pathname: string,
+  siteTenantId?: string,
 ): Promise<Redirect | null> {
-  const demo = demoStateFrom(cookie);
+  const demo = demoStateFrom(cookie, siteTenantId);
   const { tenantId } = requestContextFrom(demo);
   if (tenantId === undefined) return null;
   return repositoriesForDemo(demo).tenants.findRedirect(

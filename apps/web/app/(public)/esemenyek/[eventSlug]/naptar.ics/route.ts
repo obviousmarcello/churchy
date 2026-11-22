@@ -6,8 +6,8 @@ import {
   getPublicEventFamily,
   getPublicLocations,
   getPublicTenantName,
-  requestOrigin,
 } from "@/server/public-events";
+import { siteOrigin } from "@/server/site-base";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +27,7 @@ export async function GET(
   const [locations, church, origin, t] = await Promise.all([
     getPublicLocations(),
     getPublicTenantName(),
-    requestOrigin(),
+    siteOrigin(),
     getTranslations({ locale: LOCALE, namespace: "public.events" }),
   ]);
   const { event, master, members } = family;

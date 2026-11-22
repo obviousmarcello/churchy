@@ -1,3 +1,4 @@
+import { gotoHome } from "./site-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { CHURCHES, axeSeriousOrCritical, switchContext } from "./demo-helpers";
 
@@ -41,10 +42,10 @@ function pdfPageCount(pdf: Buffer): number {
 
 test.describe("service schedule page", () => {
   test("is in the public main navigation and only reachable at the term slug", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await expect((await mainNav(page)).getByRole("link", { name: "Miserend" })).toHaveAttribute(
       "href",
-      PATH,
+      new RegExp(`${PATH}$`),
     );
 
     await page.goto(PATH);

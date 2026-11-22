@@ -6,6 +6,7 @@ import { PublicPageHeader } from "@/components/public/public-page-header";
 import { getT } from "@/i18n/server";
 import { eventPath } from "@/lib/events/public-event";
 import type { PublicOccurrence } from "@/server/public-events";
+import { getSiteHref } from "@/server/site-base";
 
 /** Inline text link style (Tailwind's preflight strips the browser's link styling). */
 export const LINK_CLASS =
@@ -86,10 +87,10 @@ export async function OccurrenceBadges({
 
 /** Page heading, lead and the list / month view switch shared by both views. */
 export async function EventsHeader({ view }: { view: "list" | "month" }) {
-  const t = await getT("public.events");
+  const [t, href] = await Promise.all([getT("public.events"), getSiteHref()]);
   const views = [
-    { key: "list", href: "/esemenyek", label: t("viewList") },
-    { key: "month", href: "/esemenyek/naptar", label: t("viewMonth") },
+    { key: "list", href: href("/esemenyek"), label: t("viewList") },
+    { key: "month", href: href("/esemenyek/naptar"), label: t("viewMonth") },
   ] as const;
   return (
     <div className="flex flex-col gap-6">
@@ -116,7 +117,7 @@ export async function EventsHeader({ view }: { view: "list" | "month" }) {
           </ul>
         </nav>
         <div className="flex max-w-md flex-col gap-1 text-fs-2">
-          <a href="/esemenyek.ics" className={LINK_CLASS} data-testid="events-ics-feed">
+          <a href={href("/esemenyek.ics")} className={LINK_CLASS} data-testid="events-ics-feed">
             {t("subscribe")}
           </a>
           <p className="text-muted">{t("subscribeHint")}</p>

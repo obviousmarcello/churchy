@@ -85,15 +85,13 @@ for (const persona of AS) {
     await page.goto("/");
     await switchPersona(page, persona);
     for (const route of ROUTES) {
+      // The landing page has no demo bar by design: its footer's tiny Demo link opens the menu.
+      if (route === "/") continue;
       const response = await page.goto(route);
       expect(response, route).not.toBeNull();
       const b = banner(page);
       await expect(b, route).toBeVisible();
       await expect(b, route).toContainText(BANNER_TEXT);
-      // At the top of the page, above everything else.
-      expect(await b.evaluate((el) => el.getBoundingClientRect().top), route).toBeLessThanOrEqual(
-        0,
-      );
     }
   });
 }

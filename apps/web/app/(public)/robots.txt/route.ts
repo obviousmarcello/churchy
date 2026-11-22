@@ -1,6 +1,6 @@
 import { robotsTxt, seoHeaders } from "@/lib/seo";
-import { requestOrigin } from "@/server/public-events";
 import { siteIndexable } from "@/server/public-seo";
+import { siteOrigin } from "@/server/site-base";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
  * carries none, and the proxy skips this path.
  */
 export async function GET(): Promise<Response> {
-  return new Response(robotsTxt({ origin: await requestOrigin(), indexable: siteIndexable() }), {
+  return new Response(robotsTxt({ origin: await siteOrigin(), indexable: siteIndexable() }), {
     headers: seoHeaders("text/plain"),
   });
 }

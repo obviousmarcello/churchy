@@ -16,6 +16,7 @@ import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { getPublicTenantName, publicOccurrences } from "@/server/public-events";
 import { requirePublicModule } from "@/server/plans";
+import { getSiteHref } from "@/server/site-base";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -29,12 +30,15 @@ export async function generateMetadata({
 }: {
   searchParams: SearchParams;
 }): Promise<Metadata> {
-  const t = await getT("public.events");
+  const [t, siteHref] = await Promise.all([getT("public.events"), getSiteHref()]);
   const ym = await selectedMonth(searchParams, todayInBudapest(new Date()));
   const month = t("monthTitle", { year: ym.year, month: monthName(ym.month) });
   return {
     title: t("monthMetaTitle", { month, church: await getPublicTenantName() }),
-    alternates: { canonical: "/esemenyek/naptar", types: { "text/calendar": "/esemenyek.ics" } },
+    alternates: {
+      canonical: siteHref("/esemenyek/naptar"),
+      types: { "text/calendar": siteHref("/esemenyek.ics") },
+    },
   };
 }
 
@@ -46,17 +50,18 @@ export default async function EventsMonthPage({ searchParams }: { searchParams: 
   const today = todayInBudapest(now);
   const ym = await selectedMonth(searchParams, today);
   const grid = monthGrid(ym);
-  const [t, common, occurrences] = await Promise.all([
+  const [t, common, occurrences, siteHref] = await Promise.all([
     getT("public.events"),
     getT("common"),
     publicOccurrences(dayWindow(grid.first, grid.last)),
+    getSiteHref(),
   ]);
   const byDay = occurrencesByDay(occurrences, grid.first, grid.last);
   const title = t("monthTitle", {
     year: ym.year,
     month: monthName(ym.month),
   });
-  const href = (m: YearMonth) => `/esemenyek/naptar?honap=${formatYearMonth(m)}`;
+  const href = (m: YearMonth) => siteHref(`/esemenyek/naptar?honap=${formatYearMonth(m)}`);
   const prev = addMonths(ym, -1);
   const next = addMonths(ym, 1);
   const current = yearMonthOf(today);
@@ -162,7 +167,10 @@ export default async function EventsMonthPage({ searchParams }: { searchParams: 
                     <ul className="flex flex-col gap-1">
                       {items.map((occ) => (
                         <li key={`${occ.event.id}-${occ.start}`} className="text-fs-2 leading-snug">
-                          <a href={occurrenceHref(occ)} className="font-semibold text-primary">
+                          <a
+                            href={siteHref(occurrenceHref(occ))}
+                            className="font-semibold text-primary"
+                          >
                             {occ.allDay ? null : (
                               <>
                                 <FormattedTime value={occ.start} className="tabular-nums" />{" "}

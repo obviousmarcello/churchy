@@ -3,12 +3,8 @@ import { buildICalendar, dayWindow, expandEvents } from "@churchy/events";
 import { addDays, todayInBudapest } from "@churchy/hu";
 import { LOCALE } from "@/i18n/request";
 import { icsHeaders, toIcsEvent } from "@/lib/events/public-event";
-import {
-  getPublicLocations,
-  getPublicTenantName,
-  listPublicEvents,
-  requestOrigin,
-} from "@/server/public-events";
+import { getPublicLocations, getPublicTenantName, listPublicEvents } from "@/server/public-events";
+import { siteOrigin } from "@/server/site-base";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +24,7 @@ export async function GET(): Promise<Response> {
     listPublicEvents(window),
     getPublicLocations(),
     getPublicTenantName(),
-    requestOrigin(),
+    siteOrigin(),
     getTranslations({ locale: LOCALE, namespace: "public.events" }),
   ]);
   const shown = new Set(expandEvents(events, window).map((o) => o.event.id));

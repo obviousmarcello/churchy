@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
 import { Breadcrumbs, PageHeader, type BreadcrumbItem } from "@churchy/ui";
 import { getT } from "@/i18n/server";
+import { getSiteHref } from "@/server/site-base";
+
+/** Breadcrumb ancestors with their links resolved for the site's base path. */
+function linked(trail: BreadcrumbItem[], href: (path: string) => string): BreadcrumbItem[] {
+  return trail.map((item) => (item.href ? { ...item, href: href(item.href) } : item));
+}
 
 /**
  * Breadcrumbs from the home page, for public pages whose title block is rendered elsewhere (a
@@ -13,11 +19,11 @@ export async function PublicBreadcrumbs({
   trail: BreadcrumbItem[];
   current: string;
 }) {
-  const t = await getT("public.chrome");
+  const [t, href] = await Promise.all([getT("public.chrome"), getSiteHref()]);
   return (
     <Breadcrumbs
       label={t("breadcrumbs")}
-      items={[{ label: t("home"), href: "/" }, ...trail, { label: current }]}
+      items={[{ label: t("home"), href: href("/") }, ...linked(trail, href), { label: current }]}
       className="print:hidden"
     />
   );
@@ -47,7 +53,7 @@ export async function PublicPageHeader({
   className?: string;
   "data-testid"?: string;
 }) {
-  const t = await getT("public.chrome");
+  const [t, href] = await Promise.all([getT("public.chrome"), getSiteHref()]);
   return (
     <PageHeader
       variant="public"
@@ -55,7 +61,7 @@ export async function PublicPageHeader({
       breadcrumbs={
         <Breadcrumbs
           label={t("breadcrumbs")}
-          items={[{ label: t("home"), href: "/" }, ...trail, { label: title }]}
+          items={[{ label: t("home"), href: href("/") }, ...linked(trail, href), { label: title }]}
           className="print:hidden"
         />
       }

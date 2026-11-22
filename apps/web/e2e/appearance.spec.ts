@@ -1,3 +1,4 @@
+import { gotoHome } from "./site-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { CHURCHES, axeSeriousOrCritical, switchContext, switchPersona } from "./demo-helpers";
 
@@ -9,7 +10,7 @@ import { CHURCHES, axeSeriousOrCritical, switchContext, switchPersona } from "./
 const BASE = "/admin/megjelenes";
 
 async function asOwner(page: Page, church: string = CHURCHES.catholic) {
-  await page.goto("/");
+  await gotoHome(page);
   if (church !== CHURCHES.catholic) await switchContext(page, church);
   await switchPersona(page, "tulajdonos");
 }
@@ -72,7 +73,7 @@ test.describe("appearance: branding and themes", () => {
     await page.locator('[data-theme-option="letisztult"]').click();
     await page.getByRole("button", { name: "Mentés" }).click();
     await expect(page.getByText("A módosítások mentve")).toBeVisible();
-    await page.goto("/");
+    await gotoHome(page);
     await expect(page.locator("html")).toHaveAttribute("data-theme", "letisztult");
     expect(await axeSeriousOrCritical(page)).toEqual([]);
   });
@@ -115,7 +116,7 @@ test.describe("appearance: home composer", () => {
 
     await page.getByRole("button", { name: "Mentés" }).click();
     await expect(page.getByText("A módosítások mentve")).toBeVisible();
-    await page.goto("/");
+    await gotoHome(page);
     await expect(page.locator('[data-home-section="quote"]')).toContainText(
       "Az Úr az én pásztorom.",
     );
@@ -229,10 +230,10 @@ test.describe("themes on the demo churches", () => {
     page,
   }) => {
     test.setTimeout(90_000);
-    await page.goto("/");
+    await gotoHome(page);
     for (const [church, theme] of DEFAULTS) {
       await switchContext(page, church);
-      await page.goto("/");
+      await gotoHome(page);
       await expect(page.locator("html"), church).toHaveAttribute("data-theme", theme);
       // Fonts are self-hosted: the face is loaded (latin-ext covers ő/ű), not substituted.
       const loaded = await page.evaluate(async () => {

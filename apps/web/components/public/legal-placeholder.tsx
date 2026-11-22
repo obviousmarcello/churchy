@@ -4,6 +4,7 @@ import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { CONTACT_PATH } from "@/lib/seo";
 import { getPublicTenantName } from "@/server/public-events";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * Placeholder of a legal page (`/impresszum`, `/adatkezeles`; SDD §6, FR-109). The real texts are
@@ -16,15 +17,23 @@ export type LegalPage = "impresszum" | "privacy";
 const TITLE_KEY = { impresszum: "impresszumTitle", privacy: "privacyTitle" } as const;
 
 export async function legalMetadata(page: LegalPage, path: string): Promise<Metadata> {
-  const [t, church] = await Promise.all([getT("public.legal"), getPublicTenantName()]);
+  const [t, church, href] = await Promise.all([
+    getT("public.legal"),
+    getPublicTenantName(),
+    getSiteHref(),
+  ]);
   return {
     title: t("metaTitle", { title: t(TITLE_KEY[page]), church }),
-    alternates: { canonical: path },
+    alternates: { canonical: href(path) },
   };
 }
 
 export async function LegalPlaceholder({ page }: { page: LegalPage }) {
-  const [t, common] = await Promise.all([getT("public.legal"), getT("common")]);
+  const [t, common, href] = await Promise.all([
+    getT("public.legal"),
+    getT("common"),
+    getSiteHref(),
+  ]);
   return (
     <PageShell skipLinkLabel={common("skipToContent")} header={<PublicSiteHeader />}>
       <div className="mx-auto grid w-full max-w-(--content-max) gap-6 px-(--gutter) py-10">
@@ -35,7 +44,7 @@ export async function LegalPlaceholder({ page }: { page: LegalPage }) {
           <p className="font-semibold">{t("comingSoon")}</p>
           <p className="text-muted">{t("comingSoonNote")}</p>
           <p>
-            <a href={CONTACT_PATH} className="text-primary underline">
+            <a href={href(CONTACT_PATH)} className="text-primary underline">
               {t("contactLink")}
             </a>
           </p>

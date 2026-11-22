@@ -1,4 +1,4 @@
-import { Alert, Badge, PageShell } from "@churchy/ui";
+import { Alert, Badge, ButtonLink, PageShell } from "@churchy/ui";
 import { buildAppNav, type AppArea } from "@/lib/app-nav";
 import { filterNav } from "@/lib/permissions/nav";
 import { getT } from "@/i18n/server";
@@ -42,6 +42,11 @@ export async function AreaHome({
               <p>{t("noAccessBody")}</p>
               {demo !== null && <p className="mt-2">{t("noAccessDemoHint")}</p>}
             </Alert>
+            <p className="mt-4">
+              <ButtonLink href="/belepes" variant="outline" data-testid="area-login">
+                {t("noAccessLogin")}
+              </ButtonLink>
+            </p>
           </div>
         ) : (
           <>

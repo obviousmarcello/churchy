@@ -14,6 +14,7 @@ import { getRequestRepositories } from "@/server/repositories";
 import { renderStamp } from "@/server/request-limiter";
 import { submitRequest } from "./actions";
 import { PublicBreadcrumbs } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * Request form of a rite (`/szentsegek/keresztelo/bejelentes`, SDD §6, D-28). The form is the
@@ -45,12 +46,17 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function RiteRequestPage({ params }: { params: Params }) {
   if ((await headers()).get(TERM_ROUTE_HEADER) !== "ritesSection") notFound();
-  const [data, t, common] = await Promise.all([load(params), getT("public.rites"), getT("common")]);
+  const [data, t, common, siteHref] = await Promise.all([
+    load(params),
+    getT("public.rites"),
+    getT("common"),
+    getSiteHref(),
+  ]);
   if (data === null) notFound();
   const { site, rite } = data;
   const [repos, ctx] = await Promise.all([getRequestRepositories(), getPublicCtx()]);
   const form = await repos.requests.getForm(ctx, rite.key);
-  const backHref = ritePath(t, rite.key);
+  const backHref = siteHref(ritePath(t, rite.key));
 
   return (
     <PageShell
@@ -64,7 +70,7 @@ export default async function RiteRequestPage({ params }: { params: Params }) {
         <PublicBreadcrumbs
           trail={[
             { label: t("title"), href: ritesPath(t) },
-            { label: rite.forms.nom, href: backHref },
+            { label: rite.forms.nom, href: ritePath(t, rite.key) },
           ]}
           current={t("requestTitle", { rite: rite.forms.nom })}
         />
@@ -85,7 +91,7 @@ export default async function RiteRequestPage({ params }: { params: Params }) {
               definition={{ key: form.key, fields: form.fields }}
               action={submitRequest}
               startedAt={renderStamp()}
-              privacyHref={PRIVACY_PATH}
+              privacyHref={siteHref(PRIVACY_PATH)}
               backHref={backHref}
             />
             <RiteContact tenant={site.tenant} />

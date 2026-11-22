@@ -10,6 +10,7 @@ import { ritePath, ritesPath, ritesSectionPage } from "@/lib/pages/public-pages"
 import { TERM_ROUTE_HEADER } from "@/lib/term-routes";
 import { getPublicSite, getPublishedPage, listPublishedPages } from "@/server/public-pages";
 import { PublicPageHeader } from "@/components/public/public-page-header";
+import { getSiteHref } from "@/server/site-base";
 
 /**
  * The rites section (*Szentségek*, Reformed *Alkalmak*, Baptist *Életesemények*; FR-010, SDD §6,
@@ -21,21 +22,26 @@ import { PublicPageHeader } from "@/components/public/public-page-header";
  */
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [t, site] = await Promise.all([getT("public.rites"), getPublicSite()]);
+  const [t, site, siteHref] = await Promise.all([
+    getT("public.rites"),
+    getPublicSite(),
+    getSiteHref(),
+  ]);
   return {
     title: t("metaTitle", { church: site?.tenant.name ?? "" }),
     description: t("metaDescription"),
-    alternates: { canonical: ritesPath(t) },
+    alternates: { canonical: siteHref(ritesPath(t)) },
   };
 }
 
 export default async function RitesPage() {
   if ((await headers()).get(TERM_ROUTE_HEADER) !== "ritesSection") notFound();
-  const [site, t, common, pages] = await Promise.all([
+  const [site, t, common, pages, siteHref] = await Promise.all([
     getPublicSite(),
     getT("public.rites"),
     getT("common"),
     listPublishedPages(),
+    getSiteHref(),
   ]);
   if (site === null || !site.config.modules.rites) notFound();
   const introSummary = ritesSectionPage(pages);
@@ -62,7 +68,7 @@ export default async function RitesPage() {
                 as="li"
                 title={rite.forms.nom}
                 headingLevel={3}
-                href={ritePath(t, rite.key)}
+                href={siteHref(ritePath(t, rite.key))}
                 footer={<span className="text-fs-2 text-muted">{t("readMore")}</span>}
               />
             ))}

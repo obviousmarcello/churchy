@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
-import { CheckIcon, ChevronDownIcon, RefreshIcon, UserIcon, buttonClasses, cn } from "@churchy/ui";
+import { CheckIcon, RefreshIcon, UserIcon, buttonClasses, cn } from "@churchy/ui";
 import { resetDemo, switchContext, switchPersona, type ResetResult } from "@/server/demo-actions";
 
 export interface DemoOption {
@@ -15,11 +15,19 @@ interface Choice {
 }
 
 export interface DemoControlsProps {
+  /**
+   * `chip`: the small floating *Demo* button of every page but the landing page. `footer`: the
+   * tiny *Demo* link in the landing page's footer. Both open the same menu.
+   */
+  variant: "chip" | "footer";
   persona: Choice;
   context: Choice;
   labels: {
+    chip: string;
     menu: string;
+    banner: string;
     note: string;
+    now: string;
     persona: string;
     context: string;
     choosePersona: string;
@@ -89,10 +97,11 @@ function OptionGroup({
 }
 
 /**
- * The demo menu (client part of the demo bar): a disclosure whose button shows the current role and
- * church; the panel holds both switchers and *Visszaállítás*. Escape or a click outside closes it.
+ * The demo menu (client part of the demo chip and of the landing footer's *Demo* link): a
+ * disclosure, collapsed by default, whose panel holds the *Bemutató — nem valós adatok* notice, the
+ * current role and church, both switchers and *Visszaállítás*. Escape or a click outside closes it.
  */
-export function DemoControls({ persona, context, labels }: DemoControlsProps) {
+export function DemoControls({ variant, persona, context, labels }: DemoControlsProps) {
   const ref = useRef<HTMLDetailsElement>(null);
   const [reset, resetAction, resetting] = useActionState<ResetResult, FormData>(
     (previous) => resetDemo(previous),
@@ -136,43 +145,52 @@ export function DemoControls({ persona, context, labels }: DemoControlsProps) {
     <details
       ref={ref}
       data-menu=""
-      className="group relative ml-auto min-w-0"
+      className={cn("group relative", variant === "footer" && "inline-block")}
       data-testid="demo-menu"
     >
       <summary
         data-surface="inverse"
+        // The tooltip repeats the notice, so it is there on hover even while the menu is closed.
+        title={labels.banner}
         className={cn(
-          "flex h-11 min-w-0 cursor-pointer list-none items-center gap-2 rounded-full px-3 text-fs-2 font-semibold lg:h-8",
-          "bg-inverse-text/8 text-inverse-text transition-[background-color,scale] duration-(--dur-2) ease-spring hover:bg-inverse-text/15 active:scale-(--motion-press) group-open:bg-inverse-text/20",
+          "flex min-h-11 cursor-pointer list-none items-center gap-2 text-fs-2 font-semibold",
           "[&::-webkit-details-marker]:hidden",
+          variant === "chip"
+            ? "min-w-11 rounded-full bg-inverse px-4 text-inverse-text shadow-overlay transition-[background-color,scale,box-shadow] duration-(--dur-2) ease-spring hover:shadow-raised active:scale-(--motion-press) group-open:bg-inverse"
+            : "rounded-full px-2 text-inverse-muted underline decoration-inverse-muted/50 underline-offset-4 hover:text-inverse-text",
         )}
       >
-        <span className="sr-only">{labels.menu}: </span>
-        <UserIcon size="sm" className="shrink-0 text-inverse-accent" />
-        <span data-testid="demo-current-persona" className="max-w-[9rem] truncate sm:max-w-[12rem]">
-          {currentPersona}
+        {variant === "chip" ? (
+          <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-inverse-accent" />
+        ) : null}
+        <span>{labels.chip}</span>
+        <span className="sr-only">
+          : {labels.banner}. {labels.menu}.
         </span>
-        <span aria-hidden="true" className="hidden h-4 border-l border-inverse-muted/50 sm:block" />
-        <span className="sr-only">, </span>
-        <span
-          data-testid="demo-current-context"
-          className="hidden max-w-[16rem] truncate font-normal text-inverse-muted sm:block"
-        >
-          {currentContext}
-        </span>
-        <ChevronDownIcon
-          size="sm"
-          className="shrink-0 transition-transform duration-(--dur-3) ease-spring group-open:rotate-180"
-        />
       </summary>
       <div
         className={cn(
-          "absolute top-[calc(100%_+_0.375rem)] right-0 z-50 grid w-[min(36rem,calc(100vw_-_2_*_var(--gutter)))] gap-5",
-          "max-h-[calc(100dvh_-_var(--demo-bar-h)_-_1rem)] overflow-y-auto overscroll-contain",
-          "rounded-overlay border border-hairline bg-surface-raised p-4 text-text shadow-overlay sm:p-5",
+          // The chip's panel opens above the chip; the footer link's is a sheet pinned to the
+          // viewport's bottom-left, so it is never cut off wherever the link sits on the page.
+          variant === "chip"
+            ? "absolute bottom-[calc(100%_+_0.5rem)] left-0 max-h-[calc(100dvh_-_7rem)]"
+            : "fixed bottom-4 left-4 max-h-[calc(100dvh_-_2rem)]",
+          "z-50 grid w-[min(34rem,calc(100vw_-_2rem))] gap-5 overflow-y-auto overscroll-contain",
+          "origin-bottom-left rounded-overlay border border-hairline bg-surface-raised p-4 text-left text-text no-underline shadow-overlay sm:p-5",
         )}
       >
-        <p className="m-0 text-fs-2 text-muted lg:hidden">{labels.note}</p>
+        <div className="grid gap-1">
+          <p className="m-0 flex items-center gap-2 text-fs-3 font-semibold text-text">
+            <UserIcon size="sm" className="shrink-0 text-accent-text" />
+            <span>{labels.banner}</span>
+          </p>
+          <p className="m-0 text-fs-2 text-muted">{labels.note}</p>
+          <p className="m-0 text-fs-2 text-muted">
+            {labels.now}: <span data-testid="demo-current-persona">{currentPersona}</span>
+            {" · "}
+            <span data-testid="demo-current-context">{currentContext}</span>
+          </p>
+        </div>
         <OptionGroup
           name="persona"
           legend={labels.choosePersona}

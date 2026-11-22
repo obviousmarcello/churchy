@@ -1,3 +1,4 @@
+import { gotoHome } from "./site-helpers";
 import { expect, test, type Page, type Request } from "@playwright/test";
 import { CHURCHES, axeSeriousOrCritical, switchContext } from "./demo-helpers";
 
@@ -155,12 +156,12 @@ test.describe("office hours", () => {
 
 test.describe("contact form", () => {
   test("Kapcsolat is in the main navigation", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     const nav = page.getByRole("navigation", { name: "Főmenü" });
     const toggle = page.getByRole("button", { name: "Menü megnyitása" });
     if (await toggle.isVisible()) await toggle.click();
     await nav.getByRole("link", { name: "Kapcsolat" }).click();
-    await expect(page).toHaveURL("/kapcsolat");
+    await expect(page).toHaveURL(/\/kapcsolat$/);
     await expect(page.getByRole("heading", { level: 1, name: "Kapcsolat" })).toBeVisible();
   });
 

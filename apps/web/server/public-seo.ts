@@ -4,13 +4,9 @@ import { eventPath } from "@/lib/events/public-event";
 import { canonicalPagePath } from "@/lib/pages/public-pages";
 import { churchJsonLd, sitemapEntries, type SitemapEntry } from "@/lib/seo";
 import { getPublicAnnouncementSite } from "@/server/public-announcements";
-import {
-  aheadWindow,
-  getPublicLocations,
-  publicOccurrences,
-  requestOrigin,
-} from "@/server/public-events";
+import { aheadWindow, getPublicLocations, publicOccurrences } from "@/server/public-events";
 import { getRequestRepositories } from "@/server/repositories";
+import { siteOrigin } from "@/server/site-base";
 
 /**
  * Data of the SEO routes and the church's structured data (D-17). Everything is read through the
@@ -48,7 +44,7 @@ export async function getSitemapEntries(now = new Date()): Promise<SitemapEntry[
     getPublicSite(),
     getRequestRepositories(),
     getTerms(),
-    requestOrigin(),
+    siteOrigin(),
   ]);
   if (site === null) return [];
   const { ctx, config } = site;
@@ -91,7 +87,7 @@ const JSON_LD_EVENTS = 5;
 export async function getChurchJsonLd(now = new Date()): Promise<Record<string, unknown> | null> {
   const [site, origin, locations] = await Promise.all([
     getPublicSite(),
-    requestOrigin(),
+    siteOrigin(),
     getPublicLocations(),
   ]);
   if (site === null) return null;
