@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { AdminScope, CloseIcon, MenuIcon, SkipLink, cn } from "@churchy/ui";
+import { AdminScope, CloseIcon, MenuIcon, SkipLink, cn, pageTransitionTypes } from "@churchy/ui";
 
 export interface AdminFrameNavItem {
   readonly id: string;
@@ -124,6 +124,7 @@ export function AdminFrame({
             <li>
               <Link
                 href={DASHBOARD_HREF}
+                transitionTypes={pageTransitionTypes}
                 aria-current={isCurrent(pathname, DASHBOARD_HREF) ? "page" : undefined}
                 className={linkClasses}
               >
@@ -144,6 +145,7 @@ export function AdminFrame({
                   <li key={item.id}>
                     <Link
                       href={item.href}
+                      transitionTypes={pageTransitionTypes}
                       data-nav-item={item.id}
                       aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
                       className={linkClasses}

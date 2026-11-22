@@ -63,12 +63,22 @@
   --fs-card-title: 1.3125rem;
   --fw-heading-sm: 700; /* small serif titles (cards, dialogs) need the bolder cut */
 
-  /* Shape */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
+  /* Shape (design v2): refined, 14 px controls and buttons, 20 px cards, 24 px overlays. The step
+     (--radius-sm…xl) is configurable; the semantic radii follow it. */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-control: var(--radius-md);
+  --radius-button: var(--radius-md);
+  --radius-card: var(--radius-lg);
+  --radius-overlay: var(--radius-xl);
+  --radius-tile: calc(var(--radius-md) - 2px);
+  --radius-image: var(--radius-lg);
+
+  /* Soft, diffuse elevation with a warm tint (negative spread keeps the edges soft). */
   --shadow-xs: 0 1px 2px rgb(60 40 20 / 0.06);
-  --shadow-card: 0 1px 2px rgb(60 40 20 / 0.04), 0 2px 10px rgb(60 40 20 / 0.05);
-  --shadow-raised: 0 2px 6px rgb(60 40 20 / 0.06), 0 12px 28px rgb(60 40 20 / 0.1);
-  --shadow-overlay: 0 8px 24px rgb(60 40 20 / 0.12), 0 32px 64px rgb(60 40 20 / 0.2);
+  --shadow-card: 0 1px 2px rgb(60 40 20 / 0.04), 0 8px 24px -10px rgb(60 40 20 / 0.14);
+  --shadow-raised: 0 2px 6px rgb(60 40 20 / 0.05), 0 20px 44px -14px rgb(60 40 20 / 0.22);
+  --shadow-overlay: 0 12px 32px -8px rgb(60 40 20 / 0.18), 0 44px 88px -24px rgb(60 40 20 / 0.34);
 }

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "../cn";
 import { CheckIcon, DangerIcon } from "../icons";
+import { IconTile } from "./primitives";
 
 export interface EmptyStateProps {
   /** Decorative icon, e.g. `<InboxIcon />`. */
@@ -37,21 +38,18 @@ export function EmptyState({
       className={cn(
         "flex flex-col items-center text-center",
         size === "md"
-          ? "gap-3 rounded-lg border border-dashed border-border px-6 py-12"
+          ? "gap-3 rounded-card bg-surface-tint px-6 py-12 sm:py-14"
           : "gap-2 px-4 py-8",
         className,
       )}
     >
       {icon ? (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "inline-grid place-items-center rounded-full bg-surface-sunken text-muted",
-            size === "md" ? "size-12 [&_svg]:size-6" : "size-10 [&_svg]:size-5",
-          )}
-        >
-          {icon}
-        </span>
+        <IconTile
+          icon={icon}
+          size={size === "md" ? "lg" : "md"}
+          tone={size === "md" ? "primary" : "neutral"}
+          className={size === "md" ? "mb-1 shadow-xs" : undefined}
+        />
       ) : null}
       <Title className="font-body text-fs-4 leading-snug font-semibold text-text">{title}</Title>
       {description ? <div className="max-w-[48ch] text-fs-3 text-muted">{description}</div> : null}
@@ -74,7 +72,13 @@ export interface SkeletonProps {
  * `<LoadingRegion label>` so assistive technology hears one status message instead.
  */
 export function Skeleton({ shape = "text", lines = 1, className }: SkeletonProps) {
-  const block = "animate-pulse bg-surface-sunken motion-reduce:animate-none";
+  // Design v2: a light band sweeps across the placeholder (transform only); static under reduced
+  // motion.
+  const block =
+    "relative overflow-hidden bg-surface-sunken " +
+    "after:absolute after:inset-0 after:bg-linear-to-r after:from-transparent " +
+    "after:via-[color-mix(in_oklab,var(--c-surface-raised)_70%,transparent)] after:to-transparent " +
+    "motion-safe:after:animate-[ui-shimmer_1.6s_var(--ease-standard)_infinite] motion-reduce:after:hidden";
   if (shape === "text") {
     return (
       <span aria-hidden="true" className={cn("grid gap-2", className)}>
@@ -83,7 +87,7 @@ export function Skeleton({ shape = "text", lines = 1, className }: SkeletonProps
             key={i}
             className={cn(
               block,
-              "block h-[0.9em] rounded-sm",
+              "block h-[0.9em] rounded-full",
               lines > 1 && i === lines - 1 ? "w-3/5" : "w-full",
             )}
           />
@@ -97,7 +101,7 @@ export function Skeleton({ shape = "text", lines = 1, className }: SkeletonProps
       className={cn(
         block,
         "block",
-        shape === "circle" ? "size-10 rounded-full" : "h-24 w-full rounded-md",
+        shape === "circle" ? "size-10 rounded-full" : "h-24 w-full rounded-card",
         className,
       )}
     />
@@ -153,7 +157,7 @@ export function SaveStatus({ state, messages, className, "data-testid": testId }
       {state === "saved" ? (
         <span
           key="saved"
-          className="inline-flex items-center gap-1.5 motion-safe:animate-[ui-fade-in_200ms_ease-out]"
+          className="inline-flex items-center gap-1.5 motion-safe:animate-[ui-pop-in_var(--dur-3)_var(--ease-spring)]"
         >
           <CheckIcon />
           {messages.saved}

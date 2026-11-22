@@ -63,8 +63,37 @@
   --control-h-lg: 3.25rem;
   --control-px: 1.125rem;
   --focus-width: 3px;
-  --duration: 160ms;
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Motion (design v2). Four durations:
+     --dur-1 120 ms  press, colour, small state changes
+     --dur-2 200 ms  hover, focus ring, tabs, menus
+     --dur-3 320 ms  open / close of dialogs, drawers, disclosures, toasts
+     --dur-4 480 ms  page transitions, staggered reveals
+     Easings (--ease-standard, --ease-emphasized, --ease-exit, --ease-spring) are declared in
+     tailwind.css (@theme) so the `ease-*` utilities exist. Animate transform and opacity only. */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --dur-4: 480ms;
+  --stagger-step: 55ms; /* delay between items of a staggered list (capped at 8 steps) */
+  --motion-lift-sm: -1px; /* hover lift of buttons */
+  --motion-lift: -3px; /* hover lift of interactive cards */
+  --motion-press: 0.97; /* scale while pressed */
+  --motion-rise: 14px; /* distance of the fade-up reveal */
+  /* v1 names, kept for existing code. */
+  --duration: var(--dur-2);
+  --ease: var(--ease-standard);
+}
+
+/* Reduced motion: no movement at all. Transitions and animations become instant in base.css. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-lift-sm: 0px;
+    --motion-lift: 0px;
+    --motion-press: 1;
+    --motion-rise: 0px;
+    --stagger-step: 0ms;
+  }
 }
 
 /*
@@ -79,6 +108,20 @@
   /* Row / item hover and the selected (current) state. Never the only cue. */
   --c-hover: color-mix(in oklab, var(--c-text) 4%, transparent);
   --c-selected: var(--c-primary-soft);
+  /* Pressed state of list items and ghost controls. */
+  --c-press: color-mix(in oklab, var(--c-text) 8%, transparent);
+
+  /* Layered surfaces (design v2): tinted areas instead of outlined boxes. */
+  /* Canvas behind cards in app-like layouts (admin, workspace, dashboards). */
+  --c-surface-app: color-mix(in oklab, var(--c-surface-sunken) 45%, var(--c-surface));
+  /* A whisper of the brand colour: bands, selected rows, icon tiles. */
+  --c-surface-tint: color-mix(in oklab, var(--c-primary) 5%, var(--c-surface-raised));
+  /* Translucent app bars (with backdrop blur where supported; solid fallback). */
+  --c-surface-glass: color-mix(in oklab, var(--c-surface-raised) 82%, transparent);
+  /* A 1 px ring that replaces hard borders on cards: visible on white, almost invisible on tint. */
+  --c-hairline: color-mix(in oklab, var(--c-text) 7%, transparent);
+  /* Coloured glow under the primary button. */
+  --shadow-primary: 0 6px 18px -8px color-mix(in oklab, var(--c-primary) 70%, transparent);
 }
 
 @media (min-width: 40rem) {

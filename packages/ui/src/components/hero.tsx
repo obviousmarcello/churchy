@@ -29,6 +29,13 @@ export interface HeroProps {
   headingLevel?: 1 | 2;
 }
 
+/*
+ * Design v2: every hero is a large rounded panel inset from the page edges (8 px on phones, 12 px
+ * from 40rem), so photos and bands get big soft corners instead of running edge to edge.
+ */
+const inset = "px-2 pt-2 sm:px-3 sm:pt-3";
+const panel = "overflow-hidden rounded-[calc(var(--radius-xl)_+_0.5rem)]";
+
 function HeroImg({ image, className }: { image: HeroImage; className?: string }) {
   return (
     <img
@@ -63,75 +70,85 @@ export function Hero({
 
   if (variant === "image-full" && image) {
     return (
-      <section data-hero="image-full" className="relative isolate overflow-hidden bg-inverse">
-        <HeroImg
-          image={image}
-          className="absolute inset-0 -z-10 h-full w-full object-cover object-[75%_center]"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-linear-to-t from-black/80 via-black/45 to-black/25 sm:bg-linear-to-r sm:from-black/80 sm:via-black/50 sm:to-black/10"
-        />
-        <Container className="flex min-h-[26rem] flex-col justify-end py-10 sm:min-h-[30rem] sm:py-14 lg:min-h-[34rem] lg:py-20">
-          <div className="max-w-2xl text-white">
-            {eyebrow ? (
-              <p className="mb-3 text-fs-2 font-semibold text-inverse-accent">{eyebrow}</p>
-            ) : null}
-            <Heading className="font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-balance">
-              {title}
-            </Heading>
-            {lead ? (
-              <p className="mt-4 max-w-[52ch] text-fs-4 leading-snug text-white/95">{lead}</p>
-            ) : null}
-            {actions ? <div className="mt-7 flex flex-wrap gap-3">{actions}</div> : null}
-          </div>
-        </Container>
+      <section data-hero="image-full" className={inset}>
+        <div className={cn(panel, "relative isolate bg-inverse")}>
+          <HeroImg
+            image={image}
+            className="absolute inset-0 -z-10 h-full w-full object-cover object-[75%_center]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 bg-linear-to-t from-black/80 via-black/45 to-black/25 sm:bg-linear-to-r sm:from-black/80 sm:via-black/50 sm:to-black/10"
+          />
+          <Container className="flex min-h-[26rem] flex-col justify-end py-10 sm:min-h-[30rem] sm:py-14 lg:min-h-[34rem] lg:py-20">
+            <div className="max-w-2xl text-white">
+              {eyebrow ? (
+                <p className="mb-3 text-fs-2 font-semibold text-inverse-accent">{eyebrow}</p>
+              ) : null}
+              <Heading className="font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-balance">
+                {title}
+              </Heading>
+              {lead ? (
+                <p className="mt-4 max-w-[52ch] text-fs-4 leading-snug text-white/95">{lead}</p>
+              ) : null}
+              {actions ? <div className="mt-7 flex flex-wrap gap-3">{actions}</div> : null}
+            </div>
+          </Container>
+        </div>
       </section>
     );
   }
 
   if (variant === "image-split" && image) {
     return (
-      <section data-hero="image-split" className="bg-surface-sunken">
-        <Container className="grid items-center gap-8 py-8 md:grid-cols-2 md:gap-12 lg:py-14">
-          <div className="order-2 md:order-1">
-            {eyebrow ? (
-              <p className="mb-3 text-fs-2 font-semibold text-accent-text">{eyebrow}</p>
-            ) : null}
-            <Heading className="font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-primary">
-              {title}
-            </Heading>
-            <Ornament className="mt-5" />
-            {lead ? (
-              <p className="mt-5 max-w-[46ch] text-fs-4 leading-snug text-text">{lead}</p>
-            ) : null}
-            {actions ? <div className="mt-7 flex flex-wrap gap-3">{actions}</div> : null}
-          </div>
-          <div className="order-1 md:order-2">
-            <HeroImg
-              image={image}
-              className="aspect-[4/3] w-full rounded-lg object-cover shadow-card outline-1 outline-offset-6 outline-accent"
-            />
-          </div>
-        </Container>
+      <section data-hero="image-split" className={inset}>
+        <div className={cn(panel, "bg-surface-sunken")}>
+          <Container className="grid items-center gap-8 py-8 md:grid-cols-2 md:gap-12 lg:py-14">
+            <div className="order-2 md:order-1">
+              {eyebrow ? (
+                <p className="mb-3 text-fs-2 font-semibold text-accent-text">{eyebrow}</p>
+              ) : null}
+              <Heading className="font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-primary">
+                {title}
+              </Heading>
+              <Ornament className="mt-5" />
+              {lead ? (
+                <p className="mt-5 max-w-[46ch] text-fs-4 leading-snug text-text">{lead}</p>
+              ) : null}
+              {actions ? <div className="mt-7 flex flex-wrap gap-3">{actions}</div> : null}
+            </div>
+            <div className="order-1 md:order-2">
+              <HeroImg
+                image={image}
+                className="aspect-[4/3] w-full rounded-[calc(var(--radius-xl)_+_4px)] object-cover shadow-raised"
+              />
+            </div>
+          </Container>
+        </div>
       </section>
     );
   }
 
   // text-only, and the fallback when an image variant is rendered without an image.
   return (
-    <section data-hero="text-only" className="border-b border-border bg-surface-sunken">
-      <Container className={cn("flex flex-col items-center py-14 text-center lg:py-20")}>
-        <Ornament className="mb-6" />
-        {eyebrow ? (
-          <p className="mb-3 text-fs-2 font-semibold text-accent-text">{eyebrow}</p>
-        ) : null}
-        <Heading className="max-w-[18ch] font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-primary">
-          {title}
-        </Heading>
-        {lead ? <p className="mt-5 max-w-[52ch] text-fs-4 leading-snug text-text">{lead}</p> : null}
-        {actions ? <div className="mt-8 flex flex-wrap justify-center gap-3">{actions}</div> : null}
-      </Container>
+    <section data-hero="text-only" className={inset}>
+      <div className={cn(panel, "bg-surface-sunken")}>
+        <Container className={cn("flex flex-col items-center py-14 text-center lg:py-20")}>
+          <Ornament className="mb-6" />
+          {eyebrow ? (
+            <p className="mb-3 text-fs-2 font-semibold text-accent-text">{eyebrow}</p>
+          ) : null}
+          <Heading className="max-w-[18ch] font-heading text-fs-8 leading-[1.04] [font-weight:var(--fw-heading)] text-primary">
+            {title}
+          </Heading>
+          {lead ? (
+            <p className="mt-5 max-w-[52ch] text-fs-4 leading-snug text-text">{lead}</p>
+          ) : null}
+          {actions ? (
+            <div className="mt-8 flex flex-wrap justify-center gap-3">{actions}</div>
+          ) : null}
+        </Container>
+      </div>
     </section>
   );
 }

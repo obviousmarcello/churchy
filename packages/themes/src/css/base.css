@@ -65,11 +65,12 @@
   }
 }
 
-/* Motion used by @churchy/ui (toasts, inline save confirmation). Reduced motion is handled above. */
+/* Motion used by @churchy/ui (toasts, inline save confirmation). Reduced motion is handled above;
+   the rest of the motion system is in motion.css. */
 @keyframes ui-toast-in {
   from {
     opacity: 0;
-    transform: translateY(0.5rem);
+    transform: translateY(1rem) scale(0.96);
   }
   to {
     opacity: 1;

@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { themeAttributes } from "@churchy/themes";
+import { PageTransition } from "@churchy/ui";
 import { DemoBar } from "@/components/demo-bar";
 import { TermsProvider } from "@/i18n/client";
 import { getTerms } from "@/i18n/terms";
@@ -34,7 +35,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <NextIntlClientProvider>
           <TermsProvider denomination={terms.denomination} terms={terms.all()}>
             <DemoBar />
-            {children}
+            {/* Design v2: animated page changes (View Transitions API; instant when unsupported). */}
+            <PageTransition>{children}</PageTransition>
           </TermsProvider>
         </NextIntlClientProvider>
       </body>

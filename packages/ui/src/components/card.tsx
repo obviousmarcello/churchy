@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "../cn";
+import { IconTile } from "./primitives";
 
 export interface CardImage {
   src: string;
@@ -10,11 +11,15 @@ export interface CardImage {
 }
 
 /**
- * - `flat` (default): hairline border, no shadow. Lists of similar items, panels in forms.
- * - `raised`: soft shadow. One featured item or a summary that should stand off the page.
- * - `interactive`: the whole card is a link (implied by `href`); lifts on hover.
+ * Design v2: large radii (`--radius-card`), layered surfaces and diffuse shadows instead of outlined
+ * boxes.
+ * - `flat` (default): white surface with a faint ring. Lists of similar items, panels in forms.
+ * - `raised`: soft diffuse shadow. One featured item or a summary that should stand off the page.
+ * - `interactive`: the whole card is a link (implied by `href`); lifts and deepens its shadow on
+ *   hover, presses down on click, its image zooms slightly.
+ * - `tinted`: a brand-tinted surface without ring or shadow, for secondary panels and bands.
  */
-export type CardVariant = "flat" | "raised" | "interactive";
+export type CardVariant = "flat" | "raised" | "interactive" | "tinted";
 
 export interface CardProps {
   /** Optional: a card without a title is a plain panel. */
@@ -23,7 +28,7 @@ export interface CardProps {
   headingLevel?: 2 | 3 | 4;
   /** Short line above the title (category, date). Sentence case, not all caps. */
   eyebrow?: string;
-  /** Decorative icon shown in a tinted square before the title, e.g. `<CalendarIcon />`. */
+  /** Decorative icon shown in a tinted rounded tile (`IconTile`) before the title, e.g. `<CalendarIcon />`. */
   icon?: ReactNode;
   /** Makes the whole card one link (the title is the link text). Implies `variant="interactive"`. */
   href?: string;
@@ -45,11 +50,14 @@ export interface CardProps {
 }
 
 const variantClasses: Record<CardVariant, string> = {
-  flat: "",
-  raised: "shadow-card",
+  flat: "border-hairline bg-surface-raised shadow-xs",
+  raised: "border-transparent bg-surface-raised shadow-card",
   interactive:
-    "shadow-xs transition-[box-shadow,border-color] duration-(--duration) " +
-    "hover:border-border-strong hover:shadow-raised",
+    "group/card border-transparent bg-surface-raised shadow-card " +
+    "transition-[box-shadow,translate,scale] duration-(--dur-3) ease-spring " +
+    "hover:translate-y-(--motion-lift) hover:shadow-raised has-[a:focus-visible]:translate-y-(--motion-lift) " +
+    "active:translate-y-0 active:scale-[0.99] active:duration-(--dur-1)",
+  tinted: "border-transparent bg-surface-tint",
 };
 
 const paddings = { none: "", sm: "p-4", md: "p-(--space-card) sm:p-6" } as const;
@@ -80,36 +88,33 @@ export function Card({
       data-testid={testId}
       data-card={resolved}
       className={cn(
-        "relative flex min-w-0 flex-col overflow-hidden rounded-lg border",
-        variantClasses[resolved],
+        "relative flex min-w-0 flex-col overflow-hidden rounded-card border",
         tone === "highlight"
-          ? "border-accent border-l-4 bg-accent-soft"
-          : "border-border bg-surface-raised",
+          ? "border-[color-mix(in_oklab,var(--c-accent)_45%,transparent)] bg-accent-soft"
+          : variantClasses[resolved],
         className,
       )}
     >
       {image ? (
-        <img
-          src={image.src}
-          alt={image.alt}
-          width={image.width}
-          height={image.height}
-          loading="lazy"
-          decoding="async"
-          className="aspect-[16/10] w-full object-cover"
-        />
+        // Inset image with its own rounded corners (design v2); zooms gently on a card link's hover.
+        <div className="p-2 pb-0">
+          <div className="overflow-hidden rounded-[calc(var(--radius-card)_-_0.5rem)] bg-surface-sunken">
+            <img
+              src={image.src}
+              alt={image.alt}
+              width={image.width}
+              height={image.height}
+              loading="lazy"
+              decoding="async"
+              className="aspect-[16/10] w-full object-cover transition-transform duration-(--dur-4) ease-emphasized group-hover/card:scale-[1.04] motion-reduce:transition-none"
+            />
+          </div>
+        </div>
       ) : null}
       <div className={cn("flex flex-1 flex-col gap-2", paddings[padding])}>
         {hasHeader ? (
           <div className="flex items-start gap-3">
-            {icon ? (
-              <span
-                aria-hidden="true"
-                className="inline-grid size-10 shrink-0 place-items-center rounded-md bg-primary-soft text-primary [&_svg]:size-5"
-              >
-                {icon}
-              </span>
-            ) : null}
+            {icon ? <IconTile icon={icon} /> : null}
             <div className="min-w-0 flex-1">
               {eyebrow ? (
                 <p className="mb-1 text-fs-2 leading-snug font-semibold text-accent-text">
@@ -126,7 +131,7 @@ export function Card({
                   {href ? (
                     <a
                       href={href}
-                      className="text-inherit no-underline after:absolute after:inset-0 after:content-[''] hover:underline hover:underline-offset-4 focus-visible:outline-none focus-visible:after:rounded-lg focus-visible:after:outline-(length:--focus-width) focus-visible:after:-outline-offset-(length:--focus-width) focus-visible:after:outline-focus"
+                      className="text-inherit no-underline after:absolute after:inset-0 after:content-[''] hover:underline hover:underline-offset-4 focus-visible:outline-none focus-visible:after:rounded-card focus-visible:after:outline-(length:--focus-width) focus-visible:after:-outline-offset-(length:--focus-width) focus-visible:after:outline-focus"
                     >
                       {title}
                     </a>

@@ -34,6 +34,8 @@ export async function DemoBar() {
     <section
       aria-label={t("regionLabel")}
       data-testid="demo-banner"
+      // Stays put during page transitions (motion.css anchors the `demo-bar` view transition).
+      style={{ viewTransitionName: "demo-bar" }}
       className="relative z-[45] bg-inverse text-inverse-text"
     >
       <div className="mx-auto flex h-(--demo-bar-h) w-full max-w-(--content-max) items-center gap-3 px-(--gutter)">

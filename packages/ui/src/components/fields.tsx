@@ -72,11 +72,16 @@ function LabelText({
   );
 }
 
+/*
+ * Design v2: 14–16 px radius (`--radius-control`), the 3:1 control border stays (WCAG 1.4.11), a
+ * soft halo in the brand colour grows around the focused field next to the global focus outline.
+ */
 const controlBase =
-  "block w-full min-h-(--control-h-md) rounded-md border border-border-strong bg-surface-raised " +
-  "px-3.5 py-2 text-fs-3 text-text shadow-xs placeholder:text-muted " +
-  "transition-[border-color,box-shadow] duration-(--duration) " +
-  "hover:border-text focus-visible:border-primary aria-[invalid=true]:border-danger " +
+  "block w-full min-h-(--control-h-md) rounded-control border border-border-strong bg-surface-raised " +
+  "px-4 py-2 text-fs-3 text-text shadow-xs placeholder:text-muted " +
+  "transition-[border-color,box-shadow,background-color] duration-(--dur-2) ease-standard " +
+  "hover:border-text focus-visible:border-primary " +
+  "focus-visible:shadow-[0_0_0_5px_color-mix(in_oklab,var(--c-primary)_14%,transparent)] aria-[invalid=true]:border-danger " +
   "aria-[invalid=true]:bg-danger-soft disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted disabled:shadow-none";
 
 const labelClass = "text-fs-3 leading-snug font-semibold text-text";
@@ -256,14 +261,15 @@ export function Checkbox({
             aria-invalid={error ? true : undefined}
             aria-describedby={describedBy}
             className={cn(
-              "peer size-6 cursor-[inherit] appearance-none rounded-sm border-[1.5px] border-border-strong bg-surface-raised",
-              "transition-colors duration-(--duration) hover:border-text checked:border-primary checked:bg-primary",
+              "peer size-6 cursor-[inherit] appearance-none rounded-[7px] border-[1.5px] border-border-strong bg-surface-raised",
+              "transition-[background-color,border-color,scale] duration-(--dur-2) ease-spring hover:border-text active:scale-90",
+              "checked:border-primary checked:bg-primary",
               "aria-[invalid=true]:border-danger disabled:bg-surface-sunken",
               className,
             )}
             {...rest}
           />
-          <CheckIcon className="pointer-events-none absolute size-4 text-primary-contrast opacity-0 peer-checked:opacity-100" />
+          <CheckIcon className="pointer-events-none absolute size-4 scale-50 text-primary-contrast opacity-0 transition-[opacity,scale] duration-(--dur-2) ease-spring peer-checked:scale-100 peer-checked:opacity-100" />
         </span>
         <span className="leading-snug">{labelContent ?? label}</span>
       </label>
@@ -304,11 +310,67 @@ export function FormActions({ children, className }: { children: ReactNode; clas
   return (
     <div
       className={cn(
-        "mt-2 flex flex-wrap items-center gap-3 border-t border-divider pt-5",
+        "mt-2 flex flex-wrap items-center gap-3 border-t border-divider pt-6",
         className,
       )}
     >
       {children}
+    </div>
+  );
+}
+
+export type RadioProps = Omit<ComponentPropsWithRef<"input">, "type"> &
+  Omit<FieldProps, "optionalLabel" | "error"> & {
+    /** Rich label. Overrides `label` text rendering. */
+    labelContent?: ReactNode;
+  };
+
+/**
+ * One radio option (design v2): a 24 px ring whose dot pops in with a spring. The whole label row is
+ * the hit area. Group radios with the same `name` inside a `Fieldset` (its legend is the question);
+ * for 2–5 short, equal options prefer `SegmentedControl`.
+ */
+export function Radio({
+  label,
+  labelContent,
+  help,
+  wrapperClassName,
+  id: idProp,
+  className,
+  ...rest
+}: RadioProps) {
+  const { id, helpId, describedBy } = useFieldIds(idProp, help);
+  return (
+    <div className={cn("grid gap-1", wrapperClassName)}>
+      <label
+        htmlFor={id}
+        className="flex min-h-(--control-h-md) cursor-pointer items-start gap-3 py-2 text-fs-3 text-text has-[:disabled]:cursor-not-allowed has-[:disabled]:text-muted"
+      >
+        <span className="relative mt-px inline-grid size-6 shrink-0 place-items-center">
+          <input
+            id={id}
+            type="radio"
+            aria-describedby={describedBy}
+            className={cn(
+              "peer size-6 cursor-[inherit] appearance-none rounded-full border-[1.5px] border-border-strong bg-surface-raised",
+              "transition-[border-color,scale] duration-(--dur-2) ease-spring hover:border-text active:scale-90",
+              "checked:border-primary disabled:bg-surface-sunken",
+              className,
+            )}
+            {...rest}
+          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute size-3 scale-0 rounded-full bg-primary transition-transform duration-(--dur-2) ease-spring peer-checked:scale-100"
+          />
+        </span>
+        <span className="leading-snug">{labelContent ?? label}</span>
+      </label>
+      {help ? (
+        <p id={helpId} className="pl-9 text-fs-2 text-muted">
+          {help}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -15,11 +15,11 @@ import { CloseIcon, DangerIcon, InfoIcon, SuccessIcon, WarningIcon } from "../ic
 
 export type ToastTone = "success" | "info" | "warning" | "danger";
 
-const toneStyle: Record<ToastTone, { icon: typeof InfoIcon; className: string }> = {
-  success: { icon: SuccessIcon, className: "text-success" },
-  info: { icon: InfoIcon, className: "text-info" },
-  warning: { icon: WarningIcon, className: "text-warning" },
-  danger: { icon: DangerIcon, className: "text-danger" },
+const toneStyle: Record<ToastTone, { icon: typeof InfoIcon; className: string; tile: string }> = {
+  success: { icon: SuccessIcon, className: "text-success", tile: "bg-success-soft" },
+  info: { icon: InfoIcon, className: "text-info", tile: "bg-info-soft" },
+  warning: { icon: WarningIcon, className: "text-warning", tile: "bg-warning-soft" },
+  danger: { icon: DangerIcon, className: "text-danger", tile: "bg-danger-soft" },
 };
 
 export interface ToastProps {
@@ -47,13 +47,18 @@ export function Toast({
     <div
       data-tone={tone}
       className={cn(
-        "pointer-events-auto flex w-full items-start gap-3 rounded-lg border border-border bg-surface-raised py-3 pr-2 pl-4 text-text shadow-overlay",
-        "motion-safe:animate-[ui-toast-in_220ms_var(--ease)]",
+        "pointer-events-auto flex w-full items-start gap-3 rounded-card border border-hairline bg-surface-raised py-3 pr-2 pl-3 text-text shadow-overlay",
+        "motion-safe:animate-[ui-toast-in_var(--dur-3)_var(--ease-spring)]",
         className,
       )}
     >
-      <Icon className={cn("mt-0.5 size-5 shrink-0", toneClass)} />
-      <div className="min-w-0 flex-1 py-0.5">
+      <span
+        aria-hidden="true"
+        className={cn("grid size-9 shrink-0 place-items-center rounded-tile", toneStyle[tone].tile)}
+      >
+        <Icon className={cn("size-5", toneClass)} />
+      </span>
+      <div className="min-w-0 flex-1 py-1">
         <p className="font-semibold">{title}</p>
         {description ? <div className="mt-0.5 text-fs-2 text-muted">{description}</div> : null}
       </div>
@@ -62,7 +67,7 @@ export function Toast({
           type="button"
           onClick={onDismiss}
           aria-label={closeLabel}
-          className="-my-1 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-muted hover:bg-hover hover:text-text"
+          className="-my-1 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors duration-(--dur-2) hover:bg-hover hover:text-text"
         >
           <CloseIcon size="sm" />
         </button>

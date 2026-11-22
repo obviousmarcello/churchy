@@ -41,7 +41,7 @@ import { themeAttributes } from "@churchy/themes";
 Add `@churchy/ui` and `@churchy/themes` to `transpilePackages`, and `@tailwindcss/postcss` to
 `postcss.config.mjs` (all done in `apps/web`).
 
-## Design principles (UI-01)
+## Design principles (UI-01, design v2 / UI-05)
 
 The system is calm on purpose: church office staff and volunteers use it for hours, on old laptops
 and phones.
@@ -51,16 +51,26 @@ and phones.
 2. **Hierarchy by size, not by weight everywhere.** One `h1` per page (`text-page-title`), section
    titles at `text-section-title`, card titles at `text-card-title`, body 17 px, captions 15 px.
    Don't put `font-bold` on body text to "make it pop".
-3. **Hairlines and soft shadows.** Decorative lines use `border-border` (cards) or `border-divider`
-   (rows, separators); only form controls use the 3:1 `border-border-strong`. Shadows are for
-   things that float (`shadow-raised`, `shadow-overlay`); most cards are flat.
+3. **Layered surfaces, not outlined boxes (v2).** Cards are white on the page with a faint
+   `border-hairline` ring or a soft diffuse shadow; secondary panels use a tinted surface
+   (`bg-surface-tint`, `Card variant="tinted"`). Rows are separated by whitespace. Only form
+   controls keep the 3:1 `border-border-strong` (WCAG 1.4.11).
 4. **Four spacing rhythms.** `--space-inline` (8) between icon and label, `--space-stack` (16)
    between fields and card items, `--space-card` (20) inside cards, `--space-section` (48/64)
    between page sections. Use the matching Tailwind steps (`gap-2`, `gap-4`, `p-5`, `py-12`).
 5. **Never colour alone.** Status = text + icon (`StatusPill`), errors = text + icon, current
-   tab = underline + `aria-current`.
+   tab = raised thumb + `aria-current`.
 6. **44 px targets.** Every button size, icon button, tab, row action and menu option is at least
    44 x 44 px (`--control-h-*`). Base font 17 px.
+7. **Soft, rounded shapes (v2).** Use the semantic radius utilities, never a raw number:
+   `rounded-control` (inputs), `rounded-button`, `rounded-card`, `rounded-overlay` (dialogs,
+   popovers, menus), `rounded-tile` (icon tiles, avatars), `rounded-image`, `rounded-full` (chips,
+   pills, badges). Nested shapes are smaller than their container
+   (`rounded-[calc(var(--radius-card)_-_0.5rem)]` for an image inset 8 px in a card).
+8. **Motion answers the user (v2).** Hover lifts, press scales down, things that open grow out of
+   their trigger, things that leave go faster than they came. Animate `transform` and `opacity`
+   only, use the tokens, and never wrap the LCP element (hero, page title) in a reveal. See
+   "Motion" below.
 
 ## Tokens
 
@@ -78,8 +88,10 @@ component without a rebuild.
 | Lines       | `--c-border` (decorative), `--c-divider` (lighter), `--c-border-strong` (controls, 3:1)                             | `border-border`, `border-divider`, `border-border-strong`                                                  |
 | Interaction | `--c-hover`, `--c-selected`, `--c-focus`                                                                            | `bg-hover`, `bg-selected`; focus ring is global                                                            |
 | Status      | `--c-success/-soft`, `--c-warning/-soft`, `--c-danger/-soft`, `--c-info/-soft`                                      | `text-success bg-success-soft` …                                                                           |
-| Shape       | `--radius-sm/md/lg` (per theme: Klasszikus soft, Letisztult square, Közösségi round, admin 4/8/12)                  | `rounded-sm/md/lg`                                                                                         |
-| Elevation   | `--shadow-xs`, `--shadow-card`, `--shadow-raised`, `--shadow-overlay`                                               | `shadow-xs`, `shadow-card`, `shadow-raised`, `shadow-overlay`                                              |
+| Shape       | `--radius-sm/md/lg/xl` (configurable step) and semantic `--radius-control/button/card/overlay/tile/image`           | `rounded-sm…xl`, `rounded-control`, `rounded-button`, `rounded-card`, `rounded-overlay`, `rounded-tile`    |
+| Elevation   | `--shadow-xs`, `--shadow-card`, `--shadow-raised`, `--shadow-overlay`, `--shadow-primary` (glow)                    | `shadow-xs`, `shadow-card`, `shadow-raised`, `shadow-overlay`, `shadow-primary`                            |
+| Layers (v2) | `--c-surface-app`, `--c-surface-tint`, `--c-surface-glass`, `--c-hairline`, `--c-press`                             | `bg-surface-app`, `bg-surface-tint`, `bg-surface-glass`, `border-hairline`, `bg-press`                     |
+| Motion (v2) | `--dur-1…4` (120/200/320/480), `--ease-standard/emphasized/exit/spring`, `--motion-lift(-sm)`, `--motion-press`     | `duration-(--dur-2)`, `ease-spring`, `hover:translate-y-(--motion-lift)`, `active:scale-(--motion-press)`  |
 | Spacing     | `--space-1…12` (4 px grid), `--space-inline/stack/card/section`                                                     | Tailwind's own steps (`p-4` = 16 px), `gap-(--space-stack)`                                                |
 | Controls    | `--control-h-sm/md/lg` (44/44/52; admin 44/48/56), `--focus-width`                                                  | `min-h-(--control-h-md)`                                                                                   |
 | Layout      | `--content-max` (1200), `--gutter`, `--header-h`, `--demo-bar-h`                                                    | `max-w-(--content-max) px-(--gutter)`                                                                      |
@@ -90,7 +102,83 @@ Rules:
 - `className` props are for layout (margin, width, grid placement). Don't override colours with
   them: `cn()` does not merge classes, so two conflicting utilities resolve by stylesheet order.
 - Motion must respect `prefers-reduced-motion`; the base stylesheet already shortens all
-  transitions. Keep focus outlines (`:focus-visible` is styled globally).
+  transitions and the motion tokens drop to 0 movement. Keep focus outlines (`:focus-visible` is
+  styled globally and draws in with a short animation).
+
+### Radius per theme (design v2)
+
+The church picks a radius step (stored as `none` / `small` / `large` → `square` / `soft` /
+`round`; labels "Visszafogott", "Lekerekített", "Erősen lekerekített"). Every step is soft;
+each theme derives its semantic radii from the step, so the three themes stay distinct:
+
+| Theme (default step)    | sm/md/lg/xl | control | button | card | overlay | tile |
+| ----------------------- | ----------- | ------- | ------ | ---- | ------- | ---- |
+| Klasszikus (`soft`)     | 10/14/20/24 | 14      | 14     | 20   | 24      | 12   |
+| Letisztult (`square`)   | 8/12/18/22  | 14      | 16     | 22   | 24      | 14   |
+| Közösségi (`round`)     | 12/16/26/32 | 16      | pill   | 28   | 32      | 16   |
+| Admin / workspace (fix) | 10/14/20/24 | 14      | 14     | 20   | 24      | 12   |
+
+Semantic radii are redeclared in every theme block and in `[data-ui="admin"]`, because a custom
+property's `var()` resolves where it is declared.
+
+## Motion (design v2)
+
+CSS-first, no runtime dependency. Tokens in `@churchy/themes` (`tokens.css`, `tailwind.css`), rules
+in `css/motion.css`.
+
+| Token              | Value / use                                                                  |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `--dur-1` 120 ms   | press, colour changes                                                        |
+| `--dur-2` 200 ms   | hover, focus ring, tabs, menus, exits                                        |
+| `--dur-3` 320 ms   | opening dialogs, drawers, disclosures, toasts, sliding thumbs                |
+| `--dur-4` 480 ms   | page transitions, staggered reveals, progress                                |
+| `ease-standard`    | most state changes                                                           |
+| `ease-emphasized`  | things arriving (strong deceleration)                                        |
+| `ease-exit`        | things leaving (accelerate out)                                              |
+| `ease-spring`      | playful overshoot for press / pop feedback; short durations only             |
+| `--motion-lift-sm` | -1 px hover lift of buttons; `--motion-lift` -3 px for cards; 0 when reduced |
+| `--motion-press`   | 0.97 scale while pressed; 1 when reduced                                     |
+| `--stagger-step`   | 55 ms between staggered items (capped at 8 steps)                            |
+
+What is already wired in the components:
+
+- **Buttons, chips, icon buttons, tab triggers:** spring hover lift, quick press-down, coloured glow
+  under `primary`. `loading` morphs the spinner in (pass a boolean from the first render).
+- **Cards (`href`):** lift, deeper shadow, image zoom; press-down on click.
+- **Focus ring:** draws in from a wider offset (`:focus-visible`, global).
+- **Tabs:** the raised thumb slides to the active tab; panels fade up after a switch (never on load).
+  **SegmentedControl:** the thumb slides with pure CSS (`:has(:checked)`).
+- **Dialog:** spring pop in (scale only, never semi-transparent text), faster fade out, scrim fades; `placement="end"` is a drawer that slides
+  from the right (a bottom sheet on phones). **Popover** (native Popover API) pops in and fades out
+  (`@starting-style`, `allow-discrete`). **Disclosure** glides open (`::details-content`,
+  `interpolate-size`). `<details data-menu>` panels pop in. Header menus pop in.
+- **Toast:** springs in from below. **Skeleton:** shimmer band. **Progress / AnimatedNumber:** values
+  glide / count to the new value (not on page load).
+- **Reveal / Stagger:** `<Stagger as="ul" className="grid …">` fades its children up one after
+  another on first render (`data-stagger`, `--i` per child). No IntersectionObserver. Use it for one
+  orchestrated moment per page (a dashboard's tiles, a list of cards), not for every section.
+- **Page transitions:** plain `<a>` navigations use the cross-document View Transitions API
+  (`@view-transition { navigation: auto }`, only with scripting enabled, a quick 200 ms swap because
+  the browser holds clicks while the document changes); Next `<Link transitionTypes={pageTransitionTypes}>`
+  navigations are animated by `<PageTransition>` (React `<ViewTransition>`, wrapped once in the root
+  layout). Server actions and refreshes never animate. The demo bar is anchored
+  (`view-transition-name: demo-bar`). `SideNav` / `NavTabs` take an optional `transitionName` so the
+  current-item highlight glides between pages. Unsupported browsers switch instantly.
+
+Rules:
+
+- **Reduced motion:** everything above becomes instant (durations 0.01 ms, movement tokens 0,
+  reveals and view transitions off). Don't add motion that bypasses the tokens or the
+  `motion-safe:` variant.
+- **No layout shift:** animate `transform` / `opacity` (and `grid-template-rows` /
+  `block-size` for disclosures). Never animate `width`/`height` of page content.
+- **Never block interaction:** `::view-transition` has `pointer-events: none`; nothing waits for an
+  animation before it can be clicked (the only exception is the 200 ms cross-document swap itself).
+- **Entrances never fade text that axe or a reader might check right away:** dialogs scale in
+  without opacity; reveals are opt-in.
+- **Testing:** axe measures contrast with the current opacity. In e2e, run axe after
+  `document.getAnimations()` have finished, or with `reducedMotion: "reduce"` (see
+  `apps/web/e2e/motion.spec.ts`). Visual tests run with reduced motion.
 
 ## Components: when to use what
 
@@ -262,6 +350,29 @@ actions (`plus`, `edit`, `trash`, `copy`, `download`, `upload`, `eye`, `filter`,
 
 `FormattedDate`, `FormattedTime`, `PersonName`, `Address`, `Phone`, `BankAccount` (props only, on
 `@churchy/hu`). Always use them for Hungarian output.
+
+### Design v2 primitives and additions (UI-05)
+
+All additive: existing props keep working.
+
+| Component / prop                                       | Use it for                                                                                                                |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `IconTile icon tone size`                              | Tinted rounded square with an icon: section and card headers, dashboard tiles, list items. Decorative.                    |
+| `Avatar label initials src size shape`                 | Person picture or initials in a rounded tile (or `shape="circle"`). With `label` it is a named image.                     |
+| `Chip` (`href` + `current`, or `onClick` + `selected`) | 44 px filter / quick-choice pills. A static chip is a span; for categories without interaction use `Badge`.               |
+| `SegmentedControl label name options`                  | 2–6 equal, mutually exclusive views or filters (Nap / Hét / Hónap). Native radios: works in forms and without JavaScript. |
+| `Popover` + `MenuItem`                                 | Row / card / toolbar menus and small popovers on the native Popover API (light dismiss, Escape, top layer). Server-safe.  |
+| `Disclosure summary`                                   | FAQ, details, advanced options (`<details>`, animated).                                                                   |
+| `SideNav label items transitionName`                   | Vertical app navigation (admin / workspace sidebars).                                                                     |
+| `Radio`                                                | One radio option; group with the same `name` in a `Fieldset`.                                                             |
+| `Progress label value max valueText`                   | Rounded progress bar; omit `value` for indeterminate.                                                                     |
+| `AnimatedNumber value` _(client)_                      | Counters that change in place (dashboards).                                                                               |
+| `Reveal`, `Stagger`                                    | One fade-up entrance (see Motion).                                                                                        |
+| `PageTransition`, `pageTransitionTypes`                | Page transitions (root layout; pass the types to Next `<Link transitionTypes>`).                                          |
+| `Card variant="tinted"`                                | Secondary panels and bands on a brand-tinted surface (no ring, no shadow).                                                |
+| `PageHeader icon`                                      | An icon tile before the page title.                                                                                       |
+| `Dialog placement="end"`                               | A drawer from the right (bottom sheet on phones): filters, item details.                                                  |
+| `NavTabs transitionName`                               | Lets the current-tab thumb glide between pages.                                                                           |
 
 ## Admin / workspace variant
 

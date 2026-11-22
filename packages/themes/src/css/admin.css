@@ -35,12 +35,23 @@
   --fw-heading-sm: 600;
   --heading-tracking: 0;
   --shadow-xs: 0 1px 2px rgb(20 17 13 / 0.06);
-  --shadow-card: 0 1px 2px rgb(20 17 13 / 0.05), 0 1px 3px rgb(20 17 13 / 0.04);
-  --shadow-raised: 0 2px 6px rgb(20 17 13 / 0.07), 0 12px 28px rgb(20 17 13 / 0.1);
-  --shadow-overlay: 0 8px 24px rgb(20 17 13 / 0.12), 0 32px 64px rgb(20 17 13 / 0.22);
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --shadow-card: 0 1px 2px rgb(20 17 13 / 0.04), 0 8px 24px -12px rgb(20 17 13 / 0.14);
+  --shadow-raised: 0 2px 6px rgb(20 17 13 / 0.05), 0 20px 44px -14px rgb(20 17 13 / 0.2);
+  --shadow-overlay: 0 12px 32px -8px rgb(20 17 13 / 0.16), 0 44px 88px -24px rgb(20 17 13 / 0.32);
+  /* Shape (design v2): app-like and fixed, independent of the church's radius step. The semantic
+     radii are redeclared here so they resolve against these values, not the page's. */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-control: var(--radius-md);
+  --radius-button: var(--radius-md);
+  --radius-card: var(--radius-lg);
+  --radius-overlay: var(--radius-xl);
+  --radius-tile: 12px;
+  --radius-image: var(--radius-lg);
+  /* A slightly cooler page under white cards: layered surfaces instead of outlined boxes. */
+  --c-surface-app: #f6f4f0;
 
   /* Touch targets: every control is at least 44 px tall. */
   --control-h-sm: 2.75rem;

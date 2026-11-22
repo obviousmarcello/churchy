@@ -58,12 +58,22 @@
   --fw-heading: 700;
   --heading-tracking: 0;
 
-  /* Shape */
-  --radius-sm: 8px;
+  /* Shape (design v2): the most playful theme: pill buttons, 28 px cards, 32 px overlays. The step
+     (--radius-sm…xl) is configurable; the semantic radii follow it. */
+  --radius-sm: 12px;
   --radius-md: 16px;
-  --radius-lg: 28px;
+  --radius-lg: 26px;
+  --radius-xl: 32px;
+  --radius-control: var(--radius-md);
+  --radius-button: 9999px;
+  --radius-card: calc(var(--radius-lg) + 2px);
+  --radius-overlay: var(--radius-xl);
+  --radius-tile: var(--radius-md);
+  --radius-image: calc(var(--radius-lg) + 2px);
+
+  /* Warm, cushiony elevation. */
   --shadow-xs: 0 1px 2px rgb(90 60 20 / 0.06);
-  --shadow-card: 0 1px 3px rgb(90 60 20 / 0.05), 0 4px 14px rgb(90 60 20 / 0.06);
-  --shadow-raised: 0 3px 8px rgb(90 60 20 / 0.07), 0 16px 36px rgb(90 60 20 / 0.12);
-  --shadow-overlay: 0 8px 24px rgb(90 60 20 / 0.12), 0 32px 64px rgb(90 60 20 / 0.2);
+  --shadow-card: 0 1px 3px rgb(90 60 20 / 0.05), 0 10px 26px -10px rgb(90 60 20 / 0.16);
+  --shadow-raised: 0 3px 8px rgb(90 60 20 / 0.06), 0 24px 48px -14px rgb(90 60 20 / 0.24);
+  --shadow-overlay: 0 12px 32px -8px rgb(90 60 20 / 0.18), 0 44px 88px -24px rgb(90 60 20 / 0.34);
 }
