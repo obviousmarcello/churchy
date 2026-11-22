@@ -264,6 +264,10 @@ test.describe("admin variant", () => {
     await admin.getByRole("button", { name: "Törlés" }).click();
     const dialog = admin.getByRole("dialog");
     await expect(dialog).toBeVisible();
+    // Design v2: the dialog pops in (scale 0.96 → 1); measure the targets at rest.
+    await dialog.evaluate((el) =>
+      Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)),
+    );
     expect(await smallTargets(dialog)).toEqual([]);
   });
 

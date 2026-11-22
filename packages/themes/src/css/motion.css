@@ -1,0 +1,362 @@
+/*
+ * Motion (design v2). CSS-first: transitions and keyframes on transform and opacity only, so nothing
+ * shifts the layout (CLS stays 0) and the compositor does the work. Everything here is switched off
+ * or made instant under `prefers-reduced-motion: reduce` (see the end of this file and base.css).
+ *
+ * Tokens: --dur-1…4, --ease-standard / -emphasized / -exit / -spring, --motion-lift(-sm),
+ * --motion-press, --motion-rise, --stagger-step (tokens.css, tailwind.css).
+ */
+
+/* ---- Keyframes ------------------------------------------------------------------------------- */
+
+@keyframes ui-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-rise, 14px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ui-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Dialogs, popovers, menus: a small scale + rise, spring on the way in. */
+@keyframes ui-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Modal dialogs: the same pop without fading, so text is never semi-transparent (contrast checks
+   and readers see the final colours from the first frame). */
+@keyframes ui-dialog-in {
+  from {
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ui-pop-out {
+  to {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+}
+
+/* Drawers: slide in from the inline end (desktop) or the bottom (phones). */
+@keyframes ui-slide-in-end {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ui-slide-out-end {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes ui-slide-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ui-slide-out-bottom {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* Skeleton shimmer: a light band that travels across the placeholder (transform only). */
+@keyframes ui-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Indeterminate progress: a third-width bar travelling across the track. */
+@keyframes ui-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+/* Focus ring: draws in from a wider offset, so the eye finds where focus went. */
+@keyframes ui-focus-ring {
+  from {
+    outline-offset: 7px;
+    outline-color: transparent;
+  }
+}
+
+/* ---- Focus ring ------------------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  :focus-visible {
+    animation: ui-focus-ring var(--dur-2) var(--ease-emphasized);
+  }
+}
+
+/* ---- Reveal and stagger ---------------------------------------------------------------------- */
+
+/*
+ * `data-reveal` on one element, or `data-stagger` on a list (each direct child fades up after the
+ * previous one). The index comes from `--i` (set it inline for long or virtual lists), otherwise
+ * from the child position (first 8 children; later ones share the last delay so long lists don't
+ * keep the reader waiting). Pure CSS: no IntersectionObserver, no JavaScript, server-safe.
+ * The start state is only applied while the animation runs (fill-mode backwards), so a browser
+ * without animations shows the content at once.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal],
+  [data-stagger] > * {
+    animation: ui-fade-up var(--dur-4) var(--ease-emphasized) backwards;
+    animation-delay: calc(min(var(--i, 0), 8) * var(--stagger-step) + var(--reveal-delay, 0ms));
+  }
+}
+
+[data-stagger] > :nth-child(2) {
+  --i: 1;
+}
+[data-stagger] > :nth-child(3) {
+  --i: 2;
+}
+[data-stagger] > :nth-child(4) {
+  --i: 3;
+}
+[data-stagger] > :nth-child(5) {
+  --i: 4;
+}
+[data-stagger] > :nth-child(6) {
+  --i: 5;
+}
+[data-stagger] > :nth-child(7) {
+  --i: 6;
+}
+[data-stagger] > :nth-child(8) {
+  --i: 7;
+}
+[data-stagger] > :nth-child(n + 9) {
+  --i: 8;
+}
+
+/* ---- Disclosure (details / summary) ---------------------------------------------------------- */
+
+/*
+ * Smooth open / close of `<details data-disclosure>`: the content's block size animates from 0 to
+ * auto (`interpolate-size`), with `content-visibility` kept discrete. Browsers without
+ * ::details-content simply open instantly.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-disclosure] {
+    interpolate-size: allow-keywords;
+  }
+  [data-disclosure]::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    opacity: 0;
+    transition:
+      block-size var(--dur-3) var(--ease-emphasized),
+      opacity var(--dur-2) var(--ease-standard),
+      content-visibility var(--dur-3) allow-discrete;
+  }
+  [data-disclosure][open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+}
+
+/*
+ * Menus anchored to a details element (`<details data-menu>` + a panel): the panel pops in when
+ * the details opens. @starting-style gives the entry state; closing is instant (the panel leaves
+ * with the details' content).
+ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-menu][open] > :not(summary) {
+    transform-origin: top right;
+    transition:
+      opacity var(--dur-2) var(--ease-standard),
+      transform var(--dur-3) var(--ease-spring);
+  }
+  @starting-style {
+    [data-menu][open] > :not(summary) {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.97);
+    }
+  }
+}
+
+/* ---- Native popovers ------------------------------------------------------------------------- */
+
+/*
+ * `[popover][data-ui-popover]` (see `Popover` in @churchy/ui): fades and scales in and out with
+ * `display` / `overlay` transitioned discretely, so the exit is animated too.
+ */
+[data-ui-popover] {
+  opacity: 0;
+  transform: translateY(6px) scale(0.97);
+  transition:
+    opacity var(--dur-2) var(--ease-standard),
+    transform var(--dur-2) var(--ease-exit),
+    overlay var(--dur-2) allow-discrete,
+    display var(--dur-2) allow-discrete;
+}
+[data-ui-popover]:popover-open {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-2) var(--ease-standard),
+    transform var(--dur-3) var(--ease-spring),
+    overlay var(--dur-3) allow-discrete,
+    display var(--dur-3) allow-discrete;
+}
+@starting-style {
+  [data-ui-popover]:popover-open {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+
+/* Anchored under the trigger where CSS anchor positioning exists; otherwise the UA centres it. */
+@supports (anchor-name: --a) {
+  [data-ui-popover] {
+    inset: auto;
+    margin: 0.5rem 0 0;
+    top: anchor(bottom);
+    left: anchor(left);
+    position-try-fallbacks: flip-block, flip-inline;
+    transform-origin: top left;
+  }
+  [data-ui-popover][data-align="end"] {
+    left: auto;
+    right: anchor(right);
+    transform-origin: top right;
+  }
+}
+
+/* ---- Segmented control indicator ------------------------------------------------------------- */
+
+/*
+ * The thumb of `SegmentedControl` slides to the checked option. Options have equal widths, so the
+ * position is the option's index; :has() reads it from the checked radio (no JavaScript).
+ */
+[data-segmented] {
+  --seg-index: 0;
+}
+[data-segmented]:has(> label:nth-of-type(2) > input:checked) {
+  --seg-index: 1;
+}
+[data-segmented]:has(> label:nth-of-type(3) > input:checked) {
+  --seg-index: 2;
+}
+[data-segmented]:has(> label:nth-of-type(4) > input:checked) {
+  --seg-index: 3;
+}
+[data-segmented]:has(> label:nth-of-type(5) > input:checked) {
+  --seg-index: 4;
+}
+[data-segmented]:has(> label:nth-of-type(6) > input:checked) {
+  --seg-index: 5;
+}
+[data-segmented]:not(:has(input:checked)) > [data-segmented-thumb] {
+  opacity: 0;
+}
+[data-segmented] > [data-segmented-thumb] {
+  transform: translateX(calc(var(--seg-index) * 100%));
+}
+
+/* ---- Page transitions (View Transitions API) ------------------------------------------------- */
+
+/*
+ * Cross-document navigations (plain links): the browser snapshots the old page and the new one
+ * fades up into place. Same-document navigations (Next <Link transitionTypes={["ui-page"]}>) are
+ * animated by React's <ViewTransition> in `PageTransition` with the classes below. Browsers without
+ * the API navigate instantly. The demo bar (`view-transition-name: demo-bar`) stays put.
+ */
+/* Only with scripting: without JavaScript Chromium can leave the transition overlay in place. */
+@media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+  @view-transition {
+    navigation: auto;
+    types: ui-doc;
+  }
+}
+
+/* Never block clicks while a transition runs. */
+::view-transition {
+  pointer-events: none;
+}
+
+/*
+ * Kept short on purpose: during a cross-document transition the browser hit-tests the document
+ * element, so the whole swap takes 200 ms and clicks are only held back while the page is changing.
+ */
+html:active-view-transition-type(ui-doc)::view-transition-old(root) {
+  animation: ui-fade-out var(--dur-1) var(--ease-exit) both;
+}
+html:active-view-transition-type(ui-doc)::view-transition-new(root) {
+  animation: ui-fade-up var(--dur-2) var(--ease-emphasized) both;
+  --motion-rise: 8px;
+}
+
+::view-transition-old(.ui-page-exit),
+::view-transition-old(.ui-page) {
+  animation: ui-fade-out var(--dur-2) var(--ease-exit) both;
+}
+::view-transition-new(.ui-page-enter),
+::view-transition-new(.ui-page) {
+  animation: ui-fade-up var(--dur-4) var(--ease-emphasized) both;
+  --motion-rise: 10px;
+}
+
+/* Anchored chrome: no animation, rendered above the moving content. */
+::view-transition-group(demo-bar) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(demo-bar) {
+  display: none;
+}
+::view-transition-new(demo-bar) {
+  animation: none;
+}
+
+/* ---- Reduced motion -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+  [data-ui-popover],
+  [data-ui-popover]:popover-open {
+    transform: none;
+  }
+}

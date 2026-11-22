@@ -70,8 +70,8 @@ function OptionGroup({
                   value={option.value}
                   aria-current={selected ? "true" : undefined}
                   className={cn(
-                    "flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-left text-fs-2 leading-snug text-text",
-                    "transition-colors duration-(--duration) hover:bg-hover",
+                    "flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-[12px] px-3 py-1.5 text-left text-fs-2 leading-snug text-text",
+                    "transition-[background-color,scale] duration-(--dur-2) ease-spring hover:bg-hover active:scale-(--motion-press)",
                     selected && "bg-selected font-semibold text-primary",
                   )}
                 >
@@ -133,12 +133,17 @@ export function DemoControls({ persona, context, labels }: DemoControlsProps) {
   }, []);
 
   return (
-    <details ref={ref} className="group relative ml-auto min-w-0" data-testid="demo-menu">
+    <details
+      ref={ref}
+      data-menu=""
+      className="group relative ml-auto min-w-0"
+      data-testid="demo-menu"
+    >
       <summary
         data-surface="inverse"
         className={cn(
-          "flex h-11 min-w-0 cursor-pointer list-none items-center gap-2 rounded-md px-2.5 text-fs-2 font-semibold lg:h-8",
-          "text-inverse-text transition-colors duration-(--duration) hover:bg-inverse-text/10 group-open:bg-inverse-text/15",
+          "flex h-11 min-w-0 cursor-pointer list-none items-center gap-2 rounded-full px-3 text-fs-2 font-semibold lg:h-8",
+          "bg-inverse-text/8 text-inverse-text transition-[background-color,scale] duration-(--dur-2) ease-spring hover:bg-inverse-text/15 active:scale-(--motion-press) group-open:bg-inverse-text/20",
           "[&::-webkit-details-marker]:hidden",
         )}
       >
@@ -157,14 +162,14 @@ export function DemoControls({ persona, context, labels }: DemoControlsProps) {
         </span>
         <ChevronDownIcon
           size="sm"
-          className="shrink-0 transition-transform duration-(--duration) group-open:rotate-180"
+          className="shrink-0 transition-transform duration-(--dur-3) ease-spring group-open:rotate-180"
         />
       </summary>
       <div
         className={cn(
           "absolute top-[calc(100%_+_0.375rem)] right-0 z-50 grid w-[min(36rem,calc(100vw_-_2_*_var(--gutter)))] gap-5",
           "max-h-[calc(100dvh_-_var(--demo-bar-h)_-_1rem)] overflow-y-auto overscroll-contain",
-          "rounded-lg border border-border bg-surface-raised p-4 text-text shadow-overlay",
+          "rounded-overlay border border-hairline bg-surface-raised p-4 text-text shadow-overlay sm:p-5",
         )}
       >
         <p className="m-0 text-fs-2 text-muted lg:hidden">{labels.note}</p>

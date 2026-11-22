@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { cn } from "../cn";
 import { ChevronLeftIcon, ChevronRightIcon } from "../icons";
-import { TabLabel, tabListClass, tabTriggerClass } from "./tab-styles";
+import { IconTile } from "./primitives";
+import { TabLabel, tabCurrentClass, tabListClass, tabTriggerClass } from "./tab-styles";
 
 export interface BreadcrumbItem {
   label: string;
@@ -47,7 +48,7 @@ export function Breadcrumbs({ label, items, className }: BreadcrumbsProps) {
               ) : (
                 <a
                   href={item.href}
-                  className="inline-flex min-h-11 items-center rounded-sm text-muted underline-offset-4 hover:text-primary hover:underline sm:min-h-8"
+                  className="-mx-2 inline-flex min-h-11 items-center rounded-full px-2 text-muted underline-offset-4 transition-colors duration-(--dur-2) hover:bg-hover hover:text-primary hover:underline sm:min-h-8"
                 >
                   {item.label}
                 </a>
@@ -74,13 +75,20 @@ export interface NavTabsProps {
   label: string;
   items: NavTabItem[];
   className?: string;
+  /**
+   * Optional `view-transition-name` for the current tab's thumb, e.g. `"settings-tabs"`. With it the
+   * thumb glides from the old tab to the new one when the page changes (View Transitions API). Must
+   * be unique on the page; omit when a page renders several NavTabs.
+   */
+  transitionName?: string;
 }
 
 /**
  * Tabs that are links (one route per tab), e.g. the sections of a settings page. Looks like `Tabs`
- * but is a `nav` with `aria-current`, so it works without JavaScript and keeps the URL.
+ * (rounded track, raised thumb on the current tab) but is a `nav` with `aria-current`, so it works
+ * without JavaScript and keeps the URL.
  */
-export function NavTabs({ label, items, className }: NavTabsProps) {
+export function NavTabs({ label, items, className, transitionName }: NavTabsProps) {
   return (
     <nav aria-label={label} className={cn("min-w-0", className)}>
       <ul className={tabListClass}>
@@ -89,10 +97,10 @@ export function NavTabs({ label, items, className }: NavTabsProps) {
             <a
               href={item.href}
               aria-current={item.current ? "page" : undefined}
-              className={cn(
-                tabTriggerClass,
-                "aria-[current=page]:border-primary aria-[current=page]:text-text",
-              )}
+              style={
+                item.current && transitionName ? { viewTransitionName: transitionName } : undefined
+              }
+              className={cn(tabTriggerClass, item.current && tabCurrentClass)}
             >
               <TabLabel label={item.label} icon={item.icon} count={item.count} />
             </a>
@@ -117,6 +125,8 @@ export interface PageHeaderProps {
   tabs?: ReactNode;
   /** id of the `h1`, for `aria-labelledby`. */
   id?: string;
+  /** Decorative icon in a tinted tile before the title (design v2), e.g. `<InboxIcon />`. */
+  icon?: ReactNode;
   className?: string;
 }
 
@@ -132,6 +142,7 @@ export function PageHeader({
   meta,
   tabs,
   id,
+  icon,
   className,
 }: PageHeaderProps) {
   return (
@@ -140,19 +151,22 @@ export function PageHeader({
     >
       {breadcrumbs}
       <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
-        <div className="grid max-w-(--measure) min-w-0 gap-2">
-          <h1
-            id={id}
-            className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-text"
-          >
-            {title}
-          </h1>
-          {description ? <div className="text-fs-3 text-muted">{description}</div> : null}
-          {meta ? <div className="flex flex-wrap items-center gap-2">{meta}</div> : null}
+        <div className="flex min-w-0 items-start gap-4">
+          {icon ? <IconTile icon={icon} size="lg" className="max-sm:hidden" /> : null}
+          <div className="grid max-w-(--measure) min-w-0 gap-2">
+            <h1
+              id={id}
+              className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-text"
+            >
+              {title}
+            </h1>
+            {description ? <div className="text-fs-3 text-muted">{description}</div> : null}
+            {meta ? <div className="flex flex-wrap items-center gap-2">{meta}</div> : null}
+          </div>
         </div>
         {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
       </div>
-      {tabs ? <div className="mt-3 min-w-0">{tabs}</div> : null}
+      {tabs ? <div className="mt-4 min-w-0">{tabs}</div> : null}
     </header>
   );
 }

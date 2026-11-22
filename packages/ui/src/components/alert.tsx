@@ -5,10 +5,10 @@ import { DangerIcon, InfoIcon, SuccessIcon, WarningIcon } from "../icons";
 export type AlertTone = "info" | "success" | "warning" | "danger";
 
 const tones: Record<AlertTone, { box: string; icon: typeof InfoIcon }> = {
-  info: { box: "border-info/35 bg-info-soft text-info", icon: InfoIcon },
-  success: { box: "border-success/35 bg-success-soft text-success", icon: SuccessIcon },
-  warning: { box: "border-warning/35 bg-warning-soft text-warning", icon: WarningIcon },
-  danger: { box: "border-danger/35 bg-danger-soft text-danger", icon: DangerIcon },
+  info: { box: "border-info/20 bg-info-soft text-info", icon: InfoIcon },
+  success: { box: "border-success/20 bg-success-soft text-success", icon: SuccessIcon },
+  warning: { box: "border-warning/20 bg-warning-soft text-warning", icon: WarningIcon },
+  danger: { box: "border-danger/20 bg-danger-soft text-danger", icon: DangerIcon },
 };
 
 export interface AlertProps {
@@ -49,7 +49,7 @@ export function Alert({
       className={cn(
         "flex flex-wrap items-start gap-x-3 gap-y-2 border px-4 py-3 text-fs-3 sm:flex-nowrap",
         variant === "inline"
-          ? "rounded-md"
+          ? "rounded-lg py-3.5 pl-4 sm:pr-5"
           : "justify-center rounded-none border-x-0 border-t-0 px-(--gutter) py-3",
         box,
         className,

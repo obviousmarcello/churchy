@@ -85,13 +85,14 @@ export function DataTable<T>({
     <table
       role="table"
       className={cn(
-        "w-full border-separate border-spacing-0 text-left text-fs-3",
-        stack && "max-md:block",
+        // Design v2: rows are separated by whitespace (border-spacing), not by lines.
+        "w-full border-separate border-spacing-x-0 border-spacing-y-1 px-2 pb-1 text-left text-fs-3",
+        stack && "max-md:block max-md:p-0",
       )}
     >
       <caption
         className={cn(
-          captionVisible ? "px-4 pt-4 pb-2 text-left text-fs-4 font-semibold text-text" : "sr-only",
+          captionVisible ? "px-3 pt-4 pb-1 text-left text-fs-4 font-semibold text-text" : "sr-only",
           captionVisible && stack && "max-md:block",
         )}
       >
@@ -106,7 +107,7 @@ export function DataTable<T>({
               scope="col"
               style={col.width ? ({ width: col.width } as CSSProperties) : undefined}
               className={cn(
-                "sticky top-(--table-sticky-top,0px) z-[1] border-b border-border bg-surface-raised",
+                "sticky top-(--table-sticky-top,0px) z-[1] bg-surface-raised",
                 "text-fs-2 font-semibold whitespace-nowrap text-muted",
                 cellPad,
                 alignClass[col.align ?? "start"],
@@ -121,7 +122,7 @@ export function DataTable<T>({
               role="columnheader"
               scope="col"
               className={cn(
-                "sticky top-(--table-sticky-top,0px) z-[1] w-px border-b border-border bg-surface-raised",
+                "sticky top-(--table-sticky-top,0px) z-[1] w-px bg-surface-raised",
                 cellPad,
               )}
             >
@@ -130,7 +131,7 @@ export function DataTable<T>({
           ) : null}
         </tr>
       </thead>
-      <tbody role="rowgroup" className={cn(stack && "max-md:grid max-md:gap-0")}>
+      <tbody role="rowgroup" className={cn(stack && "max-md:grid max-md:gap-2 max-md:p-2")}>
         {rows.length === 0 ? (
           <tr role="row" className={cn(stack && "max-md:block")}>
             <td role="cell" colSpan={colCount} className={cn(stack && "max-md:block")}>
@@ -147,9 +148,9 @@ export function DataTable<T>({
                 data-testid={extra?.["data-testid"]}
                 data-selected={extra?.selected || undefined}
                 className={cn(
-                  "group/row transition-colors duration-(--duration) hover:bg-hover data-selected:bg-selected",
+                  "group/row [&>*]:transition-colors [&>*]:duration-(--dur-2) hover:[&>*]:bg-hover data-selected:[&>*]:bg-selected",
                   stack &&
-                    "max-md:grid max-md:gap-1 max-md:border-b max-md:border-divider max-md:px-4 max-md:py-3 max-md:last:border-b-0",
+                    "max-md:grid max-md:gap-1 max-md:rounded-[max(calc(var(--radius-card)_-_0.5rem),10px)] max-md:bg-surface-tint max-md:px-4 max-md:py-3 max-md:data-selected:bg-selected max-md:[&>*]:bg-transparent",
                 )}
               >
                 {columns.map((col) => {
@@ -161,7 +162,7 @@ export function DataTable<T>({
                       scope={col.primary ? "row" : undefined}
                       data-label={col.header}
                       className={cn(
-                        "border-b border-divider align-top [overflow-wrap:anywhere] group-last/row:border-b-0",
+                        "align-top [overflow-wrap:anywhere] first:rounded-s-[12px] last:rounded-e-[12px]",
                         cellPad,
                         alignClass[col.align ?? "start"],
                         col.primary ? "font-semibold text-text" : "font-normal text-text",
@@ -185,7 +186,7 @@ export function DataTable<T>({
                   <td
                     role="cell"
                     className={cn(
-                      "border-b border-divider text-right align-top whitespace-nowrap group-last/row:border-b-0",
+                      "text-right align-top whitespace-nowrap last:rounded-e-[12px]",
                       density === "compact" ? "px-2 py-1" : "px-2 py-1.5",
                       stack && "max-md:flex max-md:justify-end max-md:border-0 max-md:p-0",
                     )}
@@ -208,7 +209,8 @@ export function DataTable<T>({
       data-testid={testId}
       data-layout={layout}
       className={cn(
-        "min-w-0 rounded-[min(var(--radius-lg),12px)] border border-border bg-surface-raised",
+        // Rounded container that clips (overflow: clip keeps the sticky header working).
+        "min-w-0 overflow-clip rounded-card border border-hairline bg-surface-raised shadow-xs",
         className,
       )}
     >

@@ -49,9 +49,10 @@ export function Footer({ brand, columns, legal, legalLabel, note }: FooterProps)
   return (
     <footer
       data-surface="inverse"
-      className="border-t-4 border-t-accent bg-inverse text-inverse-text"
+      // Design v2: a large rounded panel rising from the bottom edge instead of a ruled band.
+      className="rounded-t-[calc(var(--radius-xl)_+_0.5rem)] bg-inverse text-inverse-text"
     >
-      <Container className="py-10 lg:py-14">
+      <Container className="py-12 lg:py-16">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr] lg:gap-12">
           <div className="md:col-span-2 lg:col-span-1">
             <p className="font-heading text-fs-5 font-bold text-inverse-accent">{brand.name}</p>
@@ -71,7 +72,7 @@ export function Footer({ brand, columns, legal, legalLabel, note }: FooterProps)
         </div>
 
         {legal?.length || note ? (
-          <div className="mt-10 flex flex-col gap-3 border-t border-inverse-muted/30 pt-5 text-fs-2 text-inverse-muted lg:flex-row lg:items-center lg:justify-between">
+          <div className="mt-10 flex flex-col gap-3 border-t border-inverse-muted/20 pt-5 text-fs-2 text-inverse-muted lg:flex-row lg:items-center lg:justify-between">
             {legal?.length ? (
               <nav aria-label={legalLabel}>
                 <ul className="-mx-1 flex flex-wrap gap-x-4">

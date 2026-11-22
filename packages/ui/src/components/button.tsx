@@ -12,30 +12,40 @@ export type ButtonVariant =
   "primary" | "secondary" | "outline" | "ghost" | "destructive" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
+/*
+ * Design v2: the radius comes from `--radius-button` (14 px Klasszikus, 16 px Letisztult, a pill in
+ * Közösségi). Hover lifts by `--motion-lift-sm` with a spring, pressing scales to `--motion-press`
+ * quickly; both are 0 / 1 under reduced motion. Only transform, opacity and colours transition.
+ */
 const base =
-  "relative inline-flex items-center justify-center gap-2 rounded-md border " +
-  "font-semibold leading-tight no-underline select-none cursor-pointer " +
-  "transition-[background-color,border-color,color,box-shadow] duration-(--duration) ease-(--ease) " +
+  "relative inline-flex items-center justify-center gap-2 rounded-button border " +
+  "font-semibold leading-tight no-underline select-none cursor-pointer [-webkit-tap-highlight-color:transparent] " +
+  "transition-[background-color,border-color,color,box-shadow,translate,scale,opacity] " +
+  "duration-(--dur-2) ease-spring active:duration-(--dur-1) active:ease-standard " +
+  "hover:translate-y-(--motion-lift-sm) active:translate-y-0 active:scale-(--motion-press) " +
   "[&_svg]:shrink-0 " +
-  "disabled:pointer-events-none disabled:opacity-55 aria-disabled:pointer-events-none aria-disabled:opacity-55";
+  "disabled:pointer-events-none disabled:opacity-55 aria-disabled:pointer-events-none aria-disabled:not-aria-busy:opacity-55";
 
 const destructive =
-  "border-transparent bg-danger text-surface-raised shadow-xs hover:bg-[color-mix(in_oklab,var(--c-danger)_85%,black)]";
+  "border-transparent bg-danger text-surface-raised shadow-xs hover:bg-[color-mix(in_oklab,var(--c-danger)_85%,black)] " +
+  "hover:shadow-[0_8px_20px_-10px_color-mix(in_oklab,var(--c-danger)_70%,transparent)]";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "border-transparent bg-primary text-primary-contrast shadow-xs hover:bg-primary-hover",
+  primary:
+    "border-transparent bg-primary text-primary-contrast shadow-xs hover:bg-primary-hover hover:shadow-primary",
   secondary:
     "border-transparent bg-primary-soft text-primary hover:bg-[color-mix(in_oklab,var(--c-primary)_14%,var(--c-surface-raised))]",
-  outline: "border-border-strong bg-surface-raised text-text hover:bg-surface-sunken",
-  ghost: "border-transparent bg-transparent text-primary hover:bg-primary-soft",
+  outline:
+    "border-border bg-surface-raised text-text shadow-xs hover:border-border-strong hover:bg-surface-raised hover:shadow-card",
+  ghost: "border-transparent bg-transparent text-primary hover:bg-primary-soft active:bg-press",
   destructive,
   danger: destructive,
 };
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "min-h-(--control-h-sm) min-w-(--control-h-sm) px-3.5 text-fs-2 [&_svg]:size-4",
+  sm: "min-h-(--control-h-sm) min-w-(--control-h-sm) px-4 text-fs-2 [&_svg]:size-4",
   md: "min-h-(--control-h-md) min-w-(--control-h-md) px-(--control-px) text-fs-3 [&_svg]:size-5",
-  lg: "min-h-(--control-h-lg) min-w-(--control-h-lg) px-6 text-fs-4 [&_svg]:size-5",
+  lg: "min-h-(--control-h-lg) min-w-(--control-h-lg) px-7 text-fs-4 [&_svg]:size-5",
 };
 
 const iconOnlySizes: Record<ButtonSize, string> = {
@@ -80,13 +90,13 @@ interface CommonProps {
   iconEnd?: ReactNode;
 }
 
-function Spinner() {
+function Spinner({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
       focusable="false"
-      className="animate-spin motion-reduce:animate-none"
+      className={cn("animate-spin motion-reduce:animate-none", className)}
       fill="none"
     >
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
@@ -101,9 +111,57 @@ export type ButtonProps = CommonProps &
      * Pending state (e.g. from `useFormStatus().pending`): shows a spinner, sets `aria-busy` and
      * `aria-disabled` (pointer clicks are blocked by CSS). The label stays, so the button keeps its
      * name. Guard the handler / action too if a keyboard repeat must not submit twice.
+     *
+     * Pass it as a boolean from the first render (`loading={pending}`) and the spinner morphs in:
+     * it grows out of the gap before the label, or crossfades with `iconStart`.
      */
     loading?: boolean;
   };
+
+/**
+ * The loading slot. Present whenever `loading` is a boolean, so switching it animates: without an
+ * icon the slot opens from 0 to 1em (grid track 0fr → 1fr) and the spinner fades and scales in;
+ * with an icon the two crossfade in the same cell. Width changes stay inside the button.
+ */
+function LoadingSlot({ loading, icon }: { loading: boolean; icon?: ReactNode }) {
+  const spinner = (
+    <span
+      className={cn(
+        "col-start-1 row-start-1 grid place-items-center transition-[opacity,scale] duration-(--dur-2) ease-spring",
+        loading ? "scale-100 opacity-100" : "scale-50 opacity-0",
+      )}
+    >
+      <Spinner />
+    </span>
+  );
+  if (icon) {
+    return (
+      <span data-slot="loading" className="grid place-items-center">
+        <span
+          className={cn(
+            "col-start-1 row-start-1 grid place-items-center transition-[opacity,scale] duration-(--dur-2) ease-standard",
+            loading ? "scale-50 opacity-0" : "scale-100 opacity-100",
+          )}
+        >
+          {icon}
+        </span>
+        {spinner}
+      </span>
+    );
+  }
+  return (
+    <span
+      data-slot="loading"
+      aria-hidden="true"
+      className={cn(
+        "grid transition-[grid-template-columns,margin] duration-(--dur-3) ease-emphasized",
+        loading ? "grid-cols-[1fr]" : "-me-2 grid-cols-[0fr]",
+      )}
+    >
+      <span className="grid min-w-0 overflow-hidden">{spinner}</span>
+    </span>
+  );
+}
 
 /** A real `<button>`. Defaults to `type="button"` so it never submits a form by accident. */
 export function Button({
@@ -112,7 +170,7 @@ export function Button({
   fullWidth,
   iconStart,
   iconEnd,
-  loading = false,
+  loading,
   className,
   type = "button",
   children,
@@ -127,8 +185,9 @@ export function Button({
       // No event handler is added here, so a server component can render a loading Button.
       aria-busy={loading || undefined}
       aria-disabled={loading || rest["aria-disabled"] || undefined}
+      data-loading={loading || undefined}
     >
-      {loading ? <Spinner /> : iconStart}
+      {loading === undefined ? iconStart : <LoadingSlot loading={loading} icon={iconStart} />}
       {children}
       {iconEnd}
     </button>

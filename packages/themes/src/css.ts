@@ -26,6 +26,7 @@ export function themeToCssVars(config: ThemeConfig): CssVars {
     "--radius-sm": radius.sm,
     "--radius-md": radius.md,
     "--radius-lg": radius.lg,
+    "--radius-xl": radius.xl,
   };
 }
 

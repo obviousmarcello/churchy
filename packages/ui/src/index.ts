@@ -35,6 +35,8 @@ export {
   Select,
   Textarea,
   TimeInput,
+  Radio,
+  type RadioProps,
   type CheckboxProps,
   type FieldProps,
   type FieldsetProps,
@@ -90,6 +92,44 @@ export {
   type ToastTone,
 } from "./components/toast";
 export { Dialog, DialogClose, type DialogProps } from "./components/dialog";
+// Design v2 primitives (UI-05).
+export {
+  Avatar,
+  Chip,
+  IconTile,
+  Progress,
+  Reveal,
+  Stagger,
+  type AvatarProps,
+  type AvatarSize,
+  type ChipProps,
+  type IconTileProps,
+  type IconTileSize,
+  type IconTileTone,
+  type ProgressProps,
+  type RevealProps,
+  type StaggerProps,
+} from "./components/primitives";
+export {
+  SegmentedControl,
+  type SegmentedControlProps,
+  type SegmentedOption,
+} from "./components/segmented";
+export { MenuItem, Popover, type MenuItemProps, type PopoverProps } from "./components/popover";
+export {
+  Disclosure,
+  SideNav,
+  type DisclosureProps,
+  type SideNavItem,
+  type SideNavProps,
+} from "./components/side-nav";
+export {
+  PAGE_TRANSITION_TYPE,
+  PageTransition,
+  pageTransitionTypes,
+  type PageTransitionProps,
+} from "./components/page-transition";
+export { AnimatedNumber, type AnimatedNumberProps } from "./components/animated-number";
 export {
   Address,
   BankAccount,

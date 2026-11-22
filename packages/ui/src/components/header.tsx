@@ -45,13 +45,12 @@ export interface HeaderProps {
   sticky?: boolean;
 }
 
+// Design v2: rounded pill items; the current page sits on a soft brand-tinted pill.
 const linkBase =
-  "relative flex w-full min-h-12 items-center px-1 text-fs-3 font-semibold text-text no-underline " +
-  "transition-colors duration-(--duration) hover:text-primary aria-[current=page]:text-primary " +
-  "lg:inline-flex lg:w-auto lg:min-h-11 lg:px-3 lg:text-fs-2 xl:text-fs-3 " +
-  "lg:after:absolute lg:after:inset-x-3 lg:after:bottom-1 lg:after:h-0.5 lg:after:origin-left " +
-  "lg:after:scale-x-0 lg:after:bg-accent lg:after:transition-transform " +
-  "lg:hover:after:scale-x-100 lg:aria-[current=page]:after:scale-x-100";
+  "relative flex w-full min-h-12 items-center rounded-[14px] px-3 text-fs-3 font-semibold text-text no-underline " +
+  "transition-[background-color,color,scale] duration-(--dur-2) ease-standard hover:bg-hover hover:text-primary " +
+  "active:scale-(--motion-press) aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary " +
+  "lg:inline-flex lg:w-auto lg:min-h-11 lg:rounded-full lg:px-3.5 lg:text-fs-2 xl:text-fs-3";
 
 /**
  * Site header: brand, primary navigation, optional call-to-action. Below 1024 px the navigation is
@@ -120,7 +119,9 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
       ref={rootRef}
       onBlur={onBlur}
       className={cn(
-        "z-40 border-t-4 border-t-primary border-b border-b-border bg-surface-raised",
+        // Translucent app bar with backdrop blur where supported (cheap: one 56–72 px strip).
+        "z-40 border-b border-hairline bg-surface-raised",
+        "supports-[backdrop-filter:blur(1px)]:bg-surface-glass supports-[backdrop-filter:blur(1px)]:backdrop-blur-xl supports-[backdrop-filter:blur(1px)]:backdrop-saturate-150",
         sticky ? "sticky top-0" : "relative",
       )}
     >
@@ -145,7 +146,7 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
             setSubOpen(null);
             setOpen((value) => !value);
           }}
-          className="ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-md border border-border text-primary hover:bg-primary-soft lg:hidden"
+          className="ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-button bg-primary-soft text-primary transition-[background-color,scale] duration-(--dur-2) ease-spring hover:bg-[color-mix(in_oklab,var(--c-primary)_14%,var(--c-surface-raised))] active:scale-(--motion-press) lg:hidden"
         >
           {open ? <CloseIcon className="size-6" /> : <MenuIcon className="size-6" />}
         </button>
@@ -155,17 +156,16 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
           aria-label={labels.navigation}
           onClick={onNavClick}
           className={cn(
-            "absolute inset-x-0 top-full max-h-[calc(100dvh-var(--header-h))] overflow-y-auto border-b border-border bg-surface-raised shadow-raised",
-            "lg:static lg:ml-auto lg:block lg:max-h-none lg:overflow-visible lg:border-0 lg:bg-transparent lg:shadow-none",
+            // Phones: a floating rounded panel that pops in under the bar.
+            "absolute inset-x-2 top-[calc(100%_+_0.5rem)] max-h-[calc(100dvh-var(--header-h)-1rem)] origin-top overflow-y-auto rounded-overlay border border-hairline bg-surface-raised shadow-overlay",
+            "motion-safe:animate-[ui-pop-in_var(--dur-3)_var(--ease-spring)] lg:animate-none",
+            "lg:static lg:ml-auto lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:bg-transparent lg:shadow-none",
             open ? "block" : "hidden",
           )}
         >
-          <ul className="mx-auto flex w-full max-w-(--content-max) flex-col px-(--gutter) py-2 lg:flex-row lg:items-center lg:gap-0.5 lg:p-0">
+          <ul className="mx-auto flex w-full max-w-(--content-max) flex-col gap-0.5 p-2 lg:flex-row lg:items-center lg:gap-0.5 lg:p-0">
             {nav.map((item, index) => (
-              <li
-                key={item.href + item.label}
-                className="border-b border-border/70 last:border-b-0 lg:relative lg:border-0"
-              >
+              <li key={item.href + item.label} className="lg:relative">
                 {item.children?.length ? (
                   <>
                     <button
@@ -189,14 +189,14 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
                     <ul
                       id={`${menuId}-sub-${index}`}
                       hidden={subOpen !== index}
-                      className="mb-2 ml-3 border-l-2 border-accent pl-3 lg:absolute lg:top-full lg:left-0 lg:z-10 lg:mt-1 lg:mb-0 lg:ml-0 lg:min-w-60 lg:rounded-md lg:border lg:border-l-2 lg:border-border lg:border-l-accent lg:bg-surface-raised lg:p-2 lg:shadow-raised"
+                      className="mb-1 ml-3 grid gap-0.5 border-l-2 border-accent/60 pl-2 lg:absolute lg:top-full lg:left-0 lg:z-10 lg:mt-2 lg:mb-0 lg:ml-0 lg:min-w-60 lg:origin-top-left lg:rounded-[20px] lg:border lg:border-hairline lg:bg-surface-raised lg:p-2 lg:shadow-overlay lg:motion-safe:animate-[ui-pop-in_var(--dur-3)_var(--ease-spring)]"
                     >
                       {item.children.map((child) => (
                         <li key={child.href}>
                           <a
                             href={child.href}
                             aria-current={child.current ? "page" : undefined}
-                            className="flex min-h-11 items-center rounded-sm px-2 text-fs-3 font-medium text-text no-underline hover:bg-primary-soft hover:text-primary aria-[current=page]:font-bold aria-[current=page]:text-primary"
+                            className="flex min-h-11 items-center rounded-[12px] px-3 text-fs-3 font-medium text-text no-underline transition-colors duration-(--dur-2) hover:bg-primary-soft hover:text-primary aria-[current=page]:font-bold aria-[current=page]:text-primary"
                           >
                             {child.label}
                           </a>
@@ -216,7 +216,7 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
               </li>
             ))}
             {cta ? (
-              <li className="pt-3 pb-3 lg:ml-3 lg:py-0">
+              <li className="p-1 pt-2 lg:ml-3 lg:p-0">
                 <a
                   href={cta.href}
                   className={buttonClasses({ variant: "primary", className: "w-full lg:w-auto" })}

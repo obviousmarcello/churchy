@@ -72,7 +72,8 @@ describe("ThemeConfig -> CSS variables (runtime theming)", () => {
     expect(vars["--c-accent"]).toBe("#c9a24b");
     expect(vars["--font-heading"]).toContain("Cormorant Garamond");
     expect(vars["--font-body"]).toContain("Source Sans 3");
-    expect(vars["--radius-md"]).toBe("6px");
+    expect(vars["--radius-md"]).toBe("14px");
+    expect(vars["--radius-xl"]).toBe("24px");
   });
 
   it("changes the variables when the config changes (no rebuild involved)", () => {
@@ -166,6 +167,7 @@ describe.each(THEME_IDS)("%s stylesheet stays in sync with the registry", (theme
       "--radius-sm",
       "--radius-md",
       "--radius-lg",
+      "--radius-xl",
     ] as const) {
       expect(klasszikus[name], name).toBe(vars[name]);
     }
@@ -325,5 +327,62 @@ describe("shared stylesheet", () => {
         expect(face).toMatch(/descent-override: /);
       }
     }
+  });
+});
+
+describe("design v2: shape and motion tokens", () => {
+  const semantic = [
+    "--radius-control",
+    "--radius-button",
+    "--radius-card",
+    "--radius-overlay",
+    "--radius-tile",
+    "--radius-image",
+  ];
+  const px = (value: string) => Number.parseFloat(value);
+
+  it.each([...THEME_IDS, "admin"])("%s declares every semantic radius", (name) => {
+    const decl = declarations(css(`${name}.css`));
+    for (const token of semantic) expect(decl[token], token).toBeDefined();
+  });
+
+  it("keeps the themes distinct and every step soft", () => {
+    expect(declarations(css("kozossegi.css"))["--radius-button"]).toBe("9999px");
+    const card = (step: keyof typeof RADIUS_SCALES) => px(RADIUS_SCALES[step].lg);
+    expect(card("square")).toBeLessThan(card("soft"));
+    expect(card("soft")).toBeLessThan(card("round"));
+    // Every step is modern: cards at least 16 px, overlays at least 20 px.
+    for (const scale of Object.values(RADIUS_SCALES)) {
+      expect(px(scale.lg)).toBeGreaterThanOrEqual(16);
+      expect(px(scale.xl)).toBeGreaterThanOrEqual(20);
+    }
+  });
+
+  it("defines the motion scale and easings, and zeroes movement under reduced motion", () => {
+    const tokens = css("tokens.css");
+    const decl = declarations(tokens);
+    expect([decl["--dur-1"], decl["--dur-2"], decl["--dur-3"], decl["--dur-4"]]).toEqual([
+      "120ms",
+      "200ms",
+      "320ms",
+      "480ms",
+    ]);
+    const theme = declarations(css("tailwind.css"));
+    for (const ease of ["--ease-standard", "--ease-emphasized", "--ease-exit", "--ease-spring"]) {
+      expect(theme[ease], ease).toMatch(/^cubic-bezier\(/);
+    }
+    const reduced = tokens.slice(tokens.indexOf("prefers-reduced-motion: reduce"));
+    expect(reduced).toMatch(/--motion-lift: 0px/);
+    expect(reduced).toMatch(/--motion-press: 1/);
+    expect(reduced).toMatch(/--motion-rise: 0px/);
+  });
+
+  it("guards motion with reduced motion and keeps view transitions non-blocking", () => {
+    const motion = css("motion.css");
+    expect(motion).toMatch(/::view-transition \{\s*pointer-events: none;/);
+    expect(motion).toMatch(
+      /@media \(prefers-reduced-motion: no-preference\) and \(scripting: enabled\) \{\s*@view-transition/,
+    );
+    expect(motion).toMatch(/@media \(prefers-reduced-motion: no-preference\) \{\s*\[data-reveal\]/);
   });
 });

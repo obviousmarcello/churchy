@@ -40,15 +40,26 @@ export const FONT_PAIRINGS: Record<FontPairingId, FontPairing> = {
 };
 
 export interface RadiusScale {
+  /** Chips inside controls, checkboxes, small swatches. */
   sm: string;
+  /** Inputs and (in most themes) buttons. */
   md: string;
+  /** Cards, table containers, images. */
   lg: string;
+  /** Dialogs, popovers, menus, heroes. */
+  xl: string;
 }
 
+/**
+ * Corner radius steps (design v2: soft, modern shapes in every step). The ids are stored in site
+ * configs, so they keep their names: `square` is the most restrained step, not literally square.
+ * Each theme derives its semantic radii (`--radius-card`, `--radius-button` …) from the step in its
+ * stylesheet, so a church's choice still changes every component.
+ */
 export const RADIUS_SCALES: Record<RadiusStep, RadiusScale> = {
-  square: { sm: "0px", md: "0px", lg: "2px" },
-  soft: { sm: "3px", md: "6px", lg: "10px" },
-  round: { sm: "8px", md: "16px", lg: "28px" },
+  square: { sm: "8px", md: "12px", lg: "18px", xl: "22px" },
+  soft: { sm: "10px", md: "14px", lg: "20px", xl: "24px" },
+  round: { sm: "12px", md: "16px", lg: "26px", xl: "32px" },
 };
 
 export interface ThemeDefinition {

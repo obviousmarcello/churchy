@@ -1,15 +1,18 @@
 import { Fragment, type CSSProperties, type ReactNode } from "react";
 import {
   RADIUS_STEPS,
+  THEME_IDS,
   isHexColor,
   resolveThemeConfig,
   themeAttributes,
   type RadiusStep,
+  type ThemeId,
 } from "@churchy/themes";
 import {
   AdminScope,
   Address,
   Alert,
+  Avatar,
   Badge,
   BankAccount,
   Breadcrumbs,
@@ -18,16 +21,21 @@ import {
   CalendarIcon,
   Card,
   Checkbox,
+  Chip,
   CopyIcon,
+  DashboardIcon,
   DataTable,
   DateInput,
   Dialog,
   DialogClose,
+  Disclosure,
   DoorIcon,
   DownloadIcon,
   EditIcon,
   EmptyState,
   EyeIcon,
+  FilterIcon,
+  Fieldset,
   Footer,
   FooterLink,
   FormActions,
@@ -38,9 +46,12 @@ import {
   ICONS,
   Icon,
   IconButton,
+  IconTile,
   InboxIcon,
   Input,
   LoadingRegion,
+  MegaphoneIcon,
+  MenuItem,
   MoreIcon,
   MusicIcon,
   NavTabs,
@@ -49,14 +60,20 @@ import {
   PersonName,
   Phone,
   PlusIcon,
+  Popover,
+  Progress,
+  Radio,
   SectionHeading,
+  SegmentedControl,
   Select,
+  SideNav,
   Skeleton,
   StatusPill,
   Tabs,
   Textarea,
   TimeInput,
   TrashIcon,
+  UsersIcon,
   type DataTableColumn,
   type HeroImage,
   type IconName,
@@ -65,6 +82,7 @@ import {
 import { getT } from "@/i18n/server";
 import { assertDevRoutesVisible } from "@/lib/dev-routes";
 import { termsForDenomination } from "@/i18n/terms";
+import { MotionDemo } from "./motion-demo";
 import { SaveDemo } from "./save-demo";
 import { ThemePlayground } from "./theme-playground";
 
@@ -203,6 +221,8 @@ const TOC_KEYS = [
   "table",
   "states",
   "tabs",
+  "primitives",
+  "motion",
   "admin",
   "formatting",
   "footer",
@@ -223,7 +243,10 @@ export default async function ShowcasePage({
   const primary = first(params.primary);
   const accent = first(params.accent);
   const radius = first(params.radius);
+  const themeParam = first(params.theme);
+  const themeId = THEME_IDS.includes(themeParam as ThemeId) ? (themeParam as ThemeId) : undefined;
   const theme = resolveThemeConfig({
+    ...(themeId ? { themeId } : {}),
     colors: {
       ...(isHexColor(primary) ? { primary } : {}),
       ...(isHexColor(accent) ? { accent } : {}),
@@ -329,6 +352,8 @@ export default async function ShowcasePage({
   const nv = await getT("dev.showcase.navigation");
   const tbl = await getT("dev.showcase.table");
   const st = await getT("dev.showcase.states");
+  const pr = await getT("dev.showcase.primitives");
+  const mo = await getT("dev.showcase.motion");
 
   const requestColumns: DataTableColumn<DemoRequest>[] = [
     { key: "name", header: tbl("colName"), cell: (r) => tbl(r.nameKey), primary: true },
@@ -379,6 +404,23 @@ export default async function ShowcasePage({
           </header>
 
           <Block id="theme" title={t("theme.title")} lead={t("theme.lead")}>
+            <nav aria-label={t("theme.themeLabel")} className="mb-6">
+              <ul className="flex flex-wrap gap-2" data-testid="showcase-theme-switch">
+                {(
+                  [
+                    ["klasszikus", t("theme.themeKlasszikus")],
+                    ["letisztult", t("theme.themeLetisztult")],
+                    ["kozossegi", t("theme.themeKozossegi")],
+                  ] as const
+                ).map(([id, label]) => (
+                  <li key={id}>
+                    <Chip href={`?theme=${id}#theme`} current={theme.themeId === id}>
+                      {label}
+                    </Chip>
+                  </li>
+                ))}
+              </ul>
+            </nav>
             <ThemePlayground
               scopeId={SCOPE_ID}
               initial={theme}
@@ -476,6 +518,7 @@ export default async function ShowcasePage({
                     ["rounded-sm", tk("radiusSmall")],
                     ["rounded-md", tk("radiusMedium")],
                     ["rounded-lg", tk("radiusLarge")],
+                    ["rounded-xl", tk("radiusXl")],
                   ].map(([cls, label]) => (
                     <li key={cls} className="grid justify-items-center gap-2">
                       <span
@@ -496,6 +539,88 @@ export default async function ShowcasePage({
                       </li>
                     ),
                   )}
+                </ul>
+              </div>
+              <div>
+                <Label>{tk("semanticRadii")}</Label>
+                <ul className="flex flex-wrap gap-6" data-testid="showcase-radii">
+                  {(
+                    [
+                      ["rounded-control", "radiusControl"],
+                      ["rounded-button", "radiusButton"],
+                      ["rounded-card", "radiusCard"],
+                      ["rounded-overlay", "radiusOverlay"],
+                      ["rounded-tile", "radiusTile"],
+                    ] as const
+                  ).map(([cls, key]) => (
+                    <li key={cls} className="grid justify-items-center gap-2">
+                      <span
+                        aria-hidden="true"
+                        className={`h-16 w-24 bg-primary-soft shadow-xs ${cls}`}
+                      />
+                      <code className="text-fs-1 text-muted">{cls}</code>
+                      <span className="text-fs-2 text-muted">{tk(key)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <Label>{tk("surfaces")}</Label>
+                <ul className="grid gap-3 sm:grid-cols-3">
+                  {(
+                    [
+                      ["bg-surface-app", "surfaceApp"],
+                      ["bg-surface-tint", "surfaceTint"],
+                      ["bg-surface-glass", "surfaceGlass"],
+                    ] as const
+                  ).map(([cls, key]) => (
+                    <li
+                      key={cls}
+                      className={`grid min-h-24 content-end gap-1 rounded-card p-4 shadow-xs ${cls}`}
+                    >
+                      <code className="text-fs-1 text-muted">{cls}</code>
+                      <span className="text-fs-2 text-text">{tk(key)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <Label>{tk("motion")}</Label>
+                <p className="mb-4 text-fs-2 text-muted">{tk("hoverHint")}</p>
+                <ul className="grid gap-3" data-testid="showcase-motion-tokens">
+                  {(
+                    [
+                      ["--dur-1", "120 ms", "durationFast", "--ease-standard", "easeStandard"],
+                      ["--dur-2", "200 ms", "durationBase", "--ease-spring", "easeSpring"],
+                      ["--dur-3", "320 ms", "durationSlow", "--ease-emphasized", "easeEmphasized"],
+                      ["--dur-4", "480 ms", "durationSlower", "--ease-exit", "easeExit"],
+                    ] as const
+                  ).map(([dur, ms, durKey, ease, easeKey]) => (
+                    <li
+                      key={dur}
+                      tabIndex={0}
+                      className="group/motion grid gap-2 rounded-card bg-surface-tint p-4 sm:grid-cols-[16rem_minmax(0,1fr)] sm:items-center"
+                    >
+                      <div className="grid text-fs-2">
+                        <code className="text-text">
+                          {dur} · {ms}
+                        </code>
+                        <span className="text-muted">{tk(durKey)}</span>
+                        <code className="text-text">{ease}</code>
+                        <span className="text-muted">{tk(easeKey)}</span>
+                      </div>
+                      <div className="relative h-10 rounded-full bg-surface-raised">
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            transitionDuration: `var(${dur})`,
+                            transitionTimingFunction: `var(${ease})`,
+                          }}
+                          className="absolute top-1 left-1 size-8 rounded-full bg-primary transition-[left] group-hover/motion:left-[calc(100%-2.25rem)] group-focus-visible/motion:left-[calc(100%-2.25rem)]"
+                        />
+                      </div>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -1055,6 +1180,216 @@ export default async function ShowcasePage({
                   <p>{tb("dialogBody")}</p>
                 </Dialog>
               </div>
+            </div>
+          </Block>
+
+          <Block id="primitives" title={pr("title")} lead={pr("lead")}>
+            <div className="grid gap-10" data-testid="showcase-primitives">
+              <div className="grid gap-8 md:grid-cols-2">
+                <div>
+                  <Label>{pr("iconTiles")}</Label>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <IconTile icon={<CalendarIcon />} size="sm" />
+                    <IconTile icon={<CalendarIcon />} />
+                    <IconTile icon={<CalendarIcon />} size="lg" />
+                    <IconTile icon={<MusicIcon />} tone="accent" />
+                    <IconTile icon={<UsersIcon />} tone="success" />
+                    <IconTile icon={<MegaphoneIcon />} tone="info" />
+                    <IconTile icon={<DoorIcon />} tone="neutral" />
+                  </div>
+                </div>
+                <div>
+                  <Label>{pr("avatars")}</Label>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Avatar label={pr("avatarLabel")} initials={pr("avatarInitials")} size="sm" />
+                    <Avatar label={pr("avatarLabel")} initials={pr("avatarInitials")} />
+                    <Avatar label={pr("avatarLabel2")} initials={pr("avatarInitials2")} size="lg" />
+                    <Avatar
+                      label={pr("avatarLabel2")}
+                      initials={pr("avatarInitials2")}
+                      shape="circle"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>{pr("chips")}</Label>
+                  <ul className="flex flex-wrap gap-2">
+                    <li>
+                      <Chip href="#primitives" current>
+                        {pr("chipAll")}
+                      </Chip>
+                    </li>
+                    <li>
+                      <Chip href="#primitives" icon={<CalendarIcon />}>
+                        {pr("chipLiturgy")}
+                      </Chip>
+                    </li>
+                    <li>
+                      <Chip href="#primitives" icon={<UsersIcon />}>
+                        {pr("chipYouth")}
+                      </Chip>
+                    </li>
+                    <li>
+                      <Chip href="#primitives" icon={<MusicIcon />}>
+                        {pr("chipMusic")}
+                      </Chip>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <Label>{pr("segmented")}</Label>
+                  <SegmentedControl
+                    label={pr("segmentedLabel")}
+                    name="showcase-view"
+                    defaultValue="week"
+                    data-testid="showcase-segmented"
+                    options={[
+                      { value: "day", label: pr("segmentedDay") },
+                      { value: "week", label: pr("segmentedWeek") },
+                      { value: "month", label: pr("segmentedMonth") },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <Label>{pr("progress")}</Label>
+                  <div className="grid gap-4">
+                    <Progress
+                      label={pr("progressLabel")}
+                      value={3}
+                      max={5}
+                      valueText={pr("progressValue")}
+                    />
+                    <Progress label={pr("progressLoading")} tone="success" />
+                  </div>
+                </div>
+                <div>
+                  <Label>{pr("popover")}</Label>
+                  <Popover
+                    triggerLabel={pr("popoverTrigger")}
+                    label={pr("popoverLabel")}
+                    data-testid="showcase-popover"
+                  >
+                    <MenuItem icon={<EditIcon />}>{pr("menuEdit")}</MenuItem>
+                    <MenuItem icon={<CopyIcon />}>{pr("menuCopy")}</MenuItem>
+                    <MenuItem icon={<DownloadIcon />}>{pr("menuDownload")}</MenuItem>
+                    <MenuItem icon={<TrashIcon />} tone="danger">
+                      {pr("menuDelete")}
+                    </MenuItem>
+                  </Popover>
+                </div>
+              </div>
+              <div className="grid gap-8 md:grid-cols-2">
+                <div>
+                  <Label>{pr("disclosure")}</Label>
+                  <div className="grid gap-2">
+                    <Disclosure summary={pr("disclosureSummary")} data-testid="showcase-disclosure">
+                      <p>{pr("disclosureBody")}</p>
+                    </Disclosure>
+                    <Disclosure summary={pr("disclosureSummary2")}>
+                      <p>{pr("disclosureBody2")}</p>
+                    </Disclosure>
+                  </div>
+                </div>
+                <div>
+                  <Label>{pr("sideNav")}</Label>
+                  <SideNav
+                    label={pr("sideNavLabel")}
+                    className="max-w-64 rounded-card bg-surface-app p-2"
+                    items={[
+                      {
+                        label: pr("sideToday"),
+                        href: "#primitives",
+                        icon: <DashboardIcon />,
+                        current: true,
+                      },
+                      { label: pr("sideCalendar"), href: "#primitives", icon: <CalendarIcon /> },
+                      { label: pr("sideRooms"), href: "#primitives", icon: <DoorIcon /> },
+                      {
+                        label: pr("sideRequests"),
+                        href: "#primitives",
+                        icon: <InboxIcon />,
+                        count: 3,
+                      },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <Label>{pr("radios")}</Label>
+                  <Fieldset legend={pr("radioLegend")} className="gap-0">
+                    <Radio name="showcase-notify" label={pr("radioEmail")} defaultChecked />
+                    <Radio name="showcase-notify" label={pr("radioPush")} />
+                  </Fieldset>
+                </div>
+                <div>
+                  <Label>{pr("drawer")}</Label>
+                  <Dialog
+                    placement="end"
+                    trigger={
+                      <Button variant="outline" iconStart={<FilterIcon />}>
+                        {pr("drawerOpen")}
+                      </Button>
+                    }
+                    title={pr("drawerTitle")}
+                    description={pr("drawerDescription")}
+                    closeLabel={common("closeDialog")}
+                    footer={
+                      <>
+                        <DialogClose asChild>
+                          <Button variant="ghost">{pr("drawerCancel")}</Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                          <Button>{pr("drawerApply")}</Button>
+                        </DialogClose>
+                      </>
+                    }
+                  >
+                    <SegmentedControl
+                      label={pr("segmentedLabel")}
+                      labelVisible
+                      name="showcase-drawer-view"
+                      defaultValue="day"
+                      fullWidth
+                      options={[
+                        { value: "day", label: pr("segmentedDay") },
+                        { value: "week", label: pr("segmentedWeek") },
+                        { value: "month", label: pr("segmentedMonth") },
+                      ]}
+                    />
+                  </Dialog>
+                </div>
+              </div>
+            </div>
+          </Block>
+
+          <Block id="motion" title={mo("title")} lead={mo("lead")}>
+            <MotionDemo
+              labels={{
+                staggerHeading: mo("staggerHeading"),
+                staggerLead: mo("staggerLead"),
+                replay: mo("replay"),
+                card1Title: mo("card1Title"),
+                card1Body: mo("card1Body"),
+                card2Title: mo("card2Title"),
+                card2Body: mo("card2Body"),
+                card3Title: mo("card3Title"),
+                card3Body: mo("card3Body"),
+                numberHeading: mo("numberHeading"),
+                counterLabel: mo("counterLabel"),
+                add: mo("add"),
+                remove: mo("remove"),
+                progressLabel: mo("progressLabel"),
+                loadingHeading: mo("loadingHeading"),
+                loadingLead: mo("loadingLead"),
+                save: mo("save"),
+                send: mo("send"),
+              }}
+            />
+            <div className="mt-10 rounded-card bg-surface-tint p-5 sm:p-6">
+              <h3 className="font-body text-fs-4 font-semibold text-text">{mo("pageHeading")}</h3>
+              <p className="mt-1 max-w-[68ch] text-fs-3 text-muted">{mo("pageLead")}</p>
+              <ButtonLink href="/" variant="secondary" className="mt-4">
+                {mo("pageLink")}
+              </ButtonLink>
             </div>
           </Block>
 

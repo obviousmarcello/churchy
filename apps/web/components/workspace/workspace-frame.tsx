@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { pageTransitionTypes } from "@churchy/ui";
 
 export interface WorkspaceNavItem {
   readonly id: string;
@@ -53,6 +54,7 @@ export function WorkspaceFrame({
               <li key={item.id} data-section={item.id} className="shrink-0 md:shrink">
                 <Link
                   href={item.href}
+                  transitionTypes={pageTransitionTypes}
                   aria-current={current ? "page" : undefined}
                   className="flex min-h-14 min-w-20 items-center justify-center rounded-md px-3 py-2 text-center text-fs-2 leading-tight font-semibold text-text no-underline hover:bg-primary-soft aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast md:min-h-11 md:justify-start md:text-left md:text-fs-3"
                 >
