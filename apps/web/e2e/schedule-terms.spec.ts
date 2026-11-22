@@ -107,7 +107,7 @@ test.describe("schedule: exceptions", () => {
     await services.first().check();
     await page.getByLabel(/^Ok/).fill("Búcsú ünnepe");
     await expect(
-      page.getByTestId("exception-result").locator('[data-badge="exception"]'),
+      page.getByTestId("exception-result").locator('[data-badge="exception"]').first(),
     ).toContainText("Elmarad");
     await page.getByTestId("exception-save").click();
     await expect(page.getByTestId("exception-feedback")).toContainText("mentve");
