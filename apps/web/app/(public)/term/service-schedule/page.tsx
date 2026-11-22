@@ -7,7 +7,7 @@ import { formatDateShort, todayInBudapest } from "@churchy/hu";
 import { effectiveConfig } from "@churchy/presets";
 import type { DayContextFn } from "@churchy/schedule";
 import { Alert, PageShell } from "@churchy/ui";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import {
   DATE_PARAM,
@@ -116,7 +116,7 @@ export default async function ServiceSchedulePage({
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref={basePath} />}
+      header={<PublicSiteHeader currentHref={basePath} />}
     >
       <div
         data-print-page="service-schedule"
@@ -128,7 +128,7 @@ export default async function ServiceSchedulePage({
         >
           {tenant.name}
         </p>
-        <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary print:text-[22pt]">
+        <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary print:text-[22pt]">
           {t.term("serviceSchedule").nom}
         </h1>
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { HomeSection } from "@churchy/contracts";
 import type { EffectiveConfig } from "@churchy/presets";
-import { PageShell, SectionHeading } from "@churchy/ui";
+import { EmptyState, MegaphoneIcon, PageShell, SectionHeading, cn } from "@churchy/ui";
 import { LatestAnnouncementTeaser } from "@/components/announcements/latest-teaser";
 import {
   CtaSection,
@@ -14,8 +14,8 @@ import {
   NewsSection,
   QuoteSection,
 } from "@/components/home/home-sections";
-import { NextServicesCard } from "@/components/home/next-services";
-import { SiteHeader } from "@/components/site-header";
+import { NextServicesStrip } from "@/components/home/next-services";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { homeBands, type Band } from "@/lib/home/sections";
 import { jsonLdScript } from "@/lib/locations";
@@ -51,7 +51,10 @@ export default async function HomePage() {
   const hasHero = config.home.some((s) => s.type === "hero");
 
   return (
-    <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader currentHref="/" />}>
+    <PageShell
+      skipLinkLabel={common("skipToContent")}
+      header={<PublicSiteHeader currentHref="/" />}
+    >
       {jsonLd ? (
         <script
           type="application/ld+json"
@@ -69,12 +72,19 @@ export default async function HomePage() {
 
 async function BandView({ band }: { band: Band }) {
   if (band.kind === "wide") return <WideSection section={band.section} />;
+  // A column that is empty (e.g. no announcements section) lets the other take the full width.
+  const both = band.left.length > 0 && band.right.length > 0;
   return (
-    <div className="mx-auto w-full max-w-(--content-max) px-(--gutter) py-6 lg:py-10">
-      <div className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-12">
+    <div className="mx-auto w-full max-w-(--content-max) px-(--gutter) py-10 lg:py-14">
+      <div
+        className={cn(
+          "grid gap-12 lg:items-start lg:gap-16",
+          both && "lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]",
+        )}
+      >
         {[band.left, band.right].map((column, i) => (
           // Columns collapse to one on a phone; `order` keeps the configured order there.
-          <div key={i} className="contents lg:flex lg:flex-col lg:gap-10">
+          <div key={i} className="contents lg:flex lg:flex-col lg:gap-14">
             {column.map(({ section, order }) => (
               <div key={section.id} style={{ order }} data-home-section={section.type}>
                 <ColumnSection section={section} />
@@ -91,23 +101,6 @@ async function ColumnSection({ section }: { section: HomeSection }) {
   const [site, t] = await Promise.all([getPublicSite(), getT("public.home")]);
   if (site === null) return null;
   switch (section.type) {
-    case "nextServices": {
-      const [view, now, repos] = await Promise.all([
-        getHomeNextServices(),
-        getRequestNow(),
-        getRequestRepositories(),
-      ]);
-      if (view === null) return null;
-      const locations = await repos.locations.list(site.ctx);
-      return (
-        <NextServicesCard
-          view={view}
-          now={now}
-          locations={locations}
-          serviceTypes={site.config.serviceTypes}
-        />
-      );
-    }
     case "announcements": {
       const title = (await getT("public.announcements"))("teaserTitle");
       return (
@@ -119,7 +112,7 @@ async function ColumnSection({ section }: { section: HomeSection }) {
               data-testid="announcements-empty"
             >
               <SectionHeading id="home-announcements" title={title} />
-              <p className="text-fs-3 text-muted">{t("announcementsEmpty")}</p>
+              <EmptyState size="sm" icon={<MegaphoneIcon />} title={t("announcementsEmpty")} />{" "}
             </section>
           }
         />
@@ -139,6 +132,24 @@ async function WideSection({ section }: { section: HomeSection }) {
   if (site === null) return null;
   const { config } = site;
   if (section.type === "hero") return <HeroSection config={config} />;
+  if (section.type === "nextServices") {
+    // A full-bleed strip right below the hero; it carries its own `data-home-section`.
+    const [view, now, repos] = await Promise.all([
+      getHomeNextServices(),
+      getRequestNow(),
+      getRequestRepositories(),
+    ]);
+    if (view === null) return null;
+    const locations = await repos.locations.list(site.ctx);
+    return (
+      <NextServicesStrip
+        view={view}
+        now={now}
+        locations={locations}
+        serviceTypes={config.serviceTypes}
+      />
+    );
+  }
   const content = await wideContent(section, config);
   if (content === null) return null;
   return (

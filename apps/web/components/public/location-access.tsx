@@ -15,7 +15,7 @@ export async function RouteLinks({ location }: { location: Pick<Location, "geo" 
         href={route}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex min-h-(--control-h-md) items-center rounded-md border-2 border-primary bg-primary px-(--control-px) font-semibold text-primary-contrast hover:bg-primary-hover"
+        className="inline-flex min-h-(--control-h-md) items-center rounded-button border-2 border-primary bg-primary px-(--control-px) font-semibold text-primary-contrast hover:bg-primary-hover"
         data-testid="route-link"
       >
         {t("route")}

@@ -14,7 +14,9 @@ export async function PortalPlaceholder({ section }: { section: "orgTemplates" |
   const title = nav(`sections.${section}`);
   return (
     <div className="flex flex-col gap-4" data-testid="portal-placeholder" data-section={section}>
-      <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">{title}</h1>
+      <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
+        {title}
+      </h1>
       <Alert tone="info" title={t("title")}>
         <p>{t(section)}</p>
       </Alert>

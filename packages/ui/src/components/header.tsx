@@ -12,6 +12,7 @@ import {
 } from "react";
 import { cn } from "../cn";
 import { ChevronDownIcon, CloseIcon, MenuIcon } from "../icons";
+import { Monogram } from "./brand";
 import { buttonClasses } from "./button";
 
 export interface NavItem {
@@ -29,10 +30,19 @@ export interface HeaderProps {
     href: string;
     /** Logo element (an `<img alt="">` or an SVG). Decorative: the name next to it is the label. */
     logo?: ReactNode;
+    /**
+     * Initials shown in a tinted tile when there is no `logo` (e.g. "ST" for Szent Tivadar).
+     * Decorative: the name next to it is the label.
+     */
+    monogram?: string;
   };
   nav: NavItem[];
-  /** Prominent call-to-action, e.g. the "Támogatás" button. */
-  cta?: { label: string; href: string };
+  /**
+   * Prominent call-to-action, e.g. the next service: `caption` "Szeretettel várjuk" above the
+   * `label` "vasárnap 10:00". `icon` is decorative. In the bar from 640 px; the last menu item
+   * below that.
+   */
+  cta?: { label: string; href: string; caption?: string; icon?: ReactNode; "data-testid"?: string };
   labels: {
     /** Accessible name of the `<nav>` landmark. */
     navigation: string;
@@ -128,13 +138,36 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
       <div className="mx-auto flex min-h-(--header-h) w-full max-w-(--content-max) items-center gap-3 px-(--gutter)">
         <a
           href={brand.href}
+          data-testid="site-brand"
           className="flex min-h-11 min-w-0 items-center gap-3 py-1 text-primary no-underline"
         >
-          {brand.logo ? <span className="shrink-0">{brand.logo}</span> : null}
-          <span className="font-heading text-fs-4 leading-[1.05] font-bold lg:text-fs-5">
+          {brand.logo ? (
+            <span className="shrink-0">{brand.logo}</span>
+          ) : brand.monogram ? (
+            <Monogram initials={brand.monogram} />
+          ) : null}
+          <span className="font-heading text-fs-4 leading-[1.1] [font-weight:var(--fw-heading-sm,var(--fw-heading))] tracking-(--heading-tracking) text-balance lg:text-fs-5">
             {brand.name}
           </span>
         </a>
+
+        {cta ? (
+          <a
+            href={cta.href}
+            data-testid={cta["data-testid"]}
+            className="ml-auto hidden min-h-11 shrink-0 items-center gap-2.5 rounded-button bg-primary py-1.5 pr-4 pl-3 text-primary-contrast no-underline shadow-[0_6px_16px_-8px_var(--c-primary)] transition-[background-color,translate,scale] duration-(--dur-2) ease-spring hover:translate-y-(--motion-lift-sm) hover:bg-primary-hover active:scale-(--motion-press) sm:inline-flex lg:order-last lg:ml-3"
+          >
+            {cta.icon ? (
+              <span aria-hidden="true" className="shrink-0 [&_svg]:size-5">
+                {cta.icon}
+              </span>
+            ) : null}
+            <span className="flex flex-col leading-tight">
+              {cta.caption ? <span className="text-fs-1">{cta.caption}</span> : null}
+              <span className="text-fs-2 font-semibold tabular-nums">{cta.label}</span>
+            </span>
+          </a>
+        ) : null}
 
         <button
           ref={toggleRef}
@@ -146,7 +179,7 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
             setSubOpen(null);
             setOpen((value) => !value);
           }}
-          className="ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-button bg-primary-soft text-primary transition-[background-color,scale] duration-(--dur-2) ease-spring hover:bg-[color-mix(in_oklab,var(--c-primary)_14%,var(--c-surface-raised))] active:scale-(--motion-press) lg:hidden"
+          className="ml-auto inline-flex size-11 shrink-0 items-center justify-center rounded-button bg-primary-soft sm:ml-0 text-primary transition-[background-color,scale] duration-(--dur-2) ease-spring hover:bg-[color-mix(in_oklab,var(--c-primary)_14%,var(--c-surface-raised))] active:scale-(--motion-press) lg:hidden"
         >
           {open ? <CloseIcon className="size-6" /> : <MenuIcon className="size-6" />}
         </button>
@@ -216,12 +249,13 @@ export function Header({ brand, nav, cta, labels, sticky = true }: HeaderProps) 
               </li>
             ))}
             {cta ? (
-              <li className="p-1 pt-2 lg:ml-3 lg:p-0">
+              // Below 640 px the call-to-action lives in the menu (the bar has no room for it).
+              <li className="p-1 pt-2 sm:hidden">
                 <a
                   href={cta.href}
-                  className={buttonClasses({ variant: "primary", className: "w-full lg:w-auto" })}
+                  className={buttonClasses({ variant: "primary", className: "w-full" })}
                 >
-                  {cta.label}
+                  {cta.caption ? `${cta.caption}: ${cta.label}` : cta.label}
                 </a>
               </li>
             ) : null}

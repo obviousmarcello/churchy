@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { Post } from "@churchy/contracts";
-import { Card, FormattedDate, PageShell, cn } from "@churchy/ui";
+import { Card, EmptyState, FormattedDate, NewspaperIcon, PageShell, cn } from "@churchy/ui";
+import { PublicPageHeader } from "@/components/public/public-page-header";
 import { LINK_CLASS } from "@/components/events/event-parts";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import {
   NEWS_PATH,
@@ -52,24 +53,19 @@ export default async function NewsListPage({ searchParams }: { searchParams: Sea
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref={NEWS_PATH} />}
+      header={<PublicSiteHeader currentHref={NEWS_PATH} />}
     >
       <div className="mx-auto flex w-full max-w-(--content-max) flex-col gap-10 px-(--gutter) py-10">
-        <header className="flex flex-col gap-4">
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
-            {t("title")}
-          </h1>
-          <p className="max-w-prose text-fs-4 text-muted">{t("lead")}</p>
-        </header>
+        <PublicPageHeader title={t("title")} lead={t("lead")} />
 
         <section aria-labelledby="news-list-title" className="flex flex-col gap-6">
           <h2 id="news-list-title" className="sr-only">
             {t("listHeading")}
           </h2>
           {result.items.length === 0 ? (
-            <p className="text-fs-4 text-muted">{t("empty")}</p>
+            <EmptyState icon={<NewspaperIcon />} title={t("empty")} data-testid="news-empty" />
           ) : (
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-testid="news-list">
+            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-testid="news-list">
               {result.items.map((post) => (
                 <Card
                   key={post.id}
@@ -77,7 +73,7 @@ export default async function NewsListPage({ searchParams }: { searchParams: Sea
                   title={post.title}
                   headingLevel={3}
                   href={newsPath(post)}
-                  {...(post.categories.length > 0 ? { eyebrow: post.categories.join(" · ") } : {})}
+                  {...(post.categories.length > 0 ? { eyebrow: post.categories.join(", ") } : {})}
                   className="h-full"
                 >
                   <div
@@ -123,7 +119,7 @@ export default async function NewsListPage({ searchParams }: { searchParams: Sea
                     aria-current={n === requested ? "page" : undefined}
                     aria-label={t("pageLink", { page: n })}
                     className={cn(
-                      "inline-flex min-h-(--control-h-sm) min-w-(--control-h-sm) items-center justify-center rounded-sm border-2 px-3 text-fs-3 font-semibold no-underline",
+                      "inline-flex min-h-(--control-h-sm) min-w-(--control-h-sm) items-center justify-center rounded-full border border-hairline px-3 text-fs-3 font-semibold no-underline",
                       n === requested
                         ? "border-primary bg-primary text-primary-contrast"
                         : "border-border text-primary hover:bg-primary-soft",

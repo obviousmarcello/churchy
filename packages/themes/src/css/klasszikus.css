@@ -81,4 +81,19 @@
   --shadow-card: 0 1px 2px rgb(60 40 20 / 0.04), 0 8px 24px -10px rgb(60 40 20 / 0.14);
   --shadow-raised: 0 2px 6px rgb(60 40 20 / 0.05), 0 20px 44px -14px rgb(60 40 20 / 0.22);
   --shadow-overlay: 0 12px 32px -8px rgb(60 40 20 / 0.18), 0 44px 88px -24px rgb(60 40 20 / 0.34);
+  /* Home hero without a photo (UI-02): a deep brand band with a faint gothic arcade in gold. */
+  --hero-bg: var(--c-primary);
+  --hero-fg: var(--c-primary-contrast);
+  --hero-ornament: var(--c-accent);
+  --hero-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='132' viewBox='0 0 72 132'%3E%3Cpath d='M12 132V64C12 40 22 22 36 12c14 10 24 28 24 52v68' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3Cpath d='M24 132V70c0-14 5-26 12-32 7 6 12 18 12 32v62' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+  --hero-pattern-size: 72px 132px;
+  --hero-pattern-position: right bottom;
+  --hero-pattern-repeat: repeat-x;
+  --hero-pattern-opacity: 0.4;
+  --ornament-display: block;
+  /* Buttons on that brand band swap colours (see the hero rule in base.css). */
+  --hero-action-bg: var(--c-primary-contrast);
+  --hero-action-fg: var(--c-primary);
+  --hero-action-hover: color-mix(in oklab, var(--c-primary-contrast) 88%, black);
+  --hero-action-soft: rgb(255 255 255 / 0.14);
 }

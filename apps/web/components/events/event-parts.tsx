@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Event } from "@churchy/contracts";
 import { describeRecurrence } from "@churchy/events";
 import { Badge, FormattedDate, FormattedTime, cn } from "@churchy/ui";
+import { PublicPageHeader } from "@/components/public/public-page-header";
 import { getT } from "@/i18n/server";
 import { eventPath } from "@/lib/events/public-event";
 import type { PublicOccurrence } from "@/server/public-events";
@@ -91,22 +92,21 @@ export async function EventsHeader({ view }: { view: "list" | "month" }) {
     { key: "month", href: "/esemenyek/naptar", label: t("viewMonth") },
   ] as const;
   return (
-    <header className="flex flex-col gap-4">
-      <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">{t("title")}</h1>
-      <p className="max-w-prose text-fs-4 text-muted">{t("lead")}</p>
+    <div className="flex flex-col gap-6">
+      <PublicPageHeader title={t("title")} lead={t("lead")} />
       <div className="flex flex-wrap items-center justify-between gap-4">
         <nav aria-label={t("views")}>
-          <ul className="flex gap-1 rounded-md border border-border bg-surface-sunken p-1">
+          <ul className="flex gap-1 rounded-full bg-surface-sunken p-1">
             {views.map((v) => (
               <li key={v.key}>
                 <a
                   href={v.href}
                   aria-current={v.key === view ? "page" : undefined}
                   className={cn(
-                    "inline-flex min-h-(--control-h-sm) items-center rounded-sm px-4 text-fs-2 font-semibold no-underline",
+                    "inline-flex min-h-(--control-h-sm) items-center rounded-full px-5 text-fs-2 font-semibold no-underline transition-colors duration-(--dur-2)",
                     v.key === view
-                      ? "bg-primary text-primary-contrast"
-                      : "text-primary hover:bg-primary-soft",
+                      ? "bg-surface-raised text-primary shadow-xs"
+                      : "text-muted hover:text-primary",
                   )}
                 >
                   {v.label}
@@ -122,6 +122,6 @@ export async function EventsHeader({ view }: { view: "list" | "month" }) {
           <p className="text-muted">{t("subscribeHint")}</p>
         </div>
       </div>
-    </header>
+    </div>
   );
 }

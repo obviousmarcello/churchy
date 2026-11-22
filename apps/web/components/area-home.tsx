@@ -33,7 +33,9 @@ export async function AreaHome({
   return (
     <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader />}>
       <div className="mx-auto w-full max-w-(--content-max) px-(--gutter) py-10">
-        <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">{title}</h1>
+        <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
+          {title}
+        </h1>
         {sections === undefined ? (
           <div className="mt-6 max-w-prose" data-testid="area-no-access">
             <Alert tone="warning" title={t("noAccessTitle")}>

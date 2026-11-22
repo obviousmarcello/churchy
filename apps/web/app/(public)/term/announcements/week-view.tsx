@@ -14,7 +14,7 @@ import {
 import { announcementFile } from "@/server/public-announcements";
 
 const HEADING_CLASS =
-  "font-heading text-fs-7 leading-[1.05] font-bold text-primary print:text-[20pt]";
+  "font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary print:text-[20pt]";
 
 /**
  * One week of announcements: the heading with the liturgical Sunday name, the week navigation
@@ -145,7 +145,7 @@ export async function WeekView({
           {file !== null ? (
             <section
               aria-labelledby="announcement-attachment"
-              className="mt-10 max-w-prose rounded-lg border border-border bg-surface-raised p-5 shadow-card print:hidden"
+              className="mt-10 max-w-prose rounded-card border border-hairline bg-surface-raised p-5 shadow-card print:hidden"
               data-testid="announcement-attachment"
             >
               <h2 id="announcement-attachment" className="font-heading text-fs-5 font-bold">

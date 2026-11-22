@@ -85,6 +85,16 @@ export async function resetDemoData(page: Page): Promise<void> {
 export async function axeSeriousOrCritical(page: Page, include?: string): Promise<string[]> {
   let builder = new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]);
   if (include) builder = builder.include(include);
+  // Entrance animations (Stagger / Reveal, design v2) fade text in: measure contrast once they
+  // have finished. Infinite ones (skeleton shimmer, live dot) are skipped.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
+  );
   const results = await builder.analyze();
   return results.violations
     .filter((v) => v.impact === "serious" || v.impact === "critical")

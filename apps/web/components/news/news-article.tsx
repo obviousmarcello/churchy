@@ -20,7 +20,7 @@ export async function NewsArticleBody({ post }: { post: Post }) {
             ))}
           </ul>
         ) : null}
-        <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
+        <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
           {post.title}
         </h1>
         {post.publishedAt ? (

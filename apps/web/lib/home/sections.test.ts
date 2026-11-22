@@ -58,10 +58,11 @@ describe("homeBands", () => {
       s("map"),
       s("news"),
     ]);
-    expect(bands.map((b) => b.kind)).toEqual(["wide", "columns", "wide", "columns"]);
-    const first = bands[1];
+    // The next-services strip is full width, right below the hero.
+    expect(bands.map((b) => b.kind)).toEqual(["wide", "wide", "columns", "wide", "columns"]);
+    const first = bands[2];
     if (first?.kind !== "columns") throw new Error("expected columns");
-    expect(first.left.map((p) => p.order)).toEqual([1, 3]);
+    expect(first.left.map((p) => p.order)).toEqual([3]);
     expect(first.right.map((p) => p.order)).toEqual([2, 4]);
   });
 });

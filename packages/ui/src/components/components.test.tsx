@@ -16,6 +16,8 @@ import {
   FooterLink,
   Header,
   Hero,
+  Monogram,
+  monogramOf,
   Input,
   PageShell,
   SectionHeading,
@@ -220,7 +222,43 @@ describe("Footer", () => {
   });
 });
 
+describe("Monogram", () => {
+  it("takes the initials of the first two capitalised words", () => {
+    expect(monogramOf("Szent Tivadar")).toBe("ST");
+    expect(monogramOf("Dunaligeti Református Egyházközség")).toBe("DR");
+    expect(monogramOf("a kis közösség")).toBe("AK");
+    expect(monogramOf("Ökumenikus")).toBe("Ö");
+  });
+
+  it("is decorative", () => {
+    const { container } = render(<Monogram initials="ST" />);
+    expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
+  });
+});
+
+describe("Header brand and call to action", () => {
+  it("shows the monogram without a logo and the two-line call to action", () => {
+    render(
+      <Header
+        brand={{ name: "Szent Tivadar", href: "/", monogram: "ST" }}
+        nav={[{ label: "Hírek", href: "/hirek" }]}
+        cta={{ label: "vasárnap 10:00", caption: "Szeretettel várjuk", href: "/miserend" }}
+        labels={{ navigation: "Fő", openMenu: "Nyit", closeMenu: "Zár" }}
+      />,
+    );
+    expect(document.querySelector("[data-monogram]")).toHaveTextContent("ST");
+    expect(
+      screen.getAllByRole("link", { name: /Szeretettel várjuk.*vasárnap 10:00/ }).length,
+    ).toBeGreaterThan(0);
+  });
+});
+
 describe("Hero", () => {
+  it("draws the theme pattern when an image variant has no photo", () => {
+    const { container } = render(<Hero variant="image-full" title="T" />);
+    expect(container.querySelector('[data-hero-pattern="image-full"]')).not.toBeNull();
+  });
+
   it.each(["image-full", "image-split"] as const)(
     "%s renders the image with alt text",
     (variant) => {

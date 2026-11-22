@@ -10,6 +10,7 @@ export {
   type SkipLinkProps,
 } from "./components/layout";
 export { Header, type HeaderProps, type NavItem } from "./components/header";
+export { Monogram, monogramOf } from "./components/brand";
 export { Footer, FooterLink, type FooterColumn, type FooterProps } from "./components/footer";
 export { Hero, type HeroImage, type HeroProps } from "./components/hero";
 export { Card, type CardImage, type CardProps, type CardVariant } from "./components/card";

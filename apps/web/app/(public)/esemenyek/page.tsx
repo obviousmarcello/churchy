@@ -11,7 +11,7 @@ import {
   occurrenceHref,
   recurrenceText,
 } from "@/components/events/event-parts";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import {
   getPublicLocations,
@@ -95,7 +95,7 @@ export default async function EventsListPage({ searchParams }: { searchParams: S
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref="/esemenyek" />}
+      header={<PublicSiteHeader currentHref="/esemenyek" />}
     >
       <div className="mx-auto flex w-full max-w-(--content-max) flex-col gap-10 px-(--gutter) py-10">
         <EventsHeader view="list" />
@@ -136,11 +136,11 @@ export default async function EventsListPage({ searchParams }: { searchParams: S
                         key={`${occ.event.id}-${occ.start}`}
                         data-testid="event-item"
                         data-date={occ.date}
-                        className="relative flex gap-4 rounded-lg border border-border bg-surface-raised p-4 shadow-card sm:gap-6 sm:p-5"
+                        className="relative flex gap-4 rounded-card border border-hairline bg-surface-raised p-4 shadow-card sm:gap-6 sm:p-5"
                       >
                         <div
                           aria-hidden="true"
-                          className="flex w-16 shrink-0 flex-col items-center justify-center rounded-md bg-primary-soft py-2 text-primary"
+                          className="flex w-16 shrink-0 flex-col items-center justify-center rounded-tile bg-primary-soft py-2 text-primary"
                         >
                           <span className="font-heading text-fs-6 leading-none font-bold">
                             {day}

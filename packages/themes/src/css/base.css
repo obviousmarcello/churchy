@@ -86,3 +86,38 @@
     opacity: 1;
   }
 }
+
+/*
+ * Typographic home hero (UI-02): the theme's abstract pattern, drawn as a mask in the theme's
+ * ornament colour so it follows the configured brand colours. Purely decorative.
+ */
+@layer components {
+  [data-hero-pattern] {
+    background-color: var(--hero-bg, var(--c-surface-sunken));
+    color: var(--hero-fg, var(--c-primary));
+    /* Buttons on a brand-coloured band (Klasszikus) swap to the light colour. The --hero-action-*
+       values are computed on the theme element, so this is not a cycle. */
+    --c-primary: var(--hero-action-bg);
+    --c-primary-contrast: var(--hero-action-fg);
+    --c-primary-hover: var(--hero-action-hover);
+    --c-primary-soft: var(--hero-action-soft);
+  }
+  [data-hero-pattern]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--hero-ornament, var(--c-accent));
+    opacity: var(--hero-pattern-opacity, 0.3);
+    mask-image: var(--hero-pattern), linear-gradient(to left, #000 15%, transparent 80%);
+    mask-size:
+      var(--hero-pattern-size, auto),
+      100% 100%;
+    mask-position:
+      var(--hero-pattern-position, right bottom),
+      0 0;
+    mask-repeat: var(--hero-pattern-repeat, repeat), no-repeat;
+    mask-composite: intersect;
+  }
+}

@@ -26,7 +26,7 @@ export async function LatestAnnouncementTeaser({ empty }: { empty?: ReactNode } 
   return (
     <section
       aria-labelledby="home-announcements"
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 rounded-card bg-surface-tint p-5 sm:p-7"
       data-testid="announcements-teaser"
     >
       <SectionHeading
@@ -36,18 +36,18 @@ export async function LatestAnnouncementTeaser({ empty }: { empty?: ReactNode } 
         action={<span className="text-fs-3 text-muted">{week.range}</span>}
       />
       {lines.length > 0 ? (
-        <ul className="flex list-disc flex-col gap-1 ps-6 text-fs-3">
+        <ul className="flex list-disc flex-col gap-2 ps-5 text-fs-3 marker:text-accent-text">
           {lines.map((line, i) => (
             <li key={i}>{line}</li>
           ))}
         </ul>
       ) : null}
       <div className="flex flex-wrap gap-3">
-        <ButtonLink href={href} size="sm" data-testid="announcements-teaser-read">
+        <ButtonLink href={href} variant="outline" size="sm" data-testid="announcements-teaser-read">
           {t("teaserRead")}
         </ButtonLink>
         {file !== null ? (
-          <ButtonLink href={file.href} download={file.filename} variant="secondary" size="sm">
+          <ButtonLink href={file.href} download={file.filename} variant="ghost" size="sm">
             {t("teaserPdf")}
           </ButtonLink>
         ) : null}

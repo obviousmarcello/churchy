@@ -12,7 +12,11 @@ export function Ornament({ className }: { className?: string }) {
       height="12"
       aria-hidden="true"
       focusable="false"
-      className={cn("text-accent in-data-[ui=admin]:hidden", className)}
+      // Only the Klasszikus theme draws it (`--ornament-display`); the others stay plain.
+      className={cn(
+        "[display:var(--ornament-display,block)] text-accent in-data-[ui=admin]:hidden",
+        className,
+      )}
     >
       <path d="M0 6h50M70 6h50" stroke="currentColor" strokeWidth="1" />
       <path d="M60 1l5 5-5 5-5-5z" fill="currentColor" />

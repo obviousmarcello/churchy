@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Alert, PageShell } from "@churchy/ui";
 import { RiteContact } from "@/components/pages/rite-contact";
 import { RequestForm } from "@/components/public/request-form";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { ritePath, ritesPath } from "@/lib/pages/public-pages";
 import { TERM_ROUTE_HEADER } from "@/lib/term-routes";
@@ -13,6 +13,7 @@ import { getPublicCtx } from "@/server/public-site";
 import { getRequestRepositories } from "@/server/repositories";
 import { renderStamp } from "@/server/request-limiter";
 import { submitRequest } from "./actions";
+import { PublicBreadcrumbs } from "@/components/public/public-page-header";
 
 /**
  * Request form of a rite (`/szentsegek/keresztelo/bejelentes`, SDD §6, D-28). The form is the
@@ -54,19 +55,20 @@ export default async function RiteRequestPage({ params }: { params: Params }) {
   return (
     <PageShell
       skipLinkLabel={common("skipToContent")}
-      header={<SiteHeader currentHref={ritesPath(t)} />}
+      header={<PublicSiteHeader currentHref={ritesPath(t)} />}
     >
       <div
         className="mx-auto flex w-full max-w-(--content-max) flex-col gap-8 px-(--gutter) py-10"
         data-testid="rite-request"
       >
-        <p>
-          <a href={backHref} className="text-fs-2 font-semibold text-primary underline">
-            <span aria-hidden="true">← </span>
-            {t("requestBack")}
-          </a>
-        </p>
-        <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
+        <PublicBreadcrumbs
+          trail={[
+            { label: t("title"), href: ritesPath(t) },
+            { label: rite.forms.nom, href: backHref },
+          ]}
+          current={t("requestTitle", { rite: rite.forms.nom })}
+        />
+        <h1 className="font-heading text-page-title [font-weight:var(--fw-heading)] tracking-(--heading-tracking) text-balance text-primary">
           {t("requestTitle", { rite: rite.forms.nom })}
         </h1>
         {form === null || !form.active ? (

@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { Card, PageShell, SectionHeading } from "@churchy/ui";
 import { PublicBlocks } from "@/components/pages/public-blocks";
 import { RiteContact } from "@/components/pages/rite-contact";
-import { SiteHeader } from "@/components/site-header";
+import { PublicSiteHeader } from "@/components/site-header";
 import { getT } from "@/i18n/server";
 import { ritePath, ritesPath, ritesSectionPage } from "@/lib/pages/public-pages";
 import { TERM_ROUTE_HEADER } from "@/lib/term-routes";
 import { getPublicSite, getPublishedPage, listPublishedPages } from "@/server/public-pages";
+import { PublicPageHeader } from "@/components/public/public-page-header";
 
 /**
  * The rites section (*Szentségek*, Reformed *Alkalmak*, Baptist *Életesemények*; FR-010, SDD §6,
@@ -42,14 +43,15 @@ export default async function RitesPage() {
   const path = ritesPath(t);
 
   return (
-    <PageShell skipLinkLabel={common("skipToContent")} header={<SiteHeader currentHref={path} />}>
+    <PageShell
+      skipLinkLabel={common("skipToContent")}
+      header={<PublicSiteHeader currentHref={path} />}
+    >
       <div className="mx-auto flex w-full max-w-(--content-max) flex-col gap-10 px-(--gutter) py-10">
-        <header className="flex max-w-prose flex-col gap-4">
-          <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
-            {t("title")}
-          </h1>
-          {intro ? <PublicBlocks blocks={intro.blocks} /> : null}
-        </header>
+        <PublicPageHeader
+          title={t("title")}
+          {...(intro ? { lead: <PublicBlocks blocks={intro.blocks} /> } : {})}
+        />
 
         <section aria-labelledby="rites-list" className="flex flex-col gap-5">
           <SectionHeading id="rites-list" title={t("listHeading")} />
