@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { can } from "@churchy/policy";
 import { Badge, Button, ButtonLink } from "@churchy/ui";
 import { getT } from "@/i18n/server";
-import { formatChord, type Notation } from "@/lib/worship/music";
+import type { Notation } from "@/lib/worship/music";
 import { getMemberEnv } from "@/server/workspace";
 import { requireWorkspaceModule } from "@/server/workspace-nav";
 import { hymnalRefLabels } from "@/server/worship";
@@ -27,8 +27,7 @@ export default async function SongLibraryPage({
   const { repos, ctx, actor, tenantId } = env;
   if (!can(actor, "song.edit", { tenantId })) notFound();
   const q = one(query["q"]);
-  const theme = one(query["tema"]);
-  const season = one(query["evszak"]);
+  const tag = one(query["cimke"]);
   const hymnalId = one(query["enekeskonyv"]);
   const notation: Notation = one(query["jeloles"]) === "en" ? "en" : "hu";
 
@@ -36,16 +35,10 @@ export default async function SongLibraryPage({
   const songs = (
     await repos.songs.search(ctx, {
       ...(q ? { query: q } : {}),
-      ...(theme ? { theme } : {}),
-      ...(season ? { season } : {}),
+      ...(tag ? { tag } : {}),
     })
   ).filter((s) => hymnalId === "" || s.hymnalRefs.some((r) => r.hymnalId === hymnalId));
-  const themes = [...new Set(all.flatMap((s) => s.themes))].sort((a, b) =>
-    a.localeCompare(b, "hu"),
-  );
-  const seasons = [...new Set(all.flatMap((s) => s.seasons))].sort((a, b) =>
-    a.localeCompare(b, "hu"),
-  );
+  const tags = [...new Set(all.flatMap((s) => s.tags))].sort((a, b) => a.localeCompare(b, "hu"));
   const usedHymnals = hymnals.filter((h) =>
     all.some((s) => s.hymnalRefs.some((r) => r.hymnalId === h.id)),
   );
@@ -99,21 +92,10 @@ export default async function SongLibraryPage({
           </select>
         </label>
         <label className="flex flex-col gap-1.5 font-semibold">
-          {t("search.theme")}
-          <select name="tema" defaultValue={theme} className={`${selectClass} font-normal`}>
+          {t("search.tag")}
+          <select name="cimke" defaultValue={tag} className={`${selectClass} font-normal`}>
             <option value="">{t("search.any")}</option>
-            {themes.map((x) => (
-              <option key={x} value={x}>
-                {x}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1.5 font-semibold">
-          {t("search.season")}
-          <select name="evszak" defaultValue={season} className={`${selectClass} font-normal`}>
-            <option value="">{t("search.any")}</option>
-            {seasons.map((x) => (
+            {tags.map((x) => (
               <option key={x} value={x}>
                 {x}
               </option>
@@ -155,8 +137,7 @@ export default async function SongLibraryPage({
                     {r}
                   </Badge>
                 ))}
-                {s.defaultKey ? <Badge>{formatChord(s.defaultKey, notation)}</Badge> : null}
-                {s.themes.map((x) => (
+                {s.tags.map((x) => (
                   <Badge key={x}>{x}</Badge>
                 ))}
               </div>

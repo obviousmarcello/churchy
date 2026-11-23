@@ -21,10 +21,16 @@ import pg from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { contextSettings, createDb, createPool, withContext } from "./client";
 import { migrateUp } from "./migrate";
-import { APP_ROLE, POSTGREST_ROLES, rlsViolations } from "./rls";
+import { APP_ROLE, MUSIC_ROLE, POSTGREST_ROLES, rlsViolations } from "./rls";
 import { seedDemo, type SeedEncryptor } from "./seed/demo";
 import { demoUuid } from "./seed/ids";
-import { HR_TABLES, TABLE_SCOPES, tablesWithScope, type TableScope } from "./table-scopes";
+import {
+  HR_TABLES,
+  MUSIC_TABLES,
+  TABLE_SCOPES,
+  tablesWithScope,
+  type TableScope,
+} from "./table-scopes";
 
 const url = process.env.TEST_DATABASE_URL;
 const unsafeEnv = ["staging", "production"].includes(process.env.APP_ENV ?? "");
@@ -34,6 +40,7 @@ if (process.env.REQUIRE_TEST_DATABASE === "1" && (!url || unsafeEnv)) {
   );
 }
 const AUTH_STUB = fileURLToPath(new URL("../sql/supabase-auth-stub.sql", import.meta.url));
+const MUSIC_FIXTURES = fileURLToPath(new URL("../sql/music-fixtures.sql", import.meta.url));
 const NOW = new Date("2026-11-18T10:00:00+01:00");
 
 const A = demoUuid(DEMO_TENANT_IDS.catholic);
@@ -308,6 +315,39 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
         ]);
       });
 
+      it("churchy_music granted a non-music table, or named by its policy", async () => {
+        const v = await violationsWith(
+          `${fixture}; alter table public.rls_fixture enable row level security;
+           alter table public.rls_fixture force row level security;
+           create policy tenant_isolation on public.rls_fixture for all to ${APP_ROLE}, ${MUSIC_ROLE}
+             using (${canonical}) with check (${canonical});
+           grant select on public.rls_fixture to ${MUSIC_ROLE}`,
+          { rls_fixture: "tenant" },
+        );
+        expect(v).toEqual(
+          expect.arrayContaining([
+            `rls_fixture: granted to ${MUSIC_ROLE}`,
+            `rls_fixture: a policy applies to ${MUSIC_ROLE}`,
+            `rls_fixture: tenant_isolation must apply to ${APP_ROLE} only`,
+          ]),
+        );
+      });
+
+      it("a music table whose policy leaves out churchy_music", async () => {
+        const client = await owner.connect();
+        try {
+          await client.query("begin");
+          await client.query(`alter policy tenant_isolation on public.songs to ${APP_ROLE}`);
+          const v = await rlsViolations(client);
+          expect(v).toEqual([
+            `songs: tenant_isolation must apply to ${APP_ROLE},${MUSIC_ROLE} only`,
+          ]);
+        } finally {
+          await client.query("rollback");
+          client.release();
+        }
+      });
+
       it("an app role with BYPASSRLS", async () => {
         const v = await violationsWith(`alter role ${APP_ROLE} bypassrls`);
         expect(v).toContain(`${APP_ROLE} has BYPASSRLS`);
@@ -546,6 +586,66 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
     });
   });
 
+  describe("music role churchy_music (PostgREST with the churchy JWT, 0007_music_rls)", () => {
+    /** Like PostgREST after verifying a churchy token: `SET LOCAL ROLE` + request.jwt.claims. */
+    async function asMusic<T>(tenantId: string, fn: (c: pg.PoolClient) => Promise<T>): Promise<T> {
+      const client = await owner.connect();
+      try {
+        await client.query("begin");
+        await client.query(`set local role ${MUSIC_ROLE}`);
+        await client.query("select set_config('request.jwt.claims', $1, true)", [
+          JSON.stringify({
+            iss: "churchy",
+            sub: "00000000-0000-4000-8000-000000000001",
+            tenant_id: tenantId,
+          }),
+        ]);
+        return await fn(client);
+      } finally {
+        await client.query("rollback").catch(() => undefined);
+        client.release();
+      }
+    }
+
+    it("is no superuser, has no BYPASSRLS, cannot log in and owns nothing", async () => {
+      const [role] = await ownerQuery<{ s: boolean; b: boolean; l: boolean; owns: boolean }>(
+        `select rolsuper as s, rolbypassrls as b, rolcanlogin as l,
+                exists (select 1 from pg_class where relowner = r.oid) as owns
+         from pg_roles r where rolname = $1`,
+        [MUSIC_ROLE],
+      );
+      expect(role).toEqual({ s: false, b: false, l: false, owns: false });
+    });
+
+    it.each(MUSIC_TABLES)("%s: sees A's rows only and cannot write B's", async (table) => {
+      const own = await ownerCount(table, A);
+      const platformRows = TABLE_SCOPES[table] === "catalog" ? await ownerCount(table, null) : 0;
+      const rowB = await sampleRow(table, B);
+      await asMusic(A, async (c) => {
+        const all = await c.query<{ n: string }>(`select count(*) as n from "${table}"`);
+        expect(Number(all.rows[0]?.n)).toBe(own + platformRows);
+        expect(await attempt(c, insertCopy(table), [JSON.stringify(rowB)])).toEqual(RLS_REJECTED);
+        expect(await attempt(c, `delete from "${table}" where tenant_id = $1`, [B])).toMatchObject({
+          rowCount: 0,
+        });
+      });
+    });
+
+    it("gets permission denied on every non-music table", async () => {
+      const others = Object.keys(TABLE_SCOPES).filter(
+        (t) => !(MUSIC_TABLES as readonly string[]).includes(t),
+      );
+      expect(others.length).toBeGreaterThan(40);
+      await asMusic(A, async (c) => {
+        for (const table of others) {
+          expect(await attempt(c, `select 1 from "${table}" limit 1`), table).toMatchObject({
+            code: "42501",
+          });
+        }
+      });
+    });
+  });
+
   describe("the real adapter path (withContext on the app role)", () => {
     it("sees only the context tenant's rows", async () => {
       const db = createDb(app);
@@ -643,6 +743,27 @@ async function supplementFixtures(owner: pg.Pool): Promise<void> {
     `insert into org_delegations (org_id, tenant_id, hr_category_key) values ($1, $2, '*')
      on conflict do nothing`,
     [link.org_id, B],
+  );
+  // Music tables: one row per table for both tenants, plus platform Bible text (catalog rows).
+  const [profile] = (
+    await owner.query<{ id: string }>("select id from profiles order by id limit 1")
+  ).rows;
+  if (profile === undefined) throw new Error("demo seed has no profile");
+  const music = readFileSync(MUSIC_FIXTURES, "utf8");
+  for (const tenant of [A, B]) {
+    const done = await owner.query("select 1 from mixer_settings where tenant_id = $1", [tenant]);
+    if (done.rowCount === 0) {
+      await owner.query(music.replaceAll(":tenant", tenant).replaceAll(":user", profile.id));
+    }
+  }
+  await owner.query(
+    `insert into scripture_books (translation, book, chapters) values ('karoli', 'Gen', '[50]')
+     on conflict do nothing`,
+  );
+  await owner.query(
+    `insert into scripture_verse_cache (translation, book, chapter, verse, text)
+     values ('karoli', 'Gen', 1, 1, 'Kezdetben teremté Isten az eget és a földet.')
+     on conflict do nothing`,
   );
   // A tenant-owned hymnal for A (the demo Catholic church only uses platform hymnals).
   await owner.query(

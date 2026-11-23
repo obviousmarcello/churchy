@@ -12,15 +12,25 @@ import type {
   Song,
   ServiceRoomBlock,
 } from "@churchy/contracts";
-import { bookingsOverlap } from "@churchy/contracts";
+import { arrangementDerived, bookingsOverlap } from "@churchy/contracts";
+import type { SongRightsStatus } from "@churchy/contracts";
 import { liturgicalDay } from "@churchy/calendar";
 import { addDays } from "@churchy/hu";
 import type { Build } from "./context";
 import { dateOf } from "./context";
 import { HYMNAL_IDS } from "./hymnals";
-import type { PlanItemSpec } from "./types";
+import type { PlanItemSpec, SongSpec } from "./types";
 
 const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** Churchy's former song licence values mapped onto the music module's rights status. */
+const RIGHTS_STATUS: Record<SongSpec["licence"], SongRightsStatus> = {
+  public_domain: "public_domain",
+  licensed: "licensed",
+  permission: "permitted",
+  own: "permitted",
+  unknown: "unknown",
+};
 
 export function buildRooms(b: Build): void {
   const { spec, c, ds, tid, k } = b;
@@ -278,34 +288,25 @@ export function buildSongs(b: Build): void {
     const id = `song-${k}-${i + 1}`;
     b.songId.push(id);
     const stamp = c.ago(110 - (i % 40), "11:00");
+    // Music-module song shape (PLAN §11): themes become tags, licence becomes the rights status.
     const song: Song = {
       id,
       tenantId: tid,
       title: sg.title,
-      altTitles: [],
-      firstLine: sg.first ?? null,
-      lyrics: sg.lyrics ?? null,
-      language: "hu",
-      authors: sg.authors ?? [],
-      composers: sg.composers ?? [],
-      translators: [],
-      copyrightHolder:
+      artist: null,
+      tags: [...new Set(sg.themes)].slice(0, 10),
+      copyright:
         sg.licence === "own"
           ? spec.tenant.name
           : sg.licence === "licensed" || sg.licence === "permission"
             ? "Példa Zenei Kiadó (kitalált)"
             : null,
-      licence: sg.licence,
-      licenceRef:
-        sg.licence === "licensed" || sg.licence === "permission"
-          ? `Demó-engedély ${c.today.slice(0, 4)}/${String(i + 1).padStart(3, "0")}`
-          : null,
-      themes: sg.themes,
-      seasons: sg.seasons,
-      defaultKey: sg.key,
-      tempoBpm: sg.bpm ?? null,
-      timeSignature: sg.time ?? null,
-      notes: "Bemutató adat — az énekeskönyvi hivatkozás szándékosan nem hiteles.",
+      songbook: null,
+      authors: [...(sg.authors ?? []), ...(sg.composers ?? [])].join(", ") || null,
+      originalTitle: null,
+      translator: null,
+      rightsStatus: RIGHTS_STATUS[sg.licence],
+      rightsNote: "Bemutató adat — az énekeskönyvi hivatkozás szándékosan nem hiteles.",
       hymnalRefs: sg.refs.map(([abbr, number]) => ({
         hymnalId: hymnalId(abbr),
         number,
@@ -319,16 +320,25 @@ export function buildSongs(b: Build): void {
     (sg.arrangements ?? []).forEach((a, j) => {
       const aid = `arr-${k}-${i + 1}-${j + 1}`;
       b.arrangementIds[i]?.push(aid);
+      // The key and tempo live in the ChordPro chart (generated columns in the DB).
+      const chordpro = [
+        `{key: ${a.key}}`,
+        ...(sg.bpm === undefined ? [] : [`{tempo: ${sg.bpm}}`]),
+        ...(sg.time === undefined ? [] : [`{time: ${sg.time}}`]),
+        ...(a.chordpro === undefined ? [] : [a.chordpro]),
+      ].join("\n");
       const arr: Arrangement = {
         id: aid,
         tenantId: tid,
         songId: id,
         name: a.name,
-        key: a.key,
-        tempoBpm: sg.bpm ?? null,
-        structure: a.structure,
-        chordpro: a.chordpro ?? null,
-        notes: null,
+        chordpro,
+        sectionOrder: a.structure === "" ? [] : a.structure.split(/\s*[–,-]\s*/),
+        isDefault: j === 0,
+        projectionThemeId: null,
+        ...arrangementDerived(chordpro),
+        createdAt: stamp,
+        updatedAt: stamp,
       };
       ds.arrangements.push(arr);
     });
@@ -367,7 +377,7 @@ export function buildSongs(b: Build): void {
       kind: "sheet_music",
       label: `Kotta — ${arr.name}`,
       part: i % 2 === 0 ? "Orgona" : "Ének",
-      key: arr.key,
+      key: arr.musicalKey,
     });
   });
   withArr.slice(6, 9).forEach((arr, i) => {
@@ -378,7 +388,7 @@ export function buildSongs(b: Build): void {
       kind: "chord_chart",
       label: `Akkordtábla — ${arr.name}`,
       part: i % 2 === 0 ? "Gitár" : null,
-      key: arr.key,
+      key: arr.musicalKey,
     });
   });
   ds.songs

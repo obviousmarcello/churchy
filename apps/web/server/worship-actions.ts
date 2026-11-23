@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
   ArrangementInputSchema,
+  MusicalKeySchema,
   SongInputSchema,
   isContractError,
   type PlanItemInput,
@@ -56,21 +57,19 @@ async function guarded(run: () => Promise<void>): Promise<Outcome> {
 
 const SONG_FIELDS = [
   "title",
-  "firstLine",
+  "artist",
   "hymnal1",
   "number1",
   "hymnal2",
   "number2",
-  "defaultKey",
-  "tempoBpm",
-  "timeSignature",
-  "themes",
-  "seasons",
+  "tags",
   "authors",
-  "composers",
-  "licence",
-  "lyrics",
-  "notes",
+  "translator",
+  "originalTitle",
+  "songbook",
+  "copyright",
+  "rightsStatus",
+  "rightsNote",
 ] as const;
 const ARRANGEMENT_FIELDS = ["name", "key", "structure", "chordpro"] as const;
 
@@ -81,6 +80,16 @@ const list = (v: string | undefined): string[] =>
     .filter((s) => s !== "");
 const orNull = (v: string | undefined): string | null =>
   v === undefined || v.trim() === "" ? null : v.trim();
+
+/** The chart with its `{key: …}` directive replaced by `key` (removed when empty). */
+function withKeyDirective(chordpro: string, key: string): string {
+  const rest = chordpro
+    .split("\n")
+    .filter((line) => !/^\s*\{\s*key\s*:[^}]*\}\s*$/.test(line))
+    .join("\n")
+    .trim();
+  return key === "" ? rest : [`{key: ${key}}`, rest].filter((x) => x !== "").join("\n");
+}
 
 export const saveSong = withPolicy(
   "song.edit",
@@ -104,17 +113,15 @@ export const saveSong = withPolicy(
       {
         ...(songId === "" ? {} : { id: songId }),
         title: (values["title"] ?? "").trim(),
-        firstLine: orNull(values["firstLine"]),
-        lyrics: orNull(values["lyrics"]),
-        notes: orNull(values["notes"]),
-        defaultKey: orNull(values["defaultKey"]),
-        tempoBpm: orNull(values["tempoBpm"]) === null ? null : Number(values["tempoBpm"]),
-        timeSignature: orNull(values["timeSignature"]),
-        themes: list(values["themes"]),
-        seasons: list(values["seasons"]),
-        authors: list(values["authors"]),
-        composers: list(values["composers"]),
-        licence: values["licence"] || "unknown",
+        artist: orNull(values["artist"]),
+        tags: list(values["tags"]),
+        authors: orNull(values["authors"]),
+        translator: orNull(values["translator"]),
+        originalTitle: orNull(values["originalTitle"]),
+        songbook: orNull(values["songbook"]),
+        copyright: orNull(values["copyright"]),
+        rightsStatus: values["rightsStatus"] || "unknown",
+        rightsNote: orNull(values["rightsNote"]),
         hymnalRefs: refs,
       },
       [...SONG_FIELDS],
@@ -158,14 +165,18 @@ export const saveArrangement = withPolicy(
     const repos = await getRequestRepositories();
     const messages = await workspaceErrorMessages();
     const values = formValues(form, ARRANGEMENT_FIELDS);
+    const key = (values["key"] ?? "").trim();
+    if (key !== "" && !MusicalKeySchema.safeParse(key).success) {
+      return { status: "invalid", errors: { key: messages.general }, values };
+    }
+    // Music-module arrangements keep the key in the chart (`{key: …}`, a generated column).
     const parsed = validate(
       ArrangementInputSchema,
       {
         songId,
         name: (values["name"] ?? "").trim(),
-        key: values["key"] ?? "",
-        structure: values["structure"] ?? "",
-        chordpro: orNull(values["chordpro"]),
+        chordpro: withKeyDirective(values["chordpro"] ?? "", key),
+        sectionOrder: list((values["structure"] ?? "").replace(/[–-]/g, ",")),
       },
       [...ARRANGEMENT_FIELDS],
       messages,

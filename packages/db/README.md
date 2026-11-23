@@ -20,13 +20,17 @@ DATABASE_URL=… pnpm test:contract                    # D-90 contract suites: m
 
 ## Migrations
 
-| File                   | Source                    | Content                                                                                             |
-| ---------------------- | ------------------------- | --------------------------------------------------------------------------------------------------- |
-| `0000_extensions.sql`  | hand-written (`--custom`) | `unaccent`, `btree_gist` (schema `extensions`), checks for `hu-HU-x-icu` + `hungarian`, SQL helpers |
-| `0001_schema.sql`      | `drizzle-kit generate`    | enums, 59 tables, indexes, checks, FKs, `ENABLE ROW LEVEL SECURITY`                                 |
-| `0002_constraints.sql` | hand-written (`--custom`) | `bookings_no_overlap` exclusion constraint, `profiles.id → auth.users(id)`                          |
-| `0003_rls.sql`         | hand-written (`--custom`) | role `churchy_app`, `app.current_tenant_id()`, FORCE RLS, per-table policies + grants (D-03)        |
-| `down/<tag>.sql`       | hand-written              | Drizzle has no down migrations; `db down` runs these and removes the journal row                    |
+| File                       | Source                    | Content                                                                                             |
+| -------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------- |
+| `0000_extensions.sql`      | hand-written (`--custom`) | `unaccent`, `btree_gist` (schema `extensions`), checks for `hu-HU-x-icu` + `hungarian`, SQL helpers |
+| `0001_schema.sql`          | `drizzle-kit generate`    | enums, 59 tables, indexes, checks, FKs, `ENABLE ROW LEVEL SECURITY`                                 |
+| `0002_constraints.sql`     | hand-written (`--custom`) | `bookings_no_overlap` exclusion constraint, `profiles.id → auth.users(id)`                          |
+| `0003_rls.sql`             | hand-written (`--custom`) | role `churchy_app`, `app.current_tenant_id()`, FORCE RLS, per-table policies + grants (D-03)        |
+| `0004_tenant_claim.sql`    | hand-written (`--custom`) | `app.current_tenant_id()` also reads the `tenant_id` claim of `churchy` JWTs (music, ADR-20)        |
+| `0005_music_functions.sql` | hand-written (`--custom`) | pg_trgm, `simple_unaccent`, helper functions of the music tables' generated columns/CHECKs          |
+| `0006_music_schema.sql`    | `drizzle-kit generate`    | music tables (`src/schema/music.ts`); replaces Churchy's `songs` / `arrangements`                   |
+| `0007_music_rls.sql`       | hand-written (`--custom`) | role `churchy_music`, RLS + grants of the music tables, SET NULL (col) FKs, partial/deferrable keys |
+| `down/<tag>.sql`           | hand-written              | Drizzle has no down migrations; `db down` runs these and removes the journal row                    |
 
 Change the schema in `src/schema/*.ts`, run `db:generate`, commit the SQL **and** add the matching
 `down/<tag>.sql`. CI (job _Database_) fails on drift, runs `up → down → up`, the live schema checks
@@ -59,11 +63,12 @@ SDD §4.2, §25.7. Migration `0003_rls.sql`, checked by `src/rls.ts` and `src/is
 
 **Roles.**
 
-| Role                                         | Used by                             | RLS                                                                               |
-| -------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------- |
-| migration role (Supabase `postgres`, CI su.) | `db up/down/seed`; owns all tables  | bypasses (superuser / BYPASSRLS) — never used by the app                          |
-| `churchy_app`                                | the app (Drizzle, `DATABASE_URL`)   | **subject to every policy**: no SUPERUSER, no BYPASSRLS, not the owner, NOINHERIT |
-| `anon`, `authenticated` (Supabase PostgREST) | nothing — Churchy uses no PostgREST | all grants on `public` and their default privileges revoked; no policy names them |
+| Role                                         | Used by                             | RLS                                                                                            |
+| -------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------- |
+| migration role (Supabase `postgres`, CI su.) | `db up/down/seed`; owns all tables  | bypasses (superuser / BYPASSRLS) — never used by the app                                       |
+| `churchy_app`                                | the app (Drizzle, `DATABASE_URL`)   | **subject to every policy**: no SUPERUSER, no BYPASSRLS, not the owner, NOINHERIT              |
+| `churchy_music`                              | music module via PostgREST (JWT)    | subject to the policies of `MUSIC_TABLES` only; no grant on any other table (`0007_music_rls`) |
+| `anon`, `authenticated` (Supabase PostgREST) | nothing — Churchy uses no PostgREST | all grants on `public` and their default privileges revoked; no policy names them              |
 
 The migration creates `churchy_app` as **NOLOGIN**. To let the app connect, an operator runs
 `ALTER ROLE churchy_app LOGIN PASSWORD '…'` out-of-band (Supabase SQL editor / secrets manager) and

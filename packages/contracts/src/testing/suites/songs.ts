@@ -9,22 +9,28 @@ export const songsContract = defineContractSuite("songs", (t) => {
     expect(ids(await t.repo.listHymnals(t.ctx.a))).toContain(hymnal.id);
     const song = await t.repo.upsert(t.ctx.a, {
       title: "Áldott légy, Uram",
-      firstLine: "Áldott légy, Uram, mindenkor",
-      licence: "public_domain",
-      themes: ["hálaadás"],
-      defaultKey: "G",
+      artist: "Ismeretlen szerző",
+      rightsStatus: "public_domain",
+      tags: ["hálaadás"],
       hymnalRefs: [{ hymnalId: hymnal.id, number: "42" }],
     });
-    expect(song).toMatchObject({ language: "hu", altTitles: [], tempoBpm: null });
+    expect(song).toMatchObject({ translator: null, rightsNote: null, songbook: null });
     expect(ids(await t.repo.search(t.ctx.a, { query: "aldott legy" }))).toContain(song.id);
     expect(ids(await t.repo.search(t.ctx.a, { query: `${abbreviation} 42` }))).toContain(song.id);
-    expect(ids(await t.repo.search(t.ctx.a, { theme: "hálaadás" }))).toContain(song.id);
+    expect(ids(await t.repo.search(t.ctx.a, { tag: "Hálaadás" }))).toContain(song.id);
 
     const arrangement = await t.repo.upsertArrangement(t.ctx.a, {
       songId: song.id,
       name: "Gitáros",
-      key: "A",
-      chordpro: "{title: Áldott légy}\n[A]Áldott légy, [E]Uram",
+      chordpro:
+        "{title: Áldott légy}\n{key: A}\n{tempo: 96}\n{duration: 3:05}\n[A]Áldott légy, [E]Uram",
+    });
+    expect(arrangement).toMatchObject({
+      musicalKey: "A",
+      tempoBpm: 96,
+      durationSeconds: 185,
+      timeSignature: null,
+      isDefault: false,
     });
     expect(ids(await t.repo.listArrangements(t.ctx.a, song.id))).toEqual([arrangement.id]);
     await t.repo.delete(t.ctx.a, song.id);
@@ -34,12 +40,12 @@ export const songsContract = defineContractSuite("songs", (t) => {
 
   it("rejects invalid input", async () => {
     await expectContractError(
-      t.repo.upsert(t.ctx.a, { title: "X", defaultKey: "H" }),
+      t.repo.upsert(t.ctx.a, { title: "X", tags: ["a", "A"] }),
       "VALIDATION",
     );
     await expectContractError(t.repo.upsert(t.ctx.a, { title: "" }), "VALIDATION");
     await expectContractError(
-      t.repo.upsert(t.ctx.a, { title: "X", licence: "cc" as never }),
+      t.repo.upsert(t.ctx.a, { title: "X", rightsStatus: "cc" as never }),
       "VALIDATION",
     );
     await expectContractError(
@@ -66,7 +72,7 @@ export const songsContract = defineContractSuite("songs", (t) => {
       "NOT_FOUND",
     );
     await expectContractError(
-      t.repo.upsertArrangement(t.ctx.b, { songId: song.id, name: "Idegen", key: "C" }),
+      t.repo.upsertArrangement(t.ctx.b, { songId: song.id, name: "Idegen" }),
       "NOT_FOUND",
     );
     await expectContractError(

@@ -1,6 +1,7 @@
 /**
- * Worship & music planning (SDD §24): hymnal catalog, songs, arrangements, attachments, plan
- * templates, service plans, plan items, comments and assignments (also used for generic rotas).
+ * Worship & music planning (SDD §24): hymnal catalog and refs, attachments, plan templates,
+ * service plans, plan items, comments and assignments (also used for generic rotas). Songs and
+ * arrangements come from the music module (`./music`).
  */
 import type { PlanItem, PlanTemplate } from "@churchy/contracts";
 import { sql } from "drizzle-orm";
@@ -23,7 +24,6 @@ import {
   tenantIndexes,
   timestamps,
   timestamptz,
-  tsvector,
 } from "./columns";
 import {
   assignmentStatus,
@@ -32,10 +32,10 @@ import {
   denomination,
   planItemType,
   planStatus,
-  songLicence,
 } from "./enums";
 import { events, people, teamPositions, teams } from "./people";
 import { tenantId, tenants } from "./platform";
+import { arrangements, songs } from "./music";
 import { media, serviceOccurrences } from "./website";
 
 /**
@@ -54,43 +54,6 @@ export const hymnals = pgTable(
   (t) => [index("hymnals_tenant_id_idx").on(t.tenantId)],
 ).enableRLS();
 
-export const songs = pgTable(
-  "songs",
-  {
-    id: idColumn(),
-    tenantId: tenantId(),
-    title: huText().notNull(),
-    altTitles: text().array().notNull().default(emptyArray),
-    firstLine: text(),
-    lyrics: text(),
-    language: text().notNull().default("hu"),
-    authors: text().array().notNull().default(emptyArray),
-    composers: text().array().notNull().default(emptyArray),
-    translators: text().array().notNull().default(emptyArray),
-    copyrightHolder: text(),
-    licence: songLicence().notNull().default("unknown"),
-    licenceRef: text(),
-    themes: text().array().notNull().default(emptyArray),
-    seasons: text().array().notNull().default(emptyArray),
-    defaultKey: text(),
-    tempoBpm: integer(),
-    timeSignature: text(),
-    notes: text(),
-    /** Accent-insensitive Hungarian search: titles (A), first line (B), lyrics (C). */
-    search: tsvector()
-      .notNull()
-      .generatedAlwaysAs(
-        sql`setweight(public.hu_tsvector(title), 'A') || setweight(public.hu_tsvector(public.hu_join(alt_titles)), 'A') || setweight(public.hu_tsvector(first_line), 'B') || setweight(public.hu_tsvector(lyrics), 'C')`,
-      ),
-    ...timestamps(),
-  },
-  (t) => [
-    ...tenantIndexes("songs", t),
-    index("songs_search_idx").using("gin", t.search),
-    check("songs_tempo_check", sql`${t.tempoBpm} is null or ${t.tempoBpm} between 20 and 300`),
-  ],
-).enableRLS();
-
 export const songHymnalRefs = pgTable(
   "song_hymnal_refs",
   {
@@ -107,26 +70,6 @@ export const songHymnalRefs = pgTable(
     ...tenantIndexes("song_hymnal_refs", t),
     index("song_hymnal_refs_hymnal_id_idx").on(t.hymnalId),
     sameTenantFk("song_hymnal_refs_song_id_fkey", t.tenantId, t.songId, songs, "cascade"),
-  ],
-).enableRLS();
-
-export const arrangements = pgTable(
-  "arrangements",
-  {
-    id: idColumn(),
-    tenantId: tenantId(),
-    songId: uuid().notNull(),
-    name: huText().notNull(),
-    key: text().notNull(),
-    tempoBpm: integer(),
-    structure: text().notNull().default(""),
-    chordpro: text(),
-    notes: text(),
-  },
-  (t) => [
-    ...tenantIndexes("arrangements", t),
-    index("arrangements_song_id_idx").on(t.songId),
-    sameTenantFk("arrangements_song_id_fkey", t.tenantId, t.songId, songs, "cascade"),
   ],
 ).enableRLS();
 

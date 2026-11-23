@@ -47,7 +47,7 @@ test.describe("Énektár", () => {
 
   test("new song", async ({ page }) => {
     await as(page, "zenei", "/munkater/enektar/uj");
-    await page.getByLabel("Cím").fill("Próba ének");
+    await page.getByLabel("Cím", { exact: true }).fill("Próba ének");
     await page.getByRole("button", { name: "Ének mentése" }).click();
     await expect(page.getByTestId("song-page")).toContainText("Próba ének");
   });

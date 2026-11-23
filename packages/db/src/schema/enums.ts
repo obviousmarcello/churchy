@@ -39,7 +39,6 @@ import {
   RoomSchema,
   ServiceExceptionKindSchema,
   ServiceOccurrenceSchema,
-  SongLicenceSchema,
   StaffGroupSchema,
   StaffProfileSchema,
   SubscriptionSchema,
@@ -119,7 +118,6 @@ export const teamKind = pgEnum("team_kind", values(TeamKindSchema.options));
 export const roomKind = pgEnum("room_kind", values(RoomSchema.shape.kind.options));
 export const bookingStatus = pgEnum("booking_status", values(BookingStatusSchema.options));
 export const bookingSource = pgEnum("booking_source", values(BookingSchema.shape.source.options));
-export const songLicence = pgEnum("song_licence", values(SongLicenceSchema.options));
 export const attachmentOwnerType = pgEnum(
   "attachment_owner_type",
   values(AttachmentOwnerTypeSchema.options),

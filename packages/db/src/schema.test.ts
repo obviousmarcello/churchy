@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { MIGRATIONS_FOLDER, readDownMigration, readJournal, splitStatements } from "./migrate";
 import * as schema from "./schema";
 import { HU_COLLATION } from "./schema/columns";
-import { HR_TABLES, TABLE_SCOPES, tablesWithScope } from "./table-scopes";
+import { HR_TABLES, MUSIC_TABLES, TABLE_SCOPES, tablesWithScope } from "./table-scopes";
 
 const tables = (Object.values(schema) as unknown[])
   .filter((v): v is PgTable => v instanceof PgTable)
@@ -133,9 +133,12 @@ describe("schema check: Hungarian text (L-03, L-09)", () => {
     expect(checked).toBeGreaterThan(20);
   });
 
-  it("has generated search vectors on posts and songs (SDD §8.2, §24.2)", () => {
-    for (const table of ["posts", "songs"]) {
-      const search = column(table, "search")!;
+  it("has generated search vectors on posts and arrangements (SDD §8.2, music module)", () => {
+    for (const [table, name] of [
+      ["posts", "search"],
+      ["arrangements", "search_vector"],
+    ] as const) {
+      const search = column(table, name)!;
       expect(search.getSQLType()).toBe("tsvector");
       expect(search.generated?.type).toBe("always");
     }
@@ -167,6 +170,9 @@ describe("migrations", () => {
       "0002_constraints",
       "0003_rls",
       "0004_tenant_claim",
+      "0005_music_functions",
+      "0006_music_schema",
+      "0007_music_rls",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);
@@ -174,8 +180,10 @@ describe("migrations", () => {
     }
   });
 
-  it("down of 0001 drops every table and enum of the schema", () => {
-    const down = readDownMigration("0001_schema").join("\n");
+  it("down of 0001 / 0006 drops every table and enum of the schema", () => {
+    const down = [readDownMigration("0006_music_schema"), readDownMigration("0001_schema")]
+      .flat()
+      .join("\n");
     for (const t of tables) expect(down, t.name).toContain(`DROP TABLE IF EXISTS "${t.name}"`);
     for (const e of enums) expect(down, e.enumName).toContain(`"public"."${e.enumName}"`);
   });
@@ -198,17 +206,24 @@ describe("migrations", () => {
     const all = journal
       .map((e) => readFileSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`, "utf8"))
       .join("\n");
-    const down = readDownMigration("0003_rls").join("\n");
+    const down = [readDownMigration("0007_music_rls"), readDownMigration("0003_rls")]
+      .flat()
+      .join("\n");
     const tenantExpr = "tenant_id = (SELECT app.current_tenant_id())";
+    /** Music tables are granted to churchy_music too (0007_music_rls); no other table is. */
+    const roles = (t: string) =>
+      (MUSIC_TABLES as readonly string[]).includes(t)
+        ? "churchy_app, churchy_music"
+        : "churchy_app";
 
     it("every tenant and catalog table gets the tenant_isolation policy and a grant", () => {
       for (const t of [...tablesWithScope("tenant"), ...tablesWithScope("catalog")]) {
         expect(all, t).toContain(
-          `CREATE POLICY "tenant_isolation" ON "${t}" AS PERMISSIVE FOR ALL TO churchy_app\n` +
+          `CREATE POLICY "tenant_isolation" ON "${t}" AS PERMISSIVE FOR ALL TO ${roles(t)}\n` +
             `  USING (${tenantExpr})\n  WITH CHECK (${tenantExpr});`,
         );
         expect(all, t).toContain(
-          `GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "${t}" TO churchy_app;`,
+          `GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "${t}" TO ${roles(t)};`,
         );
         expect(down, t).toContain(`DROP POLICY IF EXISTS "tenant_isolation" ON "${t}";`);
       }
@@ -222,6 +237,14 @@ describe("migrations", () => {
         expect(all, t.name).toContain(`ALTER TABLE "${t.name}" FORCE ROW LEVEL SECURITY;`);
         expect(down, t.name).toContain(`ALTER TABLE "${t.name}" NO FORCE ROW LEVEL SECURITY;`);
       }
+    });
+
+    it("grants churchy_music the music tables only", () => {
+      const granted = [...all.matchAll(/ON TABLE "(\w+)" TO [^;]*churchy_music;/g)].map(
+        (m) => m[1],
+      );
+      expect(granted.sort()).toEqual([...MUSIC_TABLES].sort());
+      expect(all).toMatch(/CREATE ROLE churchy_music NOLOGIN NOSUPERUSER[^;]* NOBYPASSRLS;/);
     });
 
     it("never grants a platform table to the app role", () => {

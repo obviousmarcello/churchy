@@ -119,16 +119,21 @@ export default async function PlanPage({
     ),
   );
 
+  // The song's key is the key of its default (else first) arrangement (music-module shape).
+  const defaultKey = (songId: string): string | null => {
+    const arrs = arrangements.get(songId) ?? [];
+    return (arrs.find((a) => a.isDefault) ?? arrs[0])?.musicalKey ?? null;
+  };
   const editorSongs = songs.map((s) => ({
     id: s.id,
     title: s.title,
     refs: hymnalRefLabels(s, hymnals).join(", "),
-    defaultKey: s.defaultKey,
+    defaultKey: defaultKey(s.id),
     lastUsed: usedBy.has(s.id) ? dateOnly.format(new Date(`${usedBy.get(s.id)}T12:00:00Z`)) : null,
     arrangements: (arrangements.get(s.id) ?? []).map((a) => ({
       id: a.id,
       name: a.name,
-      key: a.key,
+      key: a.musicalKey ?? "",
     })),
   }));
   const editorItems: EditorItem[] = items.map((i) => ({
@@ -290,7 +295,7 @@ export default async function PlanPage({
             <ol className="flex flex-col gap-2" data-testid="plan-items-readonly">
               {items.map((i, n) => {
                 const song = i.songId ? songById.get(i.songId) : undefined;
-                const key = i.keyOverride ?? song?.defaultKey ?? null;
+                const key = i.keyOverride ?? (song ? defaultKey(song.id) : null);
                 return (
                   <li
                     key={i.id}

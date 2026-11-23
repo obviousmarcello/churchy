@@ -4,6 +4,7 @@ export * from "./platform";
 export * from "./website";
 export * from "./people";
 export * from "./rooms";
+export * from "./music";
 export * from "./worship";
 export * from "./hr";
 export * from "./notifications";

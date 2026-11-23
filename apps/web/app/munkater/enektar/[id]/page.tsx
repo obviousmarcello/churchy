@@ -74,15 +74,16 @@ export default async function SongPage({
     },
   ];
   const meta: [string, string][] = [
-    [t("meta.firstLine"), song.firstLine ?? ""],
-    [t("meta.authors"), song.authors.join(", ")],
-    [t("meta.composers"), song.composers.join(", ")],
-    [t("meta.licence"), t(`form.licences.${song.licence}`)],
-    [t("meta.key"), song.defaultKey ? formatChord(song.defaultKey, notation) : ""],
-    [t("meta.tempo"), song.tempoBpm ? String(song.tempoBpm) : ""],
-    [t("meta.time"), song.timeSignature ?? ""],
-    [t("meta.seasons"), song.seasons.join(", ")],
+    [t("meta.artist"), song.artist ?? ""],
+    [t("meta.authors"), song.authors ?? ""],
+    [t("meta.translator"), song.translator ?? ""],
+    [t("meta.originalTitle"), song.originalTitle ?? ""],
+    [t("meta.songbook"), song.songbook ?? ""],
+    [t("meta.copyright"), song.copyright ?? ""],
+    [t("meta.rightsStatus"), t(`form.rightsStatuses.${song.rightsStatus}`)],
+    [t("meta.rightsNote"), song.rightsNote ?? ""],
   ];
+  const defaultKey = arrangements.find((a) => a.isDefault)?.musicalKey ?? "";
 
   return (
     <div className="flex max-w-3xl flex-col gap-6" data-testid="song-page">
@@ -100,7 +101,7 @@ export default async function SongPage({
                 {r}
               </Badge>
             ))}
-            {song.themes.map((x) => (
+            {song.tags.map((x) => (
               <Badge key={x}>{x}</Badge>
             ))}
           </div>
@@ -128,14 +129,6 @@ export default async function SongPage({
             </div>
           ))}
       </dl>
-      {song.lyrics ? (
-        <section aria-labelledby="lyrics-h">
-          <h2 id="lyrics-h" className="font-heading text-fs-5 font-bold">
-            {t("lyrics")}
-          </h2>
-          <p className="whitespace-pre-line">{song.lyrics}</p>
-        </section>
-      ) : null}
 
       <section aria-labelledby="arr-h" className="flex flex-col gap-4">
         <h2 id="arr-h" className="font-heading text-fs-5 font-bold">
@@ -144,11 +137,12 @@ export default async function SongPage({
         {arrangements.length === 0 ? <p className="text-muted">{t("noArrangements")}</p> : null}
         {arrangements.map((a) => {
           const active = arrId === a.id || (arrId === "" && a === arrangements[0]);
-          const to = active && target !== "" ? target : a.key;
-          const shown =
-            a.chordpro === null
-              ? null
-              : transposeChordPro(a.chordpro, a.key, to, active ? capo : 0);
+          const key = a.musicalKey ?? "C";
+          const to = active && target !== "" ? target : key;
+          // Only charts with more than directives (`{key: …}`) have something to show.
+          const shown = parseChordPro(a.chordpro).some((l) => l.kind !== "directive")
+            ? transposeChordPro(a.chordpro, key, to, active ? capo : 0)
+            : null;
           return (
             <article
               key={a.id}
@@ -157,8 +151,10 @@ export default async function SongPage({
             >
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="font-semibold">{a.name}</h3>
-                <Badge>{formatChord(a.key, notation)}</Badge>
-                {a.structure ? <span className="text-muted">{a.structure}</span> : null}
+                {a.musicalKey ? <Badge>{formatChord(a.musicalKey, notation)}</Badge> : null}
+                {a.sectionOrder.length > 0 ? (
+                  <span className="text-muted">{a.sectionOrder.join(" – ")}</span>
+                ) : null}
                 <span className="ml-auto">
                   <DeleteButton name={a.name} onDelete={deleteArrangement.bind(null, a.id)} />
                 </span>
@@ -176,10 +172,10 @@ export default async function SongPage({
                       {t("transpose.key")}
                       <select
                         name="hang"
-                        defaultValue={active ? to : a.key}
+                        defaultValue={active ? to : key}
                         className="min-h-11 rounded-md border-2 border-border-strong bg-surface-raised px-3 font-normal"
                       >
-                        {[...new Set([a.key, ...KEYS_MAJOR])].map((k) => (
+                        {[...new Set([key, ...KEYS_MAJOR])].map((k) => (
                           <option key={k} value={k}>
                             {formatChord(k, notation)}
                           </option>
@@ -220,7 +216,7 @@ export default async function SongPage({
           <EntityForm
             action={saveArrangement.bind(null, id)}
             fields={arrFields}
-            values={{ name: "", key: song.defaultKey ?? "", structure: "", chordpro: "" }}
+            values={{ name: "", key: defaultKey, structure: "", chordpro: "" }}
             submitLabel={t("arr.save")}
             cancelHref={`/munkater/enektar/${id}`}
             testId="arrangement-form"
