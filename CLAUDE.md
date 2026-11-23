@@ -28,6 +28,7 @@ The plan is in `docs/03-DELIVERABLES.md` §3.
 1. **Contract first.**
    - UI and server components import **repository interfaces** from `packages/contracts` only. Never import an adapter directly (enforced by lint).
    - Any change to a schema or interface must keep **both** adapters passing the contract tests.
+   - **Exception (SDD ADR-20):** the music module (merged Music Sheet DB, `docs/music-merge/`) may use its supabase-js server models through `createMusicSupabaseClient()` (`apps/web/server/music/`), isolated by RLS via the tenant JWT claim. It still uses `can()`/`withPolicy`, strings under the `music` namespace and Hungarian slugs under `/munkater` (`/munkater/enektar`, `/kotta`, `/proba`, `/vetites`, …).
 2. **Real logic, never mocked.** These packages are pure TypeScript and are used by both adapters:
    - the schedule engine and calendar (`packages/schedule`, `packages/calendar`)
    - Hungarian formatting (`packages/hu`)
@@ -89,7 +90,7 @@ Don't add new runtime dependencies without saying why in the PR. Prefer what's a
 
 ## Messages & terminology in UI (pattern)
 
-- **Strings:** `messages/hu.json`, namespaces `common`, `public`, `admin`, `munkater`, `portal`, `dev`, `email` (notification templates, `packages/email`). Keys are typed (`apps/web/global.d.ts`), so a wrong key fails `pnpm typecheck`.
+- **Strings:** `messages/hu.json`, namespaces `common`, `public`, `admin`, `munkater`, `music` (merged Music Sheet DB), `portal`, `dev`, `email` (notification templates, `packages/email`). Keys are typed (`apps/web/global.d.ts`), so a wrong key fails `pnpm typecheck`.
 - **Server components:** `const t = await getT("public.home")` from `apps/web/i18n/server.ts`. **Client components:** `useT("…")` from `apps/web/i18n/client.tsx`. Both are next-intl translators plus `t.term(key)`.
 - **Terminology:** write `{service.plural}`, `{serviceSchedule.nom}`, `{community.article}` … (forms `nom`, `lower`, `slug`, `plural`, `article`) in a message; they are resolved from the tenant's `TermForms` before ICU formatting (`apps/web/i18n/request.ts`). Use `t.term("serviceSchedule").slug` in code. Term data comes through `TermSource` (`apps/web/i18n/terms.ts`, built on `effectiveConfig()` from `@churchy/presets`).
 - **Dates, times, names, addresses, phones, bank accounts:** `<FormattedDate>`, `<FormattedTime>`, `<PersonName>`, `<Address>`, `<Phone>`, `<BankAccount>` from `@churchy/ui` (props only, built on `@churchy/hu`).
@@ -126,7 +127,7 @@ Keep this section in sync when you change scripts. Node ≥ 22 (`.nvmrc`), pnpm 
 pnpm install          # install workspace
 pnpm dev              # run the app on http://localhost:3000 (mock adapters by default in Phase A)
 DEMO_MODE=1 pnpm dev  # demo mode: role/church switcher, banner, reset (apps/web/lib/demo/)
-pnpm build            # production build of apps/web
+pnpm build            # production build of apps/web (first copies pdf.js/Tesseract assets and bundles the metronome worklet, apps/web/scripts)
 pnpm lint             # ESLint incl. custom rules: i18n/no-hardcoded-text (D-06), adapter imports (D-90), role checks + policy wrapper (D-05)
 pnpm format           # Prettier write; `pnpm format:check` in CI
 pnpm typecheck        # tsc --noEmit in every package

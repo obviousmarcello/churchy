@@ -18,6 +18,10 @@ export default tseslint.config(
       "**/playwright-report/**",
       "**/test-results/**",
       ".claude/**",
+      // Copied/built by apps/web/scripts (music merge)
+      "apps/web/public/pdfjs/**",
+      "apps/web/public/tesseract/**",
+      "apps/web/public/metronome-processor.js",
     ],
   },
   js.configs.recommended,

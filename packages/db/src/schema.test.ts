@@ -166,6 +166,7 @@ describe("migrations", () => {
       "0001_schema",
       "0002_constraints",
       "0003_rls",
+      "0004_tenant_claim",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);

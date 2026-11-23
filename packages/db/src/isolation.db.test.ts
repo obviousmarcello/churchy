@@ -477,6 +477,75 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
     });
   });
 
+  describe("tenant JWT claim (music module via PostgREST, migration 0004, ADR-20)", () => {
+    const SUB = "00000000-0000-4000-8000-000000000001";
+    /** Like PostgREST: the verified JWT claims as the transaction-local `request.jwt.claims`. */
+    const asClaims = <T>(
+      claims: Record<string, unknown>,
+      settings: { tenantId?: string; orgId?: string },
+      fn: (c: pg.PoolClient) => Promise<T>,
+    ) =>
+      asApp(
+        { raw: { tenantId: settings.tenantId ?? "", orgId: settings.orgId ?? "" } },
+        async (c) => {
+          await c.query("select set_config('request.jwt.claims', $1, true)", [
+            JSON.stringify(claims),
+          ]);
+          return fn(c);
+        },
+      );
+    const churchy = (tenantId: string) => ({ iss: "churchy", sub: SUB, tenant_id: tenantId });
+    const count = async (c: pg.PoolClient, table: string, tenantId?: string) =>
+      Number(
+        (
+          await c.query<{ n: string }>(
+            `select count(*) as n from "${table}"${tenantId ? " where tenant_id = $1" : ""}`,
+            tenantId ? [tenantId] : [],
+          )
+        ).rows[0]?.n,
+      );
+
+    it.each(TENANT_OWNED)(
+      "%s: a churchy claim for A sees A's rows only and cannot write B's",
+      async (table) => {
+        const own = await ownerCount(table, A);
+        const platformRows = TABLE_SCOPES[table] === "catalog" ? await ownerCount(table, null) : 0;
+        const rowB = await sampleRow(table, B);
+        await asClaims(churchy(A), {}, async (c) => {
+          expect({ all: await count(c, table), other: await count(c, table, B) }).toEqual({
+            all: own + platformRows,
+            other: 0,
+          });
+          expect(await attempt(c, insertCopy(table), [JSON.stringify(rowB)])).toEqual(RLS_REJECTED);
+        });
+      },
+    );
+
+    it("ignores a tenant_id claim from any other issuer (e.g. Supabase Auth tokens)", async () => {
+      for (const iss of [undefined, "https://example.supabase.co/auth/v1"]) {
+        await asClaims({ iss, sub: SUB, tenant_id: A }, {}, async (c) => {
+          expect(await count(c, "songs")).toBe(0);
+        });
+      }
+    });
+
+    it("refuses a claim together with app.org_id, or one that differs from app.tenant_id", async () => {
+      const [org] = await ownerQuery<{ id: string }>("select id from organizations limit 1");
+      await asClaims(churchy(A), { orgId: org!.id }, async (c) => {
+        expect(await attempt(c, `select count(*) from "songs"`)).toMatchObject({ code: "42501" });
+      });
+      await asClaims(churchy(A), { tenantId: B }, async (c) => {
+        expect(await attempt(c, `select count(*) from "songs"`)).toEqual({
+          code: "42501",
+          message: expect.stringMatching(/claim differ/),
+        });
+      });
+      await asClaims(churchy(A), { tenantId: A }, async (c) => {
+        expect(await count(c, "songs", A)).toBe(await ownerCount("songs", A));
+      });
+    });
+  });
+
   describe("the real adapter path (withContext on the app role)", () => {
     it("sees only the context tenant's rows", async () => {
       const db = createDb(app);

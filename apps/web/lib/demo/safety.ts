@@ -47,6 +47,7 @@ export const FORBIDDEN_DEMO_CREDENTIALS: Readonly<
       "PGHOST",
       "PGUSER",
       "PGDATABASE",
+      "SUPABASE_JWT_SECRET",
     ],
     prefixes: [],
   },
