@@ -61,7 +61,7 @@ Visibility is always decided by `can()` from `@churchy/policy`; the UI never ins
 
 - **Product UI is Hungarian only.**
   - All user-visible strings live in `messages/hu.json`; no hard-coded UI text in components (lint rule).
-  - Use the formal address (_Ön_).
+  - Use the **informal address (_tegező_)** everywhere, public sites included (decision 2026-11-24, replaces the earlier formal _Ön_). Existing strings are being converted in a dedicated tone pass; new strings are written informal.
 - **Code, comments, commit messages, PRs and issues are in English.** Hungarian domain terms are fine in identifiers when there is no good English equivalent (e.g. `miserend` in a URL slug).
 - Locale `hu-HU`, timezone **`Europe/Budapest`** for all date logic (never the server timezone). Weeks start on **Monday**.
 - Always use `packages/hu` for:

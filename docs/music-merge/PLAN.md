@@ -252,3 +252,17 @@ Done:
 Folding their messages (each phase, with its code): `src/i18n/messages/hu/<part>.ts` → `messages/hu.json` `music.<part>`; English dropped; `Plural {one, other}` → ICU `{count, plural, …}`; rich tags → next-intl `t.rich`; their informal address must become the formal _Ön_ (the catalog test enforces it), so wording changes; `m.x.y` accessor → `useT("music.x")`/`getT`.
 
 Remaining for phase 1b (blocked on the questions in the report): tenant-scoped snapshot schema of their 69 tables (tenant_id, composite FKs, per-tenant uniques, RLS + grants, `table-scopes.ts`, fixtures for two tenants), the songs/arrangements replacement with rewired hymnal/plan references, the DB role of the token, the ~150 security-definer functions, storage prefix/policies, lint allow-list for `apps/web/server/music/**`.
+
+### 11.1 Further decisions (2026-11-24, round 2)
+
+| # | Decision |
+|---|---|
+| Music DB role | New role `churchy_music`, grants on music tables only. |
+| Security-definer functions | Convert to SECURITY INVOKER per feature phase. |
+| Their own auth.uid() policies/helpers | Dropped; `tenant_isolation` + `can()`/`withPolicy`. |
+| Song contract | Changed to their song shape; Churchy-only extra fields dropped. |
+| User admin / storage | Their user admin dropped; storage under `t/<tenant>/` with storage RLS. |
+| Address form | Informal (tegező) for the WHOLE product, public sites included. CLAUDE.md updated; a dedicated tone pass converts existing strings and tests (catalog test currently enforces Ön). |
+| Service worker | Scoped to `/munkater` (in the phase that needs it). |
+| OCR | Hungarian data only. |
+| Local Postgres | 16 accepted; real Supabase JWT signing checked on first connection. |
