@@ -209,3 +209,33 @@ Their 38 ids (`songs.pdfs`, `sheet.metronome`, `projection.themes`, `events.bloc
 20. Roles: is the 5-role to `can()` mapping in 5.9 acceptable, and which Churchy roles get `music.*` by default?
 21. Priority and order of phases; is a staged release per module (modules default OFF per tenant) wanted (their default is ON)?
 22. Documentation: OK to amend CLAUDE.md namespace list (`music`) and add an ADR for the contract-first exception?
+
+## 11. Decisions by the product owner (2026-11-24)
+
+Answers to the open questions. Anything not listed is still open and must be asked, never assumed.
+
+| # | Decision |
+|---|---|
+| Data layer | Keep Music Sheet DB's supabase-js server models; add `tenant_id` + RLS to their tables. Exception to contract-first, limited to the music module (ADR + CLAUDE.md note). |
+| Tenant context | Per-request JWT with a tenant claim; no spike first. |
+| Placement | Inside `apps/web` under `/munkater`, Hungarian slugs (`/munkater/enektar`, `/kotta`, `/proba`, `/vetites`, …). |
+| Songs/arrangements | Their tables replace Churchy's (`songs`, `arrangements`); our hymnal/plan links are rewired. |
+| Setlists vs plans | Keep both, linked (plan references the setlist). |
+| Events | One events table: theirs merged into ours. |
+| Volunteers | Merge into Churchy teams/positions/assignments. |
+| iCal | Keep their iCal feed code for music events. |
+| Login | Drop theirs (login, MFA, email-code); Churchy login only. |
+| Language | Hungarian only; drop English and `[lang]`; strings under a `music` namespace in `messages/hu.json`. |
+| UI kit | `@base-ui/react` and `lucide-react` allowed temporarily; restyle with Churchy design system. |
+| AI | Platform key with a per-plan cap. |
+| Song rights data | Shared catalog across tenants. |
+| Bible text | Platform catalog: Károli 1908 included; other translations per church licence. |
+| Email | Through Churchy's outbox/templates (`packages/email`); no Resend. |
+| Sentry | Whole application, as the LAST step (not in the merge). |
+| Desktop (Electron) | Out of scope; stays in the music repo. |
+| Production data | Migrate later as its own task (after the security core). |
+| Module defaults | Music modules default OFF; owner switches on per church (/admin/modulok), by plan. |
+| Project rules | CLAUDE.md and an ADR may be amended (small edit). |
+| Start | Phase 1 foundation first, then songs. |
+
+Still open (ask when reached): realtime transport for live sessions/projection (phases 3 and 5), role mapping of their 5 roles to `can()` actions (phase 9), profile id vs auth user id check (phase 1), phase order after phase 2.
