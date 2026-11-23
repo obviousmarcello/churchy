@@ -239,3 +239,16 @@ Answers to the open questions. Anything not listed is still open and must be ask
 | Start | Phase 1 foundation first, then songs. |
 
 Still open (ask when reached): realtime transport for live sessions/projection (phases 3 and 5), role mapping of their 5 roles to `can()` actions (phase 9), profile id vs auth user id check (phase 1), phase order after phase 2.
+
+## 12. Phase 1 progress (music-01-foundation, phase 1a)
+
+Done:
+- Deps (apps/web): `pdfjs-dist`, `tesseract.js`, `@tesseract.js-data/eng|hun`, `@supabase/supabase-js`, dev `esbuild`. React/zod/tiptap need no change (Churchy is already on equal or newer versions). `ical.js`, `@base-ui/react`, `lucide-react`, AI SDKs, tiptap in apps/web: added with the code that uses them (phases 2+).
+- Build scripts copied to `apps/web/scripts/` (`copy-pdfjs`, `copy-tesseract`, `build-worklet`) and run by `dev`/`build`. Outputs are git/eslint-ignored. `build-worklet` builds an entry only once its source exists (metronome: phase 3); the service worker entry is left out (scope open, phase 8).
+- i18n: empty `music` namespace in `messages/hu.json` (catalog test + CLAUDE.md list updated).
+- Tenant JWT: migration `0004_tenant_claim` (+ down) lets `app.current_tenant_id()` read the `tenant_id` claim of `iss = "churchy"` tokens from `request.jwt.claims`; `apps/web/server/music/{tenant-token,supabase}.ts` mint the token and build the per-request client; isolation suite extended; setup in `SUPABASE-SETUP.md`; ADR-20 in the SDD; CLAUDE.md note.
+- Check: Churchy `profiles.id` **is** the Supabase auth user id (`profiles_id_auth_users_fkey`, migration 0002), so their `user_id → auth.users` FKs map to `profiles.id`.
+
+Folding their messages (each phase, with its code): `src/i18n/messages/hu/<part>.ts` → `messages/hu.json` `music.<part>`; English dropped; `Plural {one, other}` → ICU `{count, plural, …}`; rich tags → next-intl `t.rich`; their informal address must become the formal _Ön_ (the catalog test enforces it), so wording changes; `m.x.y` accessor → `useT("music.x")`/`getT`.
+
+Remaining for phase 1b (blocked on the questions in the report): tenant-scoped snapshot schema of their 69 tables (tenant_id, composite FKs, per-tenant uniques, RLS + grants, `table-scopes.ts`, fixtures for two tenants), the songs/arrangements replacement with rewired hymnal/plan references, the DB role of the token, the ~150 security-definer functions, storage prefix/policies, lint allow-list for `apps/web/server/music/**`.
