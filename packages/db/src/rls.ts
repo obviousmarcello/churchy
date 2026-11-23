@@ -18,12 +18,17 @@
  *    (and PUBLIC) hold no privilege on any `public` table.
  * 5. `churchy_app` is not a superuser, has no BYPASSRLS, owns no table and is not a member of
  *    a table owner role.
+ * 6. `churchy_music` (music module via PostgREST, ADR-20) likewise; it holds privileges on
+ *    `MUSIC_TABLES` only, and the policies of exactly those tables apply to it (rule 2 then
+ *    expects `churchy_app, churchy_music`).
  */
 import type pg from "pg";
-import { HR_TABLES, TABLE_SCOPES, type TableScope } from "./table-scopes";
+import { HR_TABLES, MUSIC_TABLES, TABLE_SCOPES, type TableScope } from "./table-scopes";
 
 /** The role the application connects as (never the table owner). */
 export const APP_ROLE = "churchy_app";
+/** The role of the music module's per-request JWT (PostgREST); music tables only. */
+export const MUSIC_ROLE = "churchy_music";
 /** Supabase roles that PostgREST uses for client (browser) requests. */
 export const POSTGREST_ROLES = ["anon", "authenticated"] as const;
 export const TENANT_POLICY = "tenant_isolation";
@@ -43,6 +48,7 @@ type TableRow = {
   owner: string;
   has_tenant_id: boolean;
   app_privileges: boolean;
+  music_privileges: boolean;
 };
 
 type PolicyRow = {
@@ -63,17 +69,20 @@ export async function rlsViolations(
   db: Queryable,
   scopes: Readonly<Record<string, TableScope>> = TABLE_SCOPES,
   hrTables: readonly string[] = HR_TABLES,
+  musicTables: readonly string[] = MUSIC_TABLES,
 ): Promise<string[]> {
   const problems: string[] = [];
 
-  const role = await db.query<{ rolsuper: boolean; rolbypassrls: boolean }>(
-    "select rolsuper, rolbypassrls from pg_catalog.pg_roles where rolname = $1",
-    [APP_ROLE],
-  );
-  const app = role.rows[0];
-  if (app === undefined) return [`role ${APP_ROLE} does not exist`];
-  if (app.rolsuper) problems.push(`${APP_ROLE} is a superuser`);
-  if (app.rolbypassrls) problems.push(`${APP_ROLE} has BYPASSRLS`);
+  for (const name of [APP_ROLE, MUSIC_ROLE]) {
+    const role = await db.query<{ rolsuper: boolean; rolbypassrls: boolean }>(
+      "select rolsuper, rolbypassrls from pg_catalog.pg_roles where rolname = $1",
+      [name],
+    );
+    const r = role.rows[0];
+    if (r === undefined) return [`role ${name} does not exist`];
+    if (r.rolsuper) problems.push(`${name} is a superuser`);
+    if (r.rolbypassrls) problems.push(`${name} has BYPASSRLS`);
+  }
 
   const tables = (
     await db.query<TableRow>(
@@ -83,12 +92,14 @@ export async function rlsViolations(
                       where a.attrelid = c.oid and a.attname = 'tenant_id' and not a.attisdropped)
                 as has_tenant_id,
               pg_catalog.has_table_privilege($1, c.oid,
-                'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER') as app_privileges
+                'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER') as app_privileges,
+              pg_catalog.has_table_privilege($2, c.oid,
+                'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER') as music_privileges
        from pg_catalog.pg_class c
        join pg_catalog.pg_namespace n on n.oid = c.relnamespace
        where n.nspname = 'public' and c.relkind in ('r', 'p')
        order by c.relname`,
-      [APP_ROLE],
+      [APP_ROLE, MUSIC_ROLE],
     )
   ).rows;
 
@@ -111,12 +122,19 @@ export async function rlsViolations(
   for (const t of tables) {
     const scope = scopes[t.table];
     const where = `${t.table}:`;
+    const own = policiesOf(t.table);
     if (scope === undefined) problems.push(`${where} not classified in TABLE_SCOPES`);
     if (!t.rls) problems.push(`${where} row-level security is not enabled`);
     if (!t.forced) problems.push(`${where} row-level security is not forced`);
     if (t.owner === APP_ROLE) problems.push(`${where} owned by ${APP_ROLE}`);
+    if (t.owner === MUSIC_ROLE) problems.push(`${where} owned by ${MUSIC_ROLE}`);
+    const music = musicTables.includes(t.table);
+    if (!music && t.music_privileges) problems.push(`${where} granted to ${MUSIC_ROLE}`);
+    if (!music && own.some((p) => p.roles.includes(MUSIC_ROLE))) {
+      problems.push(`${where} a policy applies to ${MUSIC_ROLE}`);
+    }
+    const policyRoles = music ? `${APP_ROLE},${MUSIC_ROLE}` : APP_ROLE;
 
-    const own = policiesOf(t.table);
     for (const p of own) {
       const exposed = p.roles.filter((r) => r === "public" || isPostgrestRole(r));
       if (exposed.length > 0) {
@@ -136,8 +154,8 @@ export async function rlsViolations(
         if (!tenantPolicy.permissive || tenantPolicy.cmd !== "*") {
           problems.push(`${where} ${TENANT_POLICY} must be PERMISSIVE FOR ALL`);
         }
-        if (tenantPolicy.roles.join(",") !== APP_ROLE) {
-          problems.push(`${where} ${TENANT_POLICY} must apply to ${APP_ROLE} only`);
+        if ([...tenantPolicy.roles].sort().join(",") !== policyRoles) {
+          problems.push(`${where} ${TENANT_POLICY} must apply to ${policyRoles} only`);
         }
         if (tenantPolicy.qual !== TENANT_EXPR || tenantPolicy.with_check !== TENANT_EXPR) {
           problems.push(`${where} ${TENANT_POLICY} expression is not the canonical one`);
@@ -150,7 +168,7 @@ export async function rlsViolations(
         if (
           read === undefined ||
           read.cmd !== "r" ||
-          read.roles.join(",") !== APP_ROLE ||
+          [...read.roles].sort().join(",") !== policyRoles ||
           read.qual !== CATALOG_READ_EXPR
         ) {
           problems.push(`${where} missing or non-canonical ${CATALOG_READ_POLICY} policy`);
@@ -188,14 +206,16 @@ export async function rlsViolations(
     problems.push(`${g.table}: ${g.privilege} granted to ${g.grantee}`);
   }
 
-  // Rule 5: the app role must not inherit owner rights.
+  // Rules 5, 6: the app and music roles must not inherit owner rights.
   const owners = [...new Set(tables.map((t) => t.owner))];
-  for (const owner of owners) {
-    const member = await db.query<{ ok: boolean }>(
-      "select pg_catalog.pg_has_role($1, $2, 'MEMBER') as ok",
-      [APP_ROLE, owner],
-    );
-    if (member.rows[0]?.ok) problems.push(`${APP_ROLE} is a member of table owner ${owner}`);
+  for (const role of [APP_ROLE, MUSIC_ROLE]) {
+    for (const owner of owners) {
+      const member = await db.query<{ ok: boolean }>(
+        "select pg_catalog.pg_has_role($1, $2, 'MEMBER') as ok",
+        [role, owner],
+      );
+      if (member.rows[0]?.ok) problems.push(`${role} is a member of table owner ${owner}`);
+    }
   }
 
   return problems;

@@ -27,7 +27,8 @@ tenant, even if a hook or metadata ever put a `tenant_id` into it.
 | `SUPABASE_PUBLISHABLE_KEY` | app env (server) | publishable/anon key (`apikey` header) |
 | `SUPABASE_JWT_SECRET` | app env (server only, secrets manager) | the project's JWT secret (Dashboard → Settings → JWT Keys, legacy HS256 secret). Never `NEXT_PUBLIC_*`, never in git or the demo (it is in `FORBIDDEN_DEMO_CREDENTIALS`). |
 | HS256 verification | Dashboard → JWT Keys | PostgREST must accept HS256 tokens signed with this secret. If the project uses the new asymmetric signing keys, the legacy shared secret must stay a verification key (to verify on the project; otherwise switch minting to an imported signing key). |
-| DB role for the token | SQL (migration, phase 1b) | `GRANT <role> TO authenticator` so PostgREST can switch to it; grants on music tables/functions only; `USAGE` on schema `app` and `EXECUTE` on `app.current_tenant_id()`. Which role is open (see PLAN.md phase 1b questions). |
+| DB role for the token | migration `0007_music_rls` (done, phase 1b) | Role `churchy_music` (NOLOGIN, NOINHERIT, no BYPASSRLS): DML on the music tables only (`MUSIC_TABLES` in `packages/db/src/table-scopes.ts`), `USAGE` on schemas `app`, `public`, `extensions`, `EXECUTE` on `app.current_tenant_id()`. The migration runs `GRANT churchy_music TO authenticator` when `authenticator` exists (Supabase). The token's `role` claim is `churchy_music`. |
+| Storage buckets | Dashboard → Storage (not a migration) | See [Storage](#storage-music-files) below. |
 | Exposed schemas | Dashboard → API | `public` (music tables live there). Churchy tables stay ungranted to that role. |
 | Custom access token hook | Dashboard → Auth → Hooks | **Not needed** for the tenant claim (per-request tokens are minted by Churchy). The music app's `custom_access_token_hook` goes away with its login (PLAN §11 "Login"). |
 | Realtime (live sessions, projection) | — | Open (phases 3 and 5): Realtime verifies its own JWTs; decide transport first. |
@@ -39,3 +40,51 @@ sets `request.jwt.claims` the way PostgREST does, connected as `churchy_app`, an
 `churchy` claim for tenant A sees only A's rows of every tenant table, cannot write B's rows, that
 other issuers yield no tenant, and that conflicting settings raise. Token minting/verification and
 the client header are unit-tested in `apps/web/server/music/tenant-token.test.ts`.
+
+## Storage (music files)
+
+Status: phase 1b documents the layout and the policies; the buckets are created on the real
+Supabase project (Dashboard → Storage or the SQL below run once by an operator), not by a Churchy
+migration (`storage.*` belongs to Supabase, and plain-Postgres CI has no `storage` schema).
+
+- Buckets (all **private**, signed URLs only): `pdfs`, `scores`, `sound-files`, `song-images`,
+  `avatars`, `branding`, `course-images`, `event-images`, `projection-backgrounds`,
+  `projection-videos` (the music app's buckets; `stray_files.bucket` lists the same names). Size and
+  MIME limits as in the music app (`supabase/migrations`, `storage.buckets` inserts).
+- Object key: `t/<tenant_id>/<path>`, where `<path>` is the value stored in the music tables
+  (`song_pdfs.path` = `<song_id>/<uuid>.pdf`, …; their CHECK constraints stay tenant-relative).
+  Build keys with `tenantStorageKey(ctx, …)` and check incoming ones with `assertTenantStorageKey`
+  (`packages/db/src/storage-keys.ts`).
+- The music app's own storage policies (`auth.uid()` / role helpers) are **not** carried over.
+
+Policies for the music role (the tenant comes from the churchy JWT claim through
+`app.current_tenant_id()`; `anon` / `authenticated` get nothing):
+
+```sql
+-- once per project, as the postgres role
+GRANT USAGE ON SCHEMA storage TO churchy_music;
+GRANT SELECT, INSERT, UPDATE, DELETE ON storage.objects TO churchy_music;
+GRANT SELECT ON storage.buckets TO churchy_music;
+
+CREATE POLICY music_tenant_objects ON storage.objects AS PERMISSIVE FOR ALL TO churchy_music
+  USING (
+    bucket_id = ANY (ARRAY['pdfs', 'scores', 'sound-files', 'song-images', 'avatars', 'branding',
+      'course-images', 'event-images', 'projection-backgrounds', 'projection-videos'])
+    AND (storage.foldername(name))[1] = 't'
+    AND (storage.foldername(name))[2] = (SELECT app.current_tenant_id())::text
+  )
+  WITH CHECK (
+    bucket_id = ANY (ARRAY['pdfs', 'scores', 'sound-files', 'song-images', 'avatars', 'branding',
+      'course-images', 'event-images', 'projection-backgrounds', 'projection-videos'])
+    AND (storage.foldername(name))[1] = 't'
+    AND (storage.foldername(name))[2] = (SELECT app.current_tenant_id())::text
+  );
+
+CREATE POLICY music_buckets_read ON storage.buckets AS PERMISSIVE FOR SELECT TO churchy_music
+  USING (id = ANY (ARRAY['pdfs', 'scores', 'sound-files', 'song-images', 'avatars', 'branding',
+    'course-images', 'event-images', 'projection-backgrounds', 'projection-videos']));
+```
+
+Check after setup (SQL editor): with `set local role churchy_music` and a `request.jwt.claims`
+of tenant A, `select count(*) from storage.objects where name like 't/<tenant B>/%'` returns 0
+and an insert of `t/<tenant B>/x` is rejected.

@@ -370,8 +370,8 @@ describe("content and workspace cascades", () => {
     ).toBe("NOT_FOUND");
     const song = await repos.songs.upsert(ctxA, {
       title: "Erős vár a mi Istenünk",
-      altTitles: ["Ein feste Burg"],
-      seasons: ["reformacio"],
+      artist: "Ein feste Burg",
+      tags: ["reformáció"],
       hymnalRefs: [{ hymnalId: "hymnal-re", number: "390" }],
     });
     expect((await repos.songs.search(ctxA, { query: "RÉ 390" })).map((s) => s.id)).toEqual([
@@ -380,6 +380,6 @@ describe("content and workspace cascades", () => {
     expect((await repos.songs.search(ctxA, { query: "feste" })).map((s) => s.id)).toEqual([
       song.id,
     ]);
-    expect(await repos.songs.search(ctxA, { season: "advent" })).toEqual([]);
+    expect(await repos.songs.search(ctxA, { tag: "advent" })).toEqual([]);
   });
 });

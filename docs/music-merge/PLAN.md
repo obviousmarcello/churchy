@@ -266,3 +266,60 @@ Remaining for phase 1b (blocked on the questions in the report): tenant-scoped s
 | Service worker | Scoped to `/munkater` (in the phase that needs it). |
 | OCR | Hungarian data only. |
 | Local Postgres | 16 accepted; real Supabase JWT signing checked on first connection. |
+
+## 13. Phase 1b progress (music-01b-schema)
+
+Done:
+- Their final schema (151 migrations applied to a local Postgres with Supabase stubs, read from the
+  catalog by a script, not retyped) is in `packages/db/src/schema/music.ts` as 43 tenant-scoped
+  tables: `tenant_id` + index, `(tenant_id, …)` primary/unique keys (global: calendar feed token,
+  push endpoint), composite `(tenant_id, x_id)` FKs, `auth.users` FKs → `profiles.id`,
+  single-row tables keyed by `tenant_id`, `scripture_books` / `scripture_verse_cache` as catalog
+  (platform rows = Károli 1908).
+- Migrations `0005_music_functions` (pg_trgm, `simple_unaccent`, the 8 INVOKER helpers of
+  generated columns/CHECKs; `church_time_zone()` tenant-scoped), `0006_music_schema` (drops
+  Churchy's songs/arrangements and the `song_licence` enum, creates the music tables, re-points
+  `song_hymnal_refs` / `plan_items`), `0007_music_rls` (role `churchy_music`, FORCE RLS, grants,
+  `tenant_isolation` for `churchy_app, churchy_music`, `catalog_read`, the constraints Drizzle
+  cannot express), each with a down migration; `up → down → up` checked.
+- `rls.ts` knows `churchy_music` (music tables only; policies of exactly those tables name it);
+  the isolation suite covers every music table (fixtures `packages/db/sql/music-fixtures.sql`),
+  the music role (claims path, cross-tenant writes, permission denied elsewhere) and fails for a
+  table without policy or a music grant on a non-music table.
+- Song contract = their shape (`title, artist, tags, copyright, songbook, authors, originalTitle,
+  translator, rightsStatus, rightsNote`, plus the rewired `hymnalRefs`); arrangements = theirs
+  (`chordpro, sectionOrder, isDefault, projectionThemeId` + generated `musicalKey, tempoBpm,
+  timeSignature, durationSeconds`). Mock, demo seed, `/munkater/enektar` and the plan editor
+  adapted minimally (key lives in the chart's `{key:}`; themes → tags; licence → rights status).
+- Function checklist: [FUNCTIONS.md](FUNCTIONS.md). Storage layout/policies: SUPABASE-SETUP.md.
+
+Not in this phase (by decision or plan):
+- Events cluster → phase 4 ("events merge into ours"): `events`, `event_announcements`,
+  `event_announcement_entries`, `event_area_notes`, `event_blocks`, `event_image_sets`,
+  `event_images`, `event_projection_controllers`, `event_team_notes`, `event_volunteer_areas`,
+  `event_volunteers`, `live_sessions`, `notification_deliveries`, `setlist_item_blocks`,
+  `setlist_item_volunteers`. Their `events` columns (setlist_id, projection_theme_id,
+  volunteer_template_id, series/visibility …) are added to Churchy `events` then.
+  `setlist_items.announcement_id` / `image_set_id` have no FK until then.
+- Volunteers → Churchy teams/positions/assignments (schema note only): `service_areas`
+  (→ `teams` + `parent_id`), `service_area_members` (→ `team_members`), `service_area_roles`
+  (→ `team_positions`), `service_area_paths` (closure table, maybe a recursive query instead),
+  `volunteer_templates`, `volunteer_template_areas`, `course_areas` (course ↔ team), replies
+  (→ `assignments.status`).
+- Dropped: their `profiles` (Churchy `profiles`), `user_direct_roles`, `totp_factor_grants`, the
+  `private` tables (MFA codes/sessions, TOTP attempts, rate limits, cron tokens).
+- Triggers and the remaining functions: per phase (FUNCTIONS.md).
+
+Open questions (asked, not assumed):
+1. Song rights "shared catalog across tenants" (§11): the rights fields are columns of the
+   tenant's `songs` (their shape). What is the shared key (CCLI number? normalized title +
+   authors?), and which fields move to a catalog table (`song_rights`?) — and do
+   `song_rights_proposals` (per tenant song) feed it? Kept on `songs` until answered.
+2. `app_config` (their per-DB settings, now one row per tenant) duplicates tenant/site config
+   (church name, palette, time zone, e-mail sender, GDPR controller): merge into
+   `tenants`/site config and drop the table, or keep it for music-only fields?
+3. Their `notification_preferences` / `push_subscriptions` vs Churchy `notification_prefs`:
+   merge (O12 recommendation) or keep separate? Kept separate (tenant tables) for now.
+4. Lyrics: Churchy's `songs.lyrics` was dropped with the contract change; the demo's own-song
+   lyrics now exist only where the chart (ChordPro) has them. OK, or move them into the default
+   arrangement's chart?

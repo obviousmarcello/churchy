@@ -36,6 +36,27 @@
       "when": 1795467993954,
       "tag": "0004_tenant_claim",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795469897374,
+      "tag": "0005_music_functions",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795469913505,
+      "tag": "0006_music_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795469933076,
+      "tag": "0007_music_rls",
+      "breakpoints": true
     }
   ]
 }

@@ -19,6 +19,7 @@ import type {
 } from "@churchy/contracts";
 import {
   ArrangementInputSchema,
+  arrangementDerived,
   AssignmentInputSchema,
   AssignmentSchema,
   AttachmentInputSchema,
@@ -88,9 +89,7 @@ export function mockSongs({ store }: RepoDeps): SongRepo {
         : [];
       const matches = (s: Song) =>
         needle === "" ||
-        [s.title, ...s.altTitles, s.firstLine ?? ""].some((t) =>
-          foldForSearch(t).includes(needle),
-        ) ||
+        [s.title, s.artist ?? ""].some((t) => foldForSearch(t).includes(needle)) ||
         s.hymnalRefs.some(
           (r) =>
             refHymnals.some((h) => h.id === r.hymnalId) &&
@@ -99,8 +98,11 @@ export function mockSongs({ store }: RepoDeps): SongRepo {
       return d()
         .songs.filter((s) => s.tenantId === tenantId)
         .filter(matches)
-        .filter((s) => query.theme === undefined || s.themes.includes(query.theme))
-        .filter((s) => query.season === undefined || s.seasons.includes(query.season))
+        .filter(
+          (s) =>
+            query.tag === undefined ||
+            s.tags.some((t) => t.toLowerCase() === query.tag!.toLowerCase()),
+        )
         .sort((a, b) => huCollator.compare(a.title, b.title));
     },
     async get(ctx, id) {
@@ -142,7 +144,15 @@ export function mockSongs({ store }: RepoDeps): SongRepo {
       const existing =
         id === undefined ? undefined : own(d().arrangements, tenantId, id, "Arrangement");
       own(d().songs, tenantId, data.songId, "Song");
-      const row: Arrangement = { ...data, id: existing?.id ?? store.nextId("arr"), tenantId };
+      const stamp = store.nowIso();
+      const row: Arrangement = {
+        ...data,
+        ...arrangementDerived(data.chordpro),
+        id: existing?.id ?? store.nextId("arr"),
+        tenantId,
+        createdAt: existing?.createdAt ?? stamp,
+        updatedAt: stamp,
+      };
       return save(d().arrangements, row);
     },
     async deleteArrangement(ctx, id) {

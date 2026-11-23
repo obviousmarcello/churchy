@@ -769,20 +769,20 @@ describe("demo dataset — privacy and copyright rules", () => {
     for (const b of DS.billingAccounts) if (b.taxNumber) expect(b.taxNumber).toMatch(/^99999999-/);
   });
 
-  it("no copyrighted lyrics or scores: lyrics only for public-domain/own songs, chord charts only for own works", () => {
+  it("no copyrighted lyrics or scores: chord charts beyond directives only for own works", () => {
     for (const s of DS.songs) {
-      if (s.lyrics !== null) expect(["public_domain", "own"], s.title).toContain(s.licence);
-      if (s.licence === "public_domain") expect(s.lyrics, s.title).toBeNull();
-      if (s.licence === "licensed" || s.licence === "permission") {
-        expect(s.lyrics, s.title).toBeNull();
-        expect(s.copyrightHolder, s.title).not.toBeNull();
-        expect(s.licenceRef, s.title).not.toBeNull();
-      }
-      if (s.lyrics !== null) expect(s.lyrics.length, s.title).toBeLessThan(400);
+      if (s.rightsStatus === "licensed") expect(s.copyright, s.title).not.toBeNull();
     }
     for (const a of DS.arrangements) {
-      if (a.chordpro !== null)
-        expect(DS.songs.find((s) => s.id === a.songId)?.licence, a.name).toBe("own");
+      const body = a.chordpro
+        .split("\n")
+        .filter((line) => !/^\s*\{[^}]*\}\s*$/.test(line))
+        .join("");
+      if (body !== "") {
+        // Own works: the church itself holds the copyright.
+        const song = DS.songs.find((s) => s.id === a.songId);
+        expect(DS.tenants.find((t) => t.id === song?.tenantId)?.name, a.name).toBe(song?.copyright);
+      }
     }
   });
 
