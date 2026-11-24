@@ -4,6 +4,7 @@
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
     "paths": { "@/*": ["./*"], "@messages/*": ["../../messages/*"] },
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
     "allowJs": false,
     "incremental": true
   },

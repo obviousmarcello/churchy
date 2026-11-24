@@ -125,6 +125,21 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: { leader: "all", musicLeader: "all" },
   },
   {
+    capability: "Music: view songs",
+    actions: ["music.song.view"],
+    grants: EVERY_ROLE,
+  },
+  {
+    capability: "Music: manage songs and arrangements",
+    actions: ["music.song.manage"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
+    capability: "Music: shared song rights and research",
+    actions: ["music.songRights.manage"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
     capability: "View plans & attachments",
     actions: ["servicePlan.view", "attachment.view"],
     grants: {

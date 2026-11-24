@@ -139,6 +139,7 @@ pnpm e2e              # Playwright against `next start` on :3100 — run `pnpm b
 pnpm --filter @churchy/db db:generate  # Drizzle schema → migrations/NNNN_*.sql (also write migrations/down/<tag>.sql)
 pnpm --filter @churchy/db db up|down [n]|reset|status|seed  # migrations & D-91 demo seed (DATABASE_URL from env)
 pnpm --filter @churchy/db db auth-stub # plain Postgres only: minimal auth.users (Supabase owns it)
+pnpm --filter @churchy/db local:sql  # after a migration change: re-bundle the in-process music DB (test fails if stale)
 TEST_DATABASE_URL=… pnpm --filter @churchy/db test  # DB integration tests — disposable database only, they reset it
 TEST_DATABASE_URL=… pnpm test:isolation  # D-03 RLS check + cross-tenant isolation suite (fails without a database)
 ```

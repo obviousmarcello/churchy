@@ -90,6 +90,9 @@ These capabilities are not rows of the SDD table; the README documents the resol
 
 | Capability                                                                    | Check                                      | Action                       |  L  |  E  |  V  | TL  | ML  | RM  | HR  | CH  |
 | ----------------------------------------------------------------------------- | ------------------------------------------ | ---------------------------- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Music: view songs (owner decision 2026-11-24, music merge)                    | view the song catalog                      | `music.song.view`            |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: manage songs and arrangements (music merge)                            | edit songs and arrangements                | `music.song.manage`          |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: shared song rights and research (music merge)                          | song rights and research                   | `music.songRights.manage`    |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
 | Create private events (README: every workspace role has a personal calendar)  | private event                              | `calendarEvent.create`       |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 | Own leave balance (README)                                                    | own leave balance                          | `hr.leaveBalance.view`       |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 | Absence calendar „Távol” (README)                                             | absence calendar                           | `hr.absence.viewCalendar`    |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |

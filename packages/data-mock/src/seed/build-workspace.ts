@@ -317,15 +317,25 @@ export function buildSongs(b: Build): void {
     };
     ds.songs.push(song);
     b.arrangementIds[i] = [];
-    (sg.arrangements ?? []).forEach((a, j) => {
+    // Music Sheet DB needs a default arrangement for every song (its chart carries the lyrics):
+    // a song without one gets a plain "Alapváltozat" with its key and first line.
+    const arrangements = sg.arrangements?.length
+      ? sg.arrangements
+      : [{ name: "Alapváltozat", key: sg.key, structure: "", chordpro: sg.first }];
+    arrangements.forEach((a, j) => {
       const aid = `arr-${k}-${i + 1}-${j + 1}`;
       b.arrangementIds[i]?.push(aid);
       // The key and tempo live in the ChordPro chart (generated columns in the DB).
+      // The song's (fictitious) lyrics live in the default arrangement's chart (PLAN §11.2): after
+      // its chorded first line come the other lines of the lyrics.
+      const lyricLines = j === 0 && sg.lyrics !== undefined ? sg.lyrics.split("\n") : [];
+      const chordedLines = a.chordpro?.split("\n").filter((line) => !line.startsWith("{")) ?? [];
       const chordpro = [
         `{key: ${a.key}}`,
         ...(sg.bpm === undefined ? [] : [`{tempo: ${sg.bpm}}`]),
         ...(sg.time === undefined ? [] : [`{time: ${sg.time}}`]),
         ...(a.chordpro === undefined ? [] : [a.chordpro]),
+        ...lyricLines.slice(chordedLines.length),
       ].join("\n");
       const arr: Arrangement = {
         id: aid,

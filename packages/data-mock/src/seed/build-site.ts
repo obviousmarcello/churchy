@@ -50,6 +50,18 @@ const WS_MODULES: Record<string, WorkspaceModuleKey[]> = {
   ],
 };
 
+const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
+  "ws.music.songs",
+  "ws.music.songs.pdfs",
+  "ws.music.songs.images",
+  "ws.music.songs.scores",
+  "ws.music.songs.sound-files",
+  "ws.music.songs.links",
+  "ws.music.songs.songpraise",
+  "ws.music.songs.ocr",
+  "ws.music.song-rights",
+];
+
 export function buildTenant(b: Build): void {
   const { spec, c, ds, tid } = b;
   const t = spec.tenant;
@@ -60,6 +72,8 @@ export function buildTenant(b: Build): void {
     Number(c.today.slice(0, 4)) + (c.today > `${c.today.slice(0, 4)}-01-01` ? 1 : 0);
   const workspaceModules: Partial<Record<WorkspaceModuleKey, boolean>> = {};
   for (const m of WS_MODULES[t.wsTier] ?? []) workspaceModules[m] = true;
+  // The demo churches have switched the music module on (it is off by default, music merge).
+  if (t.wsTier !== "none") for (const m of DEMO_MUSIC_MODULES) workspaceModules[m] = true;
 
   const siteConfig: SiteConfigOverrides = {
     identity: {

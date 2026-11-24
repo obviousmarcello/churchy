@@ -7,52 +7,6 @@ async function as(page: Page, persona: PersonaKey, path: string) {
   await page.goto(path);
 }
 
-test.describe("Énektár", () => {
-  test("search, hymnal number, H/B notation, transposition and axe", async ({ page }) => {
-    await as(page, "zenei", "/munkater/enektar");
-    await expect(page.getByTestId("song-library")).toBeVisible();
-    const all = await page.getByTestId("song-row").count();
-    expect(all).toBeGreaterThan(10);
-    expect(await axeSeriousOrCritical(page)).toEqual([]);
-
-    // Accent-insensitive title search.
-    await page.goto("/munkater/enektar?q=dicsoseg");
-    await expect(page.getByTestId("song-row").first()).toContainText("Dicsőség");
-    // Hymnal reference.
-    await page.goto("/munkater/enektar?q=" + encodeURIComponent("ÉE 101"));
-    await expect(page.getByTestId("song-row")).toHaveCount(1);
-    await page.getByTestId("song-row").getByRole("link").click();
-    await expect(page.getByTestId("song-page")).toBeVisible();
-    expect(await axeSeriousOrCritical(page)).toEqual([]);
-  });
-
-  test("transposition, capo and H/B on a chord chart", async ({ page }) => {
-    await as(page, "zenei", "/munkater/enektar?q=nazaret");
-    await page.getByTestId("song-row").getByRole("link").click();
-    await expect(page.getByTestId("chord-sheet")).toContainText("D");
-    await page.getByTestId("transpose-form").getByLabel("Hangnem").selectOption("Bb");
-    await page.getByRole("button", { name: "Átír" }).click();
-    await expect(page.getByTestId("chord-sheet")).toContainText("B");
-    await expect(page.getByTestId("chord-sheet")).not.toContainText("H");
-    await page.getByTestId("transpose-form").getByLabel("Capo").selectOption("3");
-    await page.getByRole("button", { name: "Átír" }).click();
-    await expect(page.getByTestId("capo-note")).toBeVisible();
-    expect(await axeSeriousOrCritical(page)).toEqual([]);
-  });
-
-  test("a volunteer has no song library", async ({ page }) => {
-    await as(page, "onkentes", "/munkater/enektar");
-    await expect(page.getByTestId("song-library")).toHaveCount(0);
-  });
-
-  test("new song", async ({ page }) => {
-    await as(page, "zenei", "/munkater/enektar/uj");
-    await page.getByLabel("Cím", { exact: true }).fill("Próba ének");
-    await page.getByRole("button", { name: "Ének mentése" }).click();
-    await expect(page.getByTestId("song-page")).toContainText("Próba ének");
-  });
-});
-
 test.describe("Liturgia", () => {
   test("list, plan editor, status flow and comments", async ({ page }) => {
     await as(page, "zenei", "/munkater/liturgia");

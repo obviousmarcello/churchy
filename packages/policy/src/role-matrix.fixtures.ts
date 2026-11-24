@@ -293,6 +293,21 @@ export const SDD_ROWS: readonly MatrixRow[] = [
 // prettier-ignore
 export const README_ROWS: readonly MatrixRow[] = [
   {
+    capability: "Music: view songs (owner decision 2026-11-24, music merge)",
+    sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
+    variants: [v("view the song catalog", "music.song.view", tenant, "YYYYYYYY")],
+  },
+  {
+    capability: "Music: manage songs and arrangements (music merge)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("edit songs and arrangements", "music.song.manage", tenant, "YNNNYNNN")],
+  },
+  {
+    capability: "Music: shared song rights and research (music merge)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("song rights and research", "music.songRights.manage", tenant, "YNNNYNNN")],
+  },
+  {
     capability: "Create private events (README: every workspace role has a personal calendar)",
     sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
     variants: [v("private event", "calendarEvent.create", event("private"), "YYYYYYYY")],

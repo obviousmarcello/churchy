@@ -4,3 +4,4 @@ coverage
 docs
 .claude
 packages/db/migrations/meta
+packages/db/src/local/sql.generated.ts

@@ -95,6 +95,15 @@ const WORKSPACE_IDS = {
   "ws.hr.confidential": "hr_confidential",
   "ws.docs": "docs",
   "ws.board": "board",
+  "ws.music.songs": "music_songs",
+  "ws.music.songs.pdfs": "music_songs_pdfs",
+  "ws.music.songs.images": "music_songs_images",
+  "ws.music.songs.scores": "music_songs_scores",
+  "ws.music.songs.sound-files": "music_songs_sound_files",
+  "ws.music.songs.links": "music_songs_links",
+  "ws.music.songs.songpraise": "music_songs_songpraise",
+  "ws.music.songs.ocr": "music_songs_ocr",
+  "ws.music.song-rights": "music_song_rights",
 } as const satisfies Record<WorkspaceModuleKey, string>;
 export type WorkspaceModuleId = (typeof WORKSPACE_IDS)[WorkspaceModuleKey];
 export const workspaceModuleId = (key: WorkspaceModuleKey): WorkspaceModuleId => WORKSPACE_IDS[key];

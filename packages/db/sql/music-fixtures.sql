@@ -84,5 +84,6 @@ BEGIN
   INSERT INTO scripture_books (tenant_id, translation, book, chapters) VALUES (t, 'sajat', 'Gen', '[50]');
   INSERT INTO scripture_verse_cache (tenant_id, translation, book, chapter, verse, text)
     VALUES (t, 'sajat', 'Gen', 1, 1, 'Kezdetben');
+  INSERT INTO song_rights (tenant_id, title_key, title) VALUES (t, 'sajatdal', 'Saját dal');
 END
 $fixtures$;

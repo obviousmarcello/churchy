@@ -1,24 +1,46 @@
-import { notFound } from "next/navigation";
-import { can } from "@churchy/policy";
-import { SongForm } from "@/components/worship/song-form";
-import { getT } from "@/i18n/server";
-import { getMemberEnv } from "@/server/workspace";
-import { requireWorkspaceModule } from "@/server/workspace-nav";
+import type { Metadata } from "next";
+import { LockIcon } from "lucide-react";
 
-export async function generateMetadata() {
-  const [t, common] = await Promise.all([getT("munkater.songs"), getT("common")]);
-  return { title: `${t("new")} · ${common("appName")}`, robots: { index: false, follow: false } };
+import { PageHeader } from "@/components/music/page-header";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/music/ui/empty";
+import { getI18n } from "@/i18n/music/server";
+import { requirePageUser } from "@/server/music/auth";
+import { listSongTags } from "@/server/music/models/songs";
+import { NewSongForm } from "./new-song-form";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { m } = await getI18n();
+  return { title: m.songs.new.title, robots: { index: false, follow: false } };
 }
 
+// This only hides the form. `createSong` checks the song admin role again on save.
 export default async function NewSongPage() {
-  await requireWorkspaceModule("ws.worship");
-  const [env, t] = await Promise.all([getMemberEnv(), getT("munkater.songs")]);
-  if (!can(env.actor, "song.edit", { tenantId: env.tenantId })) notFound();
-  const hymnals = await env.repos.songs.listHymnals(env.ctx);
+  const [user, { m }] = await Promise.all([requirePageUser(), getI18n()]);
   return (
-    <div className="flex flex-col gap-5" data-testid="song-new-page">
-      <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">{t("new")}</h1>
-      <SongForm song={null} hymnals={hymnals} />
-    </div>
+    <main className="flex flex-1 flex-col">
+      <PageHeader
+        title={m.songs.new.title}
+        back={{ href: "/munkater/enektar", label: m.common.nav.songs }}
+      />
+      {user.canEditSongs ? (
+        <NewSongForm tagOptions={await listSongTags()} />
+      ) : (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <LockIcon />
+            </EmptyMedia>
+            <EmptyTitle>{m.songs.new.forbidden.title}</EmptyTitle>
+            <EmptyDescription>{m.songs.new.forbidden.description}</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      )}
+    </main>
   );
 }

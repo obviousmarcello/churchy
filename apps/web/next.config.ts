@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
     "@churchy/themes",
     "@churchy/ui",
   ],
+  // In-process Postgres (WASM) of the music module's local mode: loaded from node_modules, so its
+  // .wasm/.data files and contrib extensions resolve next to it (packages/db/src/local).
+  serverExternalPackages: ["@electric-sql/pglite"],
   poweredByHeader: false,
   async headers() {
     // The workspace is private (D-53 AC3, SDD §20.1): never cached by a CDN or the browser and

@@ -15,6 +15,15 @@ const S50: readonly WorkspaceModuleKey[] = [
   "ws.rota",
   "ws.hr",
   "ws.hr.leave",
+  "ws.music.songs",
+  "ws.music.songs.pdfs",
+  "ws.music.songs.images",
+  "ws.music.songs.scores",
+  "ws.music.songs.sound-files",
+  "ws.music.songs.links",
+  "ws.music.songs.songpraise",
+  "ws.music.songs.ocr",
+  "ws.music.song-rights",
 ];
 const M150: readonly WorkspaceModuleKey[] = [...S50, "ws.hr.confidential", "ws.docs"];
 const L300: readonly WorkspaceModuleKey[] = [...M150, "ws.board"];
@@ -58,5 +67,19 @@ export function moduleEnabled(
   overrides: Partial<Record<WorkspaceModuleKey, boolean>> | undefined,
   key: WorkspaceModuleKey,
 ): boolean {
-  return TIER_MODULES[tier].includes(key) && overrides?.[key] !== false;
+  if (!TIER_MODULES[tier].includes(key)) return false;
+  if (!key.startsWith(MUSIC_PREFIX)) return overrides?.[key] !== false;
+  // Music modules are off until the church switches them on, and need their parent module.
+  const parent = musicParent(key);
+  return overrides?.[key] === true && (parent === null || moduleEnabled(tier, overrides, parent));
+}
+
+const MUSIC_PREFIX = "ws.music.";
+
+/** `ws.music.songs.pdfs` → `ws.music.songs`; `ws.music.song-rights` → `ws.music.songs`. */
+export function musicParent(key: WorkspaceModuleKey): WorkspaceModuleKey | null {
+  if (key === "ws.music.songs") return null;
+  if (key === "ws.music.song-rights") return "ws.music.songs";
+  const parent = key.slice(0, key.lastIndexOf("."));
+  return parent.startsWith(MUSIC_PREFIX) ? (parent as WorkspaceModuleKey) : null;
 }

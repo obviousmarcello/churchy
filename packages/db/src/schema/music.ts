@@ -30,7 +30,14 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { huText, tenantIndexes, timestamptz, tsvector } from "./columns";
-import { profiles, tenantId, tenants } from "./platform";
+import { profiles, tenantId as platformTenantId, tenants } from "./platform";
+
+/**
+ * Tenant column of the music tables. Defaults to the request's tenant (`app.current_tenant_id()`:
+ * `app.tenant_id` or the churchy JWT claim), so the music models and their SQL functions insert
+ * without naming it, as in the music app; `tenant_isolation` checks it (music phase 2).
+ */
+const tenantId = () => platformTenantId().default(sql`app.current_tenant_id()`);
 
 export const songs = pgTable(
   "songs",
@@ -1767,5 +1774,44 @@ export const announcementSettings = pgTable(
       foreignColumns: [profiles.id],
     }).onDelete("set null"),
     index("announcement_settings_updated_by_idx").on(t.updatedBy),
+  ],
+).enableRLS();
+
+/**
+ * Shared song-rights catalog (music phase 2, PLAN §11 "Song rights data", §11.2): rights facts of
+ * a song shared by every church. Platform rows only (`tenant_id` null); key = the CCLI song number
+ * from the copyright text, otherwise the folded title + authors. Fed by the songs trigger
+ * `share_song_rights()` (song saves and accepted research proposals); a church's licence status
+ * and permission note stay on its own `songs` row.
+ */
+export const songRights = pgTable(
+  "song_rights",
+  {
+    tenantId: uuid().references(() => tenants.id, { onDelete: "cascade" }),
+    id: uuid().primaryKey().defaultRandom(),
+    ccliNumber: text(),
+    titleKey: text().notNull(),
+    authorsKey: text().notNull().default(""),
+    title: huText().notNull(),
+    authors: text(),
+    originalTitle: text(),
+    translator: text(),
+    songbook: text(),
+    copyright: text(),
+    updatedByTenant: uuid().references(() => tenants.id, { onDelete: "set null" }),
+    updatedAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    index("song_rights_tenant_id_idx").on(t.tenantId),
+    check("song_rights_ccli_number_check", sql`(ccli_number ~ '^[0-9]{1,10}$'::text)`),
+    check(
+      "song_rights_title_check",
+      sql`((char_length(title) >= 1) AND (char_length(title) <= 200))`,
+    ),
+    check("song_rights_authors_check", sql`(char_length(authors) <= 500)`),
+    check("song_rights_original_title_check", sql`(char_length(original_title) <= 200)`),
+    check("song_rights_translator_check", sql`(char_length(translator) <= 200)`),
+    check("song_rights_songbook_check", sql`(char_length(songbook) <= 200)`),
+    check("song_rights_copyright_check", sql`(char_length(copyright) <= 500)`),
   ],
 ).enableRLS();

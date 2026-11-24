@@ -26,10 +26,11 @@ test.describe("Munkatér shell and Ma", () => {
     await as(page, "onkentes", "/munkater");
     await expect(page.getByTestId("workspace-today")).toBeVisible();
     const nav = page.getByTestId("area-sections");
-    for (const id of ["today", "calendar", "directory", "teams", "worship", "hr"]) {
+    // Every workspace role reads the songs (music module, owner decision 2026-11-24).
+    for (const id of ["today", "calendar", "directory", "teams", "worship", "songs", "hr"]) {
       await expect(nav.locator(`[data-section="${id}"]`)).toHaveCount(1);
     }
-    for (const id of ["rooms", "songs"]) {
+    for (const id of ["rooms"]) {
       await expect(nav.locator(`[data-section="${id}"]`)).toHaveCount(0);
     }
     expect(await axeSeriousOrCritical(page)).toEqual([]);
