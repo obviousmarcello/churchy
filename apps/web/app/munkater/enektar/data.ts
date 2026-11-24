@@ -20,15 +20,27 @@ export type SongFileModules = {
   images: boolean;
   soundFiles: boolean;
   links: boolean;
+  /** The chord sheet (`ws.music.sheet`): the arrangements link to it. */
+  sheet: boolean;
 };
 
 export async function songFileModules(): Promise<SongFileModules> {
-  const [scores, pdfs, images, soundFiles, links] = await Promise.all(
-    (["scores", "pdfs", "images", "sound-files", "links"] as const).map((m) =>
-      isWorkspaceModuleOn(`ws.music.songs.${m}`),
+  const [[scores, pdfs, images, soundFiles, links], sheet] = await Promise.all([
+    Promise.all(
+      (["scores", "pdfs", "images", "sound-files", "links"] as const).map((m) =>
+        isWorkspaceModuleOn(`ws.music.songs.${m}`),
+      ),
     ),
-  );
-  return { scores: scores!, pdfs: pdfs!, images: images!, soundFiles: soundFiles!, links: links! };
+    isWorkspaceModuleOn("ws.music.sheet"),
+  ]);
+  return {
+    scores: scores!,
+    pdfs: pdfs!,
+    images: images!,
+    soundFiles: soundFiles!,
+    links: links!,
+    sheet,
+  };
 }
 
 export type SongsPageData = {

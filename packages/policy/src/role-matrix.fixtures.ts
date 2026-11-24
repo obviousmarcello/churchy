@@ -298,6 +298,11 @@ export const README_ROWS: readonly MatrixRow[] = [
     variants: [v("view the song catalog", "music.song.view", tenant, "YYYYYYYY")],
   },
   {
+    capability: "Music: use the chord sheet, own capo, key, layout and marks (music merge)",
+    sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
+    variants: [v("personalise the chord sheet", "music.sheet.personalize", tenant, "YYYYYYYY")],
+  },
+  {
     capability: "Music: manage songs and arrangements (music merge)",
     sdd: ["✔", "", "", "", "✔", "", "", ""],
     variants: [v("edit songs and arrangements", "music.song.manage", tenant, "YNNNYNNN")],

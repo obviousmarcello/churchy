@@ -12,9 +12,11 @@ import {
 import Link from "next/link";
 import { ChevronDownIcon, LoaderCircleIcon, PlusIcon, XIcon } from "lucide-react";
 
+import { PreviewLayout } from "@/components/music/preview-layout";
 import { DIALOG_FORM_CLASS, DialogBody, DialogFooter } from "@/components/music/dialog-parts";
 import { Field, FieldMessage, SectionHeading } from "@/components/music/form-field";
 import { useResultToast } from "@/components/music/form-parts";
+import { ChartPreview } from "./chart-preview";
 import { invalidatePageCache } from "@/components/music/page-cache";
 import { SaveBar, usePageSaveForm } from "@/components/music/page-save";
 import { PageCard } from "@/components/music/page-card";
@@ -444,8 +446,22 @@ export function SongForm({
       )}
       {keepPlainSections && <input type="hidden" name="keepPlainSections" value="true" />}
       <DialogBodyIf inDialog={inDialog}>
-        {/* Music Sheet DB shows a chart preview next to the editor here (chart phase 3). */}
-        <>
+        {/* The editor keeps its width. On a page, the preview stays next to it on a wide screen, or goes under it. */}
+        <PreviewLayout
+          preview={
+            !inDialog && (
+              <ChartPreview
+                chordpro={chordpro}
+                sectionOrder={sectionOrder}
+                title={previewFields.title}
+                artist={previewFields.artist}
+                musicalKey={previewFields.key}
+                bpm={previewFields.bpm}
+                timeSignature={previewFields.timeSignature}
+              />
+            )
+          }
+        >
           {/* The ids are the targets of the list of parts of the edit page. */}
           <section id="song" aria-label={t.song} className="flex scroll-mt-32 flex-col gap-4">
             {/* The one required field of the song: almost all the others are optional. */}
@@ -872,7 +888,7 @@ export function SongForm({
               </div>
             </section>
           )}
-        </>
+        </PreviewLayout>
       </DialogBodyIf>
 
       {embedded ? (

@@ -24,6 +24,11 @@ const S50: readonly WorkspaceModuleKey[] = [
   "ws.music.songs.songpraise",
   "ws.music.songs.ocr",
   "ws.music.song-rights",
+  "ws.music.sheet",
+  "ws.music.sheet.metronome",
+  "ws.music.sheet.midi-out",
+  "ws.music.sheet.marks",
+  "ws.music.sheet.chord-diagrams",
 ];
 const M150: readonly WorkspaceModuleKey[] = [...S50, "ws.hr.confidential", "ws.docs"];
 const L300: readonly WorkspaceModuleKey[] = [...M150, "ws.board"];
@@ -76,10 +81,11 @@ export function moduleEnabled(
 
 const MUSIC_PREFIX = "ws.music.";
 
-/** `ws.music.songs.pdfs` → `ws.music.songs`; `ws.music.song-rights` → `ws.music.songs`. */
+/** `ws.music.songs.pdfs` → `ws.music.songs`; `ws.music.song-rights`, `ws.music.sheet` → `ws.music.songs`; `ws.music.sheet.midi-out` → `ws.music.sheet.metronome`. */
 export function musicParent(key: WorkspaceModuleKey): WorkspaceModuleKey | null {
   if (key === "ws.music.songs") return null;
-  if (key === "ws.music.song-rights") return "ws.music.songs";
+  if (key === "ws.music.song-rights" || key === "ws.music.sheet") return "ws.music.songs";
+  if (key === "ws.music.sheet.midi-out") return "ws.music.sheet.metronome";
   const parent = key.slice(0, key.lastIndexOf("."));
   return parent.startsWith(MUSIC_PREFIX) ? (parent as WorkspaceModuleKey) : null;
 }

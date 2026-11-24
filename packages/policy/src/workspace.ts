@@ -130,6 +130,11 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: EVERY_ROLE,
   },
   {
+    capability: "Music: use the chord sheet (own capo, key, layout, marks)",
+    actions: ["music.sheet.personalize"],
+    grants: EVERY_ROLE,
+  },
+  {
     capability: "Music: manage songs and arrangements",
     actions: ["music.song.manage"],
     grants: { leader: "all", musicLeader: "all" },

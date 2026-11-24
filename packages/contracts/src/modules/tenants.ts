@@ -66,6 +66,11 @@ export const WorkspaceModuleKeySchema = z.enum([
   "ws.music.songs.songpraise",
   "ws.music.songs.ocr",
   "ws.music.song-rights",
+  "ws.music.sheet",
+  "ws.music.sheet.metronome",
+  "ws.music.sheet.midi-out",
+  "ws.music.sheet.marks",
+  "ws.music.sheet.chord-diagrams",
 ]);
 export type WorkspaceModuleKey = z.infer<typeof WorkspaceModuleKeySchema>;
 

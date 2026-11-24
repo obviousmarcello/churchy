@@ -25,3 +25,14 @@ export function musicFiles(module: "pdfs" | "images" | "scores" | "sound-files" 
     return (await isWorkspaceModuleOn(`ws.music.songs.${module}`)) ? tenant : null;
   };
 }
+
+/** The chord sheet (`ws.music.sheet`, and its child module when named) must be on too. */
+export function musicSheet(module?: "marks" | "metronome") {
+  return async (scope: PolicyScope, ...args: unknown[]): Promise<{ tenantId: string } | null> => {
+    const tenant = await musicTenant(scope, ...args);
+    if (tenant === null || !(await isWorkspaceModuleOn("ws.music.sheet"))) return null;
+    return module === undefined || (await isWorkspaceModuleOn(`ws.music.sheet.${module}`))
+      ? tenant
+      : null;
+  };
+}

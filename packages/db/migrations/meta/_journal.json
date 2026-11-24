@@ -71,6 +71,13 @@
       "when": 1795522399138,
       "tag": "0009_music_files",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795526187065,
+      "tag": "0010_music_sheet",
+      "breakpoints": true
     }
   ]
 }

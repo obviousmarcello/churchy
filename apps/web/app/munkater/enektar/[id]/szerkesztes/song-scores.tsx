@@ -32,6 +32,8 @@ import {
   replaceScoreAction,
   updateScoreAction,
 } from "./file-actions-client";
+import { ScoreView } from "../../../kotta/score-view";
+import { useSheetSettings } from "../../../kotta/sheet-settings";
 import { useAttachmentForm } from "./use-attachment-form";
 
 const initialState: FormState = { status: "idle", message: null, fieldErrors: {} };
@@ -110,18 +112,42 @@ export function SongScores({
   );
 }
 
+const nothing = () => {};
+
+/** No notes sound: the same array each time, so the score does not light up again. */
+const NO_NOTES: string[] = [];
+
 /** The score as the sheet shows it, in its own key, on the paper of the user's sheet settings. */
 function ScorePreview({ score }: { score: SongScoreDTO | null }) {
   const { m } = useI18n();
   const t = m.songs.scores;
+  const settings = useSheetSettings();
 
   return (
     <PreviewSection title={m.songs.form.preview} hint={score?.name}>
-      {/* Music Sheet DB draws the score here (verovio); the sheet comes with music phase 3. */}
       {score ? (
-        <a href={score.url} className="text-sm underline underline-offset-4">
-          {score.name}
-        </a>
+        <div
+          // The colors of the paper are in `globals.css`, for the light and the dark theme.
+          data-sheet-paper={settings.background}
+          className="overflow-hidden rounded-lg border bg-(--sheet-bg) text-(--sheet-fg)"
+        >
+          {/* As on the sheet, the score fits its pages to the group and the article. */}
+          <div data-sheet-group className="h-[calc(100dvh-12rem)] overflow-y-auto p-4 text-sm">
+            <article>
+              <ScoreView
+                key={score.url}
+                url={score.url}
+                transpose={null}
+                showChords
+                sizePercent={80}
+                active={NO_NOTES}
+                onLayout={nothing}
+                onTimeline={nothing}
+                onReveal={nothing}
+              />
+            </article>
+          </div>
+        </div>
       ) : (
         <PreviewEmpty
           icon={<FileMusicIcon aria-hidden />}

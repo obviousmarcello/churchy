@@ -32,7 +32,7 @@ describe("isPublicPath", () => {
 
 describe("isFullScreenPath", () => {
   it("covers the sheet and the three projection pages", () => {
-    expect(isFullScreenPath("/sheet")).toBe(true);
+    expect(isFullScreenPath("/munkater/kotta")).toBe(true);
     expect(isFullScreenPath("/project")).toBe(true);
     expect(isFullScreenPath("/project/screen")).toBe(true);
     expect(isFullScreenPath("/project/overlay")).toBe(true);

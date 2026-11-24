@@ -150,6 +150,7 @@ export const WORKSPACE_TENANT_ACTIONS = [
   "music.song.view",
   "music.song.manage",
   "music.songRights.manage",
+  "music.sheet.personalize",
 ] as const;
 export type WorkspaceTenantAction = (typeof WORKSPACE_TENANT_ACTIONS)[number];
 

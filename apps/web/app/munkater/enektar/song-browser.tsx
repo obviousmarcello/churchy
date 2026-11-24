@@ -6,6 +6,7 @@ import { useRouter, useSearchParams, type ReadonlyURLSearchParams } from "next/n
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  FileMusicIcon,
   FileTextIcon,
   ImageIcon,
   ListMusicIcon,
@@ -56,7 +57,7 @@ import type {
 } from "@/server/music/models/songs";
 import { useAttachmentDetails } from "@/components/music/attachment-details";
 import { SongLinkAnchor, SoundFilePlayer } from "@/components/music/song-media";
-import { imageHref, pdfHref } from "@/lib/music/next-path";
+import { imageHref, pdfHref, sheetHref } from "@/lib/music/next-path";
 import type { SongFileModules } from "./data";
 import { AddSongLink } from "./add-song-link";
 import { DeleteSongButton } from "./delete-song-button";
@@ -800,6 +801,19 @@ function SongDetails({
                         : m.songs.browser.details.noDetails}
                     </p>
                   </div>
+                  {files.sheet && (
+                    <Link
+                      href={sheetHref(arrangement.id, sheetFrom)}
+                      className={buttonVariants({
+                        variant: "outline",
+                        size: "sm",
+                        className: "shrink-0",
+                      })}
+                    >
+                      <FileMusicIcon />
+                      {m.songs.browser.details.sheet}
+                    </Link>
+                  )}
                 </li>
               );
             })}
