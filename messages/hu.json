@@ -5453,6 +5453,12 @@
       "aiOff": {
         "demo": "Demó módban az AI-kutatás ki van kapcsolva. A helyi kutatás (dalok letöltése, eredmények feltöltése) működik.",
         "notReady": "Az AI-kutatás még nincs bekapcsolva: a platform kulcsa és a csomagonkénti keret beállítása hiányzik. A helyi kutatás (dalok letöltése, eredmények feltöltése) működik."
+      },
+      "quota": {
+        "title": "AI-kutatás",
+        "line": "Ebben a hónapban {used} / {limit} kutatás használva (a csomagod havi kerete).",
+        "reached": "Elérted a havi keretet ({limit} kutatás). A következő hónap elején újra kutathatsz.",
+        "none": "A csomagod nem tartalmaz AI-kutatást."
       }
     },
     "server": {

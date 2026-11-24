@@ -18,6 +18,7 @@ import * as schema from "../schema";
 import { demoUuid, prepareDemoDataset, seedDataset } from "../seed";
 import { MUSIC_TABLES } from "../table-scopes";
 import { AUTH_STUB_SQL, MIGRATION_SQL } from "./sql.generated";
+import { seedLocalFile } from "./storage";
 
 export interface LocalSqlRunner {
   query(sql: string, params?: unknown[]): Promise<{ rows: Record<string, unknown>[] }>;
@@ -28,6 +29,58 @@ export interface LocalDatabase extends LocalSqlRunner {
   tenantFor(sessionKey: string, fixtureTenantId: string): Promise<string>;
   /** Drops the copies of a session (demo *Visszaállítás* or eviction). */
   dropSession(sessionKey: string): Promise<void>;
+}
+
+const UUIDS = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g;
+
+/** A one-page PDF with a fictitious heading: the demo's PDF chart. */
+function demoPdf(title: string): Uint8Array {
+  const text = title.replace(/[^\x20-\x7e]/g, "?").replace(/[()\\]/g, "");
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
+    "", // contents, below
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  ];
+  const stream = `BT /F1 24 Tf 72 760 Td (${text}) Tj ET`;
+  objects[3] = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+  let pdf = "%PDF-1.4\n";
+  const offsets: number[] = [];
+  objects.forEach((body, i) => {
+    offsets.push(pdf.length);
+    pdf += `${i + 1} 0 obj\n${body}\nendobj\n`;
+  });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  for (const o of offsets) pdf += `${String(o).padStart(10, "0")} 00000 n \n`;
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return new TextEncoder().encode(pdf);
+}
+
+/**
+ * Fictitious files of the demo churches (music phase 2b): a PDF chart and a link on their first
+ * song, the PDF in the in-memory Storage (`seedLocalFile`).
+ */
+async function seedSongFiles(db: PGlite): Promise<void> {
+  const firsts = await db.query<{ tenant_id: string; id: string; title: string }>(
+    `select distinct on (tenant_id) tenant_id, id, title from songs order by tenant_id, title`,
+  );
+  for (const song of firsts.rows) {
+    const file = demoUuid(`demo-pdf:${song.id}`);
+    const path = `${song.id}/${file}.pdf`;
+    const bytes = demoPdf(song.title);
+    seedLocalFile("pdfs", path, bytes, "application/pdf");
+    await db.query(
+      `insert into song_pdfs (tenant_id, song_id, name, file_name, path, size_bytes)
+       values ($1, $2, 'Kottakép (bemutató)', 'kotta-bemutato.pdf', $3, $4)`,
+      [song.tenant_id, song.id, path, bytes.byteLength],
+    );
+    await db.query(
+      `insert into song_links (tenant_id, song_id, name, url) values ($1, $2, 'Felvétel (példa)', 'https://example.org/felvetel')`,
+      [song.tenant_id, song.id],
+    );
+  }
 }
 
 /** The session key of the shared default data (no demo session). */
@@ -52,6 +105,7 @@ async function create(now: Date): Promise<LocalDatabase> {
   await migrate(db);
   const orm = drizzle(db, { schema, casing: "snake_case" });
   await seedDataset(orm as unknown as Db, prepareDemoDataset(now));
+  await seedSongFiles(db);
 
   const tableColumns = new Map<string, string[]>();
   const columnsOf = async (tx: Pick<PGlite, "query">, table: string) => {
@@ -98,8 +152,12 @@ async function create(now: Date): Promise<LocalDatabase> {
         rowsByTable.set(table, rows);
       }
       const map = (value: unknown): unknown => {
-        if (typeof value === "string")
-          return value === source ? target : known.has(value) ? mapped(value) : value;
+        if (typeof value === "string") {
+          if (value === source) return target;
+          if (known.has(value)) return mapped(value);
+          // Storage paths name their song (`<song_id>/<file>.pdf`).
+          return value.replace(UUIDS, (u) => (known.has(u) ? mapped(u) : u));
+        }
         if (Array.isArray(value)) return value.map(map);
         if (value !== null && typeof value === "object") {
           return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, map(v)]));

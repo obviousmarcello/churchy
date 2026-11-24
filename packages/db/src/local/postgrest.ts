@@ -516,13 +516,15 @@ export function localPostgrestFetch(
   return async (input, init) => {
     const request = new Request(input, init);
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/storage/v1/")) {
+    // The client may live under a base path (local mode serves its signed URLs from an app route).
+    if (url.pathname.includes("/storage/v1/")) {
       if (!storage) throw new UnsupportedRequest("storage request");
       return storage(request);
     }
     const prefix = "/rest/v1/";
-    if (!url.pathname.startsWith(prefix)) throw new UnsupportedRequest(`path ${url.pathname}`);
-    const resource = decodeURIComponent(url.pathname.slice(prefix.length));
+    const at = url.pathname.indexOf(prefix);
+    if (at < 0) throw new UnsupportedRequest(`path ${url.pathname}`);
+    const resource = decodeURIComponent(url.pathname.slice(at + prefix.length));
     const bodyText =
       request.method === "GET" || request.method === "HEAD" ? "" : await request.text();
     const body: unknown = bodyText === "" ? undefined : JSON.parse(bodyText);

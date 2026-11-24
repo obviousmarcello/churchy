@@ -4,6 +4,7 @@ import { DEMO_TENANT_IDS } from "@churchy/data-mock";
 import { DEFAULT_SESSION, localDatabase, localId, type LocalDatabase } from "./database";
 import { loadCatalog, localPostgrestFetch, parseSelect, type Catalog } from "./postgrest";
 import { localSqlSource } from "./sql-source";
+import { localStorageRequest, seedLocalFile } from "./storage";
 import { readFileSync } from "node:fs";
 
 let db: LocalDatabase;
@@ -152,5 +153,48 @@ describe("local PostgREST", () => {
     expect(found.data).toMatchObject({ total: expect.any(Number) });
     const bad = await music.from("songs").select("id").or("title.eq.a,title.eq.b");
     expect(bad.error?.message).toMatch(/unsupported/);
+  });
+});
+
+describe("local Storage", () => {
+  const storage = () =>
+    createClient("http://music.local/base", "local", {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      global: { fetch: async (input, init) => localStorageRequest(new Request(input, init)) },
+    }).storage.from("pdfs");
+
+  it("signs an upload, takes the browser's PUT once, signs a download and removes", async () => {
+    const up = await storage().createSignedUploadUrl("t/x/a.pdf");
+    expect(up.error).toBeNull();
+    const put = () =>
+      localStorageRequest(
+        new Request(up.data!.signedUrl, { method: "PUT", body: "%PDF-1.4" }),
+        true,
+      );
+    expect((await put()).status).toBe(200);
+    expect((await put()).status).toBe(400); // one-time ticket
+    const info = await storage().info("t/x/a.pdf");
+    expect(info.data?.size).toBe(8);
+    const signed = await storage().createSignedUrl("t/x/a.pdf", 60, { download: "a.pdf" });
+    const got = await localStorageRequest(new Request(signed.data!.signedUrl), true);
+    expect(await got.text()).toBe("%PDF-1.4");
+    expect(got.headers.get("content-disposition")).toContain("a.pdf");
+    // Without the ticket, a browser gets nothing.
+    expect(
+      (
+        await localStorageRequest(
+          new Request("http://music.local/base/storage/v1/object/pdfs/t/x/a.pdf"),
+          true,
+        )
+      ).status,
+    ).toBe(404);
+    expect((await storage().remove(["t/x/a.pdf"])).data).toHaveLength(1);
+    expect((await storage().info("t/x/a.pdf")).error).not.toBeNull();
+  });
+
+  it("finds a seeded demo file under any tenant and song", async () => {
+    seedLocalFile("pdfs", "song-a/file-1.pdf", new TextEncoder().encode("demo"), "application/pdf");
+    const file = await storage().download("t/any/song-b/file-1.pdf");
+    expect(await file.data?.text()).toBe("demo");
   });
 });

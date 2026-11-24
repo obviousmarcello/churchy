@@ -133,7 +133,7 @@ export function toSongImage(row: z.infer<typeof imageRowSchema>): SongImageDTO {
       .toSorted((a, b) => a.position - b.position)
       .map((page) => ({
         id: page.id,
-        url: `/song-images/${page.path}`,
+        url: `/munkater/enektar/fajl/kep/${page.path}`,
         width: page.width,
         height: page.height,
       })),
@@ -395,7 +395,7 @@ export async function removeSongImagePage(pageId: string): Promise<boolean> {
 
 /**
  * The file of a page for a signed-in user, or null if there is no such file.
- * `path` is the part of the page URL after `/song-images/`.
+ * `path` is the part of the page URL after `/munkater/enektar/fajl/kep/`.
  */
 export async function getSongImageFile(path: string): Promise<Blob | null> {
   if (!PAGE_PATH_PATTERN.test(path)) return null;

@@ -12,9 +12,12 @@ import {
 import { getI18n } from "@/i18n/music/server";
 import { demoModeEnabled } from "@/lib/demo/flag";
 import { requirePageUser } from "@/server/music/auth";
-import { getResearchSettings } from "@/server/music/models/song-rights-research";
+import { getResearchQuota, getResearchSettings } from "@/server/music/models/song-rights-research";
 import { requireWorkspaceModule } from "@/server/workspace-nav";
 import { ResearchSettings } from "./research-settings";
+
+// "Research now" and "Research again" wait for the provider: up to 4 minutes for each song.
+export const maxDuration = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const { m } = await getI18n();
@@ -36,7 +39,11 @@ export default async function SongRightsPage() {
       {/* The gate only hides the page. The model functions check the user again. */}
       {user.isSuperadmin ? (
         <div className="px-4 py-6 sm:px-6">
-          <ResearchSettings settings={await getResearchSettings()} demo={demoModeEnabled()} />
+          <ResearchSettings
+            settings={await getResearchSettings()}
+            demo={demoModeEnabled()}
+            quota={await getResearchQuota()}
+          />
         </div>
       ) : (
         <Empty>

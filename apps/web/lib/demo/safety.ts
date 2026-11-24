@@ -21,7 +21,7 @@
  */
 import { demoModeFlag, type Env } from "./flag";
 
-export type CredentialCategory = "database" | "storage" | "email" | "push" | "payment";
+export type CredentialCategory = "database" | "storage" | "email" | "push" | "payment" | "ai";
 
 export interface ForbiddenCredentials {
   /** Exact variable names. */
@@ -87,6 +87,8 @@ export const FORBIDDEN_DEMO_CREDENTIALS: Readonly<
     names: ["SZAMLAZZ_AGENT_KEY", "BILLINGO_API_KEY"],
     prefixes: ["BARION_"],
   },
+  // The platform key of the AI song-rights research (music module); research is off in demo.
+  ai: { names: ["ANTHROPIC_API_KEY"], prefixes: [] },
 };
 
 export const CREDENTIAL_CATEGORIES = Object.keys(

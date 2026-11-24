@@ -2,55 +2,79 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
-import { DownloadIcon, InfoIcon, UploadIcon } from "lucide-react";
+import { DownloadIcon, InfoIcon, PlayIcon, RotateCcwIcon, UploadIcon } from "lucide-react";
 
 import { Field } from "@/components/music/form-field";
-import { FormFooter, FormSection } from "@/components/music/form-parts";
+import { FormFooter, FormSection, submitWithoutReset } from "@/components/music/form-parts";
 import { LocalDateTime } from "@/components/music/local-date-time";
 import { Button } from "@/components/music/ui/button";
 import { Card } from "@/components/music/ui/card";
 import { Input } from "@/components/music/ui/input";
 import { useI18n } from "@/i18n/music/client";
 import {
+  DEFAULT_RESEARCH_RUN_NOW_COUNT,
   RESEARCH_FINDINGS_MAX,
   RESEARCH_FINDINGS_MAX_BYTES,
+  RESEARCH_RUN_NOW_MAX,
+  RESEARCH_RUN_NOW_MIN,
 } from "@/lib/music/song-rights-research";
 import { toastError } from "@/lib/music/toast";
-import type { ResearchSettingsDTO } from "@/server/music/models/song-rights-research";
+import type {
+  ResearchQuotaDTO,
+  ResearchSettingsDTO,
+} from "@/server/music/models/song-rights-research";
 import { usePolicyAction } from "@/lib/music/policy-form";
-import { exportSongsAction, uploadFindingsAction, type SongRightsFormState } from "./actions";
+import {
+  exportSongsAction,
+  researchSongAction,
+  runNowAction,
+  uploadFindingsAction,
+  type SongRightsFormState,
+} from "./actions";
 
 const initialState: SongRightsFormState = { status: "idle", message: null, fieldErrors: {} };
 
 /**
- * Music Sheet DB's research settings page. Churchy (music phase 2): the upload of a local
- * research and the closed researches. The AI research (provider, API key, test, "Research now",
- * "Research again") waits for the platform key and the per-plan cap; a notice says so.
+ * Music Sheet DB's research settings page. Churchy: the AI research runs on the platform key
+ * within the plan's monthly cap ("Research now", "Research again"; off in demo mode, with a
+ * notice), plus the upload of a local research and the closed researches. Their provider, API key
+ * and test forms and the nightly research are left out (the nightly job: phase 8).
  */
 export function ResearchSettings({
   settings,
   demo,
+  quota,
 }: {
   settings: ResearchSettingsDTO;
   demo: boolean;
+  quota: ResearchQuotaDTO;
 }) {
   const { m } = useI18n();
+  const ai = quota.available && quota.limit > 0;
 
   return (
     <FormSection
       title={m.songRights.settings.title}
       description={m.songRights.settings.description}
     >
-      <p
-        role="note"
-        className="flex items-start gap-2 rounded-lg border bg-surface-sunken p-3 text-sm"
-        data-testid="ai-research-off"
-      >
-        <InfoIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
-        {demo ? m.songRights.aiOff.demo : m.songRights.aiOff.notReady}
-      </p>
+      {ai ? (
+        <RunNowCard settings={settings} quota={quota} />
+      ) : (
+        <p
+          role="note"
+          className="flex items-start gap-2 rounded-lg border bg-surface-sunken p-3 text-sm"
+          data-testid="ai-research-off"
+        >
+          <InfoIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
+          {demo
+            ? m.songRights.aiOff.demo
+            : quota.available
+              ? m.songRights.quota.none
+              : m.songRights.aiOff.notReady}
+        </p>
+      )}
       <UploadCard settings={settings} />
-      <ClosedList settings={settings} />
+      <ClosedList settings={settings} again={ai && quota.used < quota.limit} />
     </FormSection>
   );
 }
@@ -140,7 +164,7 @@ function UploadCard({ settings }: { settings: ResearchSettingsDTO }) {
   );
 }
 
-function ClosedList({ settings }: { settings: ResearchSettingsDTO }) {
+function ClosedList({ settings, again }: { settings: ResearchSettingsDTO; again: boolean }) {
   const { m } = useI18n();
   const t = m.songRights.closed;
 
@@ -155,7 +179,7 @@ function ClosedList({ settings }: { settings: ResearchSettingsDTO }) {
       ) : (
         <ul className="flex flex-col divide-y text-sm">
           {settings.recentClosed.map((row) => (
-            <ClosedRow key={`${row.songId}-${row.createdAt}`} row={row} />
+            <ClosedRow key={`${row.songId}-${row.createdAt}`} row={row} again={again} />
           ))}
         </ul>
       )}
@@ -163,9 +187,19 @@ function ClosedList({ settings }: { settings: ResearchSettingsDTO }) {
   );
 }
 
-function ClosedRow({ row }: { row: ResearchSettingsDTO["recentClosed"][number] }) {
+function ClosedRow({
+  row,
+  again,
+}: {
+  row: ResearchSettingsDTO["recentClosed"][number];
+  again: boolean;
+}) {
   const { m } = useI18n();
   const t = m.songRights.closed;
+  const [state, formAction, pending] = useActionState(
+    usePolicyAction(researchSongAction),
+    initialState,
+  );
 
   return (
     <li className="flex flex-wrap items-start justify-between gap-2 py-2">
@@ -185,6 +219,88 @@ function ClosedRow({ row }: { row: ResearchSettingsDTO["recentClosed"][number] }
         </span>
         {row.error && <span className="text-xs break-words text-danger">{row.error}</span>}
       </div>
+      {again && (
+        <form action={formAction}>
+          <input type="hidden" name="id" value={row.songId} />
+          <input type="hidden" name="title" value={row.title} />
+          {state.status === "error" && state.message && (
+            <span role="alert" className="text-xs text-danger">
+              {state.message}
+            </span>
+          )}
+          <FormFooter state={state.status === "success" ? state : initialState}>
+            <Button type="submit" size="sm" variant="outline" disabled={pending}>
+              <RotateCcwIcon />
+              {pending ? t.researching : t.again}
+            </Button>
+          </FormFooter>
+        </form>
+      )}
     </li>
+  );
+}
+
+/** "Research now" (their `RunNowCard`) with the month's quota of the plan. */
+function RunNowCard({
+  settings,
+  quota,
+}: {
+  settings: ResearchSettingsDTO;
+  quota: ResearchQuotaDTO;
+}) {
+  const { m, format } = useI18n();
+  const t = m.songRights.runNow;
+  const [state, formAction, running] = useActionState(usePolicyAction(runNowAction), initialState);
+  const left = Math.max(0, quota.limit - quota.used);
+  const max = Math.min(RESEARCH_RUN_NOW_MAX, left);
+
+  return (
+    <Card className="gap-4" data-testid="ai-research">
+      <div className="flex flex-col gap-1 text-sm">
+        <h3 className="flex items-center gap-2 font-medium">
+          <PlayIcon className="size-4" aria-hidden />
+          {t.title}
+        </h3>
+        <p className="text-muted">{t.description}</p>
+        <p>{format(m.songRights.quota.line, { used: quota.used, limit: quota.limit })}</p>
+      </div>
+      {left === 0 ? (
+        <p className="text-sm text-muted">
+          {format(m.songRights.quota.reached, { limit: quota.limit })}
+        </p>
+      ) : settings.openSongs === 0 ? (
+        <p className="text-sm text-muted">{t.empty}</p>
+      ) : (
+        // The number stays in the field after a run.
+        <form onSubmit={submitWithoutReset(formAction)} className="flex flex-col gap-4">
+          <Field
+            name="research-now-count"
+            label={t.count}
+            hint={format(t.countHint, { max })}
+            errors={state.fieldErrors.count}
+          >
+            <Input
+              id="research-now-count"
+              name="count"
+              type="number"
+              inputMode="numeric"
+              required
+              min={RESEARCH_RUN_NOW_MIN}
+              max={max}
+              defaultValue={Math.min(DEFAULT_RESEARCH_RUN_NOW_COUNT, settings.openSongs, max)}
+              className="w-28"
+              aria-describedby="research-now-count-description"
+              aria-invalid={(state.fieldErrors.count?.length ?? 0) > 0 || undefined}
+            />
+          </Field>
+          <FormFooter state={state}>
+            <Button type="submit" disabled={running}>
+              <PlayIcon />
+              {running ? t.running : t.start}
+            </Button>
+          </FormFooter>
+        </form>
+      )}
+    </Card>
   );
 }

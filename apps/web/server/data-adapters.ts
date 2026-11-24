@@ -154,25 +154,44 @@ export async function localMusicFetch(
   sessionId: string | null,
   actor: { tenantId: string; userId: string },
   role: string,
-): Promise<typeof fetch> {
-  const { DEFAULT_SESSION, loadCatalog, localDatabase, localId, localPostgrestFetch } =
-    await loadLocalMusic();
+): Promise<{ fetch: typeof fetch; tenantId: string }> {
+  const {
+    DEFAULT_SESSION,
+    loadCatalog,
+    localDatabase,
+    localId,
+    localPostgrestFetch,
+    localStorageRequest,
+  } = await loadLocalMusic();
   const db = await localDatabase();
   musicCatalog ??= loadCatalog(db);
   const catalog = musicCatalog;
   const tenantId = await db.tenantFor(sessionId ?? DEFAULT_SESSION, actor.tenantId);
-  return localPostgrestFetch({
-    db,
-    catalog: () => catalog,
-    role,
-    claims: {
-      iss: "churchy",
-      aud: "authenticated",
-      sub: localId(actor.userId),
-      tenant_id: tenantId,
+  const fetch = localPostgrestFetch(
+    {
+      db,
+      catalog: () => catalog,
       role,
+      claims: {
+        iss: "churchy",
+        aud: "authenticated",
+        sub: localId(actor.userId),
+        tenant_id: tenantId,
+        role,
+      },
     },
-  });
+    (request) => localStorageRequest(request),
+  );
+  return { fetch, tenantId };
+}
+
+/**
+ * A browser request to the local Storage stand-in (the signed upload and download URLs of local
+ * mode, served by `/munkater/enektar/fajl/helyi/…`): answered only with a valid one-time ticket.
+ */
+export async function localMusicStorageRequest(request: Request): Promise<Response> {
+  const { localStorageRequest } = await loadLocalMusic();
+  return localStorageRequest(request, true);
 }
 
 // ---------------------------------------------------------------------------------------------

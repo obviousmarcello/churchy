@@ -56,6 +56,7 @@ function plan(
       wsTier: "none",
       wsModules: [],
       maxWorkspaceUsers: null,
+      musicResearchPerMonth: 0,
       ...extra,
     },
   };

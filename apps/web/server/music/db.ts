@@ -6,7 +6,13 @@ import { demoModeEnabled } from "@/lib/demo/flag";
 import { localMusicFetch, localMusicUserId } from "@/server/data-adapters";
 import { getDemoState } from "@/server/demo";
 import { getActor } from "@/server/session";
-import { createMusicSupabaseClient, MUSIC_DB_ROLE, musicSupabaseConfigured } from "./supabase";
+import { headers } from "next/headers";
+import {
+  createMusicSupabaseClient,
+  MUSIC_DB_ROLE,
+  musicSupabaseConfigured,
+  tenantStorageFetch,
+} from "./supabase";
 
 /**
  * The music models' database client for this request (replaces Music Sheet DB's
@@ -31,13 +37,22 @@ export const getMusicSupabase = cache(async (): Promise<SupabaseClient> => {
     throw new Error("music: a signed-in tenant actor is required");
   }
   const sessionId = demoModeEnabled() ? ((await getDemoState())?.sessionId ?? null) : null;
-  const fetch = await localMusicFetch(
+  const local = await localMusicFetch(
     sessionId,
     { tenantId: actor.tenantId, userId: actor.userId },
     MUSIC_DB_ROLE,
   );
-  return createClient("http://music.local", "local", {
+  // The client "lives" under an app route of this host, so the signed Storage URLs it hands to
+  // the browser (uploads, downloads) reach the local Storage (`fajl/helyi/[...path]/route.ts`).
+  // Its other requests never leave the process.
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost";
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  return createClient(`${proto}://${host}${LOCAL_STORAGE_BASE}`, "local", {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-    global: { fetch },
+    global: { fetch: tenantStorageFetch(local.tenantId, local.fetch) },
   });
 });
+
+/** The base path of the local client (see `getMusicSupabase`). */
+export const LOCAL_STORAGE_BASE = "/munkater/enektar/fajl/helyi";

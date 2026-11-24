@@ -58,11 +58,11 @@ naming the tenant.
 | `public.add_event_image(p_set_id uuid, p_name text, p_path text, p_width integer, p_height integer, p_size_bytes integer, p_max integer, p_unused_before timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
 | `public.add_event_items(p_event_id uuid, p_items jsonb, p_after_key uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.add_new_user_to_service_areas(p_user_id uuid, p_area_ids uuid[])` | invoker | 4 (events, setlists, volunteers) |
-| `public.add_song_image(p_song_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b (song files, second slice of phase 2) |
-| `public.add_song_image_page(p_image_id uuid, p_path text, p_width integer, p_height integer, p_size_bytes integer, p_max integer)` | invoker | 2b (song files, second slice of phase 2) |
-| `public.add_song_link(p_song_id uuid, p_name text, p_url text, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b (song files, second slice of phase 2) |
-| `public.add_song_pdf(p_song_id uuid, p_name text, p_file_name text, p_path text, p_size_bytes integer, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b (song files, second slice of phase 2) |
-| `public.add_song_sound_file(p_song_id uuid, p_name text, p_file_name text, p_path text, p_size_bytes integer, p_content_type text, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b (song files, second slice of phase 2) |
+| `public.add_song_image(p_song_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.add_song_image_page(p_image_id uuid, p_path text, p_width integer, p_height integer, p_size_bytes integer, p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.add_song_link(p_song_id uuid, p_name text, p_url text, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.add_song_pdf(p_song_id uuid, p_name text, p_file_name text, p_path text, p_size_bytes integer, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.add_song_sound_file(p_song_id uuid, p_name text, p_file_name text, p_path text, p_size_bytes integer, p_content_type text, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.app_config_check_time_zone()` | invoker, trigger | 9 (modules, permissions) |
 | `public.area_member_ids()` | invoker | 4 (events, setlists, volunteers) |
 | `public.can_edit_course(p_course_id uuid, p_user_id uuid)` | invoker | 8 (courses) |
@@ -82,14 +82,14 @@ naming the tenant.
 | `public.church_day(p_at timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
 | `public.church_time_zone()` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
 | `public.claim_announcement_refresh(p_id uuid, p_force boolean)` | invoker | 4 (events, setlists, volunteers) |
-| `public.claim_song_for_rights_research(p_song_id uuid, p_provider text, p_model text)` | invoker | 8 (rights research) |
+| `public.claim_song_for_rights_research(p_song_id uuid, p_provider text, p_model text)` | invoker | 2b — 0009_music_files (AI research now, ON CONFLICT on the tenant-scoped open-proposal index; the nightly batch stays phase 8) |
 | `public.claim_songs_for_rights_research(p_batch integer, p_provider text, p_model text)` | invoker | 8 (rights research) |
-| `public.claim_songs_for_rights_research_now(p_count integer, p_provider text, p_model text)` | invoker | 8 (rights research) |
-| `public.claim_stray_file()` | invoker, trigger | 2b (song files, second slice of phase 2) |
+| `public.claim_songs_for_rights_research_now(p_count integer, p_provider text, p_model text)` | invoker | 2b — 0009_music_files (AI research now, ON CONFLICT on the tenant-scoped open-proposal index; the nightly batch stays phase 8) |
+| `public.claim_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.clamp_live_session_end()` | invoker, trigger | dropped (Churchy login / user admin, PLAN §11) |
 | `public.clear_email_mfa_codes(p_user_id uuid)` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.clone_arrangement(p_id uuid, p_name text)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
-| `public.close_crashed_song_rights_research(p_song_id uuid)` | invoker | 8 (rights research) |
+| `public.close_crashed_song_rights_research(p_song_id uuid)` | invoker | 2b — 0009_music_files (AI research now, ON CONFLICT on the tenant-scoped open-proposal index; the nightly batch stays phase 8) |
 | `public.consume_cron_token(p_token text)` | definer | 8 (pg_cron → pg-boss) |
 | `public.consume_rate_limit(p_key text, p_max integer, p_window_seconds integer)` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.copy_announcement_entries(p_source_id uuid, p_target_id uuid, p_files jsonb)` | invoker | 4 (events, setlists, volunteers) |
@@ -132,7 +132,7 @@ naming the tenant.
 | `public.keep_default_projection_theme()` | invoker, trigger | 5 (projection) |
 | `public.keep_one_superadmin()` | definer, trigger | dropped (Churchy login / user admin, PLAN §11) |
 | `public.keep_session_after_totp_removal(p_user_id uuid, p_session_id uuid)` | definer | dropped (Churchy login / user admin, PLAN §11) |
-| `public.keep_stray_file()` | invoker, trigger | 2b (song files, second slice of phase 2) |
+| `public.keep_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.led_area_ids(p_user_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.list_due_notifications(p_limit integer)` | invoker | 8 (notifications) |
 | `public.mark_event_announcement_used()` | invoker, trigger | 4 (events, setlists, volunteers) |
@@ -141,10 +141,10 @@ naming the tenant.
 | `public.module_enabled(p_id text)` | definer | 9 (modules, permissions) |
 | `public.move_event_set_images(p_set_id uuid, p_image_ids uuid[])` | invoker | 4 (events, setlists, volunteers) |
 | `public.move_service_area(p_id uuid, p_parent_id uuid)` | invoker | 4 (events, setlists, volunteers) |
-| `public.move_song_image_pages(p_image_id uuid, p_page_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
+| `public.move_song_image_pages(p_image_id uuid, p_page_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.place_service_area(p_id uuid, p_parent_id uuid, p_ids uuid[], p_grant_roles boolean, p_actor_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.prevent_setlist_update()` | invoker, trigger | 4 (events, setlists, volunteers) |
-| `public.prevent_song_id_update()` | invoker, trigger | 4 (events, setlists, volunteers) |
+| `public.prevent_song_id_update()` | invoker, trigger | 2b — 0009_music_files (song files and arrangements) |
 | `public.publish_course(p_id uuid, p_revision integer, p_doc jsonb)` | invoker | 8 (courses) |
 | `public.put_scripture_cache_verses(p_translation text, p_book text, p_verses jsonb, p_book_limit integer)` | invoker | 6 (scripture) |
 | `public.recent_closed_song_rights_proposals(p_limit integer)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
@@ -174,11 +174,11 @@ naming the tenant.
 | `public.set_service_area_members(p_area_id uuid, p_members jsonb, p_grant_roles boolean, p_actor_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.set_service_area_order(p_parent_id uuid, p_ids uuid[])` | invoker | 4 (events, setlists, volunteers) |
 | `public.set_service_area_roles(p_area_id uuid, p_roles text[])` | invoker | 4 (events, setlists, volunteers) |
-| `public.set_song_image_arrangements(p_image_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
-| `public.set_song_link_arrangements(p_link_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
-| `public.set_song_pdf_arrangements(p_pdf_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
+| `public.set_song_image_arrangements(p_image_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.set_song_link_arrangements(p_link_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.set_song_pdf_arrangements(p_pdf_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.set_song_rights_research_api_key(p_key text, p_user uuid)` | definer | 8 (rights research) |
-| `public.set_song_sound_file_arrangements(p_sound_file_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
+| `public.set_song_sound_file_arrangements(p_sound_file_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.set_updated_at()` | invoker, trigger | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.set_user_roles(p_user_id uuid, p_roles text[])` | invoker | dropped (Churchy login / user admin, PLAN §11) |
 | `public.set_volunteer_reply(p_event_id uuid, p_user_id uuid, p_reply text)` | invoker | 4 (events, setlists, volunteers) |
@@ -186,7 +186,7 @@ naming the tenant.
 | `public.set_volunteer_template_area(p_template_id uuid, p_area_id uuid, p_on boolean)` | invoker | 4 (events, setlists, volunteers) |
 | `public.setlist_song_count(p_items jsonb)` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
 | `public.song_filter_options()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
-| `public.song_image_pages_keep_stray_file()` | invoker, trigger | 2b (song files, second slice of phase 2) |
+| `public.song_image_pages_keep_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.song_play_stats(p_song_ids uuid[])` | invoker | 2 — 0008_music_songs as a stub (`{}`): plays come from events, phase 4 |
 | `public.song_play_stats(p_song_ids uuid[], p_user_id uuid)` | invoker | 2 — 0008_music_songs as a stub (`{}`): plays come from events, phase 4 |
 | `public.song_rights_research_api_key()` | definer | 8 (rights research) |
@@ -195,17 +195,17 @@ naming the tenant.
 | `public.songs_for_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.start_event_block(p_event_id uuid, p_key uuid, p_restart boolean)` | invoker | 4 (events, setlists, volunteers) |
 | `public.start_projection_video_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 5 (projection) |
-| `public.start_song_pdf_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 2b (song files, second slice of phase 2) |
-| `public.start_song_sound_file_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 2b (song files, second slice of phase 2) |
+| `public.start_song_pdf_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.start_song_sound_file_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.swap_announcement_calendars(p_id uuid, p_other_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.touch_projection_controller(p_id uuid, p_event_id uuid, p_user_id uuid)` | invoker | 5 (projection) |
 | `public.update_event_block(p_event_id uuid, p_key uuid, p_name text, p_countdown text, p_until time without time zone)` | invoker | 4 (events, setlists, volunteers) |
 | `public.update_event_block(p_event_id uuid, p_key uuid, p_name text, p_countdown text, p_until time without time zone, p_duration_seconds integer)` | invoker | 4 (events, setlists, volunteers) |
 | `public.update_profile(p_user_id uuid, p_changes jsonb)` | invoker | dropped (Churchy login / user admin, PLAN §11) |
-| `public.update_song_image(p_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
-| `public.update_song_link(p_id uuid, p_name text, p_url text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
-| `public.update_song_pdf(p_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
-| `public.update_song_sound_file(p_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b (song files, second slice of phase 2) |
+| `public.update_song_image(p_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.update_song_link(p_id uuid, p_name text, p_url text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.update_song_pdf(p_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
+| `public.update_song_sound_file(p_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.user_access(p_user_id uuid)` | invoker | 9 (modules, permissions) |
 | `public.user_role_lists()` | invoker | dropped (Churchy login / user admin, PLAN §11) |
 | `public.valid_announcement_words(p_words text[])` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
@@ -219,6 +219,7 @@ naming the tenant.
 | Function | Kind | Migration |
 |---|---|---|
 | `public.song_rights_ccli(p_copyright text)` | invoker | 0008_music_songs — the CCLI song number in a copyright text |
-| `public.share_song_rights()` | **definer**, trigger | 0008_music_songs — upserts the shared `song_rights` row after a song's rights facts change; the only write path to the shared rows (they stay read-only for `churchy_app` / `churchy_music`); no EXECUTE grant. Owner: the migration role, which must bypass RLS (Supabase `postgres`). Open question in PLAN §14. |
+| `public.share_song_rights()` | **definer**, trigger | 0008_music_songs — upserts the shared `song_rights` row after a song's rights facts change; the only write path to the shared rows (they stay read-only for `churchy_app` / `churchy_music`); no EXECUTE grant. Owner: the migration role, which must bypass RLS (Supabase `postgres`). Accepted (PLAN §11.4). |
+| `public.count_song_rights_researches_this_month()` | invoker | 0009_music_files — the church's AI researches this calendar month (Europe/Budapest), for the per-plan cap |
 | `public.shared_song_rights(p_title text, p_authors text, p_copyright text)` | invoker | 0008_music_songs — the shared facts for a song (CCLI number, else title + authors) |
 
