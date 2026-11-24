@@ -31,6 +31,8 @@ export interface Entitlements {
   readonly wsModules: readonly WorkspaceModuleKey[];
   /** `null`: no workspace. */
   readonly maxWorkspaceUsers: number | null;
+  /** AI song-rights researches per calendar month (music module); 0: none. */
+  readonly musicResearchPerMonth: number;
   /** A diocesan bulk deal covers the church (billing runs through the organization). */
   readonly coveredByDeal: boolean;
 }
@@ -56,6 +58,7 @@ export function entitlements(sources: EntitlementSources): Entitlements {
     wsTier: workspace?.wsTier ?? "none",
     wsModules: workspace?.wsModules ?? [],
     maxWorkspaceUsers: workspace?.maxWorkspaceUsers ?? null,
+    musicResearchPerMonth: workspace?.musicResearchPerMonth ?? 0,
     coveredByDeal:
       sources.deal !== null &&
       (dealKeys.includes(sources.websitePlan.key) ||

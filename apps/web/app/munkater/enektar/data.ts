@@ -11,6 +11,25 @@ import {
   type SongPageDTO,
 } from "@/server/music/models/songs";
 import { countRightsProposals } from "@/server/music/models/song-rights-research";
+import { isWorkspaceModuleOn } from "@/server/workspace-nav";
+
+/** The file modules of a song (`ws.music.songs.*`) that are on: the parts that show. */
+export type SongFileModules = {
+  scores: boolean;
+  pdfs: boolean;
+  images: boolean;
+  soundFiles: boolean;
+  links: boolean;
+};
+
+export async function songFileModules(): Promise<SongFileModules> {
+  const [scores, pdfs, images, soundFiles, links] = await Promise.all(
+    (["scores", "pdfs", "images", "sound-files", "links"] as const).map((m) =>
+      isWorkspaceModuleOn(`ws.music.songs.${m}`),
+    ),
+  );
+  return { scores: scores!, pdfs: pdfs!, images: images!, soundFiles: soundFiles!, links: links! };
+}
 
 export type SongsPageData = {
   /** One page of the songs that match the filters. */
@@ -26,6 +45,7 @@ export type SongsPageData = {
    * The selected song when it is not on this page, e.g. after "Add song" or from a shared link.
    */
   extraSong: SongListItemDTO | null;
+  files: SongFileModules;
 };
 
 // Music Sheet DB loaded this page into its offline page cache (`loadPage`, `usePageData`);
@@ -34,7 +54,7 @@ export async function loadSongsPage(
   user: CurrentUser,
   params: Record<string, string | string[] | undefined>,
 ): Promise<SongsPageData> {
-  const [result, options, rightsProposals] = await Promise.all([
+  const [result, options, rightsProposals, files] = await Promise.all([
     findSongs({
       ...parseSongFilters(params),
       sort: parseSongSort(params),
@@ -48,6 +68,7 @@ export async function loadSongsPage(
           return 0;
         })
       : 0,
+    songFileModules(),
   ]);
   const selectedId = firstParam(params.song);
   const extraSong =
@@ -61,5 +82,6 @@ export async function loadSongsPage(
     canEditEvents: user.canEditEvents,
     rightsProposals,
     extraSong,
+    files,
   };
 }

@@ -29,6 +29,7 @@ const base = {
   wsTier: "none" as const,
   wsModules: [],
   maxWorkspaceUsers: null,
+  musicResearchPerMonth: 0,
 };
 const free: Plan = {
   key: "ingyenes",

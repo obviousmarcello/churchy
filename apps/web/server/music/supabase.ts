@@ -62,18 +62,18 @@ export function tenantStorageFetch(tenantId: string, base: typeof fetch = fetch)
   const prefix = `t/${tenantId}/`;
   return async (input, init) => {
     const href = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-    if (!new URL(href).pathname.startsWith("/storage/v1/")) return base(input, init);
+    if (!new URL(href).pathname.includes("/storage/v1/")) return base(input, init);
     const request = new Request(input, init);
     const url = new URL(request.url);
     const match =
-      /^(\/storage\/v1\/object\/(?:sign\/|upload\/sign\/|public\/|authenticated\/|info\/)?)([^/]+)\/(.+)$/.exec(
+      /^(.*\/storage\/v1\/object\/(?:sign\/|upload\/sign\/|public\/|authenticated\/|info\/)?)([^/]+)\/(.+)$/.exec(
         url.pathname,
       );
     if (match) {
       url.pathname = `${match[1]}${match[2]}/${prefix}${match[3]}`;
       return base(new Request(url, request));
     }
-    if (request.method === "DELETE" && /^\/storage\/v1\/object\/[^/]+$/.test(url.pathname)) {
+    if (request.method === "DELETE" && /\/storage\/v1\/object\/[^/]+$/.test(url.pathname)) {
       const body = (await request.json()) as { prefixes: string[] };
       return base(
         new Request(url, {

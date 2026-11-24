@@ -6,6 +6,8 @@ import { useRouter, useSearchParams, type ReadonlyURLSearchParams } from "next/n
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  FileTextIcon,
+  ImageIcon,
   ListMusicIcon,
   PencilIcon,
   MousePointerClickIcon,
@@ -52,6 +54,10 @@ import type {
   SongPageDTO,
   SongSnippetDTO,
 } from "@/server/music/models/songs";
+import { useAttachmentDetails } from "@/components/music/attachment-details";
+import { SongLinkAnchor, SoundFilePlayer } from "@/components/music/song-media";
+import { imageHref, pdfHref } from "@/lib/music/next-path";
+import type { SongFileModules } from "./data";
 import { AddSongLink } from "./add-song-link";
 import { DeleteSongButton } from "./delete-song-button";
 import { SongFilterBar } from "./song-filter-bar";
@@ -70,7 +76,10 @@ export function SongBrowser({
   isLoading,
   // Their offline copy failed to refresh; Churchy renders on the server (always false).
   failed: _failed,
+  files,
 }: {
+  /** The file modules that are on (`ws.music.songs.*`). */
+  files: SongFileModules;
   /** One page of the songs that match the filters. */
   result: SongPageDTO;
   filters: SongFilters;
@@ -377,6 +386,7 @@ export function SongBrowser({
               tagHref={tagHref}
               canAddToEvent={canEditEvents}
               onDelete={canEditSongs ? () => select(null) : undefined}
+              files={files}
             />
           </div>
         </>
@@ -661,11 +671,11 @@ function EditSongLink({
  */
 function SongDetails({
   song,
-  // The sheet link and "Add to event" come with the chart (3) and event (4) phases.
-  sheetFrom: _sheetFrom,
+  sheetFrom,
   tagHref,
   canAddToEvent: _canAddToEvent,
   onDelete,
+  files,
 }: {
   song: SongListItemDTO;
   sheetFrom: string;
@@ -674,9 +684,14 @@ function SongDetails({
   /** Shows "Add to event" for each arrangement. */
   canAddToEvent: boolean;
   onDelete?: () => void;
+  /** The file modules that are on (`ws.music.songs.*`). */
+  files: SongFileModules;
 }) {
-  const { m, format } = useI18n();
+  const { m, format, plural } = useI18n();
   const noteNames = useNoteNames();
+  const attachmentDetails = useAttachmentDetails();
+  // An image without pages (all its uploads failed) has nothing to show.
+  const images = song.images.filter((image) => image.pages.length > 0);
 
   return (
     <article className="flex flex-col gap-6">
@@ -794,7 +809,126 @@ function SongDetails({
         )}
       </section>
 
-      {/* Play history (events, phase 4) and the files of the song (PDFs, images, MusicXML, sound files, links) come with later phases. */}
+      {/* Play history: events, phase 4. */}
+
+      {files.scores && (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">{m.songs.browser.details.scores}</h3>
+          {song.scores.length > 0 ? (
+            // The sheet of an arrangement shows them.
+            <ul className="flex flex-wrap gap-1.5">
+              {song.scores.map((score) => (
+                <li key={score.id} className="rounded-md border px-2 py-0.5 text-sm">
+                  {score.name}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">{m.songs.browser.details.noScores}</p>
+          )}
+        </section>
+      )}
+
+      {files.pdfs && (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">{m.songs.browser.details.pdfs}</h3>
+          {song.pdfs.length > 0 ? (
+            <ul className="flex flex-col divide-y rounded-lg border">
+              {song.pdfs.map((pdf) => (
+                <li key={pdf.id}>
+                  <Link
+                    href={pdfHref(pdf.id, sheetFrom)}
+
+                    className="flex items-center gap-2 px-3 py-2 transition-colors select-none hover:bg-surface-sunken/50 pointer-coarse:active:bg-surface-sunken"
+                  >
+                    <FileTextIcon aria-hidden className="size-4 shrink-0 text-muted" />
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="truncate text-sm font-medium">{pdf.name}</span>
+                      <span className="truncate text-sm text-muted">
+                        {attachmentDetails(pdf, song.arrangements)}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">{m.songs.browser.details.noPdfs}</p>
+          )}
+        </section>
+      )}
+
+      {files.images && (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">{m.songs.browser.details.images}</h3>
+          {images.length > 0 ? (
+            <ul className="flex flex-col divide-y rounded-lg border">
+              {images.map((image) => (
+                <li key={image.id}>
+                  <Link
+                    href={imageHref(image.id, sheetFrom)}
+
+                    className="flex items-center gap-2 px-3 py-2 transition-colors select-none hover:bg-surface-sunken/50 pointer-coarse:active:bg-surface-sunken"
+                  >
+                    <ImageIcon aria-hidden className="size-4 shrink-0 text-muted" />
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="truncate text-sm font-medium">{image.name}</span>
+                      <span className="truncate text-sm text-muted">
+                        {plural(m.songs.browser.details.imagePages, image.pages.length)}
+                        {m.common.separator}
+                        {attachmentDetails(image, song.arrangements)}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">{m.songs.browser.details.noImages}</p>
+          )}
+        </section>
+      )}
+
+      {files.soundFiles && (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">{m.songs.browser.details.soundFiles}</h3>
+          {song.soundFiles.length > 0 ? (
+            <ul className="flex flex-col divide-y rounded-lg border">
+              {song.soundFiles.map((soundFile) => (
+                <li key={soundFile.id} className="px-3 py-2">
+                  <SoundFilePlayer
+                    file={soundFile}
+                    details={attachmentDetails(soundFile, song.arrangements)}
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">{m.songs.browser.details.noSoundFiles}</p>
+          )}
+        </section>
+      )}
+
+      {files.links && (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">{m.songs.browser.details.links}</h3>
+          {song.links.length > 0 ? (
+            <ul className="flex flex-col divide-y rounded-lg border">
+              {song.links.map((link) => (
+                <li key={link.id}>
+                  <SongLinkAnchor
+                    link={link}
+                    details={attachmentDetails(link, song.arrangements)}
+                    className="px-3 py-2"
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">{m.songs.browser.details.noLinks}</p>
+          )}
+        </section>
+      )}
 
       {onDelete && (
         <div className="border-t pt-4">

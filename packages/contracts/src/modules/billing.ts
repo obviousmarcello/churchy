@@ -20,6 +20,8 @@ export const EntitlementsSchema = z.object({
   wsModules: z.array(WorkspaceModuleKeySchema).default([]),
   /** Active workspace user cap; null = not applicable. */
   maxWorkspaceUsers: z.number().int().positive().nullable().default(null),
+  /** AI song-rights researches per calendar month (music module, platform key); 0 = none. */
+  musicResearchPerMonth: z.number().int().nonnegative().default(0),
 });
 export type Entitlements = z.infer<typeof EntitlementsSchema>;
 

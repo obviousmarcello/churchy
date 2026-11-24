@@ -129,7 +129,7 @@ export function toSongPdf(row: z.infer<typeof pdfRowSchema>): SongPdfDTO {
     sizeBytes: row.size_bytes,
     keys: sortAttachmentKeys(row.musical_keys),
     arrangementIds: row.song_pdf_arrangements.map((link) => link.arrangement_id),
-    url: `/pdf-files/${row.path}`,
+    url: `/munkater/enektar/fajl/pdf/${row.path}`,
   };
 }
 
@@ -354,7 +354,7 @@ export async function removeSongPdf(id: string): Promise<boolean> {
 
 /**
  * A signed URL of a PDF file for a signed-in user, or null if no PDF has
- * this file. `path` is the part of the PDF URL after `/pdf-files/`. With
+ * this file. `path` is the part of the PDF URL after `/munkater/enektar/fajl/pdf/`. With
  * `download`, the browser saves the file with its original name, always with
  * `.pdf` at the end (see `downloadFileName`).
  */

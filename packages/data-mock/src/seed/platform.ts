@@ -75,6 +75,7 @@ function ent(partial: Partial<Entitlements>): Entitlements {
     wsTier: "none",
     wsModules: [],
     maxWorkspaceUsers: null,
+    musicResearchPerMonth: 0,
     ...partial,
   };
 }
@@ -114,6 +115,8 @@ export const PLANS: Plan[] = [
       wsTier: "s50",
       wsModules: WS_S50,
       maxWorkspaceUsers: 50,
+      // AI song-rights research on the platform key (music module, decision 2026-11-24).
+      musicResearchPerMonth: 20,
     }),
   },
   {
@@ -127,6 +130,8 @@ export const PLANS: Plan[] = [
       wsTier: "m150",
       wsModules: WS_M150,
       maxWorkspaceUsers: 150,
+      // AI song-rights research on the platform key (music module, decision 2026-11-24).
+      musicResearchPerMonth: 20,
     }),
   },
   {
@@ -140,6 +145,8 @@ export const PLANS: Plan[] = [
       wsTier: "l300",
       wsModules: WS_L300,
       maxWorkspaceUsers: 300,
+      // AI song-rights research on the platform key (music module, decision 2026-11-24).
+      musicResearchPerMonth: 20,
     }),
   },
 ];

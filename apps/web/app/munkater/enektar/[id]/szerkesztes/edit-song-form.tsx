@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRightIcon } from "lucide-react";
 
 import { FormSection } from "@/components/music/form-parts";
@@ -13,14 +13,26 @@ import type { SharedSongRightsDTO } from "@/server/music/models/songs";
 import { SongForm, type SongFormValues } from "../../song-form";
 import { usePolicyAction } from "@/lib/music/policy-form";
 import { updateSongInPlaceAction } from "./actions";
+import type { SongFileModules } from "../../data";
+import type { SongScoreDTO } from "@/server/music/models/scores";
+import { SongImages } from "./song-images";
+import { SongLinks } from "./song-links";
+import { SongPdfs } from "./song-pdfs";
+import { SongScores } from "./song-scores";
+import { SongSoundFiles } from "./song-sound-files";
 
 // The parts of the page in their order. The song form has the ids of its sections.
-const parts: { id: string; title: (m: Messages) => string }[] = [
+const allParts: { id: string; title: (m: Messages) => string; module?: keyof SongFileModules }[] = [
   { id: "song", title: (m) => m.songs.form.song },
   { id: "chart", title: (m) => m.songs.form.chart },
   { id: "playing-order", title: (m) => m.songs.form.playingOrder },
   { id: "details", title: (m) => m.songs.form.details },
   { id: "rights", title: (m) => m.songs.form.rights },
+  { id: "scores", title: (m) => m.songs.scores.title, module: "scores" },
+  { id: "pdfs", title: (m) => m.songs.pdfs.title, module: "pdfs" },
+  { id: "images", title: (m) => m.songs.images.title, module: "images" },
+  { id: "sound-files", title: (m) => m.songs.soundFiles.title, module: "soundFiles" },
+  { id: "links", title: (m) => m.songs.links.title, module: "links" },
   { id: "delete", title: (m) => m.songs.edit.delete.title },
 ];
 
@@ -33,8 +45,23 @@ export function EditSongForm({
   song,
   tagOptions,
   sharedRights,
+  files,
+  scores,
+  scoreLimits,
+  pdfs,
+  images,
+  soundFiles,
+  links,
 }: {
   song: SongFormValues;
+  /** The file modules that are on (`ws.music.songs.*`): the file parts that show. */
+  files: SongFileModules;
+  scores: SongScoreDTO[];
+  scoreLimits: React.ComponentProps<typeof SongScores>["limits"];
+  pdfs: Omit<React.ComponentProps<typeof SongPdfs>, "songId">;
+  images: Omit<React.ComponentProps<typeof SongImages>, "songId">;
+  soundFiles: Omit<React.ComponentProps<typeof SongSoundFiles>, "songId">;
+  links: Omit<React.ComponentProps<typeof SongLinks>, "songId">;
   /** The suggestions of the tag field. */
   tagOptions: string[];
   /** The facts of the shared song-rights catalog for this song, if any. */
@@ -42,11 +69,15 @@ export function EditSongForm({
 }) {
   const { m } = useI18n();
   const t = m.songs.edit.delete;
+  const parts = useMemo(
+    () => allParts.filter((part) => !part.module || files[part.module]),
+    [files],
+  );
 
   return (
     <PageSave savedHref={`/munkater/enektar?song=${song.id}`}>
       <div className="flex flex-1 flex-col md:flex-row">
-        <Contents />
+        <Contents parts={parts} />
 
         <div className="flex min-w-0 flex-1 flex-col divide-y">
           {/* The save bar stays at the bottom of the window only next to the parts that it saves. */}
@@ -62,6 +93,31 @@ export function EditSongForm({
                 embedded
               />
             </div>
+            {files.scores && (
+              <Part id="scores">
+                <SongScores songId={song.id} scores={scores} limits={scoreLimits} />
+              </Part>
+            )}
+            {files.pdfs && (
+              <Part id="pdfs">
+                <SongPdfs songId={song.id} {...pdfs} />
+              </Part>
+            )}
+            {files.images && (
+              <Part id="images">
+                <SongImages songId={song.id} {...images} />
+              </Part>
+            )}
+            {files.soundFiles && (
+              <Part id="sound-files">
+                <SongSoundFiles songId={song.id} {...soundFiles} />
+              </Part>
+            )}
+            {files.links && (
+              <Part id="links">
+                <SongLinks songId={song.id} {...links} />
+              </Part>
+            )}
             <PageSaveBar />
           </div>
           <Part id="delete">
@@ -89,7 +145,7 @@ function Part({ id, children }: { id: string; children: React.ReactNode }) {
 }
 
 /** The list of the parts, as the list of the email notifications page looks. */
-function Contents() {
+function Contents({ parts }: { parts: typeof allParts }) {
   const { m } = useI18n();
   const [current, setCurrent] = useState(parts[0]!.id);
 
@@ -131,7 +187,7 @@ function Contents() {
       lastObserver.disconnect();
       window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [parts]);
 
   return (
     <nav

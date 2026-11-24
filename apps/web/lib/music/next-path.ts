@@ -142,12 +142,16 @@ export function newEventHref(title?: string): string {
 
 /** The page that shows a PDF file of a song. Its back link goes to `from`, or to the song. */
 export function pdfHref(pdfId: string, from?: string): string {
-  return from ? `/pdf/${pdfId}?${new URLSearchParams({ from })}` : `/pdf/${pdfId}`;
+  return from
+    ? `/munkater/enektar/pdf/${pdfId}?${new URLSearchParams({ from })}`
+    : `/munkater/enektar/pdf/${pdfId}`;
 }
 
 /** The page that shows an image of a song. Its back link goes to `from`, or to the song. */
 export function imageHref(imageId: string, from?: string): string {
-  return from ? `/image/${imageId}?${new URLSearchParams({ from })}` : `/image/${imageId}`;
+  return from
+    ? `/munkater/enektar/kep/${imageId}?${new URLSearchParams({ from })}`
+    : `/munkater/enektar/kep/${imageId}`;
 }
 
 /**

@@ -2,3 +2,4 @@
 export { DEFAULT_SESSION, localDatabase, localId, type LocalDatabase } from "./database";
 export { localPostgrestFetch, UnsupportedRequest, loadCatalog, parseSelect } from "./postgrest";
 export type { Catalog, LocalPostgrestOptions, SqlDb } from "./postgrest";
+export { localStorageRequest, seedLocalFile } from "./storage";

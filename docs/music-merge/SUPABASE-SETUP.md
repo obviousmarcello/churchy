@@ -98,5 +98,8 @@ and an insert of `t/<tenant B>/x` is rejected.
   delete).
 - `share_song_rights()` (trigger on `songs`) is SECURITY DEFINER: its owner (the migration role)
   must bypass RLS to write the shared `song_rights` rows. On Supabase that is `postgres`.
+- AI song-rights research: `ANTHROPIC_API_KEY` (server env, secrets manager; never in the demo,
+  which refuses to start with it). The monthly cap comes from the plan
+  (`musicResearchPerMonth`).
 - Without `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_JWT_SECRET` the music models run
   in local mode (in-process PGlite with the demo data, PLAN §14); staging and production refuse.

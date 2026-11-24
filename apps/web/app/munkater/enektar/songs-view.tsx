@@ -31,6 +31,7 @@ export function SongsView({ data }: { data: SongsPageData }) {
       rightsProposals={data.rightsProposals}
       isLoading={false}
       failed={false}
+      files={data.files}
     />
   );
 }

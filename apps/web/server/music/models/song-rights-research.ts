@@ -17,6 +17,9 @@ import {
   RESEARCH_PROVIDERS,
   RESEARCH_FINDINGS_MAX_BYTES,
   DEFAULT_RESEARCH_NIGHTLY_LIMIT,
+  DEFAULT_RESEARCH_MODELS,
+  RESEARCH_RUN_NOW_MAX,
+  RESEARCH_RUN_NOW_MIN,
   type ProposalProvider,
   type ResearchProvider,
   type ResearchResult,
@@ -28,7 +31,16 @@ import {
   localResearchSongsFile,
   type LocalResearchSongsFile,
 } from "@/server/music/rights-research/local-files";
-import { songLyrics } from "@/server/music/rights-research/prompt";
+import { researchUserPrompt, songLyrics } from "@/server/music/rights-research/prompt";
+import {
+  ResearchError,
+  runResearch,
+  type ResearchErrorKind,
+} from "@/server/music/rights-research/providers";
+import { demoModeEnabled } from "@/lib/demo/flag";
+import { entitlementsFor } from "@/server/plans";
+import { getRequestContext } from "@/server/session";
+import { getWorkspaceEnv } from "@/server/workspace";
 import {
   researchFindingsSchema,
   researchResultSchema,
@@ -418,4 +430,204 @@ async function readSettings(): Promise<SettingsRow> {
         nightly_limit: DEFAULT_RESEARCH_NIGHTLY_LIMIT,
         api_key_hint: null,
       };
+}
+
+// --- AI research (Churchy: platform key, per-plan cap) ---------------------
+
+/** The longest research of one song (the request may run 300 seconds). */
+const RESEARCH_TIMEOUT_MS = 240_000;
+/** The error of a song without lyrics. After a change of the chart, the song goes again (`error_kind`). */
+const NO_LYRICS_ERROR = "The song has no lyrics.";
+/** The error of a research whose result the database did not take. */
+const SAVE_FAILED_ERROR = "The result could not be saved.";
+
+const runNowInputSchema = z.strictObject({
+  count: z.coerce.number().int().min(RESEARCH_RUN_NOW_MIN).max(RESEARCH_RUN_NOW_MAX),
+});
+
+const claimRowSchema = z.object({
+  proposal_id: z.string(),
+  song_id: z.string(),
+  title: z.string(),
+  artist: z.string().nullable(),
+  copyright: z.string().nullable(),
+  songbook: z.string().nullable(),
+  chordpro: z.string(),
+});
+
+export type ResearchBatchResult = { researched: number; failed: number };
+
+/**
+ * The AI research of this church this month: `limit` from the plan
+ * (`entitlements().musicResearchPerMonth`), `used` the researches since the 1st (Europe/Budapest),
+ * `available` whether the platform key is set (never in demo mode).
+ */
+export type ResearchQuotaDTO = { available: boolean; limit: number; used: number };
+
+export async function getResearchQuota(): Promise<ResearchQuotaDTO> {
+  await requireSuperadmin();
+  const [limit, used] = await Promise.all([researchLimit(), researchesThisMonth()]);
+  return { available: platformKey() !== null, limit, used };
+}
+
+/**
+ * "Research now" on the song-rights page: the next `count` songs at the same time, at most what
+ * is left of the month's cap. Waits for the results: up to 4 minutes.
+ */
+export async function runResearchNow(input: unknown): Promise<ResearchBatchResult> {
+  await requireSuperadmin();
+  const { count } = parseInput(runNowInputSchema, input);
+  const configuration = await readConfiguration();
+  const left = await researchesLeft();
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("claim_songs_for_rights_research_now", {
+    p_count: Math.min(count, left),
+    p_provider: configuration.provider,
+    p_model: configuration.model,
+  });
+  if (error) throw databaseError("claim songs for rights research now", error);
+  return batchResult(await researchClaimed(z.array(claimRowSchema).parse(data), configuration));
+}
+
+/**
+ * Researches one song again, e.g. after a rejection or a failure. False if the song does not
+ * exist. Throws a `SafeError` with the error if the research fails. Up to 4 minutes.
+ */
+export async function researchSongNow(input: unknown): Promise<boolean> {
+  await requireSuperadmin();
+  const songId = parseInput(idSchema, input);
+  const configuration = await readConfiguration();
+  await researchesLeft();
+
+  const db = await getMusicSupabase();
+  const { data: song, error: songError } = await db
+    .from("songs")
+    .select("id")
+    .eq("id", songId)
+    .maybeSingle();
+  if (songError) throw databaseError("find song for rights research", songError);
+  if (!song) return false;
+
+  const { data, error } = await db.rpc("claim_song_for_rights_research", {
+    p_song_id: songId,
+    p_provider: configuration.provider,
+    p_model: configuration.model,
+  });
+  if (error) throw databaseError("claim song for rights research", error);
+  const [claimed] = z.array(claimRowSchema).parse(data);
+  if (!claimed) throw new SafeError(({ m }) => m.songRights.errors.alreadyOpen);
+
+  const [outcome] = await researchClaimed([claimed], configuration);
+  if (outcome?.status === "failed") {
+    const message = outcome.error;
+    throw new SafeError(({ m, format }) => format(m.songRights.errors.researchFailed, { message }));
+  }
+  return true;
+}
+
+type Configuration = { provider: ResearchProvider; model: string; apiKey: string };
+type ClaimedSong = z.infer<typeof claimRowSchema>;
+type ResearchOutcome = { status: "pending" } | { status: "failed"; error: string };
+
+function batchResult(outcomes: ResearchOutcome[]): ResearchBatchResult {
+  return {
+    researched: outcomes.filter((outcome) => outcome.status === "pending").length,
+    failed: outcomes.filter((outcome) => outcome.status === "failed").length,
+  };
+}
+
+/**
+ * Researches the claimed songs at the same time, and saves each result or error in its
+ * proposal. A failed save fails only its song: the proposal stays running, and the next claim
+ * closes it after 1 hour.
+ */
+async function researchClaimed(
+  songs: ClaimedSong[],
+  { provider, model, apiKey }: Configuration,
+): Promise<ResearchOutcome[]> {
+  const db = await getMusicSupabase();
+  const year = new Date().getUTCFullYear();
+  return Promise.all(
+    songs.map(async (song): Promise<ResearchOutcome> => {
+      let update:
+        | { status: "pending"; result: ResearchResult }
+        | { status: "failed"; error: string; error_kind: "no_lyrics" | ResearchErrorKind };
+      if (!songLyrics(song.chordpro)) {
+        update = { status: "failed", error: NO_LYRICS_ERROR, error_kind: "no_lyrics" };
+      } else {
+        try {
+          const result = await runResearch({
+            provider,
+            model,
+            apiKey,
+            prompt: researchUserPrompt(song, year),
+            signal: AbortSignal.timeout(RESEARCH_TIMEOUT_MS),
+          });
+          update = { status: "pending", result };
+        } catch (cause) {
+          if (!(cause instanceof ResearchError))
+            console.error("[song-rights] Research failed:", cause);
+          update =
+            cause instanceof ResearchError
+              ? { status: "failed", error: cause.message, error_kind: cause.kind }
+              : { status: "failed", error: "Unexpected error.", error_kind: null };
+        }
+      }
+      const { error } = await db
+        .from("song_rights_proposals")
+        .update(update)
+        .eq("id", song.proposal_id);
+      if (error) {
+        // Logs the error.
+        databaseError("save song rights proposal", error);
+        return { status: "failed", error: SAVE_FAILED_ERROR };
+      }
+      return update.status === "pending"
+        ? { status: "pending" }
+        : { status: "failed", error: update.error };
+    }),
+  );
+}
+
+/** The platform key (server env), never in demo mode (the demo refuses to start with one). */
+function platformKey(): string | null {
+  if (demoModeEnabled()) return null;
+  return process.env.ANTHROPIC_API_KEY || null;
+}
+
+/** Anthropic with the platform key and the saved (or default) model; a `SafeError` without a key. */
+async function readConfiguration(): Promise<Configuration> {
+  const apiKey = platformKey();
+  if (!apiKey) throw new SafeError(({ m }) => m.songRights.aiOff.notReady);
+  const settings = await readSettings();
+  const model =
+    settings.provider === "anthropic" && settings.model
+      ? settings.model
+      : DEFAULT_RESEARCH_MODELS.anthropic;
+  return { provider: "anthropic", model, apiKey };
+}
+
+async function researchLimit(): Promise<number> {
+  const { tenantId } = await getRequestContext();
+  if (tenantId === undefined) return 0;
+  const env = await getWorkspaceEnv();
+  return (await entitlementsFor({ ...env.ctx, tenantId })).musicResearchPerMonth;
+}
+
+async function researchesThisMonth(): Promise<number> {
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("count_song_rights_researches_this_month");
+  if (error) throw databaseError("count song rights researches", error);
+  return z.number().parse(data);
+}
+
+/** What is left of the month's cap; a `SafeError` when nothing is. */
+async function researchesLeft(): Promise<number> {
+  const [limit, used] = await Promise.all([researchLimit(), researchesThisMonth()]);
+  const left = limit - used;
+  if (left <= 0)
+    throw new SafeError(({ m, format }) => format(m.songRights.quota.reached, { limit }));
+  return left;
 }

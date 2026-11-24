@@ -395,3 +395,46 @@ Open questions:
    (the catalog rule of `rls.ts`); alternative: a new "shared catalog" class with write policies.
    Its owner must bypass RLS (Supabase `postgres`). OK?
 3. Which plans include the music modules? They are in every workspace tier now (default off).
+
+### 11.4 Decisions after phase 2 slice 1 (2026-11-24)
+
+| # | Decision |
+|---|---|
+| AI research | Platform key `ANTHROPIC_API_KEY`; cap 20 researches per month per tenant on Plus+ plans, through `entitlements()`; off in demo. |
+| Shared catalog | SECURITY DEFINER `share_song_rights()` accepted. |
+| Music modules | In every workspace tier, default off. |
+
+## 15. Phase 2b progress (music-02b-files)
+
+Done:
+- Migration `0009_music_files` (+ down): the song-file functions of FUNCTIONS.md (PDFs, images,
+  pages, MusicXML scores, sound files, links, upload tickets, arrangement links), the stray-file
+  triggers (their rows name their own tenant; nothing is kept when the church itself is deleted),
+  `set_updated_at` and `prevent_song_id_update` on the file tables, and the AI research claims
+  (`claim_song_for_rights_research`, `claim_songs_for_rights_research_now`,
+  `close_crashed_song_rights_research`) plus `count_song_rights_researches_this_month()`.
+- Copied: the edit page parts `song-pdfs, song-images, song-scores, song-sound-files, song-links`
+  (+ `use-attachment-form`), `file-drop, song-media, attachment-details/fields, image-viewer,
+  pdf-viewer, image-chooser, preview-layout`, `lib/{file-view,image-resize,pdfjs,pinch-zoom}`, the
+  viewers `/munkater/enektar/pdf/[id]` and `/kep/[id]`, the private file routes
+  `/munkater/enektar/fajl/{pdf,kep,kotta,hang}/…` and `server/music/private-file.ts`. The file
+  actions go through `withPolicy("music.song.manage", musicFiles(<module>))`
+  (`[id]/szerkesztes/file-actions.ts`, client signatures in `file-actions-client.ts`). Each part,
+  section, viewer and route follows its `ws.music.songs.*` module.
+- Local mode Storage (`@churchy/db/local/storage.ts`): in memory, one-time tickets for the signed
+  upload/download URLs, which the browser reaches through `/munkater/enektar/fajl/helyi/storage/v1/…`
+  (PUT through `withPolicyRoute`); per-session copies of the demo songs keep their seeded files.
+  Seed: each demo church's first song has a fictitious one-page PDF and an example.org link.
+- AI research (from phase 8): Anthropic only, key `ANTHROPIC_API_KEY` (server env; the demo
+  refuses to start with it, `lib/demo/safety.ts` category `ai`); "Research now" and "Research
+  again" on `/munkater/enektar/jogok`, at most `entitlements().musicResearchPerMonth` per calendar
+  month (new plan entitlement, default 0; 20 on the workspace plans). The model is the saved one of
+  `song_rights_research_settings` or `claude-opus-5-5`.
+
+Left out: the MusicXML preview on the edit page (verovio, sheet phase 3: the score shows as a
+link), OCR "Read text" of an image (phase 7), the nightly research job (phase 8, pg-boss), their
+provider/API-key/test forms (platform key instead).
+
+Open question: which plans are "Plus+"? Churchy has `ingyenes`, `teljes` (website) and
+`ws_s50/m150/l300` (workspace add-ons); the cap of 20 is set on the three workspace plans for now
+(data only, `packages/data-mock/src/seed/platform.ts`).

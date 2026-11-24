@@ -133,7 +133,7 @@ export function toSongSoundFile(row: z.infer<typeof soundFileRowSchema>): SongSo
     contentType: row.content_type,
     keys: sortAttachmentKeys(row.musical_keys),
     arrangementIds: row.song_sound_file_arrangements.map((link) => link.arrangement_id),
-    url: `/sound-files/${row.path}`,
+    url: `/munkater/enektar/fajl/hang/${row.path}`,
   };
 }
 
@@ -370,7 +370,7 @@ export async function removeSongSoundFile(id: string): Promise<boolean> {
 
 /**
  * A signed URL of a sound file for a signed-in user, or null if no sound file
- * has this file. `path` is the part of the URL after `/sound-files/`. With
+ * has this file. `path` is the part of the URL after `/munkater/enektar/fajl/hang/`. With
  * `download`, the browser saves the file with its original name, always with
  * an extension of its checked format (see `downloadFileName`).
  */

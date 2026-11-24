@@ -92,7 +92,7 @@ export function toSongScore(row: z.infer<typeof scoreRowSchema>): SongScoreDTO {
     name: row.name,
     fileName: row.file_name,
     key: row.musical_key,
-    url: `/scores/${row.path}?v=${SCORE_URL_VERSION}`,
+    url: `/munkater/enektar/fajl/kotta/${row.path}?v=${SCORE_URL_VERSION}`,
   };
 }
 
@@ -258,7 +258,7 @@ export async function removeSongScore(id: string): Promise<boolean> {
 
 /**
  * The MusicXML text of a score file for a signed-in user, or null if there is
- * no such file. `path` is the part of the score URL after `/scores/`.
+ * no such file. `path` is the part of the score URL after `/munkater/enektar/fajl/kotta/`.
  *
  * The text is the score that `readMusicXml` checked, also for a compressed
  * file. The browser never gets the archive: Verovio reads an archive in its
