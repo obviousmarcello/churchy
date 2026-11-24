@@ -38,6 +38,51 @@ export function createMusicSupabaseClient(
   return createClient(url, key, {
     // No stored session: nothing is kept or refreshed, nothing leaks between requests.
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-    global: { headers: { Authorization: `Bearer ${token}` } },
+    global: {
+      headers: { Authorization: `Bearer ${token}` },
+      fetch: tenantStorageFetch(actor.tenantId),
+    },
   });
+}
+
+/** The Postgres role of the music tables (migration 0007_music_rls). */
+export const MUSIC_DB_ROLE = "churchy_music";
+
+/** Whether a Supabase project is configured for the music module (else: local mode). */
+export function musicSupabaseConfigured(env: MusicSupabaseEnv = process.env as MusicSupabaseEnv) {
+  return Boolean(env.SUPABASE_URL && env.SUPABASE_PUBLISHABLE_KEY && env.SUPABASE_JWT_SECRET);
+}
+
+/**
+ * Storage keys are `t/<tenant_id>/<path>` (SUPABASE-SETUP.md "Storage"); the music models keep
+ * using their tenant-relative paths. Rewrites the object path of every Storage request (and the
+ * `prefixes` of a bulk delete), so no model builds a key itself.
+ */
+export function tenantStorageFetch(tenantId: string, base: typeof fetch = fetch): typeof fetch {
+  const prefix = `t/${tenantId}/`;
+  return async (input, init) => {
+    const href = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    if (!new URL(href).pathname.startsWith("/storage/v1/")) return base(input, init);
+    const request = new Request(input, init);
+    const url = new URL(request.url);
+    const match =
+      /^(\/storage\/v1\/object\/(?:sign\/|upload\/sign\/|public\/|authenticated\/|info\/)?)([^/]+)\/(.+)$/.exec(
+        url.pathname,
+      );
+    if (match) {
+      url.pathname = `${match[1]}${match[2]}/${prefix}${match[3]}`;
+      return base(new Request(url, request));
+    }
+    if (request.method === "DELETE" && /^\/storage\/v1\/object\/[^/]+$/.test(url.pathname)) {
+      const body = (await request.json()) as { prefixes: string[] };
+      return base(
+        new Request(url, {
+          method: "DELETE",
+          headers: request.headers,
+          body: JSON.stringify({ prefixes: body.prefixes.map((p) => prefix + p) }),
+        }),
+      );
+    }
+    throw new Error(`music storage: unsupported request ${request.method} ${url.pathname}`);
+  };
 }

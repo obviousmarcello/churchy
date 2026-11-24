@@ -3245,6 +3245,42 @@
           "board": {
             "title": "Hirdetőtábla",
             "help": "Belső hirdetések és közlemények."
+          },
+          "music_songs": {
+            "title": "Dalok (énektár)",
+            "help": "A zenei szolgálat daltára: dalok, akkordlapok, jogi adatok."
+          },
+          "music_songs_pdfs": {
+            "title": "PDF-kották",
+            "help": "PDF-kották a dalokhoz."
+          },
+          "music_songs_images": {
+            "title": "Kottaképek",
+            "help": "Kottaképek a dalokhoz."
+          },
+          "music_songs_scores": {
+            "title": "MusicXML-kották",
+            "help": "MusicXML-kották a dalokhoz."
+          },
+          "music_songs_sound_files": {
+            "title": "Hangfájlok",
+            "help": "Hangfájlok a dalokhoz."
+          },
+          "music_songs_links": {
+            "title": "Linkek",
+            "help": "Külső linkek a dalokhoz."
+          },
+          "music_songs_songpraise": {
+            "title": "SongPraise-import",
+            "help": "Dalok átvétele SongPraise-fájlból."
+          },
+          "music_songs_ocr": {
+            "title": "Kotta beolvasása (OCR)",
+            "help": "Akkordlap beolvasása képről."
+          },
+          "music_song_rights": {
+            "title": "Dalok jogainak kutatása",
+            "help": "Jogi adatok javaslatai és a közös jogi katalógus."
           }
         }
       },
@@ -3342,7 +3378,16 @@
           "hr_leave": "Szabadság és távollét (munkatér)",
           "hr_confidential": "Bizalmas bejelentések (munkatér)",
           "docs": "Belső dokumentumok (munkatér)",
-          "board": "Hirdetőtábla (munkatér)"
+          "board": "Hirdetőtábla (munkatér)",
+          "music_songs": "Dalok (énektár) (munkatér)",
+          "music_songs_pdfs": "PDF-kották (munkatér)",
+          "music_songs_images": "Kottaképek (munkatér)",
+          "music_songs_scores": "MusicXML-kották (munkatér)",
+          "music_songs_sound_files": "Hangfájlok (munkatér)",
+          "music_songs_links": "Linkek (munkatér)",
+          "music_songs_songpraise": "SongPraise-import (munkatér)",
+          "music_songs_ocr": "Kotta beolvasása (OCR) (munkatér)",
+          "music_song_rights": "Dalok jogainak kutatása (munkatér)"
         }
       },
       "catalog": {
@@ -4244,7 +4289,1511 @@
       "failedBody": "A beosztás közben megváltozott, vagy nincs jogosultsága hozzá."
     }
   },
-  "music": {},
+  "music": {
+    "common": {
+      "nav": {
+        "main": "Fő menü",
+        "menu": "Menü",
+        "more": "Továbbiak",
+        "openMenu": "Menü megnyitása",
+        "dashboard": "Áttekintés",
+        "songs": "Dalok",
+        "events": "Események",
+        "rehearsal": "Próba",
+        "courses": "Tudástér",
+        "admin": "Adminisztráció",
+        "users": "Felhasználók",
+        "groupsAndUsers": "Csoportok és felhasználók",
+        "songsAndProjection": "Dalok és vetítés",
+        "hubForbidden": {
+          "title": "Itt nincs elérhető oldalad",
+          "description": "Ezek az oldalak adminisztrátoroknak szólnak. Ha szükséged van rájuk, kérj meg egy szuperadmint."
+        },
+        "rail": {
+          "courses": "Tudástér",
+          "groupsAndUsers": "Emberek",
+          "songsAndProjection": "Média"
+        },
+        "submenuHasCurrentPage": "benne van a jelenlegi oldal",
+        "notifications": "E-mail-értesítések",
+        "projectionThemes": "Vetítési témák",
+        "groups": "Csoportok",
+        "volunteerTemplates": "Szolgálati sablonok",
+        "mixer": "Keverőpult",
+        "bibleTranslations": "Bibliafordítások",
+        "modules": "Modulok",
+        "songRights": "Dalok jogainak kutatása",
+        "announcementCalendars": "Hirdetési naptárak",
+        "configuration": "Konfiguráció",
+        "settings": "Beállítások",
+        "back": "Vissza",
+        "privacy": "Adatvédelmi tájékoztató",
+        "backToProjection": "Vissza a kivetítéshez",
+        "projectionRunning": "Kivetítés fut"
+      },
+      "people": {
+        "member": "Tag"
+      },
+      "theme": {
+        "light": "Világos",
+        "dark": "Sötét",
+        "system": "Automatikus",
+        "current": "{theme} téma",
+        "unknown": "Téma",
+        "switchTo": "Váltás erre: {theme} téma",
+        "nextPalette": "Következő színséma"
+      },
+      "language": {
+        "label": "Nyelv",
+        "failed": "Nem sikerült nyelvet váltani. Ellenőrizd a kapcsolatot, és próbáld újra."
+      },
+      "account": {
+        "checkingSession": "Munkamenet ellenőrzése…",
+        "noEmail": "Nincs e-mail-cím",
+        "signOut": "Kijelentkezés",
+        "signingOut": "Kijelentkezés…"
+      },
+      "actions": {
+        "cancel": "Mégse",
+        "save": "Mentés",
+        "saving": "Mentés…",
+        "saveChanges": "Módosítások mentése",
+        "saved": "Mentve",
+        "delete": "Törlés",
+        "deleting": "Törlés…",
+        "remove": "Eltávolítás",
+        "edit": "Szerkesztés",
+        "add": "Hozzáadás",
+        "close": "Bezárás"
+      },
+      "autoSave": {
+        "saved": {
+          "one": "{count} módosítás mentve",
+          "other": "{count} módosítás mentve"
+        },
+        "failed": {
+          "one": "{count} módosítást nem sikerült menteni.",
+          "other": "{count} módosítást nem sikerült menteni."
+        },
+        "retry": "Újra"
+      },
+      "form": {
+        "correctFields": "Javítsd a hibásként jelölt mezőket.",
+        "notAllSaved": "Néhány módosítás nincs mentve. Nézd meg a fenti hibákat, és mentsd újra.",
+        "optional": "nem kötelező",
+        "required": "kötelező",
+        "unsavedTitle": "A módosításaid nincsenek mentve",
+        "unsavedDescription": "Szeretnéd most menteni őket?",
+        "discardAndLeave": "Módosítások elvetése és az oldal elhagyása",
+        "discard": "Módosítások elvetése"
+      },
+      "errors": {
+        "signIn": "A folytatáshoz jelentkezz be",
+        "forbidden": "Ehhez nincs jogosultságod",
+        "invalidInput": "Érvénytelen adatok",
+        "generic": "Hiba történt. Próbáld újra."
+      },
+      "pageCache": {
+        "staleCopy": "Nem sikerült betölteni a legfrissebb adatokat. Ez a legutóbbi látogatásod másolata.",
+        "retry": "Újra",
+        "errorTitle": "Ez az oldal nem töltődött be",
+        "errorDescription": "Ellenőrizd a kapcsolatot, és próbáld újra."
+      },
+      "pullToRefresh": {
+        "refreshing": "Frissítés…"
+      },
+      "offline": {
+        "banner": "Nincs internetkapcsolat. Az alkalmazás az eszközön mentett másolatokat mutatja.",
+        "backOnline": "Újra van internetkapcsolat.",
+        "pageTitle": "Ez az oldal nincs mentve ezen az eszközön",
+        "pageText": "Nincs internetkapcsolat, és ezt az oldalt még nem nyitottad meg ezen az eszközön. Nyisd meg újra, ha lesz kapcsolat.",
+        "back": "Vissza",
+        "newVersion": "Elkészült az alkalmazás új verziója.",
+        "reload": "Újratöltés"
+      },
+      "validation": {
+        "required": "Adj meg egy értéket",
+        "tooShort": {
+          "one": "Legalább {count} karaktert adj meg",
+          "other": "Legalább {count} karaktert adj meg"
+        },
+        "tooLong": {
+          "one": "Legfeljebb {count} karaktert adj meg",
+          "other": "Legfeljebb {count} karaktert adj meg"
+        },
+        "tooFewItems": {
+          "one": "Adj hozzá legalább {count} elemet",
+          "other": "Adj hozzá legalább {count} elemet"
+        },
+        "tooManyItems": {
+          "one": "Legfeljebb {count} elemet adj meg",
+          "other": "Legfeljebb {count} elemet adj meg"
+        },
+        "tooSmall": "Az érték legalább {min} legyen",
+        "tooBig": "Az érték legfeljebb {max} legyen",
+        "notInteger": "Egész számot adj meg",
+        "notNumber": "Adj meg egy számot",
+        "email": "Érvényes e-mail-címet adj meg",
+        "url": "Érvényes URL-t adj meg",
+        "invalidOption": "Válassz a lehetőségek közül",
+        "invalid": "Ez az érték nem érvényes"
+      },
+      "duration": {
+        "minutes": "{minutes} perc",
+        "hours": "{hours} óra",
+        "hoursMinutes": "{hours} óra {minutes} perc"
+      },
+      "counts": {
+        "songs": {
+          "one": "{count} dal",
+          "other": "{count} dal"
+        },
+        "items": {
+          "one": "{count} programpont",
+          "other": "{count} programpont"
+        },
+        "textItems": {
+          "one": "{count} szöveges programpont",
+          "other": "{count} szöveges programpont"
+        }
+      },
+      "separator": " · "
+    },
+    "components": {
+      "setlistRows": {
+        "dragToReorder": "Húzd el a sorrend módosításához",
+        "unknownSong": "Ismeretlen dal",
+        "untitledItem": "{number}. programpont",
+        "itemTitle": "{number}. programpont címe",
+        "imageItemTitle": "{number}. programpont képeinek címe",
+        "itemTitlePlaceholder": "Például: Bejelentés",
+        "itemNotes": "{number}. programpont jegyzetei",
+        "itemNotesPlaceholder": "Jegyzetek (nem kötelező)",
+        "untitledTextSlide": "{number}. szöveges dia",
+        "textSlideTitle": "{number}. szöveges dia címe",
+        "textSlideTitlePlaceholder": "Például: Imatéma",
+        "textSlideDescription": "{number}. szöveges dia leírása",
+        "textSlideDescriptionPlaceholder": "Leírás a vetítésen (nem kötelező)",
+        "textSlideHighlight": "{number}. szöveges dia kiemelt szövege",
+        "textSlideHighlightPlaceholder": "Kiemelt szöveg a vetítésen (nem kötelező)",
+        "textSlideEmpty": "Nincs leírás és kiemelt szöveg: a képernyők nem mutatnak szöveget ennél a szöveges diánál.",
+        "textSlideNotes": "{number}. szöveges dia jegyzetei",
+        "textSlideNotesPlaceholder": "Jegyzetek a csapatnak, nem jelennek meg a vetítésen (nem kötelező)",
+        "untitledScripture": "{number}. igeolvasás",
+        "scriptureReference": "{number}. igeolvasás igehelye",
+        "scriptureReferencePlaceholder": "Például: Jn 3,16–21",
+        "referenceNotRecognized": "Az alkalmazás nem ismeri fel ezt az igehelyet, ezért a vetítés csak az igehelyet mutatja. Például: Jn 3,16–21 vagy John 3:16–21.",
+        "pasteScripture": "Szöveg bemásolása",
+        "pasteScriptureOf": "{title} szövegének bemásolása",
+        "pasteScriptureHint": "A közös gyorsítótár csak 24 óráig tárolja a {translation} szöveget, ezért az esemény napján másold be, vagy a vetítés vezérlőjén.",
+        "scripturePasted": "A {translation} szöveg 24 óráig van a közös gyorsítótárban.",
+        "volunteerOf": "„{title}” önkéntese",
+        "noVolunteer": "Nincs önkéntes",
+        "themeOf": "„{title}” vetítési témája",
+        "eventTheme": "Esemény témája",
+        "arrangementTheme": "Változat témája ({name})",
+        "setTheme": "Téma beállítása…",
+        "setPlannedTime": "Tervezett idő megadása…",
+        "addNotes": "Jegyzet hozzáadása…",
+        "searchVolunteers": "Önkéntes keresése",
+        "searchThemes": "Téma keresése",
+        "searchKeys": "Hangnem keresése",
+        "arrangementOf": "„{title}” változata",
+        "defaultArrangement": "{name} (alapértelmezett)",
+        "keyOf": "„{title}” hangneme",
+        "chartKey": "{key} (akkordlap)",
+        "move": "„{title}” mozgatása",
+        "remove": "„{title}” eltávolítása",
+        "live": "Élő",
+        "liveChangeTitle": "Ez a programpont most a vetítésen van",
+        "liveRemove": "A vetítés most ezt mutatja: „{title}”. A képernyők megtartják a diát, és a kezelő újratöltésig még kivetítheti. Eltávolítod?",
+        "liveArrangement": "A vetítés most ezt mutatja: „{title}”. A másik változat diái a következő lépéstől jelennek meg. Módosítod a változatot?",
+        "liveKind": "A vetítés most ezt mutatja: „{title}”. A másik típus diái a következő lépéstől jelennek meg. Módosítod a típust?",
+        "liveRemoveConfirm": "Eltávolítás",
+        "liveArrangementConfirm": "Módosítás"
+      },
+      "rowMenu": {
+        "label": "„{title}” további műveletei"
+      },
+      "textKindMenu": {
+        "label": "„{title}” típusa",
+        "hint": "Típus módosítása",
+        "text": "Szöveges programpont",
+        "textSlide": "Szöveges dia",
+        "scripture": "Igeolvasás"
+      },
+      "peoplePicker": {
+        "addMore": "Továbbiak…",
+        "noMatches": "Nincs találat.",
+        "noPeople": "Nincs hozzáadható felhasználó.",
+        "useText": "A(z) „{text}” szöveg használata",
+        "textGroup": "Szöveg",
+        "removeText": "A szöveg eltávolítása"
+      },
+      "avatarPicker": {
+        "value": "{label}: {value}",
+        "noMatches": "Nincs találat."
+      },
+      "scriptureTranslation": {
+        "language": "Nyelv",
+        "languageOf": "„{title}” nyelve",
+        "translationOf": "„{title}” fordítása",
+        "allOff": "Minden bibliafordítás ki van kapcsolva. Egy szuperadmin bekapcsolhat egyet a Konfiguráció > Bibliafordítások lapon."
+      },
+      "addItemBox": {
+        "addLabel": "Programpont hozzáadása",
+        "addPlaceholder": "Keress egy dalt, vagy írj be egy címet vagy egy igehelyet",
+        "noMatches": "Írj be egy címet, és szöveges programpontként hozzáadhatod, például egy bejelentést. Egy igehelyet igeolvasásként adhatsz hozzá.",
+        "addTextItem": "<strong>„{title}”</strong> hozzáadása szöveges programpontként",
+        "addTextSlide": "<strong>„{title}”</strong> hozzáadása szöveges diaként",
+        "addScripture": "<strong>„{title}”</strong> hozzáadása igeolvasásként",
+        "noSongs": "A katalógusban még nincs dal. <link>Dal hozzáadása</link>",
+        "noSongsCannotAdd": "A katalógusban még nincs dal. A dalok itt jelennek meg, amikor egy daladmin hozzáadja őket.",
+        "inList": "A listán"
+      },
+      "printSetlist": {
+        "print": "Dallista nyomtatása",
+        "number": "#",
+        "item": "Dal vagy programpont",
+        "key": "Hangnem",
+        "tempo": "Tempó",
+        "volunteer": "Önkéntes",
+        "bpm": "{bpm} BPM",
+        "scripture": "Igeolvasás"
+      },
+      "noteNames": {
+        "label": "Hangnevek",
+        "english": "B és Bb (angol)",
+        "german": "H és B (német)",
+        "hint": "Ezen az eszközön az akkordok és a hangnemek ezekkel a hangnevekkel jelennek meg."
+      },
+      "cookieNotice": {
+        "label": "Sütikről",
+        "text": "Ez az alkalmazás csak a működéséhez szükséges sütiket használja: a bejelentkezéshez és a nyelv megjegyzéséhez. A megnyitott oldalak és fájlok másolatát is megőrzi ezen az eszközön. Egy képzés videója csak akkor töltődik be a YouTube-ról, ha rákattintasz: a YouTube ekkor adatokat tárolhat a böngésződben. <link>Adatvédelmi tájékoztató</link>",
+        "ok": "Rendben"
+      },
+      "dailyPsalm": {
+        "title": "A nap zsoltára",
+        "reference": "Zsoltárok {psalm},{verses} (RÚF)",
+        "loading": "A nap zsoltára betöltődik…"
+      },
+      "songMedia": {
+        "player": "{name} lejátszása",
+        "download": "{name} letöltése",
+        "newTab": "(új lapon nyílik meg)",
+        "youtube": "YouTube",
+        "playFailed": "Ez a böngésző nem tudja lejátszani a fájlt. Töltsd le a lejátszáshoz."
+      },
+      "fileDrop": {
+        "title": "Engedd el a fájlokat a hozzáadáshoz",
+        "hint": "Bárhol elengedheted őket az oldalon: a kiválasztott részhez kerülnek. Másik rész kiválasztásához húzd a fájlokat a lenti lehetőségek egyikére.",
+        "none": "Az oldal egyik része sem fogadja ezeket a fájlokat."
+      },
+      "eventBlocks": {
+        "select": "{title} kijelölése",
+        "selectHint": "Kattints egy programpontra a kijelöléshez. Shift + kattintás az összes programpontot kijelöli odáig.",
+        "selected": {
+          "one": "{count} programpont kijelölve",
+          "other": "{count} programpont kijelölve"
+        },
+        "create": "Blokk létrehozása",
+        "clearSelection": "Kijelölés törlése",
+        "notAdjacent": "Egymás melletti programpontokat jelölj ki a blokkhoz.",
+        "defaultName": "Blokk",
+        "nameOf": "A(z) {name} blokk neve",
+        "nameRequired": "Adj nevet a blokknak.",
+        "durationOf": "A(z) {name} blokk tervezett ideje",
+        "durationHint": "Percben (20) vagy percben és másodpercben (4:05) az egész blokkra. Üresen: a programpontjai ideje. A visszaszámlálás akkor indul, amikor a blokk egy programpontja élőben megjelenik a vetítésen.",
+        "ungroup": "Blokk megszüntetése",
+        "ungroupOf": "A(z) {name} blokk megszüntetése",
+        "actionsOf": "A(z) {name} blokk további műveletei",
+        "restart": "Visszaszámlálás újraindítása",
+        "restartFailed": "A visszaszámlálás nem indult újra.",
+        "noTime": {
+          "one": "A blokk {count} programpontjának nincs tervezett ideje.",
+          "other": "A blokk {count} programpontjának nincs tervezett ideje."
+        },
+        "left": "{time} van hátra",
+        "over": "{time} túllépés",
+        "until": "{time} eddig: {clock}",
+        "afterUntil": "{time} ennyivel {clock} után",
+        "timerLabel": "{name} blokk: {status}"
+      },
+      "eventChanges": {
+        "changedBy": "{names} módosította az eseményt",
+        "changedByOther": "Egy másik felhasználó módosította az eseményt",
+        "added": "Hozzáadva: {titles}.",
+        "removed": "Eltávolítva: {titles}.",
+        "changed": "Módosítva: {titles}.",
+        "moved": "Új sorrend.",
+        "detailsChanged": "Új adatok.",
+        "removedWhileChanged": "Egy másik felhasználó eltávolította ezt: „{title}”, ezért a módosításod nem mentődött.",
+        "overwritten": "Egy másik felhasználó is módosította ezt: „{title}”. A te módosításod mentődött.",
+        "openEvent": "Esemény megnyitása",
+        "offline": "A szinkronizálás szünetel: a többiek módosításai percenként érkeznek."
+      }
+    },
+    "songs": {
+      "page": {
+        "loading": "Dalok betöltése…",
+        "addSong": "Dal hozzáadása",
+        "addFirstSong": "Adj hozzá egy dalt"
+      },
+      "browser": {
+        "matchCount": {
+          "one": "{count} dal felel meg a szűrőknek",
+          "other": "{count} dal felel meg a szűrőknek"
+        },
+        "emptyPage": {
+          "title": "Ezen az oldalon nincsenek dalok",
+          "description": {
+            "one": "A lista {count} oldalas.",
+            "other": "A lista {count} oldalas."
+          },
+          "firstPage": "Ugrás az 1. oldalra"
+        },
+        "noMatches": {
+          "title": "Egy dal sem felel meg a szűrőknek",
+          "description": "Módosítsd a szűrőket, vagy töröld őket, hogy minden dalt láss."
+        },
+        "noSongs": {
+          "title": "Még nincsenek dalok",
+          "description": "Itt jelennek meg az adatbázis dalai."
+        },
+        "noSelection": {
+          "title": "Nincs kiválasztott dal",
+          "description": "Válassz egy dalt a listában, hogy lásd a részleteit."
+        },
+        "closeDetails": "Részletek bezárása",
+        "addToEvent": {
+          "button": "{arrangement} hozzáadása egy eseményhez",
+          "title": "Hozzáadás eseményhez",
+          "description": "{title} ({arrangement}) a kiválasztott esemény elemeinek végére kerül.",
+          "key": "Hangnem",
+          "chartKey": "Az akkordlap hangneme ({key})",
+          "events": "Következő események",
+          "loading": "Események betöltése…",
+          "loadFailed": "Nem sikerült betölteni az eseményeket.",
+          "retry": "Próbáld újra",
+          "noEvents": {
+            "title": "Nincsenek következő események",
+            "description": "Előbb hozz létre egy eseményt, aztán adj hozzá dalokat."
+          },
+          "createEvent": "Esemény létrehozása",
+          "add": "Hozzáadás",
+          "addTo": "Hozzáadás ehhez: {event}",
+          "adding": "Hozzáadás…",
+          "alreadyAdded": "Már szerepel ezen az eseményen",
+          "otherArrangement": "A dal egy másik változata már szerepel rajta",
+          "noItems": "Még nincsenek elemei",
+          "added": "Hozzáadva ehhez: {event}.",
+          "openEvent": "Az esemény megnyitása"
+        },
+        "pagination": {
+          "label": "Oldalak",
+          "range": "{first}–{last} (összesen {total})",
+          "page": "{page}. oldal / {pageCount}",
+          "previous": "Előző oldal",
+          "next": "Következő oldal"
+        },
+        "noArtistOrDetails": "Még nincs előadó vagy más adat",
+        "moreTags": "+{count}",
+        "lastPlayed": "Utoljára: <date></date>",
+        "neverPlayed": "Még nem szerepelt",
+        "editSong": "Dal szerkesztése",
+        "editSongTitle": "{title} szerkesztése",
+        "details": {
+          "noArtist": "Nincs megadva előadó",
+          "arrangements": "Változatok",
+          "default": "Alapértelmezett",
+          "noDetails": "Nincs megadva hangnem, tempó vagy időtartam",
+          "otherKeys": "más hangnemben is: {keys}",
+          "sheet": "Akkordlap",
+          "noArrangements": "Még nincsenek változatok.",
+          "scores": "Kották",
+          "noScores": "Még nincsenek kották.",
+          "pdfs": "PDF-fájlok",
+          "noPdfs": "Még nincsenek PDF-fájlok.",
+          "images": "Képek",
+          "noImages": "Még nincsenek képek.",
+          "soundFiles": "Hangfájlok",
+          "noSoundFiles": "Még nincsenek hangfájlok.",
+          "links": "Linkek",
+          "noLinks": "Még nincsenek linkek.",
+          "imagePages": {
+            "one": "{count} oldal",
+            "other": "{count} oldal"
+          },
+          "allArrangements": "Minden változat",
+          "attachmentKeys": {
+            "one": "Hangnem: {keys}",
+            "other": "Hangnemek: {keys}"
+          },
+          "history": "Előzmények",
+          "recentCount": {
+            "one": "Az elmúlt 12 hónapban {count} eseményen szerepelt.",
+            "other": "Az elmúlt 12 hónapban {count} eseményen szerepelt."
+          },
+          "noRecentPlays": "Az elmúlt 12 hónapban nem szerepelt.",
+          "planned": "Tervezett",
+          "noPlays": "Még egy eseményen sem szerepelt.",
+          "tags": "Címkék",
+          "noTags": "Még nincsenek címkék.",
+          "songbook": "Énekeskönyv",
+          "noSongbook": "Még nincs énekeskönyvben.",
+          "copyright": "Szerzői jog",
+          "noCopyright": "Még nincs szerzői jogi szöveg.",
+          "authors": "Szerzők",
+          "noAuthors": "Még nincsenek szerzők.",
+          "rights": "Jogok",
+          "originalTitle": "Eredeti cím: {title}",
+          "translator": "Fordító: {name}",
+          "noRightsNote": "Még nincs megadva az engedély forrása.",
+          "filterByTag": "A(z) {tag} címkéjű dalok mutatása"
+        }
+      },
+      "rightsStatuses": {
+        "public_domain": "Közkincs",
+        "licensed": "Licencelt",
+        "permitted": "Engedéllyel",
+        "partial": "Részben rendezett",
+        "unknown": "Ismeretlen"
+      },
+      "filters": {
+        "search": "Keresés cím, előadó, énekeskönyv vagy dalszöveg alapján",
+        "key": "Hangnem",
+        "anyKey": "Bármely hangnem",
+        "timeSignature": "Ütemmutató",
+        "tag": "Címke",
+        "anyTag": "Bármely címke",
+        "any": "Bármely",
+        "minBpm": "Min. BPM",
+        "maxBpm": "Max. BPM",
+        "clear": "Szűrők törlése",
+        "sort": "Rendezés",
+        "sorts": {
+          "title": "Cím szerint (A–Z)",
+          "recent": "Legutóbb játszottak elöl",
+          "oldest": "Legrégebben játszottak elöl"
+        }
+      },
+      "form": {
+        "song": "Dal",
+        "title": "Cím",
+        "artist": "Előadó",
+        "authors": "Szerzők",
+        "songbook": "Énekeskönyv",
+        "copyright": "Szerzői jog",
+        "rights": "Jogok",
+        "rightsDescription": "A dal felhasználásának engedélye. Fordításnál a státusz mindig a gyengébb oldalt mutatja.",
+        "rightsStatus": "Jogi státusz",
+        "rightsStatusHint": "Például ha a fordító engedélyezte, de az eredeti kiadó még nem, a státusz „Részben rendezett”.",
+        "rightsNote": "Engedély forrása",
+        "rightsNoteHint": "Például „kottatar.hu, 10 példány” vagy „fordító e-mailje, 2026-10-12”.",
+        "originalTitle": "Eredeti cím",
+        "originalTitleHint": "Csak fordításnál. Ebből lehet az eredeti kiadót megtalálni.",
+        "translator": "Fordító",
+        "copyrightHint": "A kivetítés a dal címdiáján mutatja, pl. „© 2010 Hillsong” és „CCLI 1234567” két sorban.",
+        "tags": "Címkék",
+        "tagsPlaceholder": "Címke hozzáadása",
+        "tagsFull": "Egy dalnak legfeljebb {max} címkéje lehet.",
+        "removeTag": "{tag} címke eltávolítása",
+        "chart": "Akkordlap",
+        "chordpro": "ChordPro",
+        "chordproHint": "Az akkordokat tedd szögletes zárójelbe, pl. [G]. A részeket így jelöld: '{'start_of_verse: 1. versszak'}' és '{'end_of_verse'}'. Az egyszerű fejléceket (pl. VERSE 1 vagy REFRÉN) és a dalszöveg fölötti akkordsorokat beillesztéskor és mentéskor átalakítjuk.",
+        "pasteConverted": "Az akkordlapot ChordPro formátumra alakítottuk.",
+        "undoPasteConversion": "Átalakítás visszavonása",
+        "convertChart": "Átalakítás ChordPro formátumra",
+        "ocrInserted": "A képek szövege bekerült az akkordlapba. Mentés előtt ellenőrizd.",
+        "undoOcr": "Visszavonás",
+        "songpraiseInserted": "A SongPraise dalszövege bekerült az akkordlapba. Mentés előtt ellenőrizd.",
+        "songpraise": {
+          "button": "Dalszöveg a SongPraise-ről",
+          "title": "Dalszöveg a SongPraise-ről",
+          "description": "Keress cím vagy énekeskönyvi szám alapján a songpraise.com dalai között. Az alkalmazás a kiválasztott dal szövegét részekre bontva beilleszti az akkordlapba. A SongPraise-en nincsenek akkordok.",
+          "language": "Nyelv",
+          "search": "Cím vagy énekeskönyvi szám",
+          "searchPlaceholder": "pl. Nagy vagy Te vagy 324",
+          "searchHint": "Írd be a cím egy részét vagy egy énekeskönyvi számot, pl. 324, Hit hangjai 324 vagy HH 324.",
+          "searching": "Keresés…",
+          "noResults": "A SongPraise-en nincs ilyen című vagy számú dal ezen a nyelven.",
+          "failed": "A SongPraise nem válaszolt. Ellenőrizd a kapcsolatot, és próbáld újra.",
+          "retry": "Újra",
+          "loadingSong": "A dalszöveg betöltése…",
+          "showLyrics": "Dalszöveg megjelenítése: {title}",
+          "hideLyrics": "Dalszöveg elrejtése: {title}",
+          "use": "Ezt a dalt választom",
+          "noLyrics": "Ennek a dalnak nincs szövege a SongPraise-en.",
+          "notFound": "Ez a dal már nincs meg a SongPraise-en.",
+          "result": "Akkordlap a SongPraise-ről",
+          "resultHint": "Ellenőrizd a dalszöveget és a részeket. Az akkordokat és a dal jogi adatait neked kell megadnod.",
+          "author": "Szerző a SongPraise-en: {author}",
+          "songbook": "Énekeskönyv a SongPraise-en: {songbook}",
+          "songbookFilled": "Az üres énekeskönyv mező ezt az értéket kapja.",
+          "order": "Lejátszási sorrend: {order}",
+          "titleFilled": "A cím mezőbe ennek a dalnak a címe kerül.",
+          "insert": "Beillesztés az akkordlapba",
+          "replace": "Az akkordlap cseréje",
+          "append": "Hozzáadás az akkordlap végéhez",
+          "back": "Vissza"
+        },
+        "ocr": {
+          "button": "Beolvasás képről",
+          "title": "Az akkordlap beolvasása képekről",
+          "description": "Az alkalmazás beolvassa az akkordokat és a dalszöveget egy akkordlap fényképeiről vagy szkennelt képeiről. A beolvasás ezen az eszközön történik: a képek nem kerülnek szerverre.",
+          "pages": "Oldalak",
+          "pagesHint": "Minden oldalhoz egy kép, a kotta sorrendjében. Egy éles, jól megvilágított fénykép adja a legjobb eredményt.",
+          "noPages": "Még nincsenek oldalak. Válassz képeket, húzd ide őket, készíts egy fényképet, vagy használd a dal egy képét.",
+          "choose": "Képek kiválasztása",
+          "takePhoto": "Fénykép készítése",
+          "songImages": "A dal képei",
+          "useImage": "{name} használata",
+          "page": "{page}. oldal",
+          "removePage": "A(z) {page}. oldal eltávolítása",
+          "read": "A szöveg beolvasása",
+          "downloading": "A szövegfelismerés betöltése… {percent}%",
+          "downloadHint": "Először az alkalmazás körülbelül 10 MB-ot tölt le. Később azonnal elindul.",
+          "starting": "A szövegfelismerés indítása…",
+          "reading": "A(z) {page}. oldal beolvasása ({count} oldalból)… {percent}%",
+          "stop": "Leállítás",
+          "result": "Akkordlap a képekről",
+          "resultHint": "Ellenőrizd az akkordokat és a dalszöveget: a szövegfelismerés hibázhat. A szöveget itt vagy később az akkordlapban is javíthatod.",
+          "noText": "Az alkalmazás nem talált szöveget ezeken a képeken. Próbálj egy élesebb, jobban megvilágított fényképet.",
+          "failed": "A szövegfelismerés nem sikerült. Ellenőrizd a kapcsolatot, és próbáld újra.",
+          "imageLoadFailed": "A dal egyik képe nem töltődött be. Ellenőrizd a kapcsolatot, és próbáld újra.",
+          "decodeFailed": "Ez a böngésző nem tudja beolvasni az egyik képet. PNG, JPEG vagy WebP képeket használj.",
+          "insert": "Beillesztés az akkordlapba",
+          "replace": "Az akkordlap cseréje",
+          "append": "Hozzáadás az akkordlap végéhez",
+          "back": "Vissza"
+        },
+        "chordproPlaceholder": "# Példa\n'{'title: Amazing Grace'}'\n'{'key: G'}'\n'{'tempo: 72'}'\n\n'{'start_of_verse: 1. versszak'}'\nA[G]mazing [G7]grace, how [C]sweet the [G]sound\n'{'end_of_verse'}'",
+        "details": "Részletek",
+        "key": "Hangnem",
+        "otherKeys": "További hangnemek",
+        "noteNames": "Az akkordlap hangnevei",
+        "noteNamesHint": "A német hangnevekkel a H a B hang, a B pedig a B♭.",
+        "noteNamesAuto": "Automatikus: német, ha az akkordlapon van H",
+        "tempo": "Tempó (BPM)",
+        "timeSignature": "Ütemmutató",
+        "duration": "Időtartam",
+        "projection": "Vetítés",
+        "theme": "Vetítési téma",
+        "themeNone": "Esemény témája",
+        "placeholderExample": "pl. {value}",
+        "placeholderFromChart": "Az akkordlapon: {value}",
+        "placeholderNotInChart": "Nincs az akkordlapon",
+        "playingOrder": "Lejátszási sorrend",
+        "chartSections": "Az akkordlap részei",
+        "noSections": "Az akkordlapon még nincsenek részek. A részek itt jelennek meg, ha hozzáadod őket az akkordlaphoz.",
+        "duplicateLabels": "Néhány résznek ugyanaz a címkéje. Adj minden résznek saját címkét, pl. 1. versszak és 2. versszak.",
+        "order": "Sorrend",
+        "missingSection": "Az akkordlapon nincs ilyen címkéjű rész",
+        "removeSection": "{label} eltávolítása ({position}. hely)",
+        "noOrder": "Nincs megadott sorrend. A részek az akkordlap szerinti sorrendben szólnak.",
+        "preview": "Előnézet",
+        "previewHint": "Ahogy a lap mutatja, a lejátszási sorrendben.",
+        "previewEmptyTitle": "Még nincs akkordlap",
+        "previewEmptyDescription": "Írd vagy illeszd be az akkordlapot. A lap itt jelenik meg.",
+        "previewNoSection": "A lejátszási sorrend nem nevezi meg az akkordlap egyik részét sem.",
+        "sharedRights": {
+          "title": "A közös jogi katalógus adatai",
+          "description": "Más gyülekezetek ugyanehhez a dalhoz ezeket az adatokat adták meg. A kitöltés csak az üres mezőkbe írja be őket; a jogi státuszt és a megjegyzést a saját gyülekezeted adja meg.",
+          "fill": "Üres mezők kitöltése a katalógusból"
+        }
+      },
+      "input": {
+        "titleRequired": "Adj meg egy címet",
+        "durationFormat": "Ilyen formátumot használj: 4:05"
+      },
+      "actions": {
+        "saved": "A dal mentve.",
+        "saveFailed": "Nem sikerült menteni a dalt. Próbáld újra.",
+        "notFound": "Ez a dal vagy változat már nem létezik.",
+        "deleteFailed": "A dal törlése nem sikerült. Próbáld újra.",
+        "addToEventFailed": "Nem sikerült hozzáadni a dalt az eseményhez. Próbáld újra.",
+        "eventNotFound": "Ez az esemény már nem létezik.",
+        "eventEnded": "Ez az esemény már véget ért. Egy következő eseményhez add hozzá a dalt.",
+        "arrangementNotFound": "Ez a változat már nem létezik.",
+        "scoreAdded": "A kotta hozzáadva.",
+        "scoreSaved": "A kotta mentve.",
+        "scoreReplaced": "A fájl lecserélve.",
+        "scoreSaveFailed": "Nem sikerült menteni a kottát. Próbáld újra.",
+        "scoreRemoveFailed": "Nem sikerült eltávolítani a kottát. Próbáld újra.",
+        "scoreNotFound": "Ez a kotta vagy dal már nem létezik. Töltsd újra az oldalt.",
+        "pdfAdded": "A PDF-fájl hozzáadva.",
+        "pdfSaved": "A PDF-fájl mentve.",
+        "pdfSaveFailed": "Nem sikerült menteni a PDF-fájlt. Próbáld újra.",
+        "pdfRemoveFailed": "Nem sikerült eltávolítani a PDF-fájlt. Próbáld újra.",
+        "pdfNotFound": "Ez a PDF-fájl vagy dal már nem létezik. Töltsd újra az oldalt.",
+        "imageAdded": "A kép hozzáadva.",
+        "imageSaved": "A kép mentve.",
+        "imageSaveFailed": "Nem sikerült menteni a képet. Próbáld újra.",
+        "imagePageFailed": "Nem sikerült hozzáadni az oldalt. Próbáld újra.",
+        "imageRemoveFailed": "Nem sikerült eltávolítani a képet. Próbáld újra.",
+        "imagePageRemoveFailed": "Nem sikerült eltávolítani az oldalt. Próbáld újra.",
+        "imageNotFound": "Ez a kép vagy dal már nem létezik. Töltsd újra az oldalt.",
+        "soundFileAdded": "A hangfájl hozzáadva.",
+        "soundFileSaved": "A hangfájl mentve.",
+        "soundFileSaveFailed": "Nem sikerült menteni a hangfájlt. Próbáld újra.",
+        "soundFileRemoveFailed": "Nem sikerült eltávolítani a hangfájlt. Próbáld újra.",
+        "soundFileNotFound": "Ez a hangfájl vagy dal már nem létezik. Töltsd újra az oldalt.",
+        "linkAdded": "A link hozzáadva.",
+        "linkSaved": "A link mentve.",
+        "linkSaveFailed": "Nem sikerült menteni a linket. Próbáld újra.",
+        "linkRemoveFailed": "Nem sikerült eltávolítani a linket. Próbáld újra.",
+        "linkNotFound": "Ez a link vagy dal már nem létezik. Töltsd újra az oldalt."
+      },
+      "scores": {
+        "title": "Kották",
+        "description": "A dal MusicXML-fájljai, például a dallam vagy egy fuvolaszólam. A MuseScore-ban válaszd a Fájl > Exportálás > MusicXML menüpontot. Az akkordlap a kottát az akkordok hangnemében mutatja.",
+        "emptyTitle": "Még nincsenek kották",
+        "emptyDescription": "Adj hozzá egy kottát lent. Ezután minden felhasználó kiválaszthatja az akkordlapon az akkordok helyett.",
+        "previewEmptyTitle": "Nincs megjeleníthető kotta",
+        "previewEmptyDescription": "Adj hozzá egy kottát. Itt jelenik meg.",
+        "show": "{name} megjelenítése az előnézetben",
+        "list": "A dal kottái",
+        "key": "Hangnem: {key}",
+        "noKey": "Nincs megadva hangnem",
+        "add": "Kotta hozzáadása",
+        "name": "Név",
+        "nameHint": "Milyen kotta ez, például Dallam vagy Fuvola. Ha üresen hagyod, a fájl neve lesz.",
+        "keyLabel": "A kotta hangneme",
+        "keyHint": "A hangnem, amelyben a kotta szól. Transzponáló szólamnál, például B-trombitánál a zenei (koncert) hangnem, nem a leírt. Az akkordlap a kottát ebből a hangnemből az akkordok hangnemébe transzponálja.",
+        "keyFromFile": "A fájlból",
+        "keyNone": "Nincs hangnem",
+        "majorKeys": "Dúr hangnemek",
+        "minorKeys": "Moll hangnemek",
+        "file": "MusicXML-fájl",
+        "fileHint": "Legfeljebb {mb} MB méretű .mxl vagy .musicxml fájl.",
+        "fileTooLarge": "Legfeljebb {mb} MB méretű fájlt használj",
+        "connectionFailed": "A kérés nem sikerült. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "pending": "Kotta hozzáadása…",
+        "limitReached": "Ennek a dalnak {max} kottája van, ennél több nem lehet. Távolíts el egyet, ha újat szeretnél hozzáadni.",
+        "edit": "Szerkesztés",
+        "editTitle": "{name} szerkesztése",
+        "editPending": "Mentés…",
+        "replace": "Fájl cseréje",
+        "replaceTitle": "{name} fájljának cseréje",
+        "replaceHint": "A kotta megtartja a nevét. Az új fájl minden felhasználónál lecseréli a régit.",
+        "replaceKeyHint": "A hangnem, amelyben az új fájl szól. „A fájlból” az új fájl első hangnemét olvassa ki, ahogy szól.",
+        "replacePending": "Csere…",
+        "remove": "Eltávolítás",
+        "removeTitle": "{name} eltávolítása",
+        "confirmTitle": "Eltávolítod ezt a kottát?",
+        "confirmDescription": "<strong>{name}</strong> és a fájlja minden felhasználónál eltűnik. Ezt nem lehet visszavonni.",
+        "removePending": "Eltávolítás…"
+      },
+      "pdfs": {
+        "title": "PDF-fájlok",
+        "description": "A dal kottái PDF-fájlként, például egy dallamkotta vagy egy kórusszólam. Minden felhasználó megnyithatja őket az alkalmazásban, a dalnál és az akkordlapon.",
+        "emptyTitle": "Még nincsenek PDF-fájlok",
+        "emptyDescription": "Adj hozzá egy PDF-fájlt lent. Ezután minden felhasználó megnyithatja.",
+        "previewEmptyTitle": "Nincs megjeleníthető PDF-fájl",
+        "previewEmptyDescription": "Adj hozzá egy PDF-fájlt. Itt jelenik meg.",
+        "show": "{name} megjelenítése az előnézetben",
+        "list": "A dal PDF-fájljai",
+        "add": "PDF-fájl hozzáadása",
+        "name": "Név",
+        "nameHint": "Milyen PDF-fájl ez, például Dallamkotta vagy Kórus. Ha üresen hagyod, a fájl neve lesz.",
+        "file": "PDF-fájl",
+        "fileHint": "Legfeljebb {mb} MB méretű PDF-fájl.",
+        "fileTooLarge": "Legfeljebb {mb} MB méretű fájlt használj",
+        "fileType": "PDF-fájlt használj",
+        "arrangements": "Változatok",
+        "arrangementsHint": "A változatok, amelyekhez a PDF-fájl tartozik. Ne válassz ki egyet sem, ha minden változathoz tartozik.",
+        "keys": "Hangnemek",
+        "keysHint": "A hangnemek, amelyekben a PDF-fájl szól. Ne válassz ki egyet sem, ha a hangnem nem számít.",
+        "majorKeys": "Dúr hangnemek",
+        "minorKeys": "Moll hangnemek",
+        "uploadFailed": "Nem sikerült feltölteni a fájlt. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "connectionFailed": "A kérés nem sikerült. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "pending": "Feltöltés…",
+        "limitReached": "Ennek a dalnak {max} PDF-fájlja van, ennél több nem lehet. Távolíts el egyet, ha újat szeretnél hozzáadni.",
+        "open": "Megnyitás",
+        "openTitle": "{name} megnyitása",
+        "edit": "Szerkesztés",
+        "editTitle": "{name} szerkesztése",
+        "editPending": "Mentés…",
+        "remove": "Eltávolítás",
+        "removeTitle": "{name} eltávolítása",
+        "confirmTitle": "Eltávolítod ezt a PDF-fájlt?",
+        "confirmDescription": "<strong>{name}</strong> és a fájlja minden felhasználónál eltűnik. Ezt nem lehet visszavonni.",
+        "removePending": "Eltávolítás…"
+      },
+      "soundFiles": {
+        "title": "Hangfájlok",
+        "description": "A dal felvételei, például egy demó vagy egy szólam gyakorló felvétele. Minden felhasználó lejátszhatja őket az alkalmazásban, a dalnál és az akkordlap gyakorló módjában.",
+        "emptyTitle": "Még nincsenek hangfájlok",
+        "emptyDescription": "Adj hozzá egy hangfájlt lent. Ezután minden felhasználó lejátszhatja.",
+        "list": "A dal hangfájljai",
+        "add": "Hangfájl hozzáadása",
+        "name": "Név",
+        "nameHint": "Milyen hangfájl ez, például Demó vagy Alt szólam. Ha üresen hagyod, a fájl neve lesz.",
+        "file": "Hangfájl",
+        "fileHint": "Legfeljebb {mb} MB méretű fájl: {formats}. Hosszú felvételhez MP3-at vagy M4A-t használj: ezek kisebbek.",
+        "fileTooLarge": "Legfeljebb {mb} MB méretű fájlt használj",
+        "fileType": "MP3, M4A, AAC, OGG, OPUS, WAV vagy FLAC fájlt használj",
+        "fileVideo": "Ez a fájl videó. Hangfájlt használj",
+        "arrangements": "Változatok",
+        "arrangementsHint": "A változatok, amelyekhez a hangfájl tartozik. Ne válassz ki egyet sem, ha minden változathoz tartozik.",
+        "keys": "Hangnemek",
+        "keysHint": "A hangnemek, amelyekben a felvétel szól. Ne válassz ki egyet sem, ha a hangnem nem számít.",
+        "majorKeys": "Dúr hangnemek",
+        "minorKeys": "Moll hangnemek",
+        "uploadFailed": "Nem sikerült feltölteni a fájlt. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "connectionFailed": "A kérés nem sikerült. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "pending": "Feltöltés…",
+        "limitReached": "Ennek a dalnak {max} hangfájlja van, ennél több nem lehet. Távolíts el egyet, ha újat szeretnél hozzáadni.",
+        "edit": "Szerkesztés",
+        "editTitle": "{name} szerkesztése",
+        "editPending": "Mentés…",
+        "remove": "Eltávolítás",
+        "removeTitle": "{name} eltávolítása",
+        "confirmTitle": "Eltávolítod ezt a hangfájlt?",
+        "confirmDescription": "<strong>{name}</strong> és a fájlja minden felhasználónál eltűnik. Ezt nem lehet visszavonni.",
+        "removePending": "Eltávolítás…"
+      },
+      "links": {
+        "title": "Linkek",
+        "description": "Weboldalak a dalról, például egy videó a YouTube-on vagy egy felvétel egy zenei szolgáltatásban. Minden felhasználó megnyithatja őket a dalnál és az akkordlap gyakorló módjában. Az alkalmazás nem tölti be ezeket az oldalakat: a link csak akkor nyílik meg egy új lapon, amikor egy felhasználó megnyitja.",
+        "emptyTitle": "Még nincsenek linkek",
+        "emptyDescription": "Adj hozzá egy linket lent, például egy YouTube-videóhoz.",
+        "list": "A dal linkjei",
+        "add": "Link hozzáadása",
+        "url": "Cím",
+        "urlHint": "A weboldal címe, például https://www.youtube.com/watch?v=…",
+        "name": "Név",
+        "nameHint": "Milyen link ez, például Eredeti felvétel. Ha üresen hagyod, YouTube vagy a webhely neve lesz.",
+        "arrangements": "Változatok",
+        "arrangementsHint": "A változatok, amelyekhez a link tartozik. Ne válassz ki egyet sem, ha minden változathoz tartozik.",
+        "keys": "Hangnemek",
+        "keysHint": "A hangnemek, amelyekben az oldalon lévő felvétel szól. Ne válassz ki egyet sem, ha a hangnem nem számít.",
+        "majorKeys": "Dúr hangnemek",
+        "minorKeys": "Moll hangnemek",
+        "connectionFailed": "A kérés nem sikerült. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "pending": "Hozzáadás…",
+        "limitReached": "Ennek a dalnak {max} linkje van, ennél több nem lehet. Távolíts el egyet, ha újat szeretnél hozzáadni.",
+        "edit": "Szerkesztés",
+        "editTitle": "{name} szerkesztése",
+        "editPending": "Mentés…",
+        "remove": "Eltávolítás",
+        "removeTitle": "{name} eltávolítása",
+        "confirmTitle": "Eltávolítod ezt a linket?",
+        "confirmDescription": "<strong>{name}</strong> minden felhasználónál eltűnik. Ezt nem lehet visszavonni.",
+        "removePending": "Eltávolítás…"
+      },
+      "images": {
+        "title": "Képek",
+        "description": "A dal kottái fényképként vagy szkennelve, például egy kézzel írt akkordlap. Egy képnek több oldala is lehet. Minden felhasználó megnyithatja őket az alkalmazásban, a dalnál és az akkordlapon.",
+        "emptyTitle": "Még nincsenek képek",
+        "emptyDescription": "Adj hozzá egy képet lent. Telefonon a kamerával is lefényképezheted az oldalakat.",
+        "previewEmptyTitle": "Nincs megjeleníthető kép",
+        "previewEmptyDescription": "Adj hozzá egy képet. Itt jelenik meg.",
+        "show": "{name} megjelenítése az előnézetben",
+        "list": "A dal képei",
+        "add": "Kép hozzáadása",
+        "name": "Név",
+        "nameHint": "Milyen kép ez, például Akkordlap. Ha üresen hagyod, a neve Kép lesz.",
+        "arrangements": "Változatok",
+        "arrangementsHint": "A változatok, amelyekhez a kép tartozik. Ne válassz ki egyet sem, ha minden változathoz tartozik.",
+        "keys": "Hangnemek",
+        "keysHint": "A hangnemek, amelyekben a kép szól. Ne válassz ki egyet sem, ha a hangnem nem számít.",
+        "majorKeys": "Dúr hangnemek",
+        "minorKeys": "Moll hangnemek",
+        "pages": "Oldalak",
+        "pagesHint": "PNG, JPEG vagy WebP képek, legfeljebb {max} oldal, a kotta sorrendjében. Az alkalmazás kisebbre veszi a nagy fényképeket, és eltávolítja az adataikat, például a helyet.",
+        "choose": "Képek kiválasztása",
+        "takePhoto": "Fénykép készítése",
+        "noPagesChosen": "Még nincsenek oldalak. Válassz képeket, húzd ide őket, vagy készíts egy fényképet.",
+        "page": "{page}. oldal",
+        "moveEarlier": "A(z) {page}. oldal előrébb helyezése",
+        "moveLater": "A(z) {page}. oldal hátrébb helyezése",
+        "removeChosen": "A(z) {page}. oldal eltávolítása",
+        "waiting": "Várakozik",
+        "uploading": "Feltöltés…",
+        "uploaded": "Feltöltve",
+        "failed": "Nincs feltöltve",
+        "decodeFailed": "Ez a böngésző nem tudja beolvasni ezt a képet. PNG, JPEG vagy WebP képet használj.",
+        "tooLarge": "Ez a kép túl nagy. Használj kisebb képet.",
+        "choosePages": "Válassz ki legalább egy oldalt",
+        "tooManyPages": "Egy képnek legfeljebb {max} oldala lehet",
+        "uploadFailed": "Néhány oldal nem töltődött fel. A hiányzó oldalak feltöltéséhez mentsd a módosításokat.",
+        "connectionFailed": "A kérés nem sikerült. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "pending": "{page}. oldal feltöltése ({count} oldalból)…",
+        "limitReached": "Ennek a dalnak {max} képe van, ennél több nem lehet. Távolíts el egyet, ha újat szeretnél hozzáadni.",
+        "open": "Megnyitás",
+        "openTitle": "{name} megnyitása",
+        "edit": "Szerkesztés",
+        "editTitle": "{name} szerkesztése",
+        "editPending": "Mentés…",
+        "remove": "Eltávolítás",
+        "removeTitle": "{name} eltávolítása",
+        "confirmTitle": "Eltávolítod ezt a képet?",
+        "confirmDescription": "<strong>{name}</strong> és minden oldala minden felhasználónál eltűnik. Ezt nem lehet visszavonni.",
+        "removePending": "Eltávolítás…",
+        "readText": "Szöveg beolvasása",
+        "readTextTitle": "Az akkordlap beolvasása innen: {name}",
+        "pagesOf": "{name} oldalai",
+        "noPages": "Ennek a képnek nincsenek oldalai. Adj hozzá oldalakat lent.",
+        "addPages": "Oldalak hozzáadása",
+        "pagesFull": "Ennek a képnek {max} oldala van, ennél több nem lehet. Távolíts el egyet, ha újat szeretnél hozzáadni.",
+        "removePage": "A(z) {page}. oldal eltávolítása",
+        "pageRemoved": "Eltávolítva",
+        "restorePage": "A(z) {page}. oldal visszaállítása"
+      },
+      "imageView": {
+        "title": "Kép",
+        "loading": "Kép betöltése…",
+        "back": "Vissza",
+        "notFound": {
+          "title": "Ez a kép nem létezik",
+          "description": "Lehet, hogy valaki eltávolította."
+        },
+        "pageCount": {
+          "one": "{count} oldal",
+          "other": "{count} oldal"
+        },
+        "page": "{page}. oldal / {count}",
+        "zoomIn": "Nagyítás",
+        "zoomOut": "Kicsinyítés",
+        "fitWidth": "Igazítás a szélességhez",
+        "zoom": "{percent}%",
+        "noPages": {
+          "title": "Ennek a képnek nincsenek oldalai",
+          "description": "Egy daladmin hozzáadhat oldalakat a dal szerkesztőoldalán."
+        },
+        "pageFailed": "Ezt az oldalt nem lehet megjeleníteni. Ellenőrizd a kapcsolatot, és töltsd újra az oldalt."
+      },
+      "pdfView": {
+        "title": "PDF-fájl",
+        "loading": "PDF-fájl betöltése…",
+        "back": "Vissza",
+        "notFound": {
+          "title": "Ez a PDF-fájl nem létezik",
+          "description": "Lehet, hogy valaki eltávolította."
+        },
+        "pageCount": {
+          "one": "{count} oldal",
+          "other": "{count} oldal"
+        },
+        "page": "{page}. oldal / {count}",
+        "zoomIn": "Nagyítás",
+        "zoomOut": "Kicsinyítés",
+        "fitWidth": "Igazítás a szélességhez",
+        "zoom": "{percent}%",
+        "download": "Letöltés",
+        "loadFailed": {
+          "title": "Nem sikerült megnyitni a PDF-fájlt",
+          "description": "Ellenőrizd a kapcsolatot, és próbáld újra. A fájlt le is töltheted."
+        },
+        "passwordProtected": {
+          "title": "Ez a PDF-fájl jelszóval védett",
+          "description": "Az alkalmazás nem tud jelszóval védett PDF-fájlt megnyitni. Töltsd le, és nyisd meg az eszközödön."
+        },
+        "noPages": {
+          "title": "Ennek a PDF-fájlnak nincsenek oldalai",
+          "description": "Töltsd le a fájlt, hogy lásd, mi van benne."
+        },
+        "tryAgain": "Újrapróbálás",
+        "pageFailed": "Ezt az oldalt nem lehet megjeleníteni."
+      },
+      "new": {
+        "title": "Új dal",
+        "checkingAccess": "Hozzáférés ellenőrzése…",
+        "signIn": {
+          "title": "Jelentkezz be a dalok hozzáadásához",
+          "description": "Csak bejelentkezett daladminok és szuperadminok adhatnak dalokat az adatbázishoz."
+        },
+        "forbidden": {
+          "title": "Csak daladminok adhatnak hozzá dalokat",
+          "description": "Kérj meg egy daladmint, hogy adja hozzá a dalt, vagy kérj meg egy szuperadmint, hogy adjon neked daladmin szerepkört."
+        },
+        "submit": "Dal hozzáadása",
+        "pending": "Dal hozzáadása…"
+      },
+      "edit": {
+        "title": "Dal szerkesztése",
+        "loading": "Dal betöltése…",
+        "signIn": {
+          "title": "Jelentkezz be a dalok szerkesztéséhez",
+          "description": "Csak bejelentkezett daladminok és szuperadminok szerkeszthetnek dalokat."
+        },
+        "forbidden": {
+          "title": "Csak daladminok szerkeszthetnek dalokat",
+          "description": "Kérj meg egy daladmint, hogy végezze el a módosítást, vagy kérj meg egy szuperadmint, hogy adjon neked daladmin szerepkört."
+        },
+        "noArrangement": {
+          "title": "Ennek a dalnak nincs változata",
+          "description": "A szerkesztéshez minden dalnak kell egy alapértelmezett változat."
+        },
+        "notFound": {
+          "title": "Ez a dal nem létezik",
+          "description": "Lehet, hogy valaki törölte."
+        },
+        "goToSongs": "Ugrás a dalokhoz",
+        "contents": "A dal részei",
+        "delete": {
+          "title": "Dal törlése",
+          "description": "Törli a dalt az összes változatával, kottájával, PDF-fájljával és képével együtt, és minden felhasználó hozzájuk tartozó személyes jegyzeteit, jelöléseit, valamint capo- és hangnemválasztásait is. Amíg egy esemény használja a dalt, nem törölheted. Ezt nem lehet visszavonni.",
+          "trigger": "Dal törlése",
+          "confirmTitle": "Törlöd ezt a dalt?",
+          "confirmDescription": "<strong>{title}</strong> törlődik az összes változatával, kottájával, PDF-fájljával és képével együtt, és velük minden felhasználó személyes jegyzetei, jelölései, valamint capo- és hangnemválasztásai is. Ezt nem lehet visszavonni."
+        }
+      },
+      "editDialog": {
+        "button": "Dal szerkesztése",
+        "buttonLabel": "„{title}” szerkesztése",
+        "title": "Dal szerkesztése",
+        "description": "Módosítsd a dalt és ezt a változatát. A változás mindenhol látszik, ahol a dal szerepel.",
+        "loadFailed": "A dal nem töltődött be. Próbáld újra.",
+        "notFound": "Ez a dal vagy változat már nem létezik.",
+        "loading": "Dal betöltése…",
+        "submit": "Dal mentése",
+        "pending": "Dal mentése…"
+      }
+    },
+    "songRights": {
+      "page": {
+        "title": "Dalok jogainak kutatása",
+        "checkingAccess": "Hozzáférés ellenőrzése…"
+      },
+      "gate": {
+        "signIn": {
+          "title": "Jelentkezz be a jogkutatás kezeléséhez",
+          "description": "Csak bejelentkezett szuperadminok állíthatják be a kutatást és nézhetik át a javaslatait."
+        },
+        "forbidden": {
+          "title": "A jogkutatást csak szuperadminok kezelhetik",
+          "description": "Egy dal jogait a dal szerkesztőoldalán módosíthatod."
+        }
+      },
+      "reviewGate": {
+        "signIn": {
+          "title": "Jelentkezz be a jogi javaslatok átnézéséhez",
+          "description": "Csak bejelentkezett daladminok és szuperadminok nézhetik át a javaslatokat."
+        },
+        "forbidden": {
+          "title": "A jogi javaslatokat csak daladminok nézhetik át",
+          "description": "Kérj meg egy daladmint vagy szuperadmint."
+        }
+      },
+      "songsLink": {
+        "one": "{count} jogi javaslat",
+        "other": "{count} jogi javaslat"
+      },
+      "songsLinkNone": "Jogi javaslatok",
+      "providers": {
+        "anthropic": "Anthropic (Claude)",
+        "openai": "OpenAI (ChatGPT)",
+        "google": "Google (Gemini)"
+      },
+      "settings": {
+        "title": "Kutatás",
+        "description": "Minden éjjel 00:00 és 05:00 (UTC) között egy MI-ügynök a weben megkeresi azoknak a daloknak a jogi adatait, amelyeknek nincs jogi adatuk, de van dalszövegük. Minden dal egyszer kerül sorra. Az ügynök csak javasol: a dalban semmi nem változik, amíg egy daladmin el nem fogadja a dalok átnézőoldalán. A szolgáltató minden kutatást a te API-kulcsodra számláz.",
+        "provider": "MI-szolgáltató",
+        "model": "Modell",
+        "modelHint": "A modell neve a szolgáltatónál, pl. „{model}”. A modellnek tudnia kell a weben keresni.",
+        "nightlyLimit": "Dalok éjszakánként",
+        "nightlyLimitHint": "Legfeljebb {max}. Minden dal egy kutatás, sok webes kereséssel.",
+        "enabled": "Kutatás minden éjjel",
+        "enabledHint": "Mentett API-kulcs kell hozzá.",
+        "save": "Beállítások mentése",
+        "saving": "Mentés…",
+        "saved": "A beállítások mentve.",
+        "saveFailed": "Nem sikerült menteni a beállításokat. Próbáld újra."
+      },
+      "apiKey": {
+        "title": "API-kulcs",
+        "description": "A kulcs titkosítva tárolódik. Senki nem láthatja újra, ezen az oldalon sem.",
+        "label": "A szolgáltató API-kulcsa",
+        "hint": "Kulcsot <link>a szolgáltató oldalán</link> készíthetsz. Ott állíts be költési korlátot is.",
+        "saved": "Egy „…{hint}” végű kulcs van mentve.",
+        "none": "Nincs mentett kulcs.",
+        "replaceLabel": "Új API-kulcs",
+        "save": "Kulcs mentése",
+        "saving": "Mentés…",
+        "keySaved": "Az API-kulcs mentve.",
+        "saveFailed": "Nem sikerült menteni az API-kulcsot. Próbáld újra.",
+        "remove": "Kulcs törlése",
+        "removing": "Törlés…",
+        "removeTitle": "Törlöd az API-kulcsot?",
+        "removeDescription": "A kutatás leáll, amíg valaki új kulcsot nem ment.",
+        "removed": "Az API-kulcs törölve.",
+        "removeFailed": "Nem sikerült törölni az API-kulcsot. Próbáld újra."
+      },
+      "run": {
+        "title": "Állapot",
+        "openSongs": {
+          "one": "{count} dal vár az első kutatására.",
+          "other": "{count} dal vár az első kutatására."
+        },
+        "counts": "Javaslatok: {pending} átnézendő, {accepted} elfogadva, {rejected} elutasítva, {failed} sikertelen.",
+        "review": "Az átnézőoldal megnyitása",
+        "test": "Kapcsolat tesztelése",
+        "testing": "Tesztelés…",
+        "testOk": "A szolgáltató válaszolt. A kulcs és a modell működik.",
+        "testFailed": "Nem sikerült tesztelni a kapcsolatot. Próbáld újra."
+      },
+      "runNow": {
+        "title": "Kutatás most",
+        "description": "Most, egyszerre kutatja a következő dalokat, akkor is, ha az éjszakai kutatás ki van kapcsolva. Az éjszakai korlát nem állítja meg. Csak a 00:00 és 05:00 (UTC) közötti kutatás számít bele annak az éjszakának a korlátjába.",
+        "empty": "Nincs dal, amely az első kutatására vár.",
+        "count": "Dalok száma",
+        "countHint": "Legfeljebb {max}. Sok dal egyszerre túllépheti a szolgáltató sebességkorlátját.",
+        "start": "Kutatás most",
+        "running": "Kutatás… (legfeljebb 4 perc)",
+        "result": "Kutatva: {researched}. Sikertelen: {failed}.",
+        "nothing": "Nincs dal, amely az első kutatására vár.",
+        "failed": "Nem sikerült elindítani a kutatást. Próbáld újra."
+      },
+      "upload": {
+        "title": "Helyi kutatás feltöltése",
+        "description": "Kutasd a dalokat a saját gépeden, pl. a Claude Code-dal, és töltsd fel az eredményeket JSON-fájlként. Minden eredmény átnézendő javaslat lesz, ahogy az éjszakai javaslatok. Az éjszakai korlát nem számolja őket. Csak olyan MI-asszisztenst használj, amelyre a szolgáltatója API- vagy üzleti ügyfeleknek szóló adatfeldolgozási feltételei vonatkoznak, személyes előfizetést ne.",
+        "download": "A váró dalok letöltése",
+        "downloading": "Letöltés…",
+        "downloadHint": "JSON-fájl az első kutatásukra váró dalokkal, a kutatás szabályaival és a dalonkénti válasz formátumával.",
+        "downloadEmpty": "Nincs dal, amely az első kutatására vár. Más dalok eredményeit ettől még feltöltheted.",
+        "downloadFailed": "Nem sikerült letölteni a dalokat. Próbáld újra.",
+        "file": "Az eredmények fájlja",
+        "fileHint": "JSON-fájl „song-rights-findings” formátumban, legfeljebb {max} eredménnyel és {size} MB méretben.",
+        "upload": "Eredmények feltöltése",
+        "uploading": "Feltöltés…",
+        "imported": {
+          "one": "{count} javaslat bekerült.",
+          "other": "{count} javaslat bekerült."
+        },
+        "skipped": "Kihagyva {count} (a dal nem létezik, a kutatása fut vagy átnézésre vár, vagy ugyanez az eredmény már fel van töltve): {songs}.",
+        "failed": "Nem sikerült feltölteni az eredményeket. Próbáld újra.",
+        "errors": {
+          "chooseFile": "Válassz ki egy eredményfájlt.",
+          "tooLarge": "A fájl túl nagy. A korlát {max} MB.",
+          "notJson": "A fájl nem érvényes JSON.",
+          "format": "A fájl nem felel meg a formátumnak itt: „{path}”: {message}",
+          "duplicate": "A fájlban több eredmény van a(z) {songId} dalhoz."
+        }
+      },
+      "closed": {
+        "title": "Elutasítva és sikertelen",
+        "description": "Az éjszakai kutatás ezeket a dalokat nem veszi újra. Egy dal új kutatását kézzel indíthatod.",
+        "empty": "Még nincs elutasított vagy sikertelen kutatás.",
+        "rejected": "Elutasítva",
+        "failed": "Sikertelen",
+        "again": "Újrakutatás",
+        "researching": "Kutatás…",
+        "againDone": "A(z) „{title}” új kutatása kész. Egy daladmin most átnézheti.",
+        "againFailed": "Nem sikerült kutatni a dalt. Próbáld újra."
+      },
+      "proposals": {
+        "title": "Átnézendő javaslatok",
+        "description": "Ezeket a dalokat egy MI-ügynök kutatta, éjjel vagy egy szuperadmin gépén. Ellenőrizz minden értéket: tartsd meg a helyeseket, szükség esetén javítsd őket, majd fogadd el. Az elutasított dal éjjel nem kap új kutatást.",
+        "emptyTitle": "Nincs átnézendő javaslat",
+        "emptyDescription": "Az éjszakai kutatás ide teszi a javaslatait.",
+        "firstOfTotal": "Ez az első {shown} javaslat a(z) {total} közül. Nézd át őket, aztán nyisd meg újra az oldalt a következőkért.",
+        "by": "Készítette: {model}",
+        "confidence": {
+          "high": "Nagy bizonyosság",
+          "medium": "Közepes bizonyosság",
+          "low": "Kis bizonyosság: ellenőrizd, hogy ez a helyes dal-e"
+        },
+        "songTypes": {
+          "hungarian_original": "Magyar eredeti",
+          "translation": "Fordítás",
+          "old_hymn": "Régi ének"
+        },
+        "levels": {
+          "verified": "Ellenőrzött",
+          "single source": "Egy forrás",
+          "not found": "Nem található"
+        },
+        "lyrics": "Dalszöveg",
+        "noLyrics": "Nincs dalszöveg.",
+        "keep": "Megtart",
+        "field": "Mező",
+        "current": "Jelenlegi",
+        "proposed": "Javasolt",
+        "level": "Szint",
+        "empty": "Üres",
+        "fields": {
+          "authors": "Szerzők",
+          "originalTitle": "Eredeti cím",
+          "translator": "Fordító",
+          "songbook": "Énekeskönyv",
+          "copyright": "Szerzői jogi szöveg",
+          "rightsStatus": "Jogi állapot"
+        },
+        "keepField": "A javasolt érték megtartása: {field}",
+        "tooLong": "{length} / {max} karakter: rövidítsd.",
+        "details": "Indoklás, jogtulajdonosok, kérdések és források",
+        "statusReason": "Állapot",
+        "rightsHolders": "Jogtulajdonosok",
+        "openQuestions": "Nyitott kérdések",
+        "sources": "Források",
+        "queries": "Az ügynök keresései",
+        "googleFirstLine": "Az első sor keresése a Google-ban",
+        "disclaimer": "Ez kutatási összefoglaló, nem jogi tanács.",
+        "accept": "Megtartott értékek elfogadása",
+        "accepting": "Elfogadás…",
+        "accepted": "A megtartott értékek mentve a dalba.",
+        "reject": "Elutasítás",
+        "rejecting": "Elutasítás…",
+        "rejected": "A javaslat elutasítva.",
+        "reviewFailed": "Nem sikerült menteni az átnézést. Próbáld újra.",
+        "gone": "Ezt a javaslatot már átnézték. Töltsd újra az oldalt.",
+        "openSong": "A dal megnyitása"
+      },
+      "errors": {
+        "notConfigured": "Előbb válassz szolgáltatót és modellt, és ments API-kulcsot.",
+        "keyRequired": "Ments API-kulcsot, mielőtt bekapcsolod a kutatást.",
+        "invalidKey": "Ez az API-kulcs nem érvényes.",
+        "providerFailed": "A szolgáltató hibával válaszolt: {message}",
+        "alreadyOpen": "Ennek a dalnak a kutatása már fut, vagy átnézésre vár.",
+        "researchFailed": "A kutatás nem sikerült: {message}"
+      },
+      "aiOff": {
+        "demo": "Demó módban az AI-kutatás ki van kapcsolva. A helyi kutatás (dalok letöltése, eredmények feltöltése) működik.",
+        "notReady": "Az AI-kutatás még nincs bekapcsolva: a platform kulcsa és a csomagonkénti keret beállítása hiányzik. A helyi kutatás (dalok letöltése, eredmények feltöltése) működik."
+      }
+    },
+    "server": {
+      "account": {
+        "enterCurrentPassword": "Add meg a jelenlegi jelszavadat",
+        "enterEmailAndPassword": "Add meg az e-mail-címedet és a jelszavadat.",
+        "wrongCredentials": "Az e-mail-cím vagy a jelszó nem helyes.",
+        "authenticatorExists": "A fiókodhoz már tartozik hitelesítő alkalmazás. Adj meg belőle egy kódot.",
+        "enterCode": "Add meg a hitelesítő alkalmazásod 6 jegyű kódját.",
+        "authenticatorUnavailable": "Ez a hitelesítő alkalmazás nem érhető el. Töltsd újra az oldalt, és próbáld újra.",
+        "wrongCode": "A kód nem helyes. Add meg a hitelesítő alkalmazásod legújabb kódját.",
+        "samePassword": "Adj meg a jelenlegitől eltérő jelszót",
+        "wrongCurrentPassword": "A jelenlegi jelszó nem helyes",
+        "weakPassword": "Ez a jelszó túl gyenge. Adj meg hosszabb jelszót.",
+        "otherDevicesSignedIn": "A jelszavad megváltozott, de lehet, hogy más eszközökön még be vagy jelentkezve. Jelentkezz ki ott, vagy kérj segítséget egy szuperadmintól.",
+        "tooManyAttempts": "Túl sok próbálkozás. Várj néhány percet, és próbáld újra.",
+        "blocked": "Ez a fiók le van tiltva. Fordulj egy szuperadminhoz.",
+        "signInFailed": "Nem sikerült bejelentkezni. Próbáld újra.",
+        "setupFailed": "Nem sikerült elindítani a beállítást. Próbáld újra.",
+        "verifyFailed": "Nem sikerült ellenőrizni a kódot. Próbáld újra.",
+        "checkPasswordFailed": "Nem sikerült ellenőrizni a jelenlegi jelszavadat. Próbáld újra.",
+        "removeAuthenticatorFailed": "Nem sikerült kikapcsolni a hitelesítő alkalmazásodat. Próbáld újra.",
+        "authenticatorOffOtherDevicesSignedIn": "A hitelesítő alkalmazásod ki van kapcsolva, de lehet, hogy más eszközökön még be vagy jelentkezve. Próbáld újra, vagy kérj segítséget egy szuperadmintól.",
+        "changePasswordFailed": "Nem sikerült megváltoztatni a jelszavadat. Próbáld újra.",
+        "setPasswordFailed": "Nem sikerült beállítani a jelszavadat. Próbáld újra.",
+        "loginLinkExpired": "Ez a link lejárt, vagy már felhasználták. Kérj egy szuperadmintól új bejelentkezési e-mailt.",
+        "noEmail": "A fiókodhoz nem tartozik e-mail-cím. Használd a hitelesítő alkalmazásodat, vagy fordulj egy szuperadminhoz.",
+        "enterEmailCode": "Add meg az e-mailben kapott 6 jegyű kódot.",
+        "wrongEmailCode": "A kód nem helyes. Add meg a legújabb e-mailben kapott kódot.",
+        "emailCodeExpired": "A kód lejárt, vagy túl sok volt a hibás próbálkozás. Kérj új kódot.",
+        "emailCodeTooSoon": "Egy percen belül már küldtünk kódot. Várj egy percet, és utána kérj új kódot.",
+        "emailCodeTooMany": "Ma már túl sok kódot kértél. Próbáld újra holnap, vagy kérj egy szuperadmintól bejelentkezési e-mailt.",
+        "emailCodeUseApp": "A fiókodhoz hitelesítő alkalmazás tartozik. Az alkalmazásban látható kódot add meg.",
+        "emailCodeNotSent": "Nem sikerült elküldeni az e-mailt. Várj egy percet, és próbáld újra.",
+        "emailCodeMessage": {
+          "subject": "Bejelentkezési kód – {app}",
+          "text": "A bejelentkezési kódod: {code}.\n\nA kód {minutes} percig érvényes. Ha nem te próbáltál bejelentkezni, változtasd meg a jelszavadat: valaki más ismeri."
+        }
+      },
+      "annotations": {
+        "slotNotThisSong": "Ez a dallistahely nem ehhez a dalhoz tartozik",
+        "unknownSongOrSlot": "Ismeretlen dal vagy dallistahely"
+      },
+      "sheetMarks": {
+        "tooMany": "Ezen az akkordlapon túl sok jelölés van. Előbb törölj néhányat."
+      },
+      "arrangements": {
+        "keyFormat": "Adj meg egy hangnemet, például G, Bb vagy F#m",
+        "tooManyOtherKeys": "Legfeljebb {max} további hangnemet adj meg",
+        "otherKeysNeedKey": "A további hangnemek előtt add meg az akkordlap hangnemét",
+        "otherKeysMode": "A további hangnemek az akkordlap hangnemével egyezzenek: mind dúr vagy mind moll",
+        "timeSignatureFormat": "Használj ilyen formátumot: 3/4",
+        "chartTooLong": "Az akkordlap túl hosszú",
+        "unknownSection": "Az akkordlapon nincs „{section}” nevű rész",
+        "unknownSong": "Ismeretlen dal",
+        "unknownTheme": "Ez a vetítési téma már nem létezik. Válassz egy másik témát.",
+        "usedByEvent": "Egy esemény használja ezt a változatot. Előbb vedd ki azokból az eseményekből.",
+        "usedByAttachment": "Egy PDF, kép, hangfájl vagy link csak ehhez a változathoz tartozik. Előbb módosítsd a változatait, vagy töröld.",
+        "isDefault": "Ez az alapértelmezett változat. Előbb tegyél egy másikat alapértelmezetté."
+      },
+      "events": {
+        "itemMissing": "Egy kiválasztott dal vagy önkéntes már nem létezik. Töltsd újra az oldalt.",
+        "notVolunteer": "Egy kiválasztott önkéntes már nem önkéntese ennek az eseménynek. Töltsd újra az oldalt.",
+        "projectionOpen": "Az esemény vetítése nyitva van. Ha törlöd az eseményt, a vetítés bezárul.",
+        "projectionUser": "Az esemény vetítése nyitva van, és a kezelője elveszítené a hozzáférését. Várj, amíg a vetítés bezárul, vagy zárd be a vetítést a módosítással együtt.",
+        "youtubeUrlInvalid": "Adj meg egy YouTube-linket, pl. https://youtu.be/…",
+        "replyClosed": "Az esemény véget ért. A válaszodat már nem módosíthatod.",
+        "privateWithoutAccess": "A privát eseményt csak az önkéntesei, a hozzáadója és a szuperadminok látják. Előbb add hozzá magad önkéntesként, aztán tedd privátra az eseményt.",
+        "areasRequired": "Válassz legalább egy csoportot.",
+        "areasNotYours": "Csak azokat a csoportokat adhatod hozzá vagy veheted el, amelyeknek tagja vagy.",
+        "areasWithoutAccess": "Nem vagy tagja ezeknek a csoportoknak, így nem látnád az eseményt. Válassz egy csoportot, amelynek tagja vagy, vagy előbb add hozzá magad önkéntesként.",
+        "areaMissing": "Egy kiválasztott csoport már nem létezik. Töltsd újra az oldalt."
+      },
+      "eventBlocks": {
+        "itemInBlock": "Egy kijelölt programpont már egy blokkban van. Töltsd újra az oldalt, és jelöld ki újra a programpontokat.",
+        "itemMissing": "Egy kijelölt programpont már nincs az eseményben. Töltsd újra az oldalt, és jelöld ki újra a programpontokat.",
+        "itemsApart": "A kijelölt programpontok már nem egymás mellett vannak. Egymás melletti programpontokat jelölj ki a blokkhoz.",
+        "blockMissing": "Ez a blokk már nem létezik. Töltsd újra az oldalt.",
+        "untilRequired": "Add meg a visszaszámlálás időpontját."
+      },
+      "liveSessions": {
+        "ended": "Ez a közös alkalom véget ért.",
+        "leaderChanged": "Most egy másik felhasználó vezeti ezt a közös alkalmat. Töltsd újra az oldalt.",
+        "notParticipant": "Ez a felhasználó nem önkéntese ennek az eseménynek. Válassz egy másik felhasználót.",
+        "startFailed": "Nem tudtuk elindítani a közös alkalmat. Próbáld újra.",
+        "changeFailed": "Nem tudtuk módosítani a közös alkalmat. Próbáld újra."
+      },
+      "profiles": {
+        "chooseImage": "Válassz egy képet",
+        "imageTooLarge": "Legfeljebb {mb} MB méretű képet használj",
+        "imageType": "PNG, JPEG vagy WebP képet használj",
+        "imageUnusable": "Ez a kép nem használható. Próbálj ki egy másik PNG, JPEG vagy WebP képet."
+      },
+      "scores": {
+        "chooseFile": "Válassz egy MusicXML-fájlt",
+        "tooLarge": "Legfeljebb {mb} MB méretű fájlt használj",
+        "fileType": "MusicXML-fájlt használj (.mxl vagy .musicxml). A MuseScore-ban válaszd a Fájl > Exportálás > MusicXML menüpontot.",
+        "nameTaken": "Ennek a dalnak már van ilyen nevű kottája",
+        "tooMany": "Egy dalnak legfeljebb {max} kottája lehet. Előbb távolíts el egyet."
+      },
+      "pdfs": {
+        "chooseFile": "Válassz egy PDF-fájlt",
+        "tooLarge": "Legfeljebb {mb} MB méretű fájlt használj",
+        "fileType": "PDF-fájlt használj",
+        "uploadMissing": "A feltöltés nem fejeződött be. Válaszd ki újra a fájlt.",
+        "tooMany": "Egy dalnak legfeljebb {max} PDF-fájlja lehet. Előbb távolíts el egyet.",
+        "tooManyUploads": "{max} befejezetlen PDF-feltöltésed van. Próbáld újra később.",
+        "unknownArrangement": "Csak ennek a dalnak a változatait válaszd ki"
+      },
+      "soundFiles": {
+        "chooseFile": "Válassz egy hangfájlt",
+        "tooLarge": "Legfeljebb {mb} MB méretű fájlt használj",
+        "fileType": "MP3, M4A, AAC, OGG, OPUS, WAV vagy FLAC fájlt használj",
+        "video": "Ez a fájl videó. Hangfájlt használj",
+        "uploadMissing": "A feltöltés nem fejeződött be. Válaszd ki újra a fájlt.",
+        "tooMany": "Egy dalnak legfeljebb {max} hangfájlja lehet. Előbb távolíts el egyet.",
+        "tooManyUploads": "{max} befejezetlen hangfájl-feltöltésed van. Próbáld újra később.",
+        "unknownArrangement": "Csak ennek a dalnak a változatait válaszd ki"
+      },
+      "links": {
+        "urlRequired": "Írd be a link címét",
+        "urlInvalid": "Egy weboldal címét írd be, pl. https://www.youtube.com/watch?v=…",
+        "tooMany": "Egy dalnak legfeljebb {max} linkje lehet. Előbb távolíts el egyet.",
+        "unknownArrangement": "Csak ennek a dalnak a változatait válaszd ki"
+      },
+      "images": {
+        "defaultName": "Kép",
+        "chooseImage": "Válassz egy képet",
+        "tooLarge": "Legfeljebb {mb} MB méretű képet használj",
+        "imageType": "PNG, JPEG vagy WebP képet használj",
+        "imageUnusable": "Ez a kép nem használható. Próbálj ki egy másik PNG, JPEG vagy WebP képet.",
+        "tooMany": "Egy dalnak legfeljebb {max} képe lehet. Előbb távolíts el egyet.",
+        "tooManyPages": "Egy képnek legfeljebb {max} oldala lehet. Előbb távolíts el egyet.",
+        "pagesChanged": "A kép oldalai megváltoztak. Töltsd újra az oldalt, és próbáld újra.",
+        "unknownArrangement": "Csak ennek a dalnak a változatait válaszd ki"
+      },
+      "projectionThemes": {
+        "nameTaken": "Már van ilyen nevű vetítési téma",
+        "tooMany": "Legfeljebb {max} vetítési téma lehet. Előbb törölj egyet.",
+        "defaultTheme": "Az alapértelmezett vetítési témát nem lehet törölni. Előbb tegyél egy másik témát alapértelmezetté.",
+        "themeMissing": "Ez a vetítési téma már nem létezik. Töltsd újra az oldalt.",
+        "itemMissing": "Ez az elem már nincs az eseményben. Töltsd újra az oldalt.",
+        "copyName": "{name} (másolat)",
+        "videoType": "MP4 vagy WebM videót használj",
+        "videoTooLarge": "Legfeljebb {mb} MB-os videót használj",
+        "videoUploadMissing": "A feltöltés nem fejeződött be. Válaszd ki újra a videót.",
+        "tooManyVideoUploads": "{max} befejezetlen videófeltöltésed van. Próbáld újra később."
+      },
+      "courses": {
+        "changed": "Valaki módosította ezt a képzést, miután az oldal betöltődött. Töltsd be újra az oldalt, aztán végezd el újra a módosításaidat.",
+        "areaMissing": "A képzés egyik szolgálati területe már nem létezik. Töltsd be újra az oldalt.",
+        "tooManyLessons": "Egy képzésnek legfeljebb {max} leckéje lehet.",
+        "noLessons": "A közzététel előtt adj hozzá egy leckét.",
+        "duplicateLesson": "Egy lecke csak egyszer lehet a képzésben",
+        "duplicateArea": "Egy terület csak egyszer lehet a listában",
+        "duplicateCourse": "Egy képzés csak egyszer lehet a listában",
+        "videoUrl": "Adj meg egy YouTube-videó linkjét",
+        "linkUrl": "Adj meg egy weboldal linkjét",
+        "invalidText": "A lecke szövegének formátumát az alkalmazás nem tudja megtartani. Másold be újra a szöveget.",
+        "textTooLong": "Egy lecke szövege legfeljebb {max} karakter lehet.",
+        "imageMissing": "A képzés borítóképe már nem létezik. Válaszd ki újra a képet.",
+        "leaderAreas": "Válassz legalább egy csoportot, és csak olyat, amelyet te vezetsz.",
+        "areasRequired": "Válassz legalább egy csoportot. Mindenkinek a legfelső csoporttal szól.",
+        "tooLarge": "Ez a képzés túl nagy a mentéshez. Rövidítsd a szövegeket, vagy tegyél át néhány leckét egy másik képzésbe."
+      },
+      "volunteerTemplates": {
+        "templateNameTaken": "Már van ilyen nevű szolgálati sablon",
+        "tooManyTemplates": "Legfeljebb {max} szolgálati sablon lehet. Előbb törölj egyet.",
+        "duplicateUser": "Egy személy csak egyszer lehet egy csapatban",
+        "duplicateArea": "Egy csoport csak egyszer lehet a listában",
+        "memberMissing": "A sablon egyik csoportja már nem létezik. Töltsd újra az oldalt.",
+        "teamMissing": "A csapatok egyik csoportja, felhasználója vagy sablonja már nem létezik. Töltsd újra az oldalt.",
+        "teamOutsider": "Egy vezető csak a csoport és az alatta lévő csoportok tagjait veheti fel. Más embereket egy eseményadmin vehet fel."
+      },
+      "groups": {
+        "nameTaken": "Ezen a helyen már van ilyen nevű csoport",
+        "tooManyGroups": "Legfeljebb {max} csoport lehet. Előbb törölj egyet.",
+        "duplicateGroup": "Egy csoport csak egyszer lehet a listában",
+        "duplicateMember": "Egy személy csak egyszer lehet egy csoport tagja",
+        "groupMissing": "Ez a csoport, a fölötte lévő csoport vagy egyik tagja már nem létezik. Töltsd újra az oldalt.",
+        "cycle": "Egy csoport nem kerülhet saját maga vagy egyik alcsoportja alá.",
+        "hasChildren": "Ennek a csoportnak vannak alcsoportjai. Előbb töröld vagy helyezd át őket.",
+        "root": "A gyökércsoport megmarad, és nincsenek szerepkörei: minden felhasználó a tagja.",
+        "rolesNeedSuperadmin": "Ez a csoport szerepköröket ad a tagjainak. Csak egy szuperadmin vehet fel bele embereket, vagy helyezhet alá tagokkal rendelkező csoportot.",
+        "removeNeedsLeader": "Ez a csoport szerepköröket ad a tagjainak. Csak egy szuperadmin, vagy ennek a csoportnak vagy egy fölötte lévő csoportnak a vezetője vehet ki belőle embereket, módosíthatja a vezetőit, viheti el egy szerepkör alól, vagy törölheti a tagjaival együtt.",
+        "rootLeadersNeedSuperadmin": "A gyökércsoport vezetőit csak egy szuperadmin választhatja ki.",
+        "projectionUser": "Egy esemény vetítése nyitva van, és a kezelője ezzel a módosítással elveszítené a hozzáférését. Várj, amíg a vetítés bezárul, aztán próbáld újra."
+      },
+      "eventImages": {
+        "defaultName": "Kép",
+        "tooMany": "Egy eseménynek legfeljebb {max} képe lehet. Előbb távolíts el egyet.",
+        "imagesChanged": "A programpont képei egy másik eszközön megváltoztak. Töltsd újra az oldalt, és próbáld újra.",
+        "imageSetMissing": "Egy programpont képei már nincsenek ebben az eseményben. Töltsd újra az oldalt, majd add hozzá újra a fájlt."
+      },
+      "announcements": {
+        "calendarUrlMissing": "Add meg a naptár címét.",
+        "tooManyCalendars": "Legfeljebb {max} naptár lehet. Előbb távolíts el egyet.",
+        "tooManyEntries": "Egy hirdetések programpontnak legfeljebb {max} saját bejegyzése lehet. Előbb távolíts el egyet.",
+        "undatedHighlight": "A dátum nélküli bejegyzés mindig kiemelt: csak a saját diáján jelenik meg.",
+        "qrCaptionWithoutText": "A felirathoz QR-kód kell. Előbb add meg a QR-kód címét vagy szövegét.",
+        "announcementMissing": "Ez a hirdetések programpont már nincs ebben az eseményben. Töltsd újra az oldalt, majd add hozzá újra."
+      },
+      "scripture": {
+        "cacheForbidden": "Csak a zenei vezetők, az eseményadminok és az esemény önkéntesei menthetnek igeverseket minden felhasználónak. Kérd meg valamelyiküket.",
+        "pasteOff": "Ehhez a fordításhoz most nem lehet igeverseket bemásolni. Töltsd újra az oldalt."
+      },
+      "setlists": {
+        "tooManyItems": "Egy eseménynek legfeljebb {max} programpontja lehet",
+        "duplicateKey": "Egy elem kétszer szerepel a listában. Töltsd újra az oldalt."
+      },
+      "songs": {
+        "usedByEvent": "Egy esemény használja ennek a dalnak egy változatát. Előbb vedd ki azokból az eseményekből.",
+        "tagTooLong": "Egy címke legfeljebb {max} karakter lehet",
+        "tooManyTags": "Egy dalnak legfeljebb {max} címkéje lehet",
+        "duplicateTags": "Egy dal két címkéje nem különbözhet csak a kis- és nagybetűkben"
+      },
+      "users": {
+        "chooseRole": "Válassz érvényes szerepköröket",
+        "groupMissing": "Egy bejelölt csoport már nem létezik. Töltsd újra az oldalt.",
+        "groupFull": "Egy bejelölt csoportnak már {max} tagja van. Előbb vegyél ki belőle egy tagot.",
+        "emailExists": "Már van felhasználó ezzel az e-mail-címmel",
+        "ownRole": "A saját szerepköreidet nem változtathatod meg. Kérj meg rá egy másik szuperadmint.",
+        "userGone": "Ez a felhasználó már nem létezik.",
+        "lastSuperadmin": "Az alkalmazásban legalább egy szuperadminnak maradnia kell. Előbb tegyél szuperadminná egy másik felhasználót.",
+        "ownBlock": "A saját fiókodat nem tilthatod le.",
+        "ownTwoStepReset": "A saját kétlépcsős azonosításodat nem állíthatod vissza. Kérj meg rá egy másik szuperadmint.",
+        "ownDelete": "A saját fiókodat nem törölheted. Kérj meg rá egy másik szuperadmint.",
+        "blockedSignOutFailed": "A felhasználó le van tiltva. De lehet, hogy más eszközökön még be van jelentkezve. Próbáld újra.",
+        "twoStepResetSignOutFailed": "A kétlépcsős azonosítás vissza van állítva. De lehet, hogy a felhasználó más eszközökön még be van jelentkezve. Próbáld újra.",
+        "ownLoginEmail": "Saját magadnak nem küldhetsz bejelentkezési e-mailt. A jelszavadat a Beállítások oldalon módosíthatod.",
+        "enterOwnPassword": "Ez a felhasználó szuperadmin. Add meg a saját jelszavadat.",
+        "wrongOwnPassword": "A jelszavad nem helyes.",
+        "emailChangeSignOutFailed": "Az e-mail-cím megváltozott, de a felhasználót nem sikerült minden eszközön kijelentkeztetni. Tiltsd le, majd engedélyezd újra a felhasználót a kijelentkeztetéshez.",
+        "emailChangedMessage": {
+          "subject": "Megváltozott a(z) {app} bejelentkezési e-mail-címed",
+          "text": "Egy szuperadmin megváltoztatta az e-mail-címet, amellyel a(z) {app} alkalmazásba bejelentkezel. Az új cím: {email}\n\nMinden eszközön kijelentkeztettünk. Ha nem számítottál erre a változásra, azonnal szólj a(z) {app} szuperadminjainak."
+        },
+        "loginEmailBlocked": "A felhasználó le van tiltva. Előbb oldd fel a letiltást.",
+        "loginEmailNoEmail": "A felhasználónak nincs e-mail-címe. Előbb adj meg egyet.",
+        "loginEmailTooSoon": "Nemrég küldtünk bejelentkezési e-mailt. Várj egy percet, és próbáld újra.",
+        "loginEmailNotSent": "Nem sikerült elküldeni a bejelentkezési e-mailt. Próbáld újra.",
+        "newUserEmailNotSent": "Nem sikerült elküldeni a bejelentkezési e-mailt, ezért a felhasználót nem adtuk hozzá. Próbáld újra.",
+        "newUserNoPrivacyContact": "A konfiguráció még nem nevezi meg az adatkezelőt és az elérhetőséget, ezért az alkalmazás nem tudja elküldeni a bejelentkezési e-mailt. Először add meg őket a Konfiguráció oldalon.",
+        "loginEmailUncertain": "Nem tudjuk, hogy a bejelentkezési e-mail elment-e. Ha nem érkezik meg, küldd el újra.",
+        "newUserEmailUncertain": "A felhasználót hozzáadtuk, de nem tudjuk, hogy a bejelentkezési e-mail elment-e. Ha nem érkezik meg, nyisd meg a felhasználót, és küldd el újra.",
+        "loginEmailMessage": {
+          "subject": "Állítsd be a jelszavadat – {app}",
+          "privacyNew": "{controller} Elérhetőség: {contact}. Az e-mail-címedet egy szuperadmin adta meg az alkalmazásnak. Mit tárol rólad az alkalmazás: az e-mail-címedet, a jelszavadat (hash formában), a kétlépcsős azonosításod adatait, a bejelentkezési kísérleteid és néhány kérésed rövid ideig tartó számlálását (körülbelül egy napig), a szerepköreidet, amelyeket egy szuperadmin ad neked közvetlenül vagy egy csoporttal, azokat az eseményeket és programpontokat, amelyekhez egy eseményadmin beoszt, ezeknek az eseményeknek azokat a csapatait (például zene vagy közvetítés), amelyekbe egy eseményadmin vagy egy csoportvezető beoszt, azokat a csoportokat (például zene → zenekar), amelyekbe egy eseményadmin, egy szuperadmin vagy egy csoportvezető felvesz, és azt, hogy vezeted-e őket, az ezekre az eseményekre adott válaszaidat az idejükkel, és ha megadod, a megjelenített nevedet, a profilképedet, az értesítéseid beállításait, az eszközeid push-címét és a naptárfeeded titkos linkjének hash-ét. Minden bejelentkezett tag látja a nevedet és a képedet, azt, hogy mely események önkéntese vagy, a csapataidat ezekben, a válaszaidat ezekre, és a nevedet azoknál a programpontoknál, amelyekhez beosztottak; egy privát eseménynél ezeket csak az önkéntesei, a hozzáadója és a szuperadminok látják, egy csak egyes csoportoknak szóló eseménynél pedig ezeknek a csoportoknak és az alattuk lévő csoportoknak a tagjai is. A csoportjaidat csak az eseményadminok, a szuperadminok és a csoportjaid vezetői látják. A csoportjaid azt is meghatározzák, hogy a csapat mely eseményeit és képzéseit látod. Egy esemény önkéntesei e-mailben a nevedet azoknál a programpontoknál is megkapják, amelyekhez beosztottak. A szuperadminok az e-mail-címedet is látják. Az alkalmazás értesítést is küld azokról az eseményekről, amelyeken önkéntes vagy, e-mailben és, ha bekapcsolod, push-értesítésben; ezeket az értesítéseket a Beállításokban kikapcsolhatod. Az alkalmazás a Vercel (az USA-ban, az Európai Bizottság általános adatvédelmi kikötései szerint) és a Supabase (az EU-ban) szolgáltatásain fut, az e-maileket a Resend küldi, a hibajelentéseit pedig a Sentrynek (az EU-ban tárolva, legfeljebb 90 napig; a cég az USA-ban van, az általános adatvédelmi kikötések szerint), a felhasználói azonosítód helyett egy álneves kóddal, a neved, az e-mail-címed és az IP-címed nélkül (egy hibaüzenet így is tartalmazhat adatot az oldalról, például egy nevet). A push-értesítések a böngésződ push-szolgáltatásán (Google, Microsoft, Mozilla vagy Apple) keresztül mennek, az USA-ban; a push bekapcsolása előtt a Beállítások ehhez a hozzájárulásodat kérik. Ha bekapcsolod a naptárfeedet, a naptáralkalmazásod cége (például a Google, az Apple vagy a Microsoft) az USA-ban is tárolhatja az eseményeidet; a Beállítások ehhez is a hozzájárulásodat kérik, és a feedben nincs más tagok neve. Az alkalmazás ezeket az adatokat a gyülekezet dalainak, eseményeinek, próbáinak és képzéseinek szervezésére, valamint az alkalmazás hibáinak megtalálására és kijavítására használja. A jogalap a gyülekezet jogos érdeke a zenélés és az események megszervezésében, a csapata képzésében és egy hibátlanul működő alkalmazásban (GDPR 6. cikk (1) bekezdés f) pont). Az adataid addig maradnak, amíg egy szuperadmin nem törli a fiókodat. Az adatkezelőtől kérhetsz másolatot az adataidról, kérheted a helyesbítésüket, a fiókod törlését vagy az adatkezelés korlátozását, és tiltakozhatsz az adatkezelés ellen. Panaszt tehetsz az adatvédelmi hatóságnál is: {authority}. A teljes adatvédelmi tájékoztató:\n{privacy}",
+          "button": "Jelszó beállítása",
+          "textAgain": "Egy szuperadmin új linket küldött a(z) {app} jelszavad beállításához. Ezzel az e-mail-címmel jelentkezel be: {email}\n\nAz új jelszó beállításához nyisd meg ezt a linket:\n{link}\n\nA link csak egyszer és korlátozott ideig működik. Amíg nem állítasz be új jelszót, a jelenlegi jelszavad működik.\n\nAdatvédelmi tájékoztató:\n{privacy}\n\nHa nem vártad ezt az e-mailt, nyugodtan hagyd figyelmen kívül."
+        }
+      }
+    },
+    "modules": {
+      "names": {
+        "songs": "Dalok",
+        "songsPdfs": "PDF-kották",
+        "songsImages": "Kottaképek",
+        "songsScores": "MusicXML-kották",
+        "songsSoundFiles": "Hangfájlok",
+        "songsLinks": "Linkek",
+        "songsSongpraise": "SongPraise-import",
+        "songsOcr": "Kotta beolvasása (OCR)",
+        "sheet": "Akkordlap",
+        "sheetMetronome": "Metronóm",
+        "sheetMidiOut": "MIDI-órajel kimenet",
+        "sheetLive": "Közös alkalmak",
+        "sheetMarks": "Rajzok az akkordlapon",
+        "sheetChordDiagrams": "Akkorddiagramok",
+        "rehearsal": "Próba",
+        "scripture": "Igeolvasások",
+        "dailyPsalm": "A nap zsoltára",
+        "projection": "Kivetítés",
+        "projectionThemes": "Vetítési témák",
+        "projectionImages": "Képes elemek",
+        "projectionAnnouncements": "Hirdetések",
+        "projectionTextSlides": "Szöveges diák",
+        "projectionOverlay": "Közvetítési overlay",
+        "projectionBiblePanel": "Biblia panel",
+        "projectionCountdown": "Blokk-visszaszámlálás",
+        "projectionQuickAdd": "Gyors hozzáadás",
+        "projectionPptxExport": "Diák letöltése",
+        "events": "Események",
+        "eventsBlocks": "Blokkok",
+        "eventsVolunteerTeams": "Szolgálati csapatok",
+        "eventsCalendarFeed": "Naptár-feliratkozás",
+        "notifications": "E-mail-értesítések",
+        "notificationsPush": "Push-értesítések",
+        "mixer": "Keverőpult",
+        "courses": "Tudástér",
+        "songRights": "Dalok jogainak kutatása",
+        "songRightsResearch": "Automatikus kutatás"
+      },
+      "page": {
+        "title": "Modulok",
+        "loading": "A modulok betöltése…"
+      },
+      "gate": {
+        "signIn": {
+          "title": "Jelentkezz be a modulok beállításához",
+          "description": "Csak bejelentkezett szuperadminok kapcsolhatják be és ki a modulokat."
+        },
+        "forbidden": {
+          "title": "Csak szuperadminok kapcsolhatják be és ki a modulokat",
+          "description": "Kérj meg egy szuperadmint."
+        }
+      },
+      "form": {
+        "empty": {
+          "title": "Nincs beállítható modul",
+          "description": "Az alkalmazás minden része be van kapcsolva. Az alkalmazás egy későbbi verziója hozza a kapcsolókat."
+        },
+        "switchLabel": "{module} bekapcsolva",
+        "turnOnFirst": "Előbb kapcsold be: {modules}.",
+        "saved": "A modulok mentve",
+        "saveFailed": "Nem tudtuk menteni a modulokat. Próbáld újra.",
+        "confirmOff": {
+          "title": "Kikapcsolod a modulokat?",
+          "description": "Ezek a modulok minden felhasználónak kikapcsolnak: {modules}. Az adataik megmaradnak. Ha újra bekapcsolod őket, minden felhasználó újra látja az adatokat.",
+          "projection": "A futó kivetítések véget érnek.",
+          "live": "A nyitott közös alkalmak véget érnek.",
+          "scripture": "Az alkalmazás törli a felhasználók által bemásolt verseket. Ha újra látni akarják őket, a felhasználóknak újra be kell másolniuk őket.",
+          "confirm": "Igen, kikapcsolom a modulokat",
+          "cancel": "Mégse, a modulok maradnak"
+        }
+      },
+      "off": {
+        "title": "{module}: kikapcsolva",
+        "description": "Egy szuperadmin kikapcsolta az alkalmazásnak ezt a részét.",
+        "descriptionSuperadmin": "A Konfiguráció oldal Modulok fülén újra bekapcsolhatod.",
+        "openModules": "Modulok megnyitása"
+      },
+      "items": {
+        "locked": "{module}: kikapcsolva. Az elem megmarad, de nem módosíthatod."
+      },
+      "errors": {
+        "off": "{module}: kikapcsolva. Az oldal újra betöltődik.",
+        "unknown": "Ez a modul nem létezik."
+      }
+    }
+  },
   "portal": {
     "home": {
       "title": "Egyházmegyei portál",

@@ -146,6 +146,10 @@ export const WORKSPACE_TENANT_ACTIONS = [
   "directory.open",
   "calendarEvent.publish",
   "song.edit",
+  // Music module (merged Music Sheet DB, docs/music-merge/PLAN.md §5.9, owner decision 2026-11-24).
+  "music.song.view",
+  "music.song.manage",
+  "music.songRights.manage",
 ] as const;
 export type WorkspaceTenantAction = (typeof WORKSPACE_TENANT_ACTIONS)[number];
 

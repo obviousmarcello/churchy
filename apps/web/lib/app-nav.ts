@@ -188,8 +188,8 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           id: "songs",
           label: t("sections.songs"),
           href: "/munkater/enektar",
-          module: "ws.worship",
-          requires: { action: "song.edit" },
+          module: "ws.music.songs",
+          requires: { action: "music.song.view" },
         },
         {
           id: "absences",

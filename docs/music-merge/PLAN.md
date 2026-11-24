@@ -333,3 +333,65 @@ Open questions (asked, not assumed):
 | Notification prefs/push | Merged into Churchy notification preferences (notifications phase). |
 | Lyrics | Moved into the default arrangement's chart text (demo songs get lyrics back). |
 | Events/volunteer tables | Phase 4 per the plan's phase table (not yet confirmed separately by the owner). |
+
+### 11.3 Decisions for phase 2 (2026-11-24)
+
+| # | Decision |
+|---|---|
+| Demo / e2e data | The copied models run against in-process Postgres (PGlite) through a supabase-js → SQL translator; no credentials. |
+| Roles | `music.song.view`: every workspace role; `music.song.manage` and `music.songRights.manage` (shared rights catalog, research pages): leader + music leader. |
+| Scope | SongPraise import and the song-rights / rights-proposals pages now; AI research off in demo with a notice; real mode: platform key + per-plan cap. |
+| Slices | Slice 1: catalog, rights, local mode, pages. Slice 2: song files (PDF, image, MusicXML, sound, links). |
+
+## 14. Phase 2 progress (music-02-songs, slice 1)
+
+Done:
+- **Local mode** (`@churchy/db/local`, used through `apps/web/server/data-adapters.ts` only):
+  one PGlite per process with the Churchy migrations (bundled as strings,
+  `pnpm --filter @churchy/db local:sql`) and the D-91 demo seed; every demo session gets its own
+  copies of the demo churches' tenant row and music rows under fresh tenant ids, so visitors stay
+  apart and RLS keeps them apart (one PGlite per session would be ~300 MB each; this is the
+  "per-visitor isolation" of the decision with one instance). *Visszaállítás* drops the copies.
+  `postgrest.ts` answers supabase-js requests (select with embeds/`!inner`/aliases, filters incl.
+  on embeds, order/limit/range/count, single, insert/upsert/update/delete, RPC) in a transaction as
+  the token's role with `request.jwt.claims`; unsupported shapes fail as `unsupported` (none met so
+  far; `or()`/`and()` are not implemented). `getMusicSupabase()` (`apps/web/server/music/db.ts`)
+  picks Supabase when configured, otherwise local mode (never in staging/production).
+- Storage keys `t/<tenant>/…`: the real client's `fetch` rewrites every Storage path
+  (`tenantStorageFetch`); local mode has no Storage yet (slice 2).
+- Migration `0008_music_songs` (+ down): `tenant_id DEFAULT app.current_tenant_id()` on all music
+  tables; the phase-2 song functions and the rights-proposal functions (SECURITY INVOKER, see
+  FUNCTIONS.md); triggers `set_updated_at`, attachment-link check; shared catalog `song_rights`
+  (catalog scope, platform rows; key CCLI number from the copyright text, else folded title +
+  authors), fed by the songs trigger `share_song_rights()`; `shared_song_rights()` lookup.
+- Policy actions `music.song.view|manage`, `music.songRights.manage` (MATRIX.md); workspace modules
+  `ws.music.songs` (+ `.pdfs .images .scores .sound-files .links .songpraise .ocr`) and
+  `ws.music.song-rights`: off by default, a child needs its parent, in every workspace tier (the
+  demo churches switched them on); labels in `/admin/modulok`.
+- Their hu messages `common, components, songs, songRights, server, modules` folded into `music.*`
+  (informal; the catalog test's formal-address check skips `music.`). Their `m.x.y` accessor is
+  kept through `apps/web/i18n/music/*` (reads the request's next-intl messages).
+- Copied (imports, routes, tokens edited): models `songs, arrangements, shared, song-rights-research`
+  (+ the file models `pdfs, images, scores, sound-files, links, stray-files, stored-files` for the
+  song reads), `errors, form-state, zod-i18n, songpraise, musicxml, rights-research/{prompt,result,local-files}`,
+  their libs, components and `ui` primitives (button on Churchy's `buttonClasses`, shadcn tokens
+  mapped to Churchy tokens). Pages: `/munkater/enektar` (list, search, details), `/uj`,
+  `/[id]/szerkesztes` (song, chart, order, details, rights, delete; "Fill from the shared catalog"),
+  `/jogok` (local research upload/download, closed researches, AI notice), `/jogi-javaslatok`.
+  Server actions through `withPolicy` (`usePolicyAction` gives the forms their state back).
+- Demo lyrics are in the default arrangement's chart; songs without an arrangement got an
+  `Alapváltozat` (key + first line). Churchy's old song library screens and actions are removed.
+
+Left out (with the phase that brings them): song files and their storage (2b); chart preview, sheet
+link (3); play history, "Add to event", `recent`/`oldest` sorts (4); projection theme (5); OCR
+"Read from image" (7); AI research settings/key/test/run (8, see questions); their offline page
+cache and page transitions (not ported). Churchy's plan editor still uses the mock song repository
+in demo mode, so its song picker and `/munkater/enektar` show different copies of the demo songs.
+
+Open questions:
+1. AI research in real mode: where is the platform key configured (env name) and what is the
+   per-plan cap (unit: songs per month? per night?; which plans)? Kept off until answered.
+2. `share_song_rights()` is SECURITY DEFINER so the shared rows stay read-only for the app roles
+   (the catalog rule of `rls.ts`); alternative: a new "shared catalog" class with write policies.
+   Its owner must bypass RLS (Supabase `postgres`). OK?
+3. Which plans include the music modules? They are in every workspace tier now (default off).

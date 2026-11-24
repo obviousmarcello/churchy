@@ -41,8 +41,10 @@ describe("messages/hu.json", () => {
     }
   });
 
-  it("uses the formal address (no informal forms)", () => {
-    for (const [key, value] of all) {
+  // The music namespace (merged Music Sheet DB) is already informal (tegező, decision 2026-11-24);
+  // the rest of the catalog is converted by the dedicated tone pass, which then drops this check.
+  it("uses the formal address (no informal forms) outside the music namespace", () => {
+    for (const [key, value] of all.filter(([key]) => !key.startsWith("music."))) {
       expect(value as string, key).not.toMatch(/\b(te|neked|téged|kérlek|add meg|kattints)\b/i);
     }
   });

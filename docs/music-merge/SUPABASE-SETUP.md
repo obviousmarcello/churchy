@@ -88,3 +88,15 @@ CREATE POLICY music_buckets_read ON storage.buckets AS PERMISSIVE FOR SELECT TO 
 Check after setup (SQL editor): with `set local role churchy_music` and a `request.jwt.claims`
 of tenant A, `select count(*) from storage.objects where name like 't/<tenant B>/%'` returns 0
 and an insert of `t/<tenant B>/x` is rejected.
+
+## Phase 2 notes (music-02-songs)
+
+- Every music table's `tenant_id` defaults to `app.current_tenant_id()` (migration
+  `0008_music_songs`): the models insert without naming the tenant; `tenant_isolation` checks it.
+- Storage paths: `createMusicSupabaseClient` installs `tenantStorageFetch`, which rewrites the
+  object path of every Storage request to `t/<tenant_id>/<path>` (and the `prefixes` of a bulk
+  delete).
+- `share_song_rights()` (trigger on `songs`) is SECURITY DEFINER: its owner (the migration role)
+  must bypass RLS to write the shared `song_rights` rows. On Supabase that is `postgres`.
+- Without `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_JWT_SECRET` the music models run
+  in local mode (in-process PGlite with the demo data, PLAN §14); staging and production refuse.

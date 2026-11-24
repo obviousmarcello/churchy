@@ -56,6 +56,16 @@ export const WorkspaceModuleKeySchema = z.enum([
   "ws.hr.confidential",
   "ws.docs",
   "ws.board",
+  // Music module (merged Music Sheet DB); default off, the owner switches them on.
+  "ws.music.songs",
+  "ws.music.songs.pdfs",
+  "ws.music.songs.images",
+  "ws.music.songs.scores",
+  "ws.music.songs.sound-files",
+  "ws.music.songs.links",
+  "ws.music.songs.songpraise",
+  "ws.music.songs.ocr",
+  "ws.music.song-rights",
 ]);
 export type WorkspaceModuleKey = z.infer<typeof WorkspaceModuleKeySchema>;
 

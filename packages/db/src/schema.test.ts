@@ -173,6 +173,7 @@ describe("migrations", () => {
       "0005_music_functions",
       "0006_music_schema",
       "0007_music_rls",
+      "0008_music_songs",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);
@@ -180,8 +181,12 @@ describe("migrations", () => {
     }
   });
 
-  it("down of 0001 / 0006 drops every table and enum of the schema", () => {
-    const down = [readDownMigration("0006_music_schema"), readDownMigration("0001_schema")]
+  it("down of 0001 / 0006 / 0008 drops every table and enum of the schema", () => {
+    const down = [
+      readDownMigration("0008_music_songs"),
+      readDownMigration("0006_music_schema"),
+      readDownMigration("0001_schema"),
+    ]
       .flat()
       .join("\n");
     for (const t of tables) expect(down, t.name).toContain(`DROP TABLE IF EXISTS "${t.name}"`);
@@ -206,7 +211,11 @@ describe("migrations", () => {
     const all = journal
       .map((e) => readFileSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`, "utf8"))
       .join("\n");
-    const down = [readDownMigration("0007_music_rls"), readDownMigration("0003_rls")]
+    const down = [
+      readDownMigration("0008_music_songs"),
+      readDownMigration("0007_music_rls"),
+      readDownMigration("0003_rls"),
+    ]
       .flat()
       .join("\n");
     const tenantExpr = "tenant_id = (SELECT app.current_tenant_id())";

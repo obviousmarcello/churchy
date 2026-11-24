@@ -38,6 +38,9 @@ import {
   registerMockAdapter,
 } from "@churchy/data-mock";
 import { registerDbAdapter } from "@churchy/db/register";
+import type * as LocalMusic from "@churchy/db/local";
+import type { Catalog } from "@churchy/db/local";
+import { demoUuid } from "@churchy/db/seed";
 import { formatPersonName } from "@churchy/hu";
 import type { DemoContextOption, DemoDirectory, DemoPersonaKey } from "@/lib/demo/personas";
 
@@ -121,6 +124,55 @@ export function setDemoSessionNow(sessionId: string, at: Date | null): void {
 /** *Visszaállítás*: restores a demo session's seed data, outbox and simulation switches. */
 export function resetDemoSession(sessionId: string): void {
   demoSessions().reset(sessionId);
+  // Only when the local music database is running (it starts on the first music request).
+  if (localMusic) {
+    void localMusic
+      .then(({ localDatabase }) => localDatabase())
+      .then((db) => db.dropSession(sessionId))
+      .catch(() => {});
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Music module, local mode (docs/music-merge/PLAN.md §14): in-process Postgres + PostgREST stand-in
+// ---------------------------------------------------------------------------------------------
+
+let musicCatalog: Promise<Catalog> | undefined;
+/** Loaded on first use only: the proxy imports this file too, and must not bundle PGlite. */
+let localMusic: Promise<typeof LocalMusic> | undefined;
+const loadLocalMusic = () => (localMusic ??= import("@churchy/db/local"));
+
+/** The profile id of a demo user in the local music database (the seed maps fixture ids). */
+export const localMusicUserId = (userId: string): string => demoUuid(userId);
+
+/**
+ * The `fetch` a supabase-js client uses for the music models when no Supabase project is
+ * configured (demo, Phase A, e2e): `role` and the churchy claims as the real tenant token carries
+ * them, for the demo session's own copy of the church (`sessionId`; null = shared default data).
+ */
+export async function localMusicFetch(
+  sessionId: string | null,
+  actor: { tenantId: string; userId: string },
+  role: string,
+): Promise<typeof fetch> {
+  const { DEFAULT_SESSION, loadCatalog, localDatabase, localId, localPostgrestFetch } =
+    await loadLocalMusic();
+  const db = await localDatabase();
+  musicCatalog ??= loadCatalog(db);
+  const catalog = musicCatalog;
+  const tenantId = await db.tenantFor(sessionId ?? DEFAULT_SESSION, actor.tenantId);
+  return localPostgrestFetch({
+    db,
+    catalog: () => catalog,
+    role,
+    claims: {
+      iss: "churchy",
+      aud: "authenticated",
+      sub: localId(actor.userId),
+      tenant_id: tenantId,
+      role,
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------------------------

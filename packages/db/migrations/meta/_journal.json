@@ -57,6 +57,13 @@
       "when": 1795469933076,
       "tag": "0007_music_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795500400615,
+      "tag": "0008_music_songs",
+      "breakpoints": true
     }
   ]
 }

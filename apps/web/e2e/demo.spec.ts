@@ -66,7 +66,7 @@ const EXPECTED: Record<PersonaKey, { visible: string[]; hidden: string[] }> = {
   latogato: { visible: [], hidden: ["workspace", "admin", "organization"] },
   tulajdonos: {
     visible: ["workspace", "admin", "domain", "users"],
-    hidden: ["organization", "songs"],
+    hidden: ["organization"],
   },
   szerkeszto: { visible: ["admin", "news"], hidden: ["appearance", "requests", "domain"] },
   iroda: { visible: ["admin", "announcements", "requests"], hidden: ["news", "appearance"] },
@@ -74,8 +74,9 @@ const EXPECTED: Record<PersonaKey, { visible: string[]; hidden: string[] }> = {
   onkentes: { visible: ["workspace", "calendar"], hidden: ["admin", "rooms"] },
   csoportvezeto: { visible: ["workspace", "calendar", "hr"], hidden: ["admin"] },
   zenei: { visible: ["workspace", "songs", "hr"], hidden: ["admin"] },
-  terem: { visible: ["workspace", "rooms"], hidden: ["admin", "songs"] },
-  hr: { visible: ["workspace", "hr"], hidden: ["admin", "songs"] },
+  // Every workspace role reads the songs (music module, owner decision 2026-11-24).
+  terem: { visible: ["workspace", "rooms", "songs"], hidden: ["admin"] },
+  hr: { visible: ["workspace", "hr", "songs"], hidden: ["admin"] },
   bizalmas: { visible: ["workspace", "calendar", "hr"], hidden: ["admin"] },
   egyhazmegyeiHr: {
     visible: ["organization", "orgLinks", "orgTemplates"],

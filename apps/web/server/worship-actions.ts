@@ -2,43 +2,27 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  ArrangementInputSchema,
-  MusicalKeySchema,
-  SongInputSchema,
-  isContractError,
-  type PlanItemInput,
-} from "@churchy/contracts";
+import { isContractError, type PlanItemInput } from "@churchy/contracts";
 import { can } from "@churchy/policy";
-import { formValues, repositoryErrors, validate, type FormState } from "@/lib/admin/content-form";
 import { findTransition } from "@/lib/worship/plan-flow";
 import { withPolicy, type PolicyScope } from "@/server/policy";
 import { getRequestRepositories } from "@/server/repositories";
 import { getRequestContext } from "@/server/session";
 import { getWorkspaceEnv } from "@/server/workspace";
-import { workspaceErrorMessages } from "@/server/workspace-form";
 import { planAssignments, planViewResources, planWhen } from "@/server/worship";
 
 /**
  * Mutations of the worship screens (D-64, D-66 … D-68). Each one goes through `withPolicy()`:
- * song library edits need `song.edit`; plans `servicePlan.edit` / `servicePlan.approve`;
+ * (the song library moved to the music module, `/munkater/enektar`); plans `servicePlan.edit` / `servicePlan.approve`;
  * assignments `assignment.manage` for the team; answering and commenting `servicePlan.view`.
  */
 
 type Outcome = "ok" | "invalid" | "notFound";
 
-async function tenantOnly() {
-  const { tenantId } = await getRequestContext();
-  return tenantId === undefined ? null : { tenantId };
-}
 async function forPlan(_scope: PolicyScope, ..._args: unknown[]) {
   const { tenantId } = await getRequestContext();
   return tenantId === undefined ? null : { tenantId, teamId: null };
 }
-const forSong = tenantOnly as (
-  scope: PolicyScope,
-  ...args: unknown[]
-) => ReturnType<typeof tenantOnly>;
 
 async function guarded(run: () => Promise<void>): Promise<Outcome> {
   try {
@@ -50,158 +34,6 @@ async function guarded(run: () => Promise<void>): Promise<Outcome> {
     throw error;
   }
 }
-
-// ---------------------------------------------------------------------------------------------
-// Song library
-// ---------------------------------------------------------------------------------------------
-
-const SONG_FIELDS = [
-  "title",
-  "artist",
-  "hymnal1",
-  "number1",
-  "hymnal2",
-  "number2",
-  "tags",
-  "authors",
-  "translator",
-  "originalTitle",
-  "songbook",
-  "copyright",
-  "rightsStatus",
-  "rightsNote",
-] as const;
-const ARRANGEMENT_FIELDS = ["name", "key", "structure", "chordpro"] as const;
-
-const list = (v: string | undefined): string[] =>
-  (v ?? "")
-    .split(/[,;\n]/)
-    .map((s) => s.trim())
-    .filter((s) => s !== "");
-const orNull = (v: string | undefined): string | null =>
-  v === undefined || v.trim() === "" ? null : v.trim();
-
-/** The chart with its `{key: …}` directive replaced by `key` (removed when empty). */
-function withKeyDirective(chordpro: string, key: string): string {
-  const rest = chordpro
-    .split("\n")
-    .filter((line) => !/^\s*\{\s*key\s*:[^}]*\}\s*$/.test(line))
-    .join("\n")
-    .trim();
-  return key === "" ? rest : [`{key: ${key}}`, rest].filter((x) => x !== "").join("\n");
-}
-
-export const saveSong = withPolicy(
-  "song.edit",
-  forSong,
-  async (
-    scope,
-    songId: string,
-    _previous: FormState,
-    form: FormData,
-  ): Promise<FormState | undefined> => {
-    const repos = await getRequestRepositories();
-    const messages = await workspaceErrorMessages();
-    const values = formValues(form, SONG_FIELDS);
-    const refs = [1, 2].flatMap((n) => {
-      const hymnalId = values[`hymnal${n}`] ?? "";
-      const number = (values[`number${n}`] ?? "").trim();
-      return hymnalId === "" && number === "" ? [] : [{ hymnalId, number, versesNote: null }];
-    });
-    const parsed = validate(
-      SongInputSchema,
-      {
-        ...(songId === "" ? {} : { id: songId }),
-        title: (values["title"] ?? "").trim(),
-        artist: orNull(values["artist"]),
-        tags: list(values["tags"]),
-        authors: orNull(values["authors"]),
-        translator: orNull(values["translator"]),
-        originalTitle: orNull(values["originalTitle"]),
-        songbook: orNull(values["songbook"]),
-        copyright: orNull(values["copyright"]),
-        rightsStatus: values["rightsStatus"] || "unknown",
-        rightsNote: orNull(values["rightsNote"]),
-        hymnalRefs: refs,
-      },
-      [...SONG_FIELDS],
-      messages,
-    );
-    if (!parsed.ok) {
-      // Reference problems belong to the number field the visitor sees.
-      const errors = { ...parsed.errors };
-      for (const key of Object.keys(errors)) {
-        if (key === "hymnalRefs" || key === "_form") errors["number1"] ??= errors[key]!;
-      }
-      return { status: "invalid", errors, values };
-    }
-    let saved;
-    try {
-      saved = await repos.songs.upsert(scope.ctx, parsed.data);
-    } catch (error) {
-      return { status: "invalid", errors: repositoryErrors(error, SONG_FIELDS, messages), values };
-    }
-    redirect(`/munkater/enektar/${saved.id}?mentve=1`);
-  },
-);
-
-export const deleteSong = withPolicy("song.edit", forSong, async (scope, id: string) =>
-  guarded(async () => {
-    const repos = await getRequestRepositories();
-    await repos.songs.delete(scope.ctx, id);
-    revalidatePath("/munkater/enektar");
-  }),
-);
-
-export const saveArrangement = withPolicy(
-  "song.edit",
-  forSong,
-  async (
-    scope,
-    songId: string,
-    _previous: FormState,
-    form: FormData,
-  ): Promise<FormState | undefined> => {
-    const repos = await getRequestRepositories();
-    const messages = await workspaceErrorMessages();
-    const values = formValues(form, ARRANGEMENT_FIELDS);
-    const key = (values["key"] ?? "").trim();
-    if (key !== "" && !MusicalKeySchema.safeParse(key).success) {
-      return { status: "invalid", errors: { key: messages.general }, values };
-    }
-    // Music-module arrangements keep the key in the chart (`{key: …}`, a generated column).
-    const parsed = validate(
-      ArrangementInputSchema,
-      {
-        songId,
-        name: (values["name"] ?? "").trim(),
-        chordpro: withKeyDirective(values["chordpro"] ?? "", key),
-        sectionOrder: list((values["structure"] ?? "").replace(/[–-]/g, ",")),
-      },
-      [...ARRANGEMENT_FIELDS],
-      messages,
-    );
-    if (!parsed.ok) return { status: "invalid", errors: parsed.errors, values };
-    try {
-      await repos.songs.upsertArrangement(scope.ctx, parsed.data);
-    } catch (error) {
-      return {
-        status: "invalid",
-        errors: repositoryErrors(error, ARRANGEMENT_FIELDS, messages),
-        values,
-      };
-    }
-    redirect(`/munkater/enektar/${songId}?mentve=1`);
-  },
-);
-
-export const deleteArrangement = withPolicy("song.edit", forSong, async (scope, id: string) =>
-  guarded(async () => {
-    const repos = await getRequestRepositories();
-    await repos.songs.deleteArrangement(scope.ctx, id);
-    revalidatePath("/munkater/enektar");
-  }),
-);
 
 // ---------------------------------------------------------------------------------------------
 // Plans
