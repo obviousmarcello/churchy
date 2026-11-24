@@ -15,15 +15,17 @@ import { ForbiddenError, UnauthorizedError } from "./errors";
  * go through `withPolicy` first.
  *
  * - `canEditSongs`: `music.song.manage` (leader, music leader);
+ * - `canEditEvents`: `music.event.manage` (leader, music leader);
  * - `isSuperadmin`: `music.songRights.manage` — in the music app only the superadmin opened the
  *   song-rights research; Churchy maps it to the same roles (owner decision 2026-11-24).
  */
 export type CurrentUser = {
   /** Profile id as the music tables store it. */
   id: string;
+  tenantId: string;
   isSuperadmin: boolean;
   canEditSongs: boolean;
-  /** Events come in phase 4. */
+  /** `music.event.manage` (leader, music leader): sees and changes all music events. */
   canEditEvents: boolean;
 };
 
@@ -34,9 +36,10 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   if (!can(actor, "music.song.view", resource)) return null;
   return {
     id: musicUserId(actor.userId),
+    tenantId: actor.tenantId,
     isSuperadmin: can(actor, "music.songRights.manage", resource),
     canEditSongs: can(actor, "music.song.manage", resource),
-    canEditEvents: false,
+    canEditEvents: can(actor, "music.event.manage", resource),
   };
 });
 
@@ -51,6 +54,13 @@ export async function requirePageUser(): Promise<CurrentUser> {
   await requireWorkspaceModule("ws.music.songs");
   const user = await getCurrentUser();
   if (!user) notFound();
+  return user;
+}
+
+/** A user who may manage music events: 403 (`ForbiddenError`) otherwise. */
+export async function requireEventAdmin(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.canEditEvents) throw new ForbiddenError();
   return user;
 }
 

@@ -26,6 +26,7 @@ import { seedDemo, type SeedEncryptor } from "./seed/demo";
 import { demoUuid } from "./seed/ids";
 import {
   HR_TABLES,
+  MUSIC_SHARED_TABLES,
   MUSIC_TABLES,
   TABLE_SCOPES,
   tablesWithScope,
@@ -618,7 +619,10 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
     });
 
     it.each(MUSIC_TABLES)("%s: sees A's rows only and cannot write B's", async (table) => {
-      const own = await ownerCount(table, A);
+      // Shared Churchy tables: the music role sees only the music calendar and its events (the
+      // fixtures have none), see "music_scope" in 0011_music_events.
+      const shared = (MUSIC_SHARED_TABLES as readonly string[]).includes(table);
+      const own = shared ? 0 : await ownerCount(table, A);
       const platformRows = TABLE_SCOPES[table] === "catalog" ? await ownerCount(table, null) : 0;
       const rowB = await sampleRow(table, B);
       await asMusic(A, async (c) => {
@@ -628,6 +632,30 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
         expect(await attempt(c, `delete from "${table}" where tenant_id = $1`, [B])).toMatchObject({
           rowCount: 0,
         });
+      });
+    });
+
+    it("events: the music role reaches only the tenant's music calendar and its events", async () => {
+      const [other] = await ownerQuery<{ id: string }>(
+        "select id from calendars where tenant_id = $1 limit 1",
+        [A],
+      );
+      const insert = (calendarId: string, slug: string) =>
+        `insert into events (tenant_id, calendar_id, visibility, slug, title, starts_at, status)
+         values ('${A}', '${calendarId}', 'staff', '${slug}', 'Próba', now(), 'published')`;
+      await asMusic(A, async (c) => {
+        // The event of a non-music calendar (public or internal) is out of scope.
+        expect(await attempt(c, insert(other!.id, "music-scope-a"))).toEqual(RLS_REJECTED);
+        expect((await c.query("select 1 from calendars")).rowCount).toBe(0);
+        // music_calendar_id() creates the calendar once; then events fit and only they are seen.
+        const first = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        const again = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        expect(again).toBe(first);
+        await c.query(insert(first, "music-scope-b"));
+        expect((await c.query("select 1 from events")).rowCount).toBe(1);
+        expect(await attempt(c, `update calendars set is_music = false`)).toEqual(RLS_REJECTED);
       });
     });
 

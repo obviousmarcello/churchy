@@ -76,6 +76,16 @@ export const EventSchema = z.object({
   createdBy: IdSchema.nullable(),
   /** Reserved for a later CalDAV/Graph sync (SDD §22.2). */
   externalRef: z.string().nullable(),
+  /** Music merge (phase 4): the event's own setlist, set by the music module (not by `EventInput`). */
+  setlistId: IdSchema.nullable(),
+  /** An https link to YouTube, e.g. the live stream. */
+  youtubeUrl: z
+    .string()
+    .max(500)
+    .regex(/^https:\/\/(((www|m|music)\.)?youtube\.com|youtu\.be)\//)
+    .nullable(),
+  /** Only the creator and music admins see a private event. */
+  isPrivate: z.boolean(),
   ...TimestampsShape,
 });
 export type Event = z.infer<typeof EventSchema>;
@@ -106,6 +116,8 @@ export const EventInputSchema = z
     teamId: IdSchema.nullable().default(null),
     category: z.string().max(60).nullable().default(null),
     coverMediaId: IdSchema.nullable().default(null),
+    youtubeUrl: EventSchema.shape.youtubeUrl.default(null),
+    isPrivate: z.boolean().default(false),
   })
   .refine((e) => e.endsAt === null || Date.parse(e.endsAt) >= Date.parse(e.startsAt), {
     message: "endsAt must not be before startsAt",

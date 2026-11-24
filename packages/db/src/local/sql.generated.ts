@@ -1195,5 +1195,31 @@ export const MIGRATION_SQL: readonly { tag: string; statements: readonly string[
    "-- Music merge phase 3 (chord sheet): the one trigger function of the sheet's own tables, tenant-aware.\n-- SECURITY INVOKER with an empty search_path: RLS (`tenant_isolation`) scopes the lookups to the\n-- tenant of the annotation. The user's capo, key, layout, zoom and marks need no function: the\n-- models read and write their tables directly. docs/music-merge/FUNCTIONS.md lists it;\n-- down/0010_music_sheet.sql drops it.\n\n-- A slot-only annotation must belong to the song in that slot. Forks keep the song, and setlist\n-- updates never change a slot's song, so this stays true.\nCREATE OR REPLACE FUNCTION public.check_annotation_setlist_item()\nreturns trigger\nlanguage plpgsql\nsecurity invoker\nset search_path = ''\nas $$\nbegin\n  if new.setlist_item_id is not null and not exists (\n    select 1\n    from public.setlist_items si\n    join public.arrangements a on a.id = si.arrangement_id\n    where si.id = new.setlist_item_id and a.song_id = new.song_id\n  ) then\n    raise exception 'setlist item does not belong to this song' using errcode = 'P0001', hint = 'annotation_setlist_item';\n  end if;\n  return new;\nend;\n$$;",
    "CREATE TRIGGER annotations_check_setlist_item\nBEFORE INSERT OR UPDATE OF song_id, setlist_item_id ON public.annotations\nFOR EACH ROW EXECUTE FUNCTION public.check_annotation_setlist_item();"
   ]
+ },
+ {
+  "tag": "0011_music_events",
+  "statements": [
+   "ALTER TABLE \"calendars\" ADD COLUMN \"is_music\" boolean DEFAULT false NOT NULL;",
+   "ALTER TABLE \"events\" ADD COLUMN \"setlist_id\" uuid;",
+   "ALTER TABLE \"events\" ADD COLUMN \"youtube_url\" text;",
+   "ALTER TABLE \"events\" ADD COLUMN \"is_private\" boolean DEFAULT false NOT NULL;",
+   "ALTER TABLE \"service_plans\" ADD COLUMN \"setlist_id\" uuid;",
+   "ALTER TABLE \"events\" ADD CONSTRAINT \"events_setlist_id_fkey\" FOREIGN KEY (\"tenant_id\",\"setlist_id\") REFERENCES \"public\".\"setlists\"(\"tenant_id\",\"id\") ON DELETE no action ON UPDATE no action;",
+   "ALTER TABLE \"service_plans\" ADD CONSTRAINT \"service_plans_setlist_id_fkey\" FOREIGN KEY (\"tenant_id\",\"setlist_id\") REFERENCES \"public\".\"setlists\"(\"tenant_id\",\"id\") ON DELETE no action ON UPDATE no action;",
+   "CREATE UNIQUE INDEX \"calendars_one_music_idx\" ON \"calendars\" USING btree (\"tenant_id\") WHERE \"calendars\".\"is_music\";",
+   "ALTER TABLE \"events\" ADD CONSTRAINT \"events_tenant_id_setlist_id_key\" UNIQUE(\"tenant_id\",\"setlist_id\");",
+   "ALTER TABLE \"service_plans\" ADD CONSTRAINT \"service_plans_tenant_id_setlist_id_key\" UNIQUE(\"tenant_id\",\"setlist_id\");",
+   "ALTER TABLE \"events\" ADD CONSTRAINT \"events_youtube_url_check\" CHECK (\"events\".\"youtube_url\" is null or (char_length(\"events\".\"youtube_url\") <= 500 and \"events\".\"youtube_url\" ~ '^https://(((www|m|music)\\.)?youtube\\.com|youtu\\.be)/'));",
+   "-- Music merge phase 4 (events, PLAN §11 \"one events table\"): the music role works on Churchy's\n-- `events` and `calendars`, but only on the tenant's music calendar (`calendars.is_music`) and its\n-- events. A RESTRICTIVE `music_scope` policy (churchy_music only) enforces that, so the music JWT\n-- can neither read nor change a public or other internal event/calendar.\nDROP POLICY \"tenant_isolation\" ON \"events\";",
+   "CREATE POLICY \"tenant_isolation\" ON \"events\" AS PERMISSIVE FOR ALL TO churchy_app, churchy_music\n  USING (tenant_id = (SELECT app.current_tenant_id()))\n  WITH CHECK (tenant_id = (SELECT app.current_tenant_id()));",
+   "DROP POLICY \"tenant_isolation\" ON \"calendars\";",
+   "CREATE POLICY \"tenant_isolation\" ON \"calendars\" AS PERMISSIVE FOR ALL TO churchy_app, churchy_music\n  USING (tenant_id = (SELECT app.current_tenant_id()))\n  WITH CHECK (tenant_id = (SELECT app.current_tenant_id()));",
+   "CREATE POLICY \"music_scope\" ON \"calendars\" AS RESTRICTIVE FOR ALL TO churchy_music\n  USING (is_music) WITH CHECK (is_music);",
+   "CREATE POLICY \"music_scope\" ON \"events\" AS RESTRICTIVE FOR ALL TO churchy_music\n  USING (EXISTS (SELECT 1 FROM public.calendars c WHERE c.tenant_id = events.tenant_id AND c.id = events.calendar_id AND c.is_music))\n  WITH CHECK (EXISTS (SELECT 1 FROM public.calendars c WHERE c.tenant_id = events.tenant_id AND c.id = events.calendar_id AND c.is_music));",
+   "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE \"events\" TO churchy_app, churchy_music;",
+   "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE \"calendars\" TO churchy_app, churchy_music;",
+   "-- The tenant's music calendar: created on first use. SECURITY INVOKER, tenant from RLS.\nCREATE OR REPLACE FUNCTION public.music_calendar_id()\nreturns uuid\nlanguage plpgsql\nsecurity invoker\nset search_path = ''\nas $$\ndeclare\n  v_id uuid;\nbegin\n  select id into v_id from public.calendars where is_music;\n  if v_id is null then\n    insert into public.calendars (tenant_id, name, color, kind, default_visibility, is_music)\n    values (app.current_tenant_id(), 'Zenei események', '#5b6b8c', 'shared', 'staff', true)\n    on conflict (tenant_id) where is_music do nothing\n    returning id into v_id;\n    if v_id is null then\n      select id into v_id from public.calendars where is_music;\n    end if;\n  end if;\n  return v_id;\nend;\n$$;",
+   "GRANT EXECUTE ON FUNCTION public.music_calendar_id() TO churchy_app, churchy_music;"
+  ]
  }
 ];

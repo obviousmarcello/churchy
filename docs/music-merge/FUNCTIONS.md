@@ -223,3 +223,8 @@ naming the tenant.
 | `public.count_song_rights_researches_this_month()` | invoker | 0009_music_files — the church's AI researches this calendar month (Europe/Budapest), for the per-plan cap |
 | `public.shared_song_rights(p_title text, p_authors text, p_copyright text)` | invoker | 0008_music_songs — the shared facts for a song (CCLI number, else title + authors) |
 
+## Added in phase 4a-1 (not in the source repo)
+
+| Function | Security | Phase |
+|---|---|---|
+| `public.music_calendar_id()` | invoker | 4a-1 — 0011_music_events (the tenant's music calendar, created on first use) |

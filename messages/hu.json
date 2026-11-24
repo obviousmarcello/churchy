@@ -3301,6 +3301,10 @@
           "music_sheet_chord_diagrams": {
             "title": "Akkordábrák",
             "help": "Gitár- és billentyűábrák a próbapanelen."
+          },
+          "music_events": {
+            "title": "Zenei események",
+            "help": "Próbák és alkalmak énekrenddel, ismétlődéssel és privát eseményekkel."
           }
         }
       },
@@ -3412,7 +3416,8 @@
           "music_sheet_metronome": "Metronóm (munkatér)",
           "music_sheet_midi_out": "MIDI-óra (munkatér)",
           "music_sheet_marks": "Rajzok az akkordlapon (munkatér)",
-          "music_sheet_chord_diagrams": "Akkordábrák (munkatér)"
+          "music_sheet_chord_diagrams": "Akkordábrák (munkatér)",
+          "music_events": "Zenei események (munkatér)"
         }
       },
       "catalog": {
@@ -5555,7 +5560,9 @@
         "areasRequired": "Válassz legalább egy csoportot.",
         "areasNotYours": "Csak azokat a csoportokat adhatod hozzá vagy veheted el, amelyeknek tagja vagy.",
         "areasWithoutAccess": "Nem vagy tagja ezeknek a csoportoknak, így nem látnád az eseményt. Válassz egy csoportot, amelynek tagja vagy, vagy előbb add hozzá magad önkéntesként.",
-        "areaMissing": "Egy kiválasztott csoport már nem létezik. Töltsd újra az oldalt."
+        "areaMissing": "Egy kiválasztott csoport már nem létezik. Töltsd újra az oldalt.",
+        "rruleInvalid": "Az ismétlési szabály érvénytelen.",
+        "occurrenceMissing": "Ez az alkalom már nem létezik az ismétlődő eseményben. Töltsd újra az oldalt."
       },
       "eventBlocks": {
         "itemInBlock": "Egy kijelölt programpont már egy blokkban van. Töltsd újra az oldalt, és jelöld ki újra a programpontokat.",

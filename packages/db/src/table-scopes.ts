@@ -140,8 +140,16 @@ export const HR_TABLES: readonly TableName[] = [
   "staff_profiles",
 ];
 
+/**
+ * Churchy tables the music role shares (phase 4): besides `tenant_isolation` they carry the
+ * RESTRICTIVE `music_scope` policy that limits `churchy_music` to the music calendar and its events.
+ */
+export const MUSIC_SHARED_TABLES: readonly TableName[] = ["calendars", "events"];
+
 /** Music module tables: also granted to `churchy_music`; no other table is (0007_music_rls). */
 export const MUSIC_TABLES: readonly TableName[] = [
+  "calendars",
+  "events",
   "annotations",
   "announcement_calendars",
   "announcement_settings",

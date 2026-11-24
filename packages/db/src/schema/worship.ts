@@ -14,6 +14,7 @@ import {
   pgTable,
   primaryKey,
   text,
+  unique,
   uuid,
 } from "drizzle-orm/pg-core";
 import {
@@ -35,7 +36,7 @@ import {
 } from "./enums";
 import { events, people, teamPositions, teams } from "./people";
 import { tenantId, tenants } from "./platform";
-import { arrangements, songs } from "./music";
+import { arrangements, setlists, songs } from "./music";
 import { media, serviceOccurrences } from "./website";
 
 /**
@@ -142,10 +143,14 @@ export const servicePlans = pgTable(
     approvedSnapshot: jsonb().$type<PlanItem[]>(),
     lockedAt: timestamptz(),
     notes: text(),
+    /** Music merge (phase 4): the linked setlist; songs sync both ways with the plan's items. */
+    setlistId: uuid(),
     ...timestamps(),
   },
   (t) => [
     ...tenantIndexes("service_plans", t),
+    unique("service_plans_tenant_id_setlist_id_key").on(t.tenantId, t.setlistId),
+    sameTenantFk("service_plans_setlist_id_fkey", t.tenantId, t.setlistId, setlists),
     index("service_plans_occurrence_id_idx").on(t.occurrenceId),
     index("service_plans_event_id_idx").on(t.eventId),
     sameTenantFk(

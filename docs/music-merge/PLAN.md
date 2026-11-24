@@ -484,3 +484,32 @@ Open questions:
 1. Realtime transport for live sessions and the shared metronome grid (Supabase Realtime with the tenant
    JWT, or SSE/pg-boss, or none)? Until answered the live session stays out.
 2. Which workspace roles may use the sheet's personal settings? Now every role that has `music.song.view`.
+
+## 17. Phase 4 progress (music-04-events)
+
+Owner decisions (2026-11-24): events mapping accepted (internal music calendar per tenant, new nullable columns on
+Churchy `events`); event access area-based in SQL/RLS inside the music models, `can()` gates actions; series map onto
+Churchy RRULE recurrence (`parent_event_id`/`rrule`), `copy_event`/sync stay; `service_plans.setlist_id` with two-way
+song sync between plan song items and setlist items. Slices: 4a-1 schema and events core, 4a-2 setlists, 4a-3 UI, sheet
+links and play statistics; 4b teams, volunteers, feed, announcements (questions 5-7 asked after 4a).
+
+### 4a-1 (done)
+- Migration `0011_music_events` (+ down): `events.setlist_id` (unique per tenant, composite FK), `youtube_url`,
+  `is_private`; `service_plans.setlist_id` (unique, composite FK); `calendars.is_music` (one per tenant).
+  Duration is `ends_at - starts_at` (no `duration_minutes` column).
+- Music role on Churchy tables: `calendars` and `events` are in `MUSIC_TABLES` (also `MUSIC_SHARED_TABLES`); the
+  `tenant_isolation` policies apply to `churchy_app, churchy_music`, plus a RESTRICTIVE `music_scope` policy for
+  `churchy_music` (only the music calendar and its events). `rls.ts` checks that policy; isolation tests extended.
+  Security-review label: yes (RLS, new grants).
+- `music_calendar_id()` (SECURITY INVOKER) gets or creates the calendar "Zenei események" (shared, staff).
+- Contract `Event`: `setlistId`, `youtubeUrl`, `isPrivate` (input: `youtubeUrl`, `isPrivate`); mock adapter and seed updated.
+- Model `server/music/models/events.ts`: list, occurrences (expanded with `@churchy/events`), get, create (single or
+  series via `rrule`), update, delete, change one occurrence (child event), skip one occurrence (`exdate`). Private
+  events: creator and `music.event.manage` only. Libs `lib/music/{youtube,event-time}.ts` with tests.
+- Policy `music.event.view` (every workspace role), `music.event.manage` (leader, music leader); MATRIX regenerated.
+  Module `ws.music.events` (parent `ws.music.songs`, default off, every tier, on in the demo churches).
+
+Deviations: no `event-series.ts` (series is an RRULE, not N copies); event areas (`area_ids`) and volunteer access come
+with the volunteer tables in 4b, until then every music-event admin sees all events and members see non-private ones;
+`copy_event` and the item RPCs wait for setlists (4a-2); no pages or server actions yet (4a-3).
+
