@@ -116,7 +116,7 @@ export const PLANS: Plan[] = [
       wsModules: WS_S50,
       maxWorkspaceUsers: 50,
       // AI song-rights research on the platform key (music module, decision 2026-11-24).
-      musicResearchPerMonth: 20,
+      musicResearchPerMonth: 0,
     }),
   },
   {
