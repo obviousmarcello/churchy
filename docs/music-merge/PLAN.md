@@ -323,3 +323,13 @@ Open questions (asked, not assumed):
 4. Lyrics: Churchy's `songs.lyrics` was dropped with the contract change; the demo's own-song
    lyrics now exist only where the chart (ChordPro) has them. OK, or move them into the default
    arrangement's chart?
+
+### 11.2 Decisions after phase 1b (2026-11-24)
+
+| # | Decision |
+|---|---|
+| Song-rights catalog key | CCLI number; fallback normalised title + authors. Shared catalog table holds rights facts; research results feed it. |
+| `app_config` | Merged into the tenant/site config (music section); table dropped (in the phase that uses it). |
+| Notification prefs/push | Merged into Churchy notification preferences (notifications phase). |
+| Lyrics | Moved into the default arrangement's chart text (demo songs get lyrics back). |
+| Events/volunteer tables | Phase 4 per the plan's phase table (not yet confirmed separately by the owner). |
