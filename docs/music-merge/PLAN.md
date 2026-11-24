@@ -438,3 +438,49 @@ provider/API-key/test forms (platform key instead).
 Open question: which plans are "Plus+"? Churchy has `ingyenes`, `teljes` (website) and
 `ws_s50/m150/l300` (workspace add-ons); the cap of 20 is set on the three workspace plans for now
 (data only, `packages/data-mock/src/seed/platform.ts`).
+
+## 16. Phase 3 progress (music-03-chordsheet)
+
+Scope (owner brief): chord sheet viewer, ChordPro rendering, transposition and capo, Hungarian H/B notation,
+metronome (+ MIDI clock out), marks, chord diagrams, the MusicXML preview on the song edit page, the chart
+preview of the song form. The chord sheet replaces the removed old song page (`/munkater/enektar/[id]`
+arrangement view with transposition, capo and H/B).
+
+Done:
+- Route `/munkater/kotta` (`?song=<id>` or `?arrangement=<id>` repeated, `&key=` per arrangement, `&from=`),
+  full screen over the workspace shell, rendered on the server per request (no browser page cache).
+  The song details link every arrangement to it. Copied from `src/app/[lang]/sheet`: viewer, chord sheet,
+  contents, pages and columns, key/capo/layout settings, text zoom, PDF/image/score views with zoom, print,
+  marks (pen, highlighter, eraser), rehearsal panel with guitar and keys chord diagrams, metronome (tempo,
+  tap, beats, volume, latency, haptics, tempo from the chart, save tempo to the arrangement), MIDI clock out,
+  score view and player (verovio, `types/verovio.d.ts`).
+- Pure libs copied with their tests: `lib/music/{chords/*, metronome/*, sheet-*, score/*, live/*, syllable,
+  device-type, screen, swipe}`. The AudioWorklet is bundled by `scripts/build-worklet.mjs` (entry
+  `lib/music/metronome/processor.ts`, now present) to `public/metronome-processor.js`.
+- Models `my-arrangements`, `my-file-views`, `sheet-marks`, `annotations` (supabase-js through
+  `getMusicSupabase()`, RLS by `tenant_isolation`; `onConflict` lists name `tenant_id`). Migration
+  `0010_music_sheet` (+ down): trigger `annotations_check_setlist_item`. No other function is needed.
+- Policy: `music.sheet.personalize` (own capo, key, layout, zoom, marks: every workspace role), the tempo
+  save uses `music.song.manage`; all sheet actions are `withPolicy` (`sheet-actions.ts`). MATRIX regenerated.
+- Modules (default off, child needs parent): `ws.music.sheet` (parent `songs`), `.metronome`,
+  `.midi-out` (parent `.metronome`), `.marks`, `.chord-diagrams`; in `/admin/modulok`, every workspace tier,
+  and switched on in the demo churches.
+- Messages `music.sheet` (informal). Chart preview restored in the song form; MusicXML preview on the edit page.
+- New runtime deps (apps/web): `verovio` 6.3.0 (score engraving, WASM, as in the music app), `dompurify`
+  3.4.17 (cleans verovio's SVG before it is injected).
+- e2e `music-sheet.spec.ts` (sheet, key change saved, metronome, not-found, chart and score preview; axe).
+  Its first run found a real bug: the upserts named `user_id,…` but the keys are `(tenant_id, user_id, …)`.
+
+Left out, with the reason:
+- Live sessions (`sheet.live`, `lib/music/live` is copied but unused): realtime transport is undecided
+  (see questions). `app/munkater/kotta/live-session.ts` is a stub with the real hook's shape; the sheet never has a session.
+- Events/setlist sheets (`?event=`, `?item=`, blocks, countdown, `my-setlists`): phase 4. Scripture
+  readings on the sheet: phase 6. Mixer sync field of the metronome: phase 7 (`ModuleGate id="mixer"` removed).
+- OCR chart reading (`chordpro-ocr`): phase 7. The `/proba` rehearsal page: not in this brief.
+- Their dark theme variants of the sheet paper (Churchy has no dark theme): light paper and mark colors only
+  (`app/music-sheet.css`). The offline copy of the page, page transitions.
+
+Open questions:
+1. Realtime transport for live sessions and the shared metronome grid (Supabase Realtime with the tenant
+   JWT, or SSE/pg-boss, or none)? Until answered the live session stays out.
+2. Which workspace roles may use the sheet's personal settings? Now every role that has `music.song.view`.

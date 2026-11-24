@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@churchy/themes/styles.css";
+@import "./music-sheet.css";
 
 /* Tailwind does not scan linked workspace packages on its own. */
 @source "../../../packages/ui/src";

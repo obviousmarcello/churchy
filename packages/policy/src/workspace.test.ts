@@ -108,6 +108,7 @@ const ROWS: Row<Action>[] = [
   { cell: "Assign people to positions (other team)", action: "assignment.manage", resource: { tenantId: TENANT, teamId: OTHER_TEAM }, expected: "YNNNYNNN" },
   { cell: "Song library edit", action: "song.edit", resource: { tenantId: TENANT }, expected: "YNNNYNNN" },
   { cell: "Music: view songs", action: "music.song.view", resource: { tenantId: TENANT }, expected: "YYYYYYYY" },
+  { cell: "Music: chord sheet (own settings)", action: "music.sheet.personalize", resource: { tenantId: TENANT }, expected: "YYYYYYYY" },
   { cell: "Music: manage songs", action: "music.song.manage", resource: { tenantId: TENANT }, expected: "YNNNYNNN" },
   { cell: "Music: song rights", action: "music.songRights.manage", resource: { tenantId: TENANT }, expected: "YNNNYNNN" },
   { cell: "View plans: assigned, other team", action: "servicePlan.view", resource: plan(OTHER_TEAM, [SELF]), expected: "YYYNYNNN" },

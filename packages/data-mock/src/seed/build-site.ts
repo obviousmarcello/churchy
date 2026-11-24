@@ -60,6 +60,11 @@ const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
   "ws.music.songs.songpraise",
   "ws.music.songs.ocr",
   "ws.music.song-rights",
+  "ws.music.sheet",
+  "ws.music.sheet.metronome",
+  "ws.music.sheet.midi-out",
+  "ws.music.sheet.marks",
+  "ws.music.sheet.chord-diagrams",
 ];
 
 export function buildTenant(b: Build): void {

@@ -28,7 +28,7 @@ export function isPublicPath(pathname: string): boolean {
 // song from the query, not from a dynamic segment: `usePathname()` in the
 // menu then knows the path when the page is prerendered, so the menu does
 // not show for a moment before it hides.
-export const SHEET_PATH = "/sheet";
+export const SHEET_PATH = "/munkater/kotta";
 
 // The projection: the controller, the screen and the stream overlay, also
 // full-screen pages. They take the event from the query for the same reason.

@@ -60,6 +60,11 @@ const WS_S50: WorkspaceModuleKey[] = [
   "ws.music.songs.songpraise",
   "ws.music.songs.ocr",
   "ws.music.song-rights",
+  "ws.music.sheet",
+  "ws.music.sheet.metronome",
+  "ws.music.sheet.midi-out",
+  "ws.music.sheet.marks",
+  "ws.music.sheet.chord-diagrams",
 ];
 const WS_M150: WorkspaceModuleKey[] = [...WS_S50, "ws.hr.confidential", "ws.docs"];
 const WS_L300: WorkspaceModuleKey[] = [...WS_M150, "ws.board"];

@@ -73,7 +73,7 @@ naming the tenant.
 | `public.chart_key_names(p_chordpro text)` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
 | `public.chart_lyrics(p_chordpro text)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.chart_notation(p_chordpro text)` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
-| `public.check_annotation_setlist_item()` | invoker, trigger | 3 (chart) |
+| `public.check_annotation_setlist_item()` | invoker, trigger | 3 — 0010_music_sheet (SECURITY INVOKER, tenant via RLS) |
 | `public.check_arrangement_attachment_links()` | invoker, trigger | 2 — 0008_music_songs (SECURITY INVOKER; skips cascading deletes) |
 | `public.check_live_session_arrangements()` | invoker, trigger | dropped (Churchy login / user admin, PLAN §11) |
 | `public.check_setlist()` | invoker, trigger | 4 (events, setlists, volunteers) |

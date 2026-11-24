@@ -5,4 +5,5 @@ const none = (): string[] => [];
 export const changedPages = {
   songs: none,
   song: none,
+  sheets: none,
 };

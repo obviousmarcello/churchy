@@ -175,6 +175,7 @@ describe("migrations", () => {
       "0007_music_rls",
       "0008_music_songs",
       "0009_music_files",
+      "0010_music_sheet",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);

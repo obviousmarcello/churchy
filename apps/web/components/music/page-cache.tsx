@@ -14,3 +14,10 @@ export function invalidating<Args extends unknown[], R>(
 ): (...args: Args) => R {
   return action;
 }
+
+/** No-op: there is no browser page cache (the copy of the chord sheet is not kept). */
+export function invalidatePageCacheExcept<Data>(
+  _keys: readonly string[],
+  _except: string,
+  _update: (data: Data) => Data,
+): void {}
