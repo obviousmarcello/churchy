@@ -11,7 +11,15 @@ import { requireEventAdmin, requireUser, type CurrentUser } from "@/server/music
 import { getMusicSupabase } from "@/server/music/db";
 import { ConflictError } from "@/server/music/errors";
 import { zodMessage } from "@/server/music/zod-i18n";
-import { databaseError, isId, lowerIdSchema, parseInput, requiredText } from "./shared";
+import { readEventBlocks, type EventBlockDTO } from "./event-blocks";
+import {
+  readSetlistItems,
+  setlistItemsInputSchema,
+  toItemsArgument,
+  type SetlistItemDTO,
+} from "./setlists";
+import { playKeySchema } from "./arrangements";
+import { databaseError, idSchema, isId, lowerIdSchema, parseInput, requiredText } from "./shared";
 
 // Music events (Music Sheet DB `events.ts`, merged into Churchy's one `events` table, PLAN §11).
 // Every music event lives in the tenant's music calendar (`music_calendar_id()`, internal
@@ -394,4 +402,143 @@ export async function skipOccurrence(input: z.input<typeof occurrenceInputSchema
     .update({ exdates: [...master.exdates, day] })
     .eq("id", masterId);
   if (error) throw databaseError("skip an occurrence", error);
+}
+
+export type EventDetailDTO = EventDTO & {
+  /** In order. */
+  items: SetlistItemDTO[];
+  /** The blocks of the items, in the order of their creation. */
+  blocks: EventBlockDTO[];
+};
+
+/** One event with its items and blocks, or null when it is not there or not visible. */
+export async function getEventDetail(id: string): Promise<EventDetailDTO | null> {
+  const event = await getEvent(id);
+  if (event === null) return null;
+  const [items, blocks] = await Promise.all([
+    event.setlistId === null ? [] : readSetlistItems(event.setlistId),
+    readEventBlocks(event.id),
+  ]);
+  return { ...event, items, blocks: blocks ?? [] };
+}
+
+/** The items of an event, in order. */
+export const eventItemsInputSchema = z.strictObject({
+  items: setlistItemsInputSchema,
+  /**
+   * The setlist that the change is based on (null: no items). The save changes nothing when the
+   * event has another setlist now. Left out: no check.
+   */
+  baseSetlistId: idSchema.nullable().optional(),
+});
+
+export type EventItemsInput = z.input<typeof eventItemsInputSchema>;
+
+const setEventItemsResultSchema = z
+  .object({ status: z.enum(["saved", "changed"]), setlist_id: z.uuid().nullable() })
+  .nullable();
+
+/** `afterKey` for the start of the items. */
+export const START_KEY = "00000000-0000-0000-0000-000000000000";
+
+/** Items to add after the item of `afterKey`, or at the end (null, or a key that the event does not have). */
+const addItemsInputSchema = z.strictObject({
+  items: setlistItemsInputSchema.min(1),
+  afterKey: z.union([idSchema, z.literal(START_KEY)]).nullable(),
+});
+
+export type SetEventItemsResult = { status: "saved" | "changed"; setlistId: string | null } | null;
+
+/**
+ * Saves the items of an event (the event gets a new setlist when they changed). `changed`: the
+ * event has another setlist than `baseSetlistId` now, nothing was saved. Null: no such event.
+ */
+export async function setEventItems(
+  id: string,
+  input: EventItemsInput,
+): Promise<SetEventItemsResult> {
+  await requireEventAdmin();
+  if (!isId(id) || (await getEvent(id)) === null) return null;
+  const { items, baseSetlistId } = parseInput(eventItemsInputSchema, input);
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("set_event_items", {
+    p_event_id: id,
+    p_items: toItemsArgument(items),
+    p_base_setlist_id: baseSetlistId ?? null,
+    p_check_base: baseSetlistId !== undefined,
+  });
+  if (error) throw databaseError("save event items", error);
+  const result = setEventItemsResultSchema.parse(data);
+  return result && { status: result.status, setlistId: result.setlist_id?.toLowerCase() ?? null };
+}
+
+export const ADD_TO_EVENT_RESULTS = ["added", "too_many_items", "no_event"] as const;
+export type AddToEventResult = (typeof ADD_TO_EVENT_RESULTS)[number];
+
+/** Adds items after the item of `afterKey` (a block around the place keeps the new items). */
+export async function addEventItems(
+  id: string,
+  input: z.input<typeof addItemsInputSchema>,
+): Promise<AddToEventResult> {
+  await requireEventAdmin();
+  if (!isId(id) || (await getEvent(id)) === null) return "no_event";
+  const { items, afterKey } = parseInput(addItemsInputSchema, input);
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("add_event_items", {
+    p_event_id: id,
+    p_items: toItemsArgument(items),
+    p_after_key: afterKey,
+  });
+  if (error) throw databaseError("add event items", error);
+  return z.enum(ADD_TO_EVENT_RESULTS).parse(data);
+}
+
+/** Removes the item of the key. False when the event or the item is not there. */
+export async function removeEventItem(id: string, key: string): Promise<boolean> {
+  await requireEventAdmin();
+  if (!isId(id) || !isId(key) || (await getEvent(id)) === null) return false;
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("remove_event_item", {
+    p_event_id: id,
+    p_key: key,
+  });
+  if (error) throw databaseError("remove an event item", error);
+  return z.enum(["removed", "no_item", "no_event"]).parse(data) === "removed";
+}
+
+const addArrangementInputSchema = z.strictObject({
+  eventId: idSchema,
+  arrangementId: idSchema,
+  /** Null or left out: the key of the chart. */
+  musicalKey: playKeySchema.nullish(),
+});
+
+export const ADD_ARRANGEMENT_RESULTS = [
+  "added",
+  "too_many_items",
+  "ended",
+  "no_event",
+  "no_arrangement",
+] as const;
+export type AddArrangementResult = (typeof ADD_ARRANGEMENT_RESULTS)[number];
+
+/** "Add to event" of a song: one arrangement at the end of an event that has not ended. */
+export async function addEventArrangement(
+  input: z.input<typeof addArrangementInputSchema>,
+): Promise<AddArrangementResult> {
+  await requireEventAdmin();
+  const { eventId, arrangementId, musicalKey } = parseInput(addArrangementInputSchema, input);
+  if ((await getEvent(eventId)) === null) return "no_event";
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("add_event_arrangement", {
+    p_event_id: eventId,
+    p_arrangement_id: arrangementId,
+    p_musical_key: musicalKey ?? null,
+  });
+  if (error) throw databaseError("add an arrangement to an event", error);
+  return z.enum(ADD_ARRANGEMENT_RESULTS).parse(data);
 }

@@ -513,3 +513,20 @@ Deviations: no `event-series.ts` (series is an RRULE, not N copies); event areas
 with the volunteer tables in 4b, until then every music-event admin sees all events and members see non-private ones;
 `copy_event` and the item RPCs wait for setlists (4a-2); no pages or server actions yet (4a-3).
 
+### 4a-2 (done): setlists on events
+- Migration `0012_music_setlists` (+ down): tables `event_blocks` (+ `duration_seconds`), `setlist_item_blocks`
+  (both RLS, MUSIC_TABLES); functions (SECURITY INVOKER, in `public`, no `private` schema): `set_event_items`
+  (without the volunteer, image-set and announcement parts, which return with their tables), `add_event_items`,
+  `remove_event_item`, `add_event_arrangement`, block functions, `normalize_event_blocks`, `setlist_items_input`;
+  triggers: setlists never change (`prevent_setlist_update`), unused setlist deleted when an event drops it,
+  deferred `setlists_check`. `service_plans.setlist_id` FK is `ON DELETE SET NULL` (a setlist is replaced on every
+  item change, the app re-points the plan).
+- Models: `setlists.ts` (items, input schemas, `readSetlistItems`), `event-blocks.ts`, and in `events.ts`:
+  `getEventDetail`, `setEventItems`, `addEventItems`, `removeEventItem`, `addEventArrangement`. Libs
+  `lib/music/{event-items,event-items-merge,event-blocks,event-timing,church-time}` with tests.
+- Plan sync: `lib/music/plan-sync.ts` (`takeSongs`, pure, tested). Rule: the side just edited wins; the other side takes
+  the song sequence over and keeps its other items. The server wiring (plan editor and event page actions) is 4a-3.
+- DB tests: item save/replace/delete of the old setlist, blocks, commit-time check; fixtures have an event and blocks.
+- Deferred: `copy_event` (needs volunteers/images/announcements copies, 4b), scripture reference detection (phase 6,
+  `looksLikeScriptureReference` left out), item volunteers (4b), image sets and announcements (projection phase).
+

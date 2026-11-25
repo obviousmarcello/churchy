@@ -10,6 +10,8 @@ DECLARE
   theme uuid := gen_random_uuid();
   setlist uuid := gen_random_uuid();
   item uuid := gen_random_uuid();
+  blk uuid := gen_random_uuid();
+  evcal uuid;
   pdf uuid := gen_random_uuid();
   img uuid := gen_random_uuid();
   snd uuid := gen_random_uuid();
@@ -32,6 +34,14 @@ BEGIN
     VALUES (t, setlist, jsonb_build_array(jsonb_build_object('arrangement_id', arr)));
   INSERT INTO setlist_items (tenant_id, id, setlist_id, position, arrangement_id)
     VALUES (t, item, setlist, 0, arr);
+  SELECT id INTO evcal FROM calendars WHERE tenant_id = t LIMIT 1;
+  INSERT INTO events (tenant_id, calendar_id, visibility, slug, title, starts_at, ends_at, status, setlist_id)
+    VALUES (t, evcal, 'staff', 'fixture-' || setlist, 'Vasárnapi alkalom', now(), now() + interval '90 minutes',
+            'published', setlist);
+  INSERT INTO event_blocks (tenant_id, event_id, key, name)
+    SELECT t, e.id, blk, 'Dicsőítés' FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO setlist_item_blocks (tenant_id, setlist_item_id, event_id, block_key)
+    SELECT t, item, e.id, blk FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
   INSERT INTO setlist_item_durations (tenant_id, setlist_item_id, seconds) VALUES (t, item, 240);
   INSERT INTO setlist_item_themes (tenant_id, setlist_item_id, theme_id) VALUES (t, item, theme);
   INSERT INTO annotations (tenant_id, user_id, song_id, body) VALUES (t, u, song, 'Lassabban');
