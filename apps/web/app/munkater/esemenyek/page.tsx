@@ -32,6 +32,7 @@ const WHEN: Intl.DateTimeFormatOptions = {
 
 export default async function EventsPage() {
   const [user, { m }] = await Promise.all([requireEventsPageUser(), getI18n()]);
+  const canAdd = user.canEditEvents || (await user.eventAreaIds()).length > 0;
   const { upcoming, past } = await loadEvents();
   const t = m.events;
 
@@ -49,7 +50,7 @@ export default async function EventsPage() {
                 {t.groupsLink}
               </Link>
             )}
-            {user.canEditEvents && (
+            {canAdd && (
               <Link href="/munkater/esemenyek/uj" className={buttonVariants()}>
                 {t.add}
               </Link>

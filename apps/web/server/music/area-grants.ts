@@ -13,7 +13,10 @@ export async function loadAreaGrants(userId: string): Promise<MusicAreaGrant[]> 
   const supabase = await getMusicSupabase();
   const areas = await supabase.rpc("member_area_ids", { p_user_id: userId });
   if (areas.error) throw new Error(`member_area_ids: ${areas.error.message}`);
-  const ids = ((areas.data ?? []) as { id: string }[]).map((row) => row.id);
+  const rows = (areas.data ?? []) as (string | { id?: string; member_area_ids?: string })[];
+  const ids = rows
+    .map((row) => (typeof row === "string" ? row : (row.id ?? row.member_area_ids)))
+    .filter((id): id is string => typeof id === "string");
   if (ids.length === 0) return [];
   const roles = await supabase
     .from("service_area_roles")

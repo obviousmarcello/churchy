@@ -44,9 +44,10 @@ export default async function EventPage({
   ]);
   const event = await getEventDetail(id);
   if (event === null) notFound();
+  const canEdit = await user.canManageIn("event", event.areaIds);
   const q = (Array.isArray(query.q) ? query.q[0] : query.q)?.trim() ?? "";
   const results =
-    user.canEditEvents && q !== ""
+    canEdit && q !== ""
       ? (await findSongs({ query: q, sort: "title", page: 1 })).songs.map((song) => ({
           id: song.id,
           title: song.title,
@@ -76,7 +77,7 @@ export default async function EventPage({
         title={event.title}
         back={{ href: "/munkater/esemenyek", label: m.events.title }}
         actions={
-          user.canEditEvents ? (
+          canEdit ? (
             <Link
               href={`/munkater/esemenyek/${event.id}/szerkesztes`}
               className={buttonVariants({ variant: "outline" })}
@@ -127,7 +128,7 @@ export default async function EventPage({
                 },
           )}
           blocks={event.blocks.map((block) => ({ key: block.key, name: block.name }))}
-          canEdit={user.canEditEvents}
+          canEdit={canEdit}
           query={q}
           results={results}
         />

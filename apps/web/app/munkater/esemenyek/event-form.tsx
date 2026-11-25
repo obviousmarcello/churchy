@@ -22,6 +22,7 @@ export function EventForm({
   initial,
   hidden,
   showRecurrence,
+  areaOptions,
   cancel,
 }: {
   action: (previous: FormState, formData: FormData) => Promise<never> | Promise<unknown>;
@@ -36,6 +37,8 @@ export function EventForm({
   };
   hidden?: Record<string, string>;
   showRecurrence: boolean;
+  /** The areas the user may choose (area-role users); left out: the root area, everyone. */
+  areaOptions?: { id: string; name: string }[];
   cancel: string;
 }) {
   const { m } = useI18n();
@@ -89,6 +92,18 @@ export function EventForm({
       >
         <Input id="youtubeUrl" name="youtubeUrl" defaultValue={initial?.youtubeUrl ?? ""} />
       </Field>
+      {areaOptions && (
+        <fieldset className="flex flex-col gap-1">
+          <legend className="text-sm font-medium">{t.new.areas}</legend>
+          <p className="text-sm text-muted">{t.new.areasHint}</p>
+          {areaOptions.map((area, index) => (
+            <label key={area.id} className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="areaIds" value={area.id} defaultChecked={index === 0} />
+              {area.name}
+            </label>
+          ))}
+        </fieldset>
+      )}
       {showRecurrence && (
         <Field name="recurrence" label={t.fields.rrule} hint={t.fields.rruleHint}>
           <NativeSelect id="recurrence" name="recurrence" defaultValue="none">

@@ -109,3 +109,28 @@ test("groups and the team of an event", async ({ page }) => {
   await expect(page.getByText(/^Énekkar:/)).toBeVisible();
   expect(await axeSeriousOrCritical(page)).toEqual([]);
 });
+
+test("an area role lets a volunteer create and edit events of that area only", async ({ page }) => {
+  await asMusicLeader(page, "/munkater/esemenyek/csoportok");
+  await page.getByPlaceholder("Csoport neve").fill("Szolgálók");
+  await page.getByRole("button", { name: "Létrehozás" }).click();
+  const row = page.getByRole("listitem").filter({ hasText: "Szolgálók" });
+  await row.getByRole("button", { name: /Tagok/ }).click();
+  await row.getByRole("checkbox", { name: "Események kezelője" }).check();
+  await row.getByRole("button", { name: "Szerepek mentése" }).click();
+  for (const box of await row.locator('input[name="userId"]').all()) await box.check();
+  await row.getByRole("button", { name: "Tagok mentése" }).click();
+  await expect(row.getByRole("button", { name: /Tagok \([1-9]/ })).toBeVisible();
+
+  await page.goto("/");
+  await switchPersona(page, "onkentes");
+  await page.goto("/munkater/esemenyek");
+  await page.getByRole("link", { name: "Új esemény" }).click();
+  await expect(page.getByRole("group", { name: "Területek" })).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+  await page.getByLabel("Név").fill("Szolgálói alkalom");
+  await page.getByLabel("Kezdés").fill("2031-06-01T10:00");
+  await page.getByRole("button", { name: "Esemény létrehozása" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Szolgálói alkalom" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Szerkesztés" })).toBeVisible();
+});

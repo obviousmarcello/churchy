@@ -9,9 +9,15 @@ import { Label } from "@/components/music/ui/label";
 import { NativeSelect } from "@/components/music/ui/native-select";
 import { useI18n } from "@/i18n/music/client";
 import type { FormState } from "@/server/music/form-state";
-import { createGroupAction, deleteGroupAction, setGroupMembersAction } from "./actions";
+import {
+  createGroupAction,
+  deleteGroupAction,
+  setGroupMembersAction,
+  setGroupRolesAction,
+} from "./actions";
 
-type Group = { id: string; label: string; isRoot: boolean; memberIds: string[] };
+type Group = { id: string; label: string; isRoot: boolean; memberIds: string[]; roles: string[] };
+const ROLES = ["song_admin", "event_admin", "music_leader", "course_admin"] as const;
 type Result =
   | { readonly ok: true; readonly value: FormState }
   | { readonly ok: false; readonly status: 403 | 404 };
@@ -19,7 +25,9 @@ type Result =
 export function GroupsPanel({
   groups,
   people,
+  canEditRoles,
 }: {
+  canEditRoles: boolean;
   groups: Group[];
   people: { id: string; name: string }[];
 }) {
@@ -109,6 +117,33 @@ export function GroupsPanel({
                   ))}
                   <Button type="submit" disabled={pending} className="self-start">
                     {t.saveMembers}
+                  </Button>
+                </form>
+              )}
+              {open === group.id && canEditRoles && (
+                <form
+                  className="flex flex-col gap-1"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const data = new FormData(event.currentTarget);
+                    data.set("id", group.id);
+                    send(setGroupRolesAction, data);
+                  }}
+                >
+                  <span className="text-sm font-medium">{t.rolesTitle}</span>
+                  {ROLES.map((role) => (
+                    <label key={role} className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        name="role"
+                        value={role}
+                        defaultChecked={group.roles.includes(role)}
+                      />
+                      {t.roles[role]}
+                    </label>
+                  ))}
+                  <Button type="submit" disabled={pending} className="self-start">
+                    {t.saveRoles}
                   </Button>
                 </form>
               )}

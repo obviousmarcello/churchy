@@ -1,7 +1,12 @@
 "use server";
 
 import { errorState, text, type FormState } from "@/server/music/form-state";
-import { createGroup, deleteGroup, setGroupMembers } from "@/server/music/models/groups";
+import {
+  createGroup,
+  deleteGroup,
+  setGroupMembers,
+  setGroupRoles,
+} from "@/server/music/models/groups";
 import { musicEvents } from "@/server/music/policy";
 import { withPolicy } from "@/server/policy";
 
@@ -47,6 +52,20 @@ export const setGroupMembersAction = withPolicy(
           isLeader: formData.get(`leader-${String(userId)}`) === "on",
         })),
       );
+      return { status: "success", message: null, fieldErrors: {} };
+    } catch (error) {
+      return errorState(error, ({ m }) => m.groups.failed);
+    }
+  },
+);
+
+/** The roles that the group gives to its members (`role` fields). Superadmins only (the model checks). */
+export const setGroupRolesAction = withPolicy(
+  "music.group.manage",
+  musicEvents,
+  async (_scope, formData: FormData): Promise<FormState> => {
+    try {
+      await setGroupRoles(text(formData, "id"), formData.getAll("role").map(String));
       return { status: "success", message: null, fieldErrors: {} };
     } catch (error) {
       return errorState(error, ({ m }) => m.groups.failed);

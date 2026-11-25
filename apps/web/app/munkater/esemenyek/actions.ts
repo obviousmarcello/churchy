@@ -57,7 +57,14 @@ export const createEventAction = withPolicy(
     const rrule = RRULES[text(formData, "recurrence")] ?? null;
     let id: string;
     try {
-      id = (await createEvent({ ...readEventFields(formData), rrule })).id;
+      const areaIds = formData.getAll("areaIds").map(String);
+      id = (
+        await createEvent({
+          ...readEventFields(formData),
+          rrule,
+          ...(areaIds.length > 0 && { areaIds }),
+        })
+      ).id;
     } catch (error) {
       return errorState(error, ({ m }) => m.events.errors.saveFailed);
     }

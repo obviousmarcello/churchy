@@ -6243,7 +6243,9 @@
       "new": {
         "title": "Új esemény",
         "submit": "Esemény létrehozása",
-        "pending": "Létrehozás…"
+        "pending": "Létrehozás…",
+        "areas": "Területek",
+        "areasHint": "Csak a kijelölt területeken hozhatsz létre eseményt."
       },
       "edit": {
         "title": "Esemény szerkesztése",
@@ -6347,7 +6349,15 @@
       "saveMembers": "Tagok mentése",
       "leader": "Vezető",
       "failed": "Nem sikerült menteni a csoportot.",
-      "deleteConfirm": "Biztosan törlöd a csoportot?"
+      "deleteConfirm": "Biztosan törlöd a csoportot?",
+      "rolesTitle": "Szerepek (a csoport tagjai a csoport területén kapják)",
+      "saveRoles": "Szerepek mentése",
+      "roles": {
+        "song_admin": "Dalok kezelője",
+        "event_admin": "Események kezelője",
+        "music_leader": "Zenei vezető",
+        "course_admin": "Tananyagok kezelője"
+      }
     }
   },
   "portal": {

@@ -33,6 +33,8 @@ export type CurrentUser = {
    * permission, or an area role (`music.event.manage` / `music.song.manage` with area context).
    */
   canManageIn: (kind: "event" | "song", areaIds: readonly string[]) => Promise<boolean>;
+  /** The areas where an area role lets the user manage events (empty: none). */
+  eventAreaIds: () => Promise<string[]>;
   /** Leads a music area (a leader of an area may manage its team). */
   leadsGroups: boolean;
 };
@@ -69,6 +71,14 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     canEditSongs: can(actor, "music.song.manage", resource),
     canEditEvents: can(actor, "music.event.manage", resource),
     leadsGroups: await leadsAnyGroup(musicUserId(actor.userId)),
+    eventAreaIds: async () => {
+      const grants = await loadAreaGrants(musicUserId(actor.userId!));
+      return grants
+        .filter((grant) =>
+          grant.roles.some((role) => role === "event_admin" || role === "music_leader"),
+        )
+        .map((grant) => grant.areaId);
+    },
     canManageIn: async (kind, areaIds) => {
       const action = kind === "event" ? "music.event.manage" : "music.song.manage";
       if (can(actor, action, resource)) return true;

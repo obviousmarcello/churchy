@@ -546,3 +546,21 @@ export async function listGroupRolesOf(
     return names ? [{ role, groups: names.sort() }] : [];
   });
 }
+
+/** The roles that each group gives (own roles only), for the roles editor. */
+export async function listGroupRolesByGroup(): Promise<Map<string, GroupRole[]>> {
+  await requireGroupManager();
+  const { data, error } = await (
+    await getMusicSupabase()
+  )
+    .from("service_area_roles")
+    .select("area_id, role");
+  if (error) throw databaseError("list group roles", error);
+  const result = new Map<string, GroupRole[]>();
+  for (const row of z
+    .array(z.object({ area_id: z.uuid(), role: z.enum(GROUP_ROLES) }))
+    .parse(data)) {
+    result.set(row.area_id, [...(result.get(row.area_id) ?? []), row.role]);
+  }
+  return result;
+}
