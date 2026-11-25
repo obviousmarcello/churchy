@@ -823,7 +823,42 @@ function SongDetails({
         )}
       </section>
 
-      {/* Play history: events, phase 4. */}
+      <section className="flex flex-col gap-2">
+        <h3 className="text-sm font-medium">{m.songs.browser.details.history}</h3>
+        {song.plays.recentEvents.length === 0 && song.plays.nextEvent === null ? (
+          <p className="text-sm text-muted">{m.songs.browser.details.noPlays}</p>
+        ) : (
+          <>
+            <p className="text-sm text-muted">
+              {song.plays.recentCount > 0
+                ? plural(m.songs.browser.details.recentCount, song.plays.recentCount)
+                : m.songs.browser.details.noRecentPlays}
+            </p>
+            <ul className="flex flex-col gap-1 text-sm">
+              {song.plays.nextEvent && (
+                <li>
+                  <span className="text-muted">{m.songs.browser.details.planned}: </span>
+                  <a className="underline" href={`/munkater/esemenyek/${song.plays.nextEvent.id}`}>
+                    {song.plays.nextEvent.title}
+                  </a>{" "}
+                  <LocalDateTime
+                    date={song.plays.nextEvent.startsAt}
+                    options={{ dateStyle: "medium" }}
+                  />
+                </li>
+              )}
+              {song.plays.recentEvents.map((event) => (
+                <li key={event.id}>
+                  <a className="underline" href={`/munkater/esemenyek/${event.id}`}>
+                    {event.title}
+                  </a>{" "}
+                  <LocalDateTime date={event.startsAt} options={{ dateStyle: "medium" }} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
 
       {files.scores && (
         <section className="flex flex-col gap-2">

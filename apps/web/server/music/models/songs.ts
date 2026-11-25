@@ -372,6 +372,7 @@ export async function findSongs(
     filters,
     SONGS_PAGE_SIZE,
     (page - 1) * SONGS_PAGE_SIZE,
+    user.id,
   );
   const pageCount = Math.ceil(total / SONGS_PAGE_SIZE);
   if (ids.length === 0) return { songs: [], snippets: {}, total, page, pageCount };
@@ -399,7 +400,12 @@ export async function findSongs(
 type FilterSongsInput = Omit<z.output<typeof songPageInputSchema>, "page">;
 
 /** The ids of the songs that match, in order, with their total and the lyrics that match (see `filter_songs`). */
-async function filterSongIds(filters: FilterSongsInput, limit: number, offset: number) {
+async function filterSongIds(
+  filters: FilterSongsInput,
+  limit: number,
+  offset: number,
+  userId: string | null = null,
+) {
   const { data, error } = await (
     await getMusicSupabase()
   ).rpc("filter_songs", {
@@ -413,6 +419,7 @@ async function filterSongIds(filters: FilterSongsInput, limit: number, offset: n
     p_sort: filters.sort,
     p_limit: limit,
     p_offset: offset,
+    p_user_id: userId,
   });
   if (error) throw databaseError("filter songs", error);
 

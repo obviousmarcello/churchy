@@ -43,7 +43,7 @@ naming the tenant.
 | `private.lock_course(p_id uuid, p_revision integer)` | invoker | 8 (courses) |
 | `private.lock_service_area_tree()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `private.normalize_event_areas()` | invoker, trigger | 4 (events, setlists, volunteers) |
-| `private.normalize_event_blocks(p_event_id uuid)` | invoker | 4 (events, setlists, volunteers) |
+| `private.normalize_event_blocks(p_event_id uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `private.notify_event(p_event_id uuid, p_kind text)` | definer | 8 (notifications) |
 | `private.notify_event_change()` | definer, trigger | 8 (notifications) |
 | `private.notify_event_part_change()` | definer, trigger | 8 (notifications) |
@@ -53,10 +53,10 @@ naming the tenant.
 | `private.rebuild_service_area_paths()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `private.root_area_ids()` | invoker | 4 (events, setlists, volunteers) |
 | `private.service_area_gives_roles(p_area_id uuid)` | invoker | 4 (events, setlists, volunteers) |
-| `private.setlist_items_input(p_setlist_id uuid)` | invoker | 4 (events, setlists, volunteers) |
-| `public.add_event_arrangement(p_event_id uuid, p_arrangement_id uuid, p_musical_key text)` | invoker | 4 (events, setlists, volunteers) |
+| `private.setlist_items_input(p_setlist_id uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
+| `public.add_event_arrangement(p_event_id uuid, p_arrangement_id uuid, p_musical_key text)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.add_event_image(p_set_id uuid, p_name text, p_path text, p_width integer, p_height integer, p_size_bytes integer, p_max integer, p_unused_before timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
-| `public.add_event_items(p_event_id uuid, p_items jsonb, p_after_key uuid)` | invoker | 4 (events, setlists, volunteers) |
+| `public.add_event_items(p_event_id uuid, p_items jsonb, p_after_key uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.add_new_user_to_service_areas(p_user_id uuid, p_area_ids uuid[])` | invoker | 4 (events, setlists, volunteers) |
 | `public.add_song_image(p_song_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.add_song_image_page(p_image_id uuid, p_path text, p_width integer, p_height integer, p_size_bytes integer, p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
@@ -76,7 +76,7 @@ naming the tenant.
 | `public.check_annotation_setlist_item()` | invoker, trigger | 3 — 0010_music_sheet (SECURITY INVOKER, tenant via RLS) |
 | `public.check_arrangement_attachment_links()` | invoker, trigger | 2 — 0008_music_songs (SECURITY INVOKER; skips cascading deletes) |
 | `public.check_live_session_arrangements()` | invoker, trigger | dropped (Churchy login / user admin, PLAN §11) |
-| `public.check_setlist()` | invoker, trigger | 4 (events, setlists, volunteers) |
+| `public.check_setlist()` | invoker, trigger | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.check_setlist_item_volunteer()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `public.chordpro_directive(p_chordpro text, p_name text)` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
 | `public.church_day(p_at timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
@@ -105,7 +105,7 @@ naming the tenant.
 | `public.course_document(p_id uuid)` | invoker | 8 (courses) |
 | `public.course_summaries()` | invoker | 8 (courses) |
 | `public.create_email_mfa_code(p_user_id uuid, p_session_id uuid, p_code_hash text)` | definer | dropped (Churchy login / user admin, PLAN §11) |
-| `public.create_event_block(p_event_id uuid, p_item_keys uuid[], p_name text, p_countdown text, p_until time without time zone)` | invoker | 4 (events, setlists, volunteers) |
+| `public.create_event_block(p_event_id uuid, p_item_keys uuid[], p_name text, p_countdown text, p_until time without time zone)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.create_event_with_items(p_title text, p_starts_at timestamp with time zone, p_duration_minutes integer, p_youtube_url text, p_items jsonb)` | invoker | 4 (events, setlists, volunteers) |
 | `public.create_event_with_items(p_title text, p_starts_at timestamp with time zone, p_duration_minutes integer, p_youtube_url text, p_items jsonb, p_is_private boolean, p_created_by uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.create_event_with_items(p_title text, p_starts_at timestamp with time zone, p_duration_minutes integer, p_youtube_url text, p_items jsonb, p_is_private boolean, p_created_by uuid, p_area_ids uuid[])` | invoker | 4 (events, setlists, volunteers) |
@@ -113,18 +113,18 @@ naming the tenant.
 | `public.create_song(p_title text, p_artist text, p_tags text[], p_chordpro text, p_section_order text[], p_copyright text, p_songbook text, p_authors text, p_original_title text, p_translator text, p_rights_status text, p_rights_note text)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.create_volunteer_template(p_name text, p_area_ids uuid[])` | invoker | 4 (events, setlists, volunteers) |
 | `public.custom_access_token_hook(event jsonb)` | invoker | dropped (Churchy login / user admin, PLAN §11) |
-| `public.delete_event_block(p_event_id uuid, p_key uuid)` | invoker | 4 (events, setlists, volunteers) |
+| `public.delete_event_block(p_event_id uuid, p_key uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.delete_service_area(p_id uuid, p_grant_roles boolean, p_actor_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.delete_unused_event_announcements(p_before timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
 | `public.delete_unused_event_image_sets(p_before timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
-| `public.delete_unused_setlist()` | invoker, trigger | 4 (events, setlists, volunteers) |
+| `public.delete_unused_setlist()` | invoker, trigger | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.discard_course_draft(p_id uuid, p_revision integer)` | invoker | 8 (courses) |
 | `public.editable_course_ids(p_user_id uuid)` | invoker | 8 (courses) |
 | `public.end_live_sessions()` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.end_projections()` | definer | 5 (projection) |
 | `public.event_ends_at(p_starts_at timestamp with time zone, p_duration_minutes integer)` | invoker | 4 (events, setlists, volunteers) |
 | `public.event_member_access(p_user_id uuid)` | invoker | 4 (events, setlists, volunteers) |
-| `public.filter_songs(p_query text, p_key text, p_time_signature text, p_bpm_min integer, p_bpm_max integer, p_tag text, p_sort text, p_limit integer, p_offset integer)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER; `recent`/`oldest` sorts wait for events, phase 4) |
+| `public.filter_songs(p_query text, p_key text, p_time_signature text, p_bpm_min integer, p_bpm_max integer, p_tag text, p_sort text, p_limit integer, p_offset integer)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER; `recent`/`oldest` sorts: 4a-3, 0013_music_stats, new parameter `p_user_id`) |
 | `public.fold_text(p_text text)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.has_distinct_elements(p_values uuid[])` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.hook_mfa_verification_attempt(event jsonb)` | invoker | dropped (Churchy login / user admin, PLAN §11) |
@@ -143,14 +143,14 @@ naming the tenant.
 | `public.move_service_area(p_id uuid, p_parent_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.move_song_image_pages(p_image_id uuid, p_page_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.place_service_area(p_id uuid, p_parent_id uuid, p_ids uuid[], p_grant_roles boolean, p_actor_id uuid)` | invoker | 4 (events, setlists, volunteers) |
-| `public.prevent_setlist_update()` | invoker, trigger | 4 (events, setlists, volunteers) |
+| `public.prevent_setlist_update()` | invoker, trigger | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.prevent_song_id_update()` | invoker, trigger | 2b — 0009_music_files (song files and arrangements) |
 | `public.publish_course(p_id uuid, p_revision integer, p_doc jsonb)` | invoker | 8 (courses) |
 | `public.put_scripture_cache_verses(p_translation text, p_book text, p_verses jsonb, p_book_limit integer)` | invoker | 6 (scripture) |
 | `public.recent_closed_song_rights_proposals(p_limit integer)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.remove_calendar_entries_from_snapshots()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `public.remove_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8 (courses) |
-| `public.remove_event_item(p_event_id uuid, p_key uuid)` | invoker | 4 (events, setlists, volunteers) |
+| `public.remove_event_item(p_event_id uuid, p_key uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.reset_notification_deliveries()` | invoker, trigger | 8 (notifications) |
 | `public.reset_volunteer_replies()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `public.restore_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8 (courses) |
@@ -168,7 +168,7 @@ naming the tenant.
 | `public.set_event_area_teams(p_event_id uuid, p_teams jsonb, p_any_user boolean)` | invoker | 4 (events, setlists, volunteers) |
 | `public.set_event_item_theme(p_event_id uuid, p_item_id uuid, p_theme_id uuid)` | invoker | 5 (projection) |
 | `public.set_event_items(p_event_id uuid, p_items jsonb)` | invoker | 4 (events, setlists, volunteers) |
-| `public.set_event_items(p_event_id uuid, p_items jsonb, p_base_setlist_id uuid, p_check_base boolean)` | invoker | 4 (events, setlists, volunteers) |
+| `public.set_event_items(p_event_id uuid, p_items jsonb, p_base_setlist_id uuid, p_check_base boolean)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.set_event_teams(p_event_id uuid, p_template_id uuid, p_teams jsonb)` | invoker | 4 (events, setlists, volunteers) |
 | `public.set_projection_theme_video(p_theme_id uuid, p_video_path text, p_poster_path text)` | invoker | 5 (projection) |
 | `public.set_service_area_members(p_area_id uuid, p_members jsonb, p_grant_roles boolean, p_actor_id uuid)` | invoker | 4 (events, setlists, volunteers) |
@@ -188,19 +188,19 @@ naming the tenant.
 | `public.song_filter_options()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.song_image_pages_keep_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.song_play_stats(p_song_ids uuid[])` | invoker | 2 — 0008_music_songs as a stub (`{}`): plays come from events, phase 4 |
-| `public.song_play_stats(p_song_ids uuid[], p_user_id uuid)` | invoker | 2 — 0008_music_songs as a stub (`{}`): plays come from events, phase 4 |
+| `public.song_play_stats(p_song_ids uuid[], p_user_id uuid)` | invoker | 4a-3 — 0013_music_stats (private events: creator only; areas in 4b) |
 | `public.song_rights_research_api_key()` | definer | 8 (rights research) |
 | `public.song_tags()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.songs_for_local_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.songs_for_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
-| `public.start_event_block(p_event_id uuid, p_key uuid, p_restart boolean)` | invoker | 4 (events, setlists, volunteers) |
+| `public.start_event_block(p_event_id uuid, p_key uuid, p_restart boolean)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.start_projection_video_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 5 (projection) |
 | `public.start_song_pdf_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.start_song_sound_file_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.swap_announcement_calendars(p_id uuid, p_other_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.touch_projection_controller(p_id uuid, p_event_id uuid, p_user_id uuid)` | invoker | 5 (projection) |
-| `public.update_event_block(p_event_id uuid, p_key uuid, p_name text, p_countdown text, p_until time without time zone)` | invoker | 4 (events, setlists, volunteers) |
-| `public.update_event_block(p_event_id uuid, p_key uuid, p_name text, p_countdown text, p_until time without time zone, p_duration_seconds integer)` | invoker | 4 (events, setlists, volunteers) |
+| `public.update_event_block(p_event_id uuid, p_key uuid, p_name text, p_countdown text, p_until time without time zone)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
+| `public.update_event_block(p_event_id uuid, p_key uuid, p_name text, p_countdown text, p_until time without time zone, p_duration_seconds integer)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.update_profile(p_user_id uuid, p_changes jsonb)` | invoker | dropped (Churchy login / user admin, PLAN §11) |
 | `public.update_song_image(p_id uuid, p_name text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.update_song_link(p_id uuid, p_name text, p_url text, p_keys text[], p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
@@ -223,3 +223,8 @@ naming the tenant.
 | `public.count_song_rights_researches_this_month()` | invoker | 0009_music_files — the church's AI researches this calendar month (Europe/Budapest), for the per-plan cap |
 | `public.shared_song_rights(p_title text, p_authors text, p_copyright text)` | invoker | 0008_music_songs — the shared facts for a song (CCLI number, else title + authors) |
 
+## Added in phase 4a-1 (not in the source repo)
+
+| Function | Security | Phase |
+|---|---|---|
+| `public.music_calendar_id()` | invoker | 4a-1 — 0011_music_events (the tenant's music calendar, created on first use) |

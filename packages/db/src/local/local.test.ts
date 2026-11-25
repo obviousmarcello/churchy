@@ -151,8 +151,18 @@ describe("local PostgREST", () => {
     });
     expect(found.error).toBeNull();
     expect(found.data).toMatchObject({ total: expect.any(Number) });
-    const bad = await music.from("songs").select("id").or("title.eq.a,title.eq.b");
+    const bad = await music
+      .from("songs")
+      .select("id")
+      .filter("and", "eq", "(title.eq.a,title.eq.b)");
     expect(bad.error?.message).toMatch(/unsupported/);
+    // A top-level `or` (also with an `and(…)` term) is supported.
+    const either = await music
+      .from("songs")
+      .select("id")
+      .or("title.eq.nincs-ilyen,and(title.eq.x,artist.is.null)");
+    expect(either.error).toBeNull();
+    expect(either.data).toEqual([]);
   });
 });
 

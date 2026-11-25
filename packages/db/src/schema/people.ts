@@ -3,6 +3,7 @@
  * and workspace directory, §8.2/§21.1), `teams`, `team_positions`, `team_members`, `calendars` and
  * the single `events` table with `calendar_id` + `visibility` (§22.1). Plus `availability_blocks`.
  */
+import { setlists } from "./music";
 import type { Calendar, ContactVisibility, RichText } from "@churchy/contracts";
 import { sql } from "drizzle-orm";
 import {
@@ -16,6 +17,7 @@ import {
   primaryKey,
   text,
   unique,
+  uniqueIndex,
   uuid,
   type PgTableExtraConfigValue,
 } from "drizzle-orm/pg-core";
@@ -161,9 +163,14 @@ export const calendars = pgTable(
     teamId: uuid(),
     defaultVisibility: eventVisibility().notNull().default("staff"),
     editors: jsonb().$type<Calendar["editors"]>().notNull().default({ roles: [], teamIds: [] }),
+    /** Music merge (phase 4): the tenant's one calendar of music events (the music role sees only it). */
+    isMusic: boolean().notNull().default(false),
   },
   (t): PgTableExtraConfigValue[] => [
     ...tenantIndexes("calendars", t),
+    uniqueIndex("calendars_one_music_idx")
+      .on(t.tenantId)
+      .where(sql`${t.isMusic}`),
     sameTenantFk("calendars_owner_person_id_fkey", t.tenantId, t.ownerPersonId, people),
     sameTenantFk("calendars_team_id_fkey", t.tenantId, t.teamId, teams),
     check("calendars_color_check", sql`${t.color} ~ '^#[0-9a-fA-F]{6}$'`),
@@ -178,7 +185,8 @@ export const events = pgTable(
   "events",
   {
     id: idColumn(),
-    tenantId: tenantId(),
+    // The default lets the music role (supabase-js, tenant JWT) insert without naming the tenant.
+    tenantId: tenantId().default(sql`app.current_tenant_id()`),
     calendarId: uuid().notNull(),
     visibility: eventVisibility().notNull(),
     slug: text().notNull(),
@@ -202,10 +210,21 @@ export const events = pgTable(
     createdBy: uuid().references(() => profiles.id, { onDelete: "set null" }),
     /** Reserved for a later CalDAV/Graph sync adapter (§22.2). */
     externalRef: text(),
+    /** Music merge (phase 4): the event's own setlist (one per event), a live-stream link, and a
+     * private flag (only creator and music admins see it). */
+    setlistId: uuid(),
+    youtubeUrl: text(),
+    isPrivate: boolean().notNull().default(false),
     ...timestamps(),
   },
   (t) => [
     ...tenantIndexes("events", t),
+    unique("events_tenant_id_setlist_id_key").on(t.tenantId, t.setlistId),
+    sameTenantFk("events_setlist_id_fkey", t.tenantId, t.setlistId, setlists),
+    check(
+      "events_youtube_url_check",
+      sql`${t.youtubeUrl} is null or (char_length(${t.youtubeUrl}) <= 500 and ${t.youtubeUrl} ~ '^https://(((www|m|music)\\.)?youtube\\.com|youtu\\.be)/')`,
+    ),
     unique("events_tenant_id_slug_key").on(t.tenantId, t.slug),
     index("events_tenant_id_starts_at_idx").on(t.tenantId, t.startsAt),
     index("events_calendar_id_idx").on(t.calendarId),

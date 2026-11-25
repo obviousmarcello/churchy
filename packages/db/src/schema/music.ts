@@ -26,10 +26,12 @@ import {
   real,
   smallint,
   text,
+  time,
   unique,
   uuid,
 } from "drizzle-orm/pg-core";
 import { huText, tenantIndexes, timestamptz, tsvector } from "./columns";
+import { events } from "./people";
 import { profiles, tenantId as platformTenantId, tenants } from "./platform";
 
 /**
@@ -1813,5 +1815,72 @@ export const songRights = pgTable(
     check("song_rights_translator_check", sql`(char_length(translator) <= 200)`),
     check("song_rights_songbook_check", sql`(char_length(songbook) <= 200)`),
     check("song_rights_copyright_check", sql`(char_length(copyright) <= 500)`),
+  ],
+).enableRLS();
+
+/**
+ * A block of an event's run sheet (a named run of consecutive setlist items with an optional
+ * countdown). Music merge phase 4a-2; the event is Churchy's `events` row.
+ */
+export const eventBlocks = pgTable(
+  "event_blocks",
+  {
+    tenantId: tenantId(),
+    eventId: uuid().notNull(),
+    key: uuid().notNull().defaultRandom(),
+    name: huText().notNull(),
+    countdown: text().notNull().default("off"),
+    /** Only for the countdown "until": the clock time on the day of the event. */
+    countdownUntil: time(),
+    /** Only for the countdown "remaining": when the block started. */
+    startedAt: timestamptz(),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ name: "event_blocks_pkey", columns: [t.tenantId, t.eventId, t.key] }),
+    index("event_blocks_tenant_id_idx").on(t.tenantId),
+    check(
+      "event_blocks_name_check",
+      sql`((name = btrim(name)) AND ((char_length(name) >= 1) AND (char_length(name) <= 80)))`,
+    ),
+    check(
+      "event_blocks_countdown_check",
+      sql`(countdown = ANY (ARRAY['off'::text, 'remaining'::text, 'until'::text]))`,
+    ),
+    check(
+      "event_blocks_countdown_until_check",
+      sql`((countdown = 'until'::text) = (countdown_until IS NOT NULL))`,
+    ),
+    foreignKey({
+      name: "event_blocks_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const setlistItemBlocks = pgTable(
+  "setlist_item_blocks",
+  {
+    tenantId: tenantId(),
+    setlistItemId: uuid().notNull(),
+    eventId: uuid().notNull(),
+    blockKey: uuid().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ name: "setlist_item_blocks_pkey", columns: [t.tenantId, t.setlistItemId] }),
+    index("setlist_item_blocks_tenant_id_idx").on(t.tenantId),
+    index("setlist_item_blocks_event_id_block_key_idx").on(t.eventId, t.blockKey),
+    foreignKey({
+      name: "setlist_item_blocks_setlist_item_id_fkey",
+      columns: [t.tenantId, t.setlistItemId],
+      foreignColumns: [setlistItems.tenantId, setlistItems.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "setlist_item_blocks_block_fkey",
+      columns: [t.tenantId, t.eventId, t.blockKey],
+      foreignColumns: [eventBlocks.tenantId, eventBlocks.eventId, eventBlocks.key],
+    }).onDelete("cascade"),
   ],
 ).enableRLS();

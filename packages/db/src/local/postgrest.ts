@@ -206,8 +206,12 @@ interface OrderTerm {
   readonly desc: boolean;
   readonly nulls: "first" | "last" | null;
 }
+/** A top-level `or=(a.eq.1,b.is.false,and(c.eq.2,d.eq.3))`: each term is an AND group of filters. */
+type OrGroup = Filter[][];
 interface Modifiers {
   filters: Filter[];
+  /** Top-level `or` parameters; every one must hold (they are ANDed with the filters). */
+  ors: OrGroup[];
   order: OrderTerm[];
   limit: number | null;
   offset: number | null;
@@ -242,6 +246,21 @@ function parseFilter(column: string, raw: string): Filter {
   return { column, negate, op, value: rest.slice(dot + 1) };
 }
 
+function parseOr(raw: string): OrGroup {
+  const inner = raw.replace(/^\(/, "").replace(/\)$/, "");
+  return splitTop(inner).map((term) => {
+    const dot = term.indexOf(".");
+    if (term.startsWith("and(") && term.endsWith(")")) {
+      return splitTop(term.slice(4, -1)).map((part) => {
+        const d = part.indexOf(".");
+        return parseFilter(part.slice(0, d), part.slice(d + 1));
+      });
+    }
+    if (dot === -1) throw new UnsupportedRequest(`or term "${term}"`);
+    return [parseFilter(term.slice(0, dot), term.slice(dot + 1))];
+  });
+}
+
 function parseOrder(raw: string): OrderTerm[] {
   return splitTop(raw).map((term) => {
     const [column, ...flags] = term.split(".");
@@ -258,11 +277,15 @@ function parseModifiers(params: URLSearchParams): Map<string, Modifiers> {
   const byPath = new Map<string, Modifiers>();
   const get = (path: string) => {
     let m = byPath.get(path);
-    if (!m) byPath.set(path, (m = { filters: [], order: [], limit: null, offset: null }));
+    if (!m) byPath.set(path, (m = { filters: [], ors: [], order: [], limit: null, offset: null }));
     return m;
   };
   for (const [key, value] of params) {
-    if (key === "or" || key === "and" || key.endsWith(".or") || key.endsWith(".and")) {
+    if (key === "or") {
+      get("").ors.push(parseOr(value));
+      continue;
+    }
+    if (key === "and" || key.endsWith(".or") || key.endsWith(".and")) {
       throw new UnsupportedRequest(`logical filter "${key}"`);
     }
     const dot = key.lastIndexOf(".");
@@ -430,6 +453,11 @@ class Builder {
   where(table: string, alias: string, items: SelectItem[]): string[] {
     const top = this.mods.get("");
     const conds = (top?.filters ?? []).map((f) => this.filterSql(table, alias, f));
+    for (const or of top?.ors ?? []) {
+      conds.push(
+        `(${or.map((term) => `(${term.map((f) => this.filterSql(table, alias, f)).join(" and ")})`).join(" or ")})`,
+      );
+    }
     for (const item of items) {
       if (item.kind === "embed" && item.inner) {
         conds.push(this.embedSql(table, alias, item, item.alias).exists);
@@ -740,7 +768,11 @@ async function rpc(
   const mods = parseModifiers(
     new URLSearchParams([...url.searchParams].filter(([k]) => !given.includes(k))),
   );
-  if ((mods.get("")?.filters.length ?? 0) > 0 || mods.size > 1) {
+  if (
+    (mods.get("")?.filters.length ?? 0) > 0 ||
+    (mods.get("")?.ors.length ?? 0) > 0 ||
+    mods.size > 1
+  ) {
     throw new UnsupportedRequest(`filters on rpc ${name}`);
   }
   let value: unknown;

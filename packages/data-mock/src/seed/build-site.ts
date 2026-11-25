@@ -65,6 +65,7 @@ const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
   "ws.music.sheet.midi-out",
   "ws.music.sheet.marks",
   "ws.music.sheet.chord-diagrams",
+  "ws.music.events",
 ];
 
 export function buildTenant(b: Build): void {
@@ -551,6 +552,9 @@ export function buildCalendarsAndEvents(b: Build): void {
       status: e.status ?? "published",
       createdBy: creator,
       externalRef: null,
+      setlistId: null,
+      youtubeUrl: null,
+      isPrivate: false,
       createdAt: stamp,
       updatedAt: stamp,
     };

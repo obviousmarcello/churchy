@@ -26,6 +26,7 @@ import { seedDemo, type SeedEncryptor } from "./seed/demo";
 import { demoUuid } from "./seed/ids";
 import {
   HR_TABLES,
+  MUSIC_SHARED_TABLES,
   MUSIC_TABLES,
   TABLE_SCOPES,
   tablesWithScope,
@@ -50,6 +51,8 @@ const actor = { userId: null, personId: null };
 /** Tables whose rows belong to a tenant: tenant scope + catalog (tenant rows next to platform rows). */
 const TENANT_OWNED = [...tablesWithScope("tenant"), ...tablesWithScope("catalog")].sort();
 const PLATFORM = tablesWithScope("platform").sort();
+/** Tables with a BEFORE UPDATE trigger that rejects every update (setlists never change). */
+const IMMUTABLE_TABLES = ["setlists", "setlist_items"];
 const RLS_REJECTED = { code: "42501", message: expect.stringMatching(/row-level security/) };
 
 function testEncryptor(): SeedEncryptor {
@@ -409,6 +412,12 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
             `update "${table}" set tenant_id = tenant_id where tenant_id = $1`,
             [A],
           );
+          // Setlists are immutable by trigger (`prevent_setlist_update`, 0012): a row update fails
+          // there, other tenants' rows are still invisible (0 rows, no trigger).
+          if (IMMUTABLE_TABLES.includes(table)) {
+            expect(mine).toMatchObject({ code: "P0001" });
+            return;
+          }
           expect(mine).toMatchObject({ rowCount: own });
           const move = await attempt(
             c,
@@ -618,7 +627,10 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
     });
 
     it.each(MUSIC_TABLES)("%s: sees A's rows only and cannot write B's", async (table) => {
-      const own = await ownerCount(table, A);
+      // Shared Churchy tables: the music role sees only the music calendar and its events (the
+      // fixtures have none), see "music_scope" in 0011_music_events.
+      const shared = (MUSIC_SHARED_TABLES as readonly string[]).includes(table);
+      const own = shared ? 0 : await ownerCount(table, A);
       const platformRows = TABLE_SCOPES[table] === "catalog" ? await ownerCount(table, null) : 0;
       const rowB = await sampleRow(table, B);
       await asMusic(A, async (c) => {
@@ -628,6 +640,141 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
         expect(await attempt(c, `delete from "${table}" where tenant_id = $1`, [B])).toMatchObject({
           rowCount: 0,
         });
+      });
+    });
+
+    it("events: the music role reaches only the tenant's music calendar and its events", async () => {
+      const [other] = await ownerQuery<{ id: string }>(
+        "select id from calendars where tenant_id = $1 limit 1",
+        [A],
+      );
+      const insert = (calendarId: string, slug: string) =>
+        `insert into events (tenant_id, calendar_id, visibility, slug, title, starts_at, status)
+         values ('${A}', '${calendarId}', 'staff', '${slug}', 'Próba', now(), 'published')`;
+      await asMusic(A, async (c) => {
+        // The event of a non-music calendar (public or internal) is out of scope.
+        expect(await attempt(c, insert(other!.id, "music-scope-a"))).toEqual(RLS_REJECTED);
+        expect((await c.query("select 1 from calendars")).rowCount).toBe(0);
+        // music_calendar_id() creates the calendar once; then events fit and only they are seen.
+        const first = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        const again = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        expect(again).toBe(first);
+        await c.query(insert(first, "music-scope-b"));
+        expect((await c.query("select 1 from events")).rowCount).toBe(1);
+        expect(await attempt(c, `update calendars set is_music = false`)).toEqual(RLS_REJECTED);
+      });
+    });
+
+    it("event setlists: items replace the setlist, blocks stay in one run, the old setlist is deleted", async () => {
+      const [arr] = await ownerQuery<{ id: string; song_id: string }>(
+        "select id, song_id from arrangements where tenant_id = $1 limit 1",
+        [A],
+      );
+      await asMusic(A, async (c) => {
+        const cal = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        const ev = (
+          await c.query<{ id: string }>(
+            `insert into events (tenant_id, calendar_id, visibility, slug, title, starts_at, ends_at, status)
+             values ('${A}', '${cal}', 'staff', 'items-test', 'Próba', now() + interval '1 day',
+                     now() + interval '1 day 90 minutes', 'published') returning id`,
+          )
+        ).rows[0]!.id;
+        const items = JSON.stringify([
+          { arrangement_id: arr!.id, musical_key: "G" },
+          { title: "Köszöntés", notes: "röviden" },
+          { arrangement_id: arr!.id },
+        ]);
+        const saved = (
+          await c.query("select public.set_event_items($1, $2::jsonb, null, false) as r", [
+            ev,
+            items,
+          ])
+        ).rows[0]!.r;
+        expect(saved.status).toBe("saved");
+        const first = saved.setlist_id as string;
+        const rows = (
+          await c.query<{ key: string; position: number }>(
+            "select key, position from setlist_items where setlist_id = $1 order by position",
+            [first],
+          )
+        ).rows;
+        expect(rows.map((r) => r.position)).toEqual([0, 1, 2]);
+        // A block over the first two items; then removing the middle item splits nothing it keeps.
+        const block = (
+          await c.query(
+            "select public.create_event_block($1, $2::uuid[], 'Dicsőítés', 'off', null) as r",
+            [ev, [rows[0]!.key, rows[1]!.key]],
+          )
+        ).rows[0]!.r;
+        expect(block.status).toBe("created");
+        // Add a song after item 0 (inside the block: it joins it), then remove the last item.
+        expect(
+          (
+            await c.query("select public.add_event_items($1, $2::jsonb, $3) as r", [
+              ev,
+              JSON.stringify([{ arrangement_id: arr!.id }]),
+              rows[0]!.key,
+            ])
+          ).rows[0]!.r,
+        ).toBe("added");
+        const now = (
+          await c.query<{ setlist_id: string }>("select setlist_id from events where id = $1", [ev])
+        ).rows[0]!.setlist_id;
+        expect(now).not.toBe(first);
+        // The previous setlist is gone (nothing refers to it) and the block covers 3 items.
+        expect((await c.query("select 1 from setlists where id = $1", [first])).rowCount).toBe(0);
+        expect(
+          (await c.query("select 1 from setlist_item_blocks where event_id = $1", [ev])).rowCount,
+        ).toBe(3);
+        expect(
+          (await c.query("select public.remove_event_item($1, $2) as r", [ev, rows[2]!.key]))
+            .rows[0]!.r,
+        ).toBe("removed");
+        // Unchanged items: the same setlist stays.
+        const same = (
+          await c.query(
+            "select public.set_event_items($1, public.setlist_items_input($2), null, false) as r",
+            [
+              ev,
+              (
+                await c.query<{ setlist_id: string }>(
+                  "select setlist_id from events where id = $1",
+                  [ev],
+                )
+              ).rows[0]!.setlist_id,
+            ],
+          )
+        ).rows[0]!.r;
+        expect(same.status).toBe("saved");
+        // Play statistics: the song is planned in this (future) event; a past event counts as played
+        // and orders the "recent" sort first.
+        const stats = (
+          await c.query("select public.song_play_stats(array[$1]::uuid[], null) as r", [
+            arr!.song_id,
+          ])
+        ).rows[0]!.r;
+        expect(stats[arr!.song_id].next_event.id).toBe(ev);
+        await c.query(
+          "update events set starts_at = now() - interval '2 days', ends_at = now() - interval '2 days' + interval '90 minutes' where id = $1",
+          [ev],
+        );
+        const after = (
+          await c.query("select public.song_play_stats(array[$1]::uuid[], null) as r", [
+            arr!.song_id,
+          ])
+        ).rows[0]!.r;
+        expect(after[arr!.song_id].recent_count).toBe(1);
+        const sorted = (
+          await c.query(
+            "select public.filter_songs('', null, null, null, null, null, 'recent', 25, 0, null) as r",
+          )
+        ).rows[0]!.r;
+        expect(sorted.ids[0]).toBe(arr!.song_id);
+        // The deferred check of `setlists_check` (items equal the setlist) passes at commit.
+        await c.query("set constraints all immediate");
       });
     });
 

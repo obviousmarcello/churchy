@@ -512,6 +512,7 @@ export function mockEvents({ store }: RepoDeps): EventRepo {
         status: existing?.status ?? "draft",
         createdBy: existing?.createdBy ?? ctx.actor.userId,
         externalRef: existing?.externalRef ?? null,
+        setlistId: existing?.setlistId ?? null,
         createdAt: existing?.createdAt ?? stamp,
         updatedAt: stamp,
       };

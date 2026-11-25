@@ -303,6 +303,16 @@ export const README_ROWS: readonly MatrixRow[] = [
     variants: [v("personalise the chord sheet", "music.sheet.personalize", tenant, "YYYYYYYY")],
   },
   {
+    capability: "Music: view events (music merge)",
+    sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
+    variants: [v("view music events", "music.event.view", tenant, "YYYYYYYY")],
+  },
+  {
+    capability: "Music: manage events and setlists (music merge)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("edit music events", "music.event.manage", tenant, "YNNNYNNN")],
+  },
+  {
     capability: "Music: manage songs and arrangements (music merge)",
     sdd: ["✔", "", "", "", "✔", "", "", ""],
     variants: [v("edit songs and arrangements", "music.song.manage", tenant, "YNNNYNNN")],

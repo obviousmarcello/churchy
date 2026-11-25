@@ -23,7 +23,13 @@
  *    expects `churchy_app, churchy_music`).
  */
 import type pg from "pg";
-import { HR_TABLES, MUSIC_TABLES, TABLE_SCOPES, type TableScope } from "./table-scopes";
+import {
+  HR_TABLES,
+  MUSIC_SHARED_TABLES,
+  MUSIC_TABLES,
+  TABLE_SCOPES,
+  type TableScope,
+} from "./table-scopes";
 
 /** The role the application connects as (never the table owner). */
 export const APP_ROLE = "churchy_app";
@@ -33,6 +39,8 @@ export const MUSIC_ROLE = "churchy_music";
 export const POSTGREST_ROLES = ["anon", "authenticated"] as const;
 export const TENANT_POLICY = "tenant_isolation";
 export const CATALOG_READ_POLICY = "catalog_read";
+/** RESTRICTIVE policy of the Churchy tables shared with the music role (MUSIC_SHARED_TABLES). */
+export const MUSIC_SCOPE_POLICY = "music_scope";
 
 /** `pg_get_expr` output of the canonical policy expressions. */
 export const TENANT_EXPR = "(tenant_id = ( SELECT app.current_tenant_id() AS current_tenant_id))";
@@ -162,6 +170,13 @@ export async function rlsViolations(
         }
       }
       const allowed = new Set([TENANT_POLICY]);
+      if ((MUSIC_SHARED_TABLES as readonly string[]).includes(t.table)) {
+        allowed.add(MUSIC_SCOPE_POLICY);
+        const scoped = own.find((p) => p.name === MUSIC_SCOPE_POLICY);
+        if (scoped === undefined || scoped.permissive || scoped.roles.join(",") !== MUSIC_ROLE) {
+          problems.push(`${where} missing or non-restrictive ${MUSIC_SCOPE_POLICY} policy`);
+        }
+      }
       if (scope === "catalog") {
         allowed.add(CATALOG_READ_POLICY);
         const read = own.find((p) => p.name === CATALOG_READ_POLICY);

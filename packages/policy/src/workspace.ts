@@ -135,6 +135,16 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: EVERY_ROLE,
   },
   {
+    capability: "Music: view events (private ones only for their creator)",
+    actions: ["music.event.view"],
+    grants: EVERY_ROLE,
+  },
+  {
+    capability: "Music: manage events and setlists",
+    actions: ["music.event.manage"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
     capability: "Music: manage songs and arrangements",
     actions: ["music.song.manage"],
     grants: { leader: "all", musicLeader: "all" },

@@ -484,3 +484,70 @@ Open questions:
 1. Realtime transport for live sessions and the shared metronome grid (Supabase Realtime with the tenant
    JWT, or SSE/pg-boss, or none)? Until answered the live session stays out.
 2. Which workspace roles may use the sheet's personal settings? Now every role that has `music.song.view`.
+
+## 17. Phase 4 progress (music-04-events)
+
+Owner decisions (2026-11-24): events mapping accepted (internal music calendar per tenant, new nullable columns on
+Churchy `events`); event access area-based in SQL/RLS inside the music models, `can()` gates actions; series map onto
+Churchy RRULE recurrence (`parent_event_id`/`rrule`), `copy_event`/sync stay; `service_plans.setlist_id` with two-way
+song sync between plan song items and setlist items. Slices: 4a-1 schema and events core, 4a-2 setlists, 4a-3 UI, sheet
+links and play statistics; 4b teams, volunteers, feed, announcements (questions 5-7 asked after 4a).
+
+### 4a-1 (done)
+- Migration `0011_music_events` (+ down): `events.setlist_id` (unique per tenant, composite FK), `youtube_url`,
+  `is_private`; `service_plans.setlist_id` (unique, composite FK); `calendars.is_music` (one per tenant).
+  Duration is `ends_at - starts_at` (no `duration_minutes` column).
+- Music role on Churchy tables: `calendars` and `events` are in `MUSIC_TABLES` (also `MUSIC_SHARED_TABLES`); the
+  `tenant_isolation` policies apply to `churchy_app, churchy_music`, plus a RESTRICTIVE `music_scope` policy for
+  `churchy_music` (only the music calendar and its events). `rls.ts` checks that policy; isolation tests extended.
+  Security-review label: yes (RLS, new grants).
+- `music_calendar_id()` (SECURITY INVOKER) gets or creates the calendar "Zenei események" (shared, staff).
+- Contract `Event`: `setlistId`, `youtubeUrl`, `isPrivate` (input: `youtubeUrl`, `isPrivate`); mock adapter and seed updated.
+- Model `server/music/models/events.ts`: list, occurrences (expanded with `@churchy/events`), get, create (single or
+  series via `rrule`), update, delete, change one occurrence (child event), skip one occurrence (`exdate`). Private
+  events: creator and `music.event.manage` only. Libs `lib/music/{youtube,event-time}.ts` with tests.
+- Policy `music.event.view` (every workspace role), `music.event.manage` (leader, music leader); MATRIX regenerated.
+  Module `ws.music.events` (parent `ws.music.songs`, default off, every tier, on in the demo churches).
+
+Deviations: no `event-series.ts` (series is an RRULE, not N copies); event areas (`area_ids`) and volunteer access come
+with the volunteer tables in 4b, until then every music-event admin sees all events and members see non-private ones;
+`copy_event` and the item RPCs wait for setlists (4a-2); no pages or server actions yet (4a-3).
+
+### 4a-2 (done): setlists on events
+- Migration `0012_music_setlists` (+ down): tables `event_blocks` (+ `duration_seconds`), `setlist_item_blocks`
+  (both RLS, MUSIC_TABLES); functions (SECURITY INVOKER, in `public`, no `private` schema): `set_event_items`
+  (without the volunteer, image-set and announcement parts, which return with their tables), `add_event_items`,
+  `remove_event_item`, `add_event_arrangement`, block functions, `normalize_event_blocks`, `setlist_items_input`;
+  triggers: setlists never change (`prevent_setlist_update`), unused setlist deleted when an event drops it,
+  deferred `setlists_check`. `service_plans.setlist_id` FK is `ON DELETE SET NULL` (a setlist is replaced on every
+  item change, the app re-points the plan).
+- Models: `setlists.ts` (items, input schemas, `readSetlistItems`), `event-blocks.ts`, and in `events.ts`:
+  `getEventDetail`, `setEventItems`, `addEventItems`, `removeEventItem`, `addEventArrangement`. Libs
+  `lib/music/{event-items,event-items-merge,event-blocks,event-timing,church-time}` with tests.
+- Plan sync: `lib/music/plan-sync.ts` (`takeSongs`, pure, tested). Rule: the side just edited wins; the other side takes
+  the song sequence over and keeps its other items. The server wiring (plan editor and event page actions) is 4a-3.
+- DB tests: item save/replace/delete of the old setlist, blocks, commit-time check; fixtures have an event and blocks.
+- Deferred: `copy_event` (needs volunteers/images/announcements copies, 4b), scripture reference detection (phase 6,
+  `looksLikeScriptureReference` left out), item volunteers (4b), image sets and announcements (projection phase).
+
+### 4a-3 (done): pages, sheet link, statistics
+- Migrations: `0013_music_stats` (`song_play_stats` and the `recent`/`oldest` sorts of `filter_songs`, which gets `p_user_id`;
+  a private event counts for its creator only), `0014_events_tenant_default` (`events.tenant_id` defaults to the JWT tenant,
+  so the music role can insert without naming it).
+- Local PostgREST (PGlite demo layer) supports a top-level `or=(…)` filter (with `and(…)` terms).
+- Pages `/munkater/esemenyek` (upcoming/past list), `/uj`, `/[id]` (setlist: search and add songs, text items, remove,
+  move up/down, blocks, link to the sheet), `/[id]/szerkesztes` (edit, one occurrence via `?alkalom=`, delete). Server
+  actions are `withPolicy("music.event.manage", musicEvents, …)`; nav item `musicEvents` (module `ws.music.events`,
+  `music.event.view`). Strings under `music.events`. Sheet: `/munkater/kotta?event=<id>` plays an event's songs in order.
+  The song details show the play history (recent, planned).
+- e2e `music-events.spec.ts` (create series, songs, text item, reorder, sheet, edit, delete, read-only role; axe 0).
+
+Deviations / not done (decisions needed marked Q):
+- The events UI is new and compact (Churchy design system), NOT a copy of the music app's event pages (drag and drop
+  editor, bulk series form, volunteer/teams panel, images, announcements, projection controls). Those parts belong to
+  4b and the projection phase; the copy-edit of their editor can follow there. (Q: accept, or copy their editor now?)
+- Plan sync is the pure rule (`takeSongs`); the actions that call it (plan editor ⇄ setlist) are not wired yet.
+  (Q: the plan editor is on the mock adapter in Phase A; wire it when the plan page edits real plan items?)
+- Per-slot annotations on the sheet of an event (`setlist_item_id`) and `my-setlists` stay for later; `copy_event`,
+  event sync (calendar `event-sync`) and the calendar feed wait for 4b.
+

@@ -78,6 +78,34 @@
       "when": 1795526187065,
       "tag": "0010_music_sheet",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795534054543,
+      "tag": "0011_music_events",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795593891083,
+      "tag": "0012_music_setlists",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795594501444,
+      "tag": "0013_music_stats",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1795595085251,
+      "tag": "0014_events_tenant_default",
+      "breakpoints": true
     }
   ]
 }

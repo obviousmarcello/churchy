@@ -28,6 +28,7 @@
         "calendar": "Naptár",
         "rooms": "Termek",
         "songs": "Énektár",
+        "musicEvents": "Zenei események",
         "absences": "Távollétek",
         "hr": "HR-ügyintézés",
         "news": "Hírek",
@@ -3301,6 +3302,10 @@
           "music_sheet_chord_diagrams": {
             "title": "Akkordábrák",
             "help": "Gitár- és billentyűábrák a próbapanelen."
+          },
+          "music_events": {
+            "title": "Zenei események",
+            "help": "Próbák és alkalmak énekrenddel, ismétlődéssel és privát eseményekkel."
           }
         }
       },
@@ -3412,7 +3417,8 @@
           "music_sheet_metronome": "Metronóm (munkatér)",
           "music_sheet_midi_out": "MIDI-óra (munkatér)",
           "music_sheet_marks": "Rajzok az akkordlapon (munkatér)",
-          "music_sheet_chord_diagrams": "Akkordábrák (munkatér)"
+          "music_sheet_chord_diagrams": "Akkordábrák (munkatér)",
+          "music_events": "Zenei események (munkatér)"
         }
       },
       "catalog": {
@@ -5555,7 +5561,9 @@
         "areasRequired": "Válassz legalább egy csoportot.",
         "areasNotYours": "Csak azokat a csoportokat adhatod hozzá vagy veheted el, amelyeknek tagja vagy.",
         "areasWithoutAccess": "Nem vagy tagja ezeknek a csoportoknak, így nem látnád az eseményt. Válassz egy csoportot, amelynek tagja vagy, vagy előbb add hozzá magad önkéntesként.",
-        "areaMissing": "Egy kiválasztott csoport már nem létezik. Töltsd újra az oldalt."
+        "areaMissing": "Egy kiválasztott csoport már nem létezik. Töltsd újra az oldalt.",
+        "rruleInvalid": "Az ismétlési szabály érvénytelen.",
+        "occurrenceMissing": "Ez az alkalom már nem létezik az ismétlődő eseményben. Töltsd újra az oldalt."
       },
       "eventBlocks": {
         "itemInBlock": "Egy kijelölt programpont már egy blokkban van. Töltsd újra az oldalt, és jelöld ki újra a programpontokat.",
@@ -6212,6 +6220,101 @@
         "measured": "A késés {ms} ms.",
         "measureUneven": "A koppintások túl egyenetlenek voltak. Próbáld újra.",
         "measureNoClicks": "Először indítsd el a metronómot."
+      }
+    },
+    "events": {
+      "title": "Események",
+      "lead": "Próbák és alkalmak énekrenddel. Az ismétlődő eseményeknek egy közös szabálya van.",
+      "upcoming": "Következő alkalmak",
+      "past": "Korábbi alkalmak",
+      "emptyUpcoming": "Nincs közelgő esemény.",
+      "emptyPast": "Nincs korábbi esemény.",
+      "add": "Új esemény",
+      "privateBadge": "Privát",
+      "seriesBadge": "Ismétlődik",
+      "songCount": {
+        "one": "{count} dal",
+        "other": "{count} dal"
+      },
+      "itemCount": {
+        "one": "{count} programpont",
+        "other": "{count} programpont"
+      },
+      "new": {
+        "title": "Új esemény",
+        "submit": "Esemény létrehozása",
+        "pending": "Létrehozás…"
+      },
+      "edit": {
+        "title": "Esemény szerkesztése",
+        "submit": "Mentés",
+        "pending": "Mentés…",
+        "edit": "Szerkesztés",
+        "notFound": "Ez az esemény nem található, vagy nem látod."
+      },
+      "fields": {
+        "title": "Név",
+        "startsAt": "Kezdés",
+        "startsAtHint": "Budapesti idő szerint.",
+        "duration": "Hossz (perc)",
+        "youtube": "YouTube-link",
+        "youtubeHint": "Pl. az élő közvetítés linkje.",
+        "private": "Privát esemény",
+        "privateHint": "Csak te és az események kezelői látjátok.",
+        "rrule": "Ismétlődés",
+        "rruleNone": "Nem ismétlődik",
+        "rruleWeekly": "Hetente",
+        "rruleBiweekly": "Kéthetente",
+        "rruleMonthly": "Havonta",
+        "rruleHint": "Az első alkalom napján ismétlődik, a végéig vagy amíg le nem állítod."
+      },
+      "delete": {
+        "button": "Esemény törlése",
+        "confirm": "Biztosan törlöd az eseményt és az énekrendjét?",
+        "series": "Az egész sorozat törlődik."
+      },
+      "items": {
+        "title": "Énekrend",
+        "empty": "Még nincs programpont.",
+        "addSong": "Dal hozzáadása",
+        "searchLabel": "Dal keresése",
+        "searchPlaceholder": "Cím, szerző vagy énekeskönyv",
+        "search": "Keresés",
+        "noResults": "Nincs találat.",
+        "add": "Hozzáadás",
+        "addText": "Szöveges programpont",
+        "textTitle": "Cím",
+        "textNotes": "Megjegyzés",
+        "remove": "Elvétel",
+        "moveUp": "Feljebb",
+        "moveDown": "Lejjebb",
+        "key": "Hangnem",
+        "chart": "Kotta megnyitása",
+        "saved": "Mentve.",
+        "changed": "Közben valaki más is módosította az énekrendet. Töltsd újra az oldalt.",
+        "full": "Az énekrend megtelt.",
+        "ended": "Az esemény véget ért, ezért nem adhatsz hozzá dalt.",
+        "noArrangement": "Ez a dal már nem létezik."
+      },
+      "blocks": {
+        "title": "Blokkok",
+        "empty": "Még nincs blokk.",
+        "new": "Blokk létrehozása",
+        "name": "Blokk neve",
+        "pick": "Válaszd ki a blokk egymás melletti programpontjait.",
+        "create": "Létrehozás",
+        "delete": "Blokk megszüntetése",
+        "itemMissing": "Egy programpont már nem létezik.",
+        "itemInBlock": "Egy programpont már másik blokkban van.",
+        "itemsApart": "A blokk programpontjai nem egymás mellett vannak."
+      },
+      "occurrence": {
+        "skip": "Ez az alkalom kimarad",
+        "change": "Csak ezt az alkalmat módosítom"
+      },
+      "errors": {
+        "saveFailed": "Nem sikerült menteni az eseményt.",
+        "notFound": "Ez az esemény már nem létezik."
       }
     }
   },
