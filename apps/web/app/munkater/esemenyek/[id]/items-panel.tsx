@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/music/ui/button";
 import { Input } from "@/components/music/ui/input";
 import { Label } from "@/components/music/ui/label";
+import { NativeSelect } from "@/components/music/ui/native-select";
 import { useI18n } from "@/i18n/music/client";
 import {
   addSongAction,
@@ -14,6 +15,8 @@ import {
   deleteBlockAction,
   moveItemAction,
   removeItemAction,
+  reorderItemsAction,
+  setItemVolunteerAction,
 } from "../actions";
 
 type Item = {
@@ -23,6 +26,7 @@ type Item = {
   musicalKey: string | null;
   arrangementId: string | null;
   blockKey: string | null;
+  volunteerId: string | null;
 };
 type SongResult = {
   id: string;
@@ -43,7 +47,10 @@ export function ItemsPanel({
   canEdit,
   query,
   results,
+  volunteers,
 }: {
+  /** The volunteers of the event: who can be given an item. */
+  volunteers: { id: string; name: string }[];
   eventId: string;
   items: Item[];
   blocks: { key: string; name: string }[];
@@ -57,6 +64,7 @@ export function ItemsPanel({
   const [notice, setNotice] = useState<string | null>(null);
   const t = m.events.items;
   const [picked, setPicked] = useState<string[]>([]);
+  const [dragKey, setDragKey] = useState<string | null>(null);
 
   const send = (
     action: (formData: FormData) => Promise<PolicyOutcome>,
@@ -101,6 +109,25 @@ export function ItemsPanel({
             <li
               key={item.key}
               className="flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2"
+              draggable={canEdit}
+              onDragStart={() => setDragKey(item.key)}
+              onDragEnd={() => setDragKey(null)}
+              onDragOver={(event) => {
+                if (dragKey !== null) event.preventDefault();
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                if (dragKey === null || dragKey === item.key) return;
+                const keys = items.map((other) => other.key).filter((key) => key !== dragKey);
+                keys.splice(
+                  keys.indexOf(item.key) +
+                    (items.findIndex((i) => i.key === dragKey) < index ? 1 : 0),
+                  0,
+                  dragKey,
+                );
+                setDragKey(null);
+                send(reorderItemsAction, { key: keys });
+              }}
             >
               {canEdit && blocks.length >= 0 && (
                 <input
@@ -134,6 +161,29 @@ export function ItemsPanel({
                   <span className="text-sm text-muted"> · {blockName(item.blockKey)}</span>
                 )}
               </span>
+              {canEdit && item.kind === "song" && volunteers.length > 0 && (
+                <NativeSelect
+                  aria-label={`${t.volunteer}: ${item.title}`}
+                  value={item.volunteerId ?? ""}
+                  disabled={pending}
+                  className="w-40"
+                  onChange={(event) =>
+                    send(setItemVolunteerAction, { key: item.key, userId: event.target.value })
+                  }
+                >
+                  <option value="">{t.noVolunteer}</option>
+                  {volunteers.map((volunteer) => (
+                    <option key={volunteer.id} value={volunteer.id}>
+                      {volunteer.name}
+                    </option>
+                  ))}
+                </NativeSelect>
+              )}
+              {!canEdit && item.volunteerId && (
+                <span className="text-sm text-muted">
+                  {volunteers.find((v) => v.id === item.volunteerId)?.name}
+                </span>
+              )}
               {canEdit && (
                 <span className="flex gap-1">
                   <Button
@@ -166,6 +216,7 @@ export function ItemsPanel({
           ))}
         </ol>
       )}
+      {canEdit && items.length > 1 && <p className="text-sm text-muted">{t.dragHint}</p>}
       {notice && (
         <p role="alert" className="text-sm text-danger">
           {notice}

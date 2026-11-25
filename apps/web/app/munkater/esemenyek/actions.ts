@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { errorState, text, type FormState } from "@/server/music/form-state";
 import { churchTime } from "@/lib/music/church-time";
+import { withBlocksAfterReorder } from "@/lib/music/event-blocks";
+import { MAX_SERIES_EVENTS } from "@/lib/music/event-series";
 import {
   addEventArrangement,
   addEventItems,
@@ -283,5 +285,129 @@ export const createEventPlanAction = withPolicy(
       if (isContractError(error)) return { planId: null };
       throw error;
     }
+  },
+);
+
+/** Puts the items in the order of the `key` fields (drag and drop); a block keeps one run. */
+export const reorderItemsAction = withPolicy(
+  "music.event.manage",
+  musicEventIn,
+  async (_scope, formData: FormData): Promise<ItemsResult> => {
+    const event = await getEventDetail(text(formData, "id"));
+    if (event === null) return { ok: false, message: "changed" };
+    const items = itemsToInput(event.items);
+    const keys = formData.getAll("key").map(String);
+    const byKey = new Map(items.map((item) => [item.key, item]));
+    // The same items, once each: else the page is out of date.
+    if (
+      keys.length !== items.length ||
+      new Set(keys).size !== keys.length ||
+      keys.some((k) => !byKey.has(k))
+    ) {
+      return { ok: false, message: "changed" };
+    }
+    const rows = keys.map((key) => ({ key, blockKey: byKey.get(key)?.blockKey ?? null }));
+    const before = items.map((item) => ({ key: item.key ?? "", blockKey: item.blockKey ?? null }));
+    const after = withBlocksAfterReorder(before, rows);
+    const ordered = after.map((row) => ({ ...byKey.get(row.key)!, blockKey: row.blockKey }));
+    const saved = await setEventItems(event.id, { items: ordered, baseSetlistId: event.setlistId });
+    if (saved?.status === "saved") await afterItems(event.id);
+    return saved?.status === "saved"
+      ? { ok: true, message: null }
+      : { ok: false, message: "changed" };
+  },
+);
+
+/** The volunteer of an item (`userId` of a volunteer of the event; empty: none). */
+export const setItemVolunteerAction = withPolicy(
+  "music.event.manage",
+  musicEventIn,
+  async (_scope, formData: FormData): Promise<ItemsResult> => {
+    const event = await getEventDetail(text(formData, "id"));
+    if (event === null) return { ok: false, message: "changed" };
+    const userId = text(formData, "userId");
+    const items = itemsToInput(event.items).map((item) =>
+      item.key === text(formData, "key")
+        ? { ...item, volunteerId: userId === "" ? null : userId }
+        : item,
+    );
+    try {
+      const saved = await setEventItems(event.id, { items, baseSetlistId: event.setlistId });
+      return saved?.status === "saved"
+        ? { ok: true, message: null }
+        : { ok: false, message: "changed" };
+    } catch (error) {
+      // The user stopped being a volunteer in the meantime (`not_event_volunteer`).
+      if (error instanceof Error && error.name !== "ValidationError")
+        return { ok: false, message: "changed" };
+      throw error;
+    }
+  },
+);
+
+const WEEKDAY_CODES = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+
+/**
+ * Several events in one go (the bulk form): for each time slot one series (a master with a weekly
+ * RRULE on the chosen weekdays, until the last day). Local dates and times are Budapest time.
+ */
+export const createSeriesAction = withPolicy(
+  "music.event.manage",
+  musicEventIn,
+  async (_scope, formData: FormData): Promise<FormState & { created?: number }> => {
+    const from = text(formData, "from");
+    const until = text(formData, "until");
+    const weekdays = formData
+      .getAll("weekday")
+      .map(Number)
+      .filter((day) => day >= 0 && day <= 6);
+    const titles = formData.getAll("slotTitle").map(String);
+    const times = formData.getAll("slotTime").map(String);
+    const durations = formData.getAll("slotDuration").map(Number);
+    const slots = titles.flatMap((title, index) =>
+      title.trim() !== "" && /^\d{2}:\d{2}$/.test(times[index] ?? "")
+        ? [{ title, time: times[index]!, duration: durations[index] || 90 }]
+        : [],
+    );
+    const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(from);
+    const last = /^(\d{4})-(\d{2})-(\d{2})$/.exec(until);
+    if (!day || !last || weekdays.length === 0 || slots.length === 0 || until < from) {
+      return { status: "error", message: null, fieldErrors: { from: [""] } };
+    }
+    // The first occurrence on or after `from`, and the cap of `MAX_SERIES_EVENTS` events in all.
+    const start = new Date(Date.UTC(Number(day[1]), Number(day[2]) - 1, Number(day[3])));
+    const end = new Date(Date.UTC(Number(last[1]), Number(last[2]) - 1, Number(last[3])));
+    let count = 0;
+    let first: Date | null = null;
+    for (const d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+      if (!weekdays.includes(d.getUTCDay())) continue;
+      first ??= new Date(d);
+      count += slots.length;
+    }
+    if (first === null || count > MAX_SERIES_EVENTS) {
+      return { status: "error", message: null, fieldErrors: { until: [""] } };
+    }
+    try {
+      for (const slot of slots) {
+        const [hour, minute] = slot.time.split(":").map(Number) as [number, number];
+        const startsAt = churchTime(
+          first.getUTCFullYear(),
+          first.getUTCMonth() + 1,
+          first.getUTCDate(),
+          hour,
+          minute,
+        ).toISOString();
+        await createEvent({
+          title: slot.title,
+          startsAt,
+          durationMinutes: slot.duration,
+          rrule: `FREQ=WEEKLY;BYDAY=${weekdays.map((d) => WEEKDAY_CODES[d]).join(",")};UNTIL=${until.replaceAll("-", "")}`,
+          ...(formData.get("isPrivate") === "on" && { isPrivate: true }),
+        });
+      }
+    } catch (error) {
+      return errorState(error, ({ m }) => m.events.errors.saveFailed);
+    }
+    redirect("/munkater/esemenyek");
   },
 );

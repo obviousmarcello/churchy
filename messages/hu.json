@@ -6306,7 +6306,10 @@
         "changed": "Közben valaki más is módosította az énekrendet. Töltsd újra az oldalt.",
         "full": "Az énekrend megtelt.",
         "ended": "Az esemény véget ért, ezért nem adhatsz hozzá dalt.",
-        "noArrangement": "Ez a dal már nem létezik."
+        "noArrangement": "Ez a dal már nem létezik.",
+        "dragHint": "Húzással is átrendezheted a programpontokat.",
+        "volunteer": "Szolgáló",
+        "noVolunteer": "Nincs"
       },
       "blocks": {
         "title": "Blokkok",
@@ -6404,6 +6407,31 @@
         "sourceAdd": "Naptár hozzáadása",
         "sourceDelete": "Törlés",
         "sourcesLink": "Hirdetési naptárak"
+      },
+      "series": {
+        "title": "Több esemény egyszerre",
+        "link": "Több esemény egyszerre",
+        "lead": "Heti ismétlődő alkalmak: minden időponthoz egy sorozat jön létre, a kiválasztott napokon.",
+        "from": "Első nap",
+        "until": "Utolsó nap",
+        "weekdays": "Napok",
+        "days": {
+          "0": "vasárnap",
+          "1": "hétfő",
+          "2": "kedd",
+          "3": "szerda",
+          "4": "csütörtök",
+          "5": "péntek",
+          "6": "szombat"
+        },
+        "slots": "Időpontok",
+        "slotTitle": "Név",
+        "slotTime": "Kezdés",
+        "slotDuration": "Hossz (perc)",
+        "addSlot": "Újabb időpont",
+        "submit": "Sorozatok létrehozása",
+        "pending": "Létrehozás…",
+        "invalid": "Add meg a napokat, legalább egy időpontot, és legfeljebb 200 alkalom lehet."
       }
     },
     "groups": {
