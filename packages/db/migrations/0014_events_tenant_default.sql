@@ -1,0 +1,1 @@
+ALTER TABLE "events" ALTER COLUMN "tenant_id" SET DEFAULT app.current_tenant_id();

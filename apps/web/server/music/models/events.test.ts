@@ -77,7 +77,6 @@ describe("music events", () => {
       startsAt: "2026-11-29T17:00:00+01:00",
     });
     expect(db.inserts[0]).toMatchObject({
-      tenant_id: "t1",
       calendar_id: "22222222-2222-4222-8222-222222222222",
       visibility: "staff",
       starts_at: "2026-11-29T16:00:00.000Z",

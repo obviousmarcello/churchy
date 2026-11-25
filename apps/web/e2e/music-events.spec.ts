@@ -1,0 +1,75 @@
+import { expect, test, type Page } from "@playwright/test";
+import { axeSeriousOrCritical, switchPersona } from "./demo-helpers";
+
+// Music merge phase 4a (events): list, create (single and series), items (songs and text), blocks,
+// edit, the chord sheet of an event, delete. Demo mode: fictitious songs, in-process database.
+
+async function asMusicLeader(page: Page, path: string) {
+  await page.goto("/");
+  await switchPersona(page, "zenei");
+  await page.goto(path);
+}
+
+test("a music leader creates an event, builds its setlist and opens its chord sheet", async ({
+  page,
+}) => {
+  await asMusicLeader(page, "/munkater/esemenyek");
+  await expect(page.getByRole("heading", { level: 1, name: "Események" })).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+
+  await page.getByRole("link", { name: "Új esemény" }).click();
+  await page.getByLabel("Név").fill("Vasárnapi próba");
+  await page.getByLabel("Kezdés").fill("2031-03-02T17:00");
+  await page.getByLabel("Ismétlődés").selectOption("weekly");
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+  await page.getByRole("button", { name: "Esemény létrehozása" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Vasárnapi próba" })).toBeVisible();
+  await expect(page.getByText("Még nincs programpont.")).toBeVisible();
+
+  // A song from the catalog.
+  await page.getByLabel("Dal keresése").fill("Áldás");
+  await page.getByRole("button", { name: "Keresés" }).click();
+  await page.getByRole("button", { name: "Hozzáadás" }).first().click();
+  await expect(page.getByRole("list").filter({ hasText: "Áldás, békesség" }).first()).toBeVisible();
+
+  // A text item, then the order changes.
+  await page.getByLabel("Szöveges programpont").fill("Köszöntés");
+  await page.getByRole("button", { name: "Hozzáadás" }).last().click();
+  await expect(page.getByText("Köszöntés")).toBeVisible();
+  await page.getByRole("button", { name: "Feljebb" }).nth(1).click();
+  await expect(page.getByRole("listitem").filter({ hasText: "1." }).first()).toContainText(
+    "Köszöntés",
+  );
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+
+  // The chord sheet of the event.
+  await page.getByRole("link", { name: "Kotta megnyitása" }).click();
+  await expect(page).toHaveURL(/\/munkater\/kotta\?.*event=|\/munkater\/kotta\?arrangement=/);
+  await expect(page.getByRole("link", { name: "Az akkordlap bezárása" })).toBeVisible();
+});
+
+test("an event can be edited and deleted", async ({ page }) => {
+  await asMusicLeader(page, "/munkater/esemenyek/uj");
+  await page.getByLabel("Név").fill("Törlendő alkalom");
+  await page.getByLabel("Kezdés").fill("2031-04-06T10:00");
+  await page.getByRole("button", { name: "Esemény létrehozása" }).click();
+  await page.getByRole("link", { name: "Szerkesztés" }).click();
+  await page.getByLabel("Név").fill("Átnevezett alkalom");
+  await page.getByRole("button", { name: "Mentés" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Átnevezett alkalom" })).toBeVisible();
+  await page.getByRole("link", { name: "Szerkesztés" }).click();
+  page.once("dialog", (dialog) => void dialog.accept());
+  await page.getByRole("button", { name: "Esemény törlése" }).click();
+  await expect(page).toHaveURL(/\/munkater\/esemenyek$/);
+  await expect(page.getByText("Átnevezett alkalom")).toHaveCount(0);
+});
+
+test("a role without music.event.manage sees events but no edit controls", async ({ page }) => {
+  await page.goto("/");
+  await switchPersona(page, "onkentes");
+  await page.goto("/munkater/esemenyek");
+  await expect(page.getByRole("heading", { level: 1, name: "Események" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Új esemény" })).toHaveCount(0);
+  await page.goto("/munkater/esemenyek/uj");
+  await expect(page.getByText(/nem található|404/i).first()).toBeVisible();
+});

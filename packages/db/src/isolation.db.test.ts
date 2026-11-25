@@ -668,8 +668,8 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
     });
 
     it("event setlists: items replace the setlist, blocks stay in one run, the old setlist is deleted", async () => {
-      const [arr] = await ownerQuery<{ id: string }>(
-        "select id from arrangements where tenant_id = $1 limit 1",
+      const [arr] = await ownerQuery<{ id: string; song_id: string }>(
+        "select id, song_id from arrangements where tenant_id = $1 limit 1",
         [A],
       );
       await asMusic(A, async (c) => {
@@ -749,6 +749,30 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
           )
         ).rows[0]!.r;
         expect(same.status).toBe("saved");
+        // Play statistics: the song is planned in this (future) event; a past event counts as played
+        // and orders the "recent" sort first.
+        const stats = (
+          await c.query("select public.song_play_stats(array[$1]::uuid[], null) as r", [
+            arr!.song_id,
+          ])
+        ).rows[0]!.r;
+        expect(stats[arr!.song_id].next_event.id).toBe(ev);
+        await c.query(
+          "update events set starts_at = now() - interval '2 days', ends_at = now() - interval '2 days' + interval '90 minutes' where id = $1",
+          [ev],
+        );
+        const after = (
+          await c.query("select public.song_play_stats(array[$1]::uuid[], null) as r", [
+            arr!.song_id,
+          ])
+        ).rows[0]!.r;
+        expect(after[arr!.song_id].recent_count).toBe(1);
+        const sorted = (
+          await c.query(
+            "select public.filter_songs('', null, null, null, null, null, 'recent', 25, 0, null) as r",
+          )
+        ).rows[0]!.r;
+        expect(sorted.ids[0]).toBe(arr!.song_id);
         // The deferred check of `setlists_check` (items equal the setlist) passes at commit.
         await c.query("set constraints all immediate");
       });

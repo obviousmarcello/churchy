@@ -124,7 +124,7 @@ naming the tenant.
 | `public.end_projections()` | definer | 5 (projection) |
 | `public.event_ends_at(p_starts_at timestamp with time zone, p_duration_minutes integer)` | invoker | 4 (events, setlists, volunteers) |
 | `public.event_member_access(p_user_id uuid)` | invoker | 4 (events, setlists, volunteers) |
-| `public.filter_songs(p_query text, p_key text, p_time_signature text, p_bpm_min integer, p_bpm_max integer, p_tag text, p_sort text, p_limit integer, p_offset integer)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER; `recent`/`oldest` sorts wait for events, phase 4) |
+| `public.filter_songs(p_query text, p_key text, p_time_signature text, p_bpm_min integer, p_bpm_max integer, p_tag text, p_sort text, p_limit integer, p_offset integer)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER; `recent`/`oldest` sorts: 4a-3, 0013_music_stats, new parameter `p_user_id`) |
 | `public.fold_text(p_text text)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.has_distinct_elements(p_values uuid[])` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.hook_mfa_verification_attempt(event jsonb)` | invoker | dropped (Churchy login / user admin, PLAN §11) |
@@ -188,7 +188,7 @@ naming the tenant.
 | `public.song_filter_options()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.song_image_pages_keep_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.song_play_stats(p_song_ids uuid[])` | invoker | 2 — 0008_music_songs as a stub (`{}`): plays come from events, phase 4 |
-| `public.song_play_stats(p_song_ids uuid[], p_user_id uuid)` | invoker | 2 — 0008_music_songs as a stub (`{}`): plays come from events, phase 4 |
+| `public.song_play_stats(p_song_ids uuid[], p_user_id uuid)` | invoker | 4a-3 — 0013_music_stats (private events: creator only; areas in 4b) |
 | `public.song_rights_research_api_key()` | definer | 8 (rights research) |
 | `public.song_tags()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.songs_for_local_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |

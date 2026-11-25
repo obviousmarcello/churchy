@@ -23,6 +23,7 @@ export type NavKey =
   | "sections.calendar"
   | "sections.rooms"
   | "sections.songs"
+  | "sections.musicEvents"
   | "sections.absences"
   | "sections.hr"
   | "sections.news"
@@ -190,6 +191,13 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           href: "/munkater/enektar",
           module: "ws.music.songs",
           requires: { action: "music.song.view" },
+        },
+        {
+          id: "musicEvents",
+          label: t("sections.musicEvents"),
+          href: "/munkater/esemenyek",
+          module: "ws.music.events",
+          requires: { action: "music.event.view" },
         },
         {
           id: "absences",

@@ -185,7 +185,8 @@ export const events = pgTable(
   "events",
   {
     id: idColumn(),
-    tenantId: tenantId(),
+    // The default lets the music role (supabase-js, tenant JWT) insert without naming the tenant.
+    tenantId: tenantId().default(sql`app.current_tenant_id()`),
     calendarId: uuid().notNull(),
     visibility: eventVisibility().notNull(),
     slug: text().notNull(),

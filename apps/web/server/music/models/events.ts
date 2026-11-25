@@ -242,7 +242,6 @@ export async function createEvent(input: NewEventInput): Promise<EventDTO> {
   const { data, error } = await supabase
     .from("events")
     .insert({
-      tenant_id: user.tenantId,
       calendar_id: await musicCalendarId(),
       visibility: "staff",
       status: "published",
@@ -371,7 +370,6 @@ export async function changeOccurrence(
         .from("events")
         .insert({
           ...values,
-          tenant_id: user.tenantId,
           calendar_id: await musicCalendarId(),
           visibility: "staff",
           status: "published",

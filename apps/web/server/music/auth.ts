@@ -64,6 +64,14 @@ export async function requireEventAdmin(): Promise<CurrentUser> {
   return user;
 }
 
+/** Any music user, for an events page: 404 when the events module is off. */
+export async function requireEventsPageUser(): Promise<CurrentUser> {
+  await requireWorkspaceModule("ws.music.events");
+  const user = await getCurrentUser();
+  if (!user) notFound();
+  return user;
+}
+
 export async function requireSuperadmin(): Promise<CurrentUser> {
   const user = await requireUser();
   if (!user.isSuperadmin) throw new ForbiddenError();

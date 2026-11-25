@@ -530,3 +530,24 @@ with the volunteer tables in 4b, until then every music-event admin sees all eve
 - Deferred: `copy_event` (needs volunteers/images/announcements copies, 4b), scripture reference detection (phase 6,
   `looksLikeScriptureReference` left out), item volunteers (4b), image sets and announcements (projection phase).
 
+### 4a-3 (done): pages, sheet link, statistics
+- Migrations: `0013_music_stats` (`song_play_stats` and the `recent`/`oldest` sorts of `filter_songs`, which gets `p_user_id`;
+  a private event counts for its creator only), `0014_events_tenant_default` (`events.tenant_id` defaults to the JWT tenant,
+  so the music role can insert without naming it).
+- Local PostgREST (PGlite demo layer) supports a top-level `or=(…)` filter (with `and(…)` terms).
+- Pages `/munkater/esemenyek` (upcoming/past list), `/uj`, `/[id]` (setlist: search and add songs, text items, remove,
+  move up/down, blocks, link to the sheet), `/[id]/szerkesztes` (edit, one occurrence via `?alkalom=`, delete). Server
+  actions are `withPolicy("music.event.manage", musicEvents, …)`; nav item `musicEvents` (module `ws.music.events`,
+  `music.event.view`). Strings under `music.events`. Sheet: `/munkater/kotta?event=<id>` plays an event's songs in order.
+  The song details show the play history (recent, planned).
+- e2e `music-events.spec.ts` (create series, songs, text item, reorder, sheet, edit, delete, read-only role; axe 0).
+
+Deviations / not done (decisions needed marked Q):
+- The events UI is new and compact (Churchy design system), NOT a copy of the music app's event pages (drag and drop
+  editor, bulk series form, volunteer/teams panel, images, announcements, projection controls). Those parts belong to
+  4b and the projection phase; the copy-edit of their editor can follow there. (Q: accept, or copy their editor now?)
+- Plan sync is the pure rule (`takeSongs`); the actions that call it (plan editor ⇄ setlist) are not wired yet.
+  (Q: the plan editor is on the mock adapter in Phase A; wire it when the plan page edits real plan items?)
+- Per-slot annotations on the sheet of an event (`setlist_item_id`) and `my-setlists` stay for later; `copy_event`,
+  event sync (calendar `event-sync`) and the calendar feed wait for 4b.
+
