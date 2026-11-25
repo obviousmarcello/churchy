@@ -47,7 +47,7 @@ export function PageHeader({
     // On phones the header is the top bar of the app: it starts below the status bar of the installed app.
     <header
       className={cn(
-        "sticky top-0 z-10 flex items-end justify-between gap-4 border-b bg-surface/80 px-4 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-3 backdrop-blur sm:px-6 sm:pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:pb-4",
+        "sticky top-0 z-10 flex items-end justify-between gap-x-4 gap-y-2 max-sm:flex-wrap border-b bg-surface/80 px-4 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-3 backdrop-blur sm:px-6 sm:pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:pb-4",
         // The card of the detail pane: the title of the card, not a bar.
         pane &&
           "lg:static lg:z-auto lg:border-b-0 lg:bg-transparent lg:pt-6 lg:pb-2 lg:backdrop-blur-none",
@@ -76,7 +76,9 @@ export function PageHeader({
         {/* Small screens have no room for it: the header is sticky. */}
         {details && <p className="hidden text-sm text-muted md:block">{details}</p>}
       </div>
-      {actions && <div className="flex shrink-0 items-center gap-1">{actions}</div>}
+      {actions && (
+        <div className="flex shrink-0 items-center gap-1 max-sm:flex-wrap">{actions}</div>
+      )}
     </header>
   );
 }
