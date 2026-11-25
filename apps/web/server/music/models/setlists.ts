@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import {
@@ -300,8 +301,11 @@ const ITEM_COLUMNS =
  * The items of a setlist in playing order, with the time, theme and block of each. Themes,
  * durations and blocks are read by item id (their keys are composite, so no embed).
  */
-export async function readSetlistItems(setlistId: string): Promise<SetlistItemDTO[]> {
-  const supabase = await getMusicSupabase();
+export async function readSetlistItems(
+  setlistId: string,
+  client?: SupabaseClient,
+): Promise<SetlistItemDTO[]> {
+  const supabase = client ?? (await getMusicSupabase());
   const items = await supabase
     .from("setlist_items")
     .select(ITEM_COLUMNS)

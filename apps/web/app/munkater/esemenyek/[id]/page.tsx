@@ -9,7 +9,13 @@ import { getI18n } from "@/i18n/music/server";
 import { requireEventsPageUser } from "@/server/music/auth";
 import { getEventDetail } from "@/server/music/models/events";
 import { findSongs } from "@/server/music/models/songs";
+import { getEventTeams, getMyReply, getTeamEditor } from "@/server/music/models/event-teams";
+import { listPeople } from "@/server/music/models/profiles";
 import { ItemsPanel } from "./items-panel";
+import { TeamPanel } from "./team-panel";
+import { PlanLink } from "./plan-link";
+import { getMemberEnv } from "@/server/workspace";
+import { canServer } from "@/lib/permissions/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { m } = await getI18n();
@@ -41,9 +47,10 @@ export default async function EventPage({
   ]);
   const event = await getEventDetail(id);
   if (event === null) notFound();
+  const canEdit = await user.canManageIn("event", event.areaIds);
   const q = (Array.isArray(query.q) ? query.q[0] : query.q)?.trim() ?? "";
   const results =
-    user.canEditEvents && q !== ""
+    canEdit && q !== ""
       ? (await findSongs({ query: q, sort: "title", page: 1 })).songs.map((song) => ({
           id: song.id,
           title: song.title,
@@ -55,13 +62,26 @@ export default async function EventPage({
         }))
       : [];
 
+  const [teams, editor, myReply, people] = await Promise.all([
+    getEventTeams(event.id),
+    getTeamEditor(),
+    getMyReply(event.id),
+    listPeople(),
+  ]);
+  const planInfo = await planOf(event.id);
+  const editableAreaIds =
+    editor === null
+      ? []
+      : editor.editable === "all"
+        ? editor.areas.map((area) => area.id)
+        : editor.editable;
   return (
     <main className="flex flex-1 flex-col">
       <PageHeader
         title={event.title}
         back={{ href: "/munkater/esemenyek", label: m.events.title }}
         actions={
-          user.canEditEvents ? (
+          canEdit ? (
             <Link
               href={`/munkater/esemenyek/${event.id}/szerkesztes`}
               className={buttonVariants({ variant: "outline" })}
@@ -112,11 +132,35 @@ export default async function EventPage({
                 },
           )}
           blocks={event.blocks.map((block) => ({ key: block.key, name: block.name }))}
-          canEdit={user.canEditEvents}
+          canEdit={canEdit}
           query={q}
           results={results}
+        />
+        <PlanLink eventId={event.id} planId={planInfo.planId} canCreate={planInfo.canCreate} />
+        <TeamPanel
+          eventId={event.id}
+          teams={teams.teams}
+          people={people.map((person) => ({ id: person.id, name: person.name }))}
+          areas={editor?.areas ?? []}
+          editableAreaIds={editableAreaIds}
+          myReply={myReply}
         />
       </div>
     </main>
   );
+}
+
+/** The liturgy plan of the event, and whether the viewer may make one (the plan side is Churchy's). */
+async function planOf(eventId: string): Promise<{ planId: string | null; canCreate: boolean }> {
+  try {
+    const { repos, ctx } = await getMemberEnv();
+    const plans = await repos.servicePlans.list(ctx, { eventIds: [eventId] });
+    const tenantId = ctx.tenantId;
+    return {
+      planId: plans[0]?.id ?? null,
+      canCreate: tenantId !== undefined && (await canServer("servicePlan.edit", { tenantId })),
+    };
+  } catch {
+    return { planId: null, canCreate: false };
+  }
 }

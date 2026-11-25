@@ -6,17 +6,25 @@ import { expandEvents, tryParseRRule, type ExpandWindow } from "@churchy/events"
 import { slugify } from "@churchy/hu";
 import { z } from "zod";
 
+import { EVENT_AREAS_MAX, forbiddenEventAreaChanges } from "@/lib/music/event-scopes";
 import { toYoutubeUrl } from "@/lib/music/youtube";
-import { requireEventAdmin, requireUser, type CurrentUser } from "@/server/music/auth";
+import { requireEventAdminIn, requireUser, type CurrentUser } from "@/server/music/auth";
 import { getMusicSupabase } from "@/server/music/db";
-import { ConflictError } from "@/server/music/errors";
+import { ConflictError, ValidationError } from "@/server/music/errors";
 import { zodMessage } from "@/server/music/zod-i18n";
 import { readEventBlocks, type EventBlockDTO } from "./event-blocks";
+import {
+  eventAreaRightsOf,
+  requireEventAdminOf,
+  visibleEventsFilter,
+  withFilter,
+} from "./event-access";
 import {
   readSetlistItems,
   setlistItemsInputSchema,
   toItemsArgument,
   type SetlistItemDTO,
+  type SetlistItemInput,
 } from "./setlists";
 import { playKeySchema } from "./arrangements";
 import { databaseError, idSchema, isId, lowerIdSchema, parseInput, requiredText } from "./shared";
@@ -49,6 +57,8 @@ export type EventDTO = {
   parentEventId: string | null;
   /** The original start of a changed occurrence, else null. */
   recurrenceId: string | null;
+  /** The music areas that see the event (the root area: everyone). */
+  areaIds: string[];
   /** The event's own setlist, else null. */
   setlistId: string | null;
   createdBy: string | null;
@@ -98,6 +108,8 @@ export const eventInputSchema = z.strictObject({
   durationMinutes: z.number().int().min(1).max(1440),
   youtubeUrl: youtubeUrlSchema,
   isPrivate: z.boolean(),
+  /** The music areas that see the event. Left out: the root area (everyone). */
+  areaIds: z.array(lowerIdSchema).min(1).max(EVENT_AREAS_MAX).optional(),
   /** Makes the event a series master. */
   rrule: rruleSchema.nullable(),
 });
@@ -114,12 +126,27 @@ const newEventInputSchema = eventInputSchema.extend({
 /** A change of some of the details: the others keep the values that the event has. */
 const eventPatchInputSchema = eventInputSchema.omit({ rrule: true }).partial();
 
+/** An event admin gives any area; the leader of an area only their own (`forbiddenEventAreaChanges`). */
+async function checkAreaRights(
+  user: CurrentUser,
+  next: readonly string[] | undefined,
+  previous: readonly string[],
+) {
+  if (next === undefined || user.canEditEvents) return;
+  const rights = await eventAreaRightsOf(user);
+  if (forbiddenEventAreaChanges(next, previous, rights, null).length > 0) {
+    throw new ValidationError([
+      { path: "areaIds", message: ({ m }) => m.server.events.areasNotYours },
+    ]);
+  }
+}
+
 export type EventInput = z.input<typeof eventInputSchema>;
 export type NewEventInput = z.input<typeof newEventInputSchema>;
 export type EventPatchInput = z.input<typeof eventPatchInputSchema>;
 
 const EVENT_COLUMNS =
-  "id, title, starts_at, ends_at, youtube_url, is_private, rrule, exdates, parent_event_id, recurrence_id, setlist_id, created_by";
+  "id, title, starts_at, ends_at, youtube_url, is_private, area_ids, rrule, exdates, parent_event_id, recurrence_id, setlist_id, created_by";
 
 const eventRowSchema = z.object({
   id: z.uuid(),
@@ -128,6 +155,7 @@ const eventRowSchema = z.object({
   ends_at: z.string().nullable(),
   youtube_url: z.string().nullable(),
   is_private: z.boolean(),
+  area_ids: z.array(lowerIdSchema),
   rrule: z.string().nullable(),
   exdates: z.array(z.string()),
   parent_event_id: z.uuid().nullable(),
@@ -151,6 +179,7 @@ function toEvent(row: EventRow): EventDTO {
     endsAt,
     youtubeUrl: row.youtube_url,
     isPrivate: row.is_private,
+    areaIds: row.area_ids,
     rrule: row.rrule,
     exdates: row.exdates,
     parentEventId: row.parent_event_id?.toLowerCase() ?? null,
@@ -169,11 +198,6 @@ function eventSlug(title: string, startsAt: string): string {
   return `${base}-${startsAt.slice(0, 10)}-${randomUUID().slice(0, 8)}`;
 }
 
-/** The filter (`.or()`) for the events that the user sees; null for an event admin: all. */
-function visibleFilter(user: CurrentUser): string | null {
-  return user.canEditEvents ? null : `is_private.eq.false,created_by.eq.${user.id}`;
-}
-
 async function musicCalendarId(): Promise<string> {
   const { data, error } = await (await getMusicSupabase()).rpc("music_calendar_id");
   if (error) throw databaseError("find the music calendar", error);
@@ -185,10 +209,10 @@ async function musicCalendarId(): Promise<string> {
 /** The events (series masters and changed occurrences included) that the user can see. */
 export async function listEvents(): Promise<EventDTO[]> {
   const user = await requireUser();
-  const filter = visibleFilter(user);
-  let query = (await getMusicSupabase()).from("events").select(EVENT_COLUMNS);
-  if (filter !== null) query = query.or(filter);
-  const { data, error } = await query.order("starts_at", { ascending: true });
+  const { data, error } = await withFilter(
+    (await getMusicSupabase()).from("events").select(EVENT_COLUMNS),
+    await visibleEventsFilter(user),
+  ).order("starts_at", { ascending: true });
   if (error) throw databaseError("list events", error);
   return z.array(eventRowSchema).parse(data).map(toEvent);
 }
@@ -225,18 +249,19 @@ export async function listEventOccurrences(window: ExpandWindow): Promise<EventO
 export async function getEvent(id: string): Promise<EventDTO | null> {
   const user = await requireUser();
   if (!isId(id)) return null;
-  const filter = visibleFilter(user);
-  let query = (await getMusicSupabase()).from("events").select(EVENT_COLUMNS).eq("id", id);
-  if (filter !== null) query = query.or(filter);
-  const { data, error } = await query.maybeSingle();
+  const { data, error } = await withFilter(
+    (await getMusicSupabase()).from("events").select(EVENT_COLUMNS).eq("id", id),
+    await visibleEventsFilter(user),
+  ).maybeSingle();
   if (error) throw databaseError("read an event", error);
   return data === null ? null : toEvent(eventRowSchema.parse(data));
 }
 
 /** Adds an event, or a series when `rrule` is given. */
 export async function createEvent(input: NewEventInput): Promise<EventDTO> {
-  const user = await requireEventAdmin();
   const event = parseInput(newEventInputSchema, input);
+  const user = await requireEventAdminIn(event.areaIds ?? []);
+  await checkAreaRights(user, event.areaIds, []);
   const startsAt = iso(event.startsAt);
   const supabase = await getMusicSupabase();
   const { data, error } = await supabase
@@ -251,6 +276,7 @@ export async function createEvent(input: NewEventInput): Promise<EventDTO> {
       ends_at: endOf(startsAt, event.durationMinutes),
       youtube_url: event.youtubeUrl,
       is_private: event.isPrivate,
+      ...(event.areaIds !== undefined && { area_ids: event.areaIds }),
       rrule: event.rrule,
       created_by: user.id,
     })
@@ -265,11 +291,13 @@ export async function createEvent(input: NewEventInput): Promise<EventDTO> {
  * `changeOccurrence()` for one occurrence). Null when the event is not there or not visible.
  */
 export async function updateEvent(id: string, patch: EventPatchInput): Promise<EventDTO | null> {
-  await requireEventAdmin();
+  const user = await requireEventAdminOf(id);
+  if (user === null) return null;
   if (!isId(id)) return null;
   const changes = parseInput(eventPatchInputSchema, patch);
   const current = await getEvent(id);
   if (current === null) return null;
+  await checkAreaRights(user, changes.areaIds, current.areaIds);
   const startsAt = iso(changes.startsAt ?? current.startsAt);
   const durationMinutes = changes.durationMinutes ?? current.durationMinutes;
   const { data, error } = await (
@@ -282,6 +310,7 @@ export async function updateEvent(id: string, patch: EventPatchInput): Promise<E
       ends_at: endOf(startsAt, durationMinutes),
       youtube_url: changes.youtubeUrl === undefined ? current.youtubeUrl : changes.youtubeUrl,
       is_private: changes.isPrivate ?? current.isPrivate,
+      ...(changes.areaIds !== undefined && { area_ids: changes.areaIds }),
     })
     .eq("id", id)
     .select(EVENT_COLUMNS)
@@ -292,8 +321,7 @@ export async function updateEvent(id: string, patch: EventPatchInput): Promise<E
 
 /** Deletes an event (with its changed occurrences). False when it is not there. */
 export async function deleteEvent(id: string): Promise<boolean> {
-  await requireEventAdmin();
-  if (!isId(id) || (await getEvent(id)) === null) return false;
+  if ((await requireEventAdminOf(id)) === null) return false;
   const { error } = await (await getMusicSupabase()).from("events").delete().eq("id", id);
   if (error) throw databaseError("delete an event", error);
   return true;
@@ -338,8 +366,9 @@ export async function changeOccurrence(
   input: z.input<typeof occurrenceInputSchema>,
   patch: EventPatchInput,
 ): Promise<EventDTO> {
-  const user = await requireEventAdmin();
   const { masterId, recurrenceId } = parseInput(occurrenceInputSchema, input);
+  const user = await requireEventAdminOf(masterId);
+  if (user === null) throw new ConflictError(({ m }) => m.server.events.occurrenceMissing);
   const changes = parseInput(eventPatchInputSchema, patch);
   const master = await seriesMaster(masterId, recurrenceId);
   const supabase = await getMusicSupabase();
@@ -386,8 +415,9 @@ export async function changeOccurrence(
 
 /** Leaves one occurrence out of a series (an `exdate`, Europe/Budapest day). */
 export async function skipOccurrence(input: z.input<typeof occurrenceInputSchema>): Promise<void> {
-  await requireEventAdmin();
   const { masterId, recurrenceId } = parseInput(occurrenceInputSchema, input);
+  if ((await requireEventAdminOf(masterId)) === null)
+    throw new ConflictError(({ m }) => m.server.events.occurrenceMissing);
   const master = await seriesMaster(masterId, recurrenceId);
   const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Budapest" }).format(
     new Date(recurrenceId),
@@ -455,8 +485,7 @@ export async function setEventItems(
   id: string,
   input: EventItemsInput,
 ): Promise<SetEventItemsResult> {
-  await requireEventAdmin();
-  if (!isId(id) || (await getEvent(id)) === null) return null;
+  if ((await requireEventAdminOf(id)) === null) return null;
   const { items, baseSetlistId } = parseInput(eventItemsInputSchema, input);
   const { data, error } = await (
     await getMusicSupabase()
@@ -471,6 +500,25 @@ export async function setEventItems(
   return result && { status: result.status, setlistId: result.setlist_id?.toLowerCase() ?? null };
 }
 
+/**
+ * Saves the items of an event for the plan sync (`server/music/plan-link.ts`): the caller already
+ * checked that the user may edit the linked plan, so there is no event-admin check here.
+ */
+export async function applyEventItems(id: string, items: SetlistItemInput[]): Promise<boolean> {
+  if (!isId(id) || (await getEvent(id)) === null) return false;
+  const parsed = parseInput(eventItemsInputSchema, { items });
+  const { error } = await (
+    await getMusicSupabase()
+  ).rpc("set_event_items", {
+    p_event_id: id,
+    p_items: toItemsArgument(parsed.items),
+    p_base_setlist_id: null,
+    p_check_base: false,
+  });
+  if (error) throw databaseError("save event items", error);
+  return true;
+}
+
 export const ADD_TO_EVENT_RESULTS = ["added", "too_many_items", "no_event"] as const;
 export type AddToEventResult = (typeof ADD_TO_EVENT_RESULTS)[number];
 
@@ -479,8 +527,7 @@ export async function addEventItems(
   id: string,
   input: z.input<typeof addItemsInputSchema>,
 ): Promise<AddToEventResult> {
-  await requireEventAdmin();
-  if (!isId(id) || (await getEvent(id)) === null) return "no_event";
+  if ((await requireEventAdminOf(id)) === null) return "no_event";
   const { items, afterKey } = parseInput(addItemsInputSchema, input);
   const { data, error } = await (
     await getMusicSupabase()
@@ -495,8 +542,7 @@ export async function addEventItems(
 
 /** Removes the item of the key. False when the event or the item is not there. */
 export async function removeEventItem(id: string, key: string): Promise<boolean> {
-  await requireEventAdmin();
-  if (!isId(id) || !isId(key) || (await getEvent(id)) === null) return false;
+  if (!isId(key) || (await requireEventAdminOf(id)) === null) return false;
   const { data, error } = await (
     await getMusicSupabase()
   ).rpc("remove_event_item", {
@@ -527,9 +573,8 @@ export type AddArrangementResult = (typeof ADD_ARRANGEMENT_RESULTS)[number];
 export async function addEventArrangement(
   input: z.input<typeof addArrangementInputSchema>,
 ): Promise<AddArrangementResult> {
-  await requireEventAdmin();
   const { eventId, arrangementId, musicalKey } = parseInput(addArrangementInputSchema, input);
-  if ((await getEvent(eventId)) === null) return "no_event";
+  if ((await requireEventAdminOf(eventId)) === null) return "no_event";
   const { data, error } = await (
     await getMusicSupabase()
   ).rpc("add_event_arrangement", {
@@ -539,4 +584,66 @@ export async function addEventArrangement(
   });
   if (error) throw databaseError("add an arrangement to an event", error);
   return z.enum(ADD_ARRANGEMENT_RESULTS).parse(data);
+}
+
+const replyInputSchema = z.strictObject({ reply: z.enum(["yes", "maybe", "no"]) });
+
+/**
+ * Saves the reply of the signed-in user to an event that they volunteer for. False when there is no
+ * such event, or the user is not a volunteer of it. An event that has ended takes no reply.
+ */
+export async function setMyReply(eventId: string, input: unknown): Promise<boolean> {
+  const user = await requireUser();
+  if (!isId(eventId)) return false;
+  const { reply } = parseInput(replyInputSchema, input);
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("set_volunteer_reply", {
+    p_event_id: eventId,
+    p_user_id: user.id,
+    p_reply: reply,
+  });
+  if (error) throw databaseError("set reply", error);
+  const result = z.enum(["not_volunteer", "ended", "saved"]).parse(data);
+  if (result === "ended") throw new ConflictError(({ m }) => m.server.events.replyClosed);
+  return result === "saved";
+}
+
+const copyEventInputSchema = eventInputSchema.omit({ rrule: true }).extend({
+  areaIds: eventInputSchema.shape.areaIds,
+  copyItems: z.boolean(),
+  copyVolunteers: z.boolean(),
+});
+
+export type CopyEventInput = z.input<typeof copyEventInputSchema>;
+
+/** A copy of an event with new details; the items and the team are optional. Null: no such event. */
+export async function copyEvent(sourceId: string, input: CopyEventInput): Promise<EventDTO | null> {
+  const user = await requireEventAdminOf(sourceId);
+  if (user === null) return null;
+  const source = await getEvent(sourceId);
+  if (source === null) return null;
+  const copy = parseInput(copyEventInputSchema, input);
+  await checkAreaRights(user, copy.areaIds, source.areaIds);
+  const startsAt = iso(copy.startsAt);
+  const id = randomUUID();
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("copy_event", {
+    p_id: id,
+    p_source_id: sourceId,
+    p_title: copy.title,
+    p_starts_at: startsAt,
+    p_duration_minutes: copy.durationMinutes,
+    p_youtube_url: copy.youtubeUrl,
+    p_copy_items: copy.copyItems,
+    p_copy_volunteers: copy.copyVolunteers,
+    p_files: null,
+    p_is_private: copy.isPrivate,
+    p_created_by: user.id,
+    p_area_ids: copy.areaIds ?? null,
+  });
+  if (error) throw databaseError("copy an event", error);
+  if (data === null) return null;
+  return getEvent(id);
 }

@@ -12,6 +12,9 @@ DECLARE
   item uuid := gen_random_uuid();
   blk uuid := gen_random_uuid();
   evcal uuid;
+  area_root uuid := gen_random_uuid();
+  area uuid := gen_random_uuid();
+  tpl uuid := gen_random_uuid();
   pdf uuid := gen_random_uuid();
   img uuid := gen_random_uuid();
   snd uuid := gen_random_uuid();
@@ -19,6 +22,8 @@ DECLARE
   course uuid := gen_random_uuid();
   cal uuid := gen_random_uuid();
 BEGIN
+  -- The area triggers fill `tenant_id` of the path rows from the tenant setting.
+  PERFORM set_config('app.tenant_id', t::text, true);
   SELECT s.id INTO song FROM songs s WHERE s.tenant_id = t ORDER BY s.id LIMIT 1;
   IF song IS NULL THEN
     INSERT INTO songs (tenant_id, title) VALUES (t, 'Próbaének') RETURNING id INTO song;
@@ -42,6 +47,24 @@ BEGIN
     SELECT t, e.id, blk, 'Dicsőítés' FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
   INSERT INTO setlist_item_blocks (tenant_id, setlist_item_id, event_id, block_key)
     SELECT t, item, e.id, blk FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  -- Areas, volunteers, templates and notes (phase 4b-1).
+  INSERT INTO service_areas (tenant_id, id, name, is_root) VALUES (t, area_root, 'Mindenki', true);
+  INSERT INTO service_areas (tenant_id, id, name, parent_id) VALUES (t, area, 'Zenekar', area_root);
+  INSERT INTO service_area_members (tenant_id, area_id, user_id) VALUES (t, area, u);
+  INSERT INTO service_area_roles (tenant_id, area_id, role) VALUES (t, area, 'song_admin');
+  INSERT INTO volunteer_templates (tenant_id, id, name) VALUES (t, tpl, 'Vasárnapi csapat');
+  INSERT INTO volunteer_template_areas (tenant_id, template_id, area_id) VALUES (t, tpl, area);
+  INSERT INTO volunteer_template_members (tenant_id, template_id, area_id, user_id, position) VALUES (t, tpl, area, u, 0);
+  INSERT INTO event_volunteers (tenant_id, event_id, user_id)
+    SELECT t, e.id, u FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO event_volunteer_areas (tenant_id, event_id, area_id, user_id, position)
+    SELECT t, e.id, area, u, 0 FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO event_area_notes (tenant_id, event_id, area_id, note)
+    SELECT t, e.id, area, 'Hangpróba 16:30' FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO event_team_notes (tenant_id, event_id, note)
+    SELECT t, e.id, 'Érkezés 16:00' FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO setlist_item_volunteers (tenant_id, setlist_item_id, event_id, user_id)
+    SELECT t, item, e.id, u FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
   INSERT INTO setlist_item_durations (tenant_id, setlist_item_id, seconds) VALUES (t, item, 240);
   INSERT INTO setlist_item_themes (tenant_id, setlist_item_id, theme_id) VALUES (t, item, theme);
   INSERT INTO annotations (tenant_id, user_id, song_id, body) VALUES (t, u, song, 'Lassabban');
@@ -77,6 +100,7 @@ BEGIN
     VALUES (t, gen_random_uuid() || '/' || gen_random_uuid() || '.mp4');
   INSERT INTO mixer_settings (tenant_id) VALUES (t);
   INSERT INTO courses (tenant_id, id, title, language, position) VALUES (t, course, 'Kurzus', 'hu', 1);
+  INSERT INTO course_areas (tenant_id, course_id, area_id) VALUES (t, course, area);
   INSERT INTO course_lessons (tenant_id, id, course_id, position, title)
     VALUES (t, gen_random_uuid(), course, 0, 'Lecke');
   INSERT INTO course_images (tenant_id, path, course_id) VALUES (t, course || '/' || gen_random_uuid() || '.webp', course);

@@ -3,7 +3,7 @@
  * and workspace directory, §8.2/§21.1), `teams`, `team_positions`, `team_members`, `calendars` and
  * the single `events` table with `calendar_id` + `visibility` (§22.1). Plus `availability_blocks`.
  */
-import { setlists } from "./music";
+import { setlists, volunteerTemplates } from "./music";
 import type { Calendar, ContactVisibility, RichText } from "@churchy/contracts";
 import { sql } from "drizzle-orm";
 import {
@@ -215,12 +215,23 @@ export const events = pgTable(
     setlistId: uuid(),
     youtubeUrl: text(),
     isPrivate: boolean().notNull().default(false),
+    /** The music areas that see the event; empty: everyone (the root area). */
+    areaIds: uuid().array().notNull().default(emptyArray),
+    /** The volunteer template the event's team started from (music module). */
+    volunteerTemplateId: uuid(),
     ...timestamps(),
   },
   (t) => [
     ...tenantIndexes("events", t),
     unique("events_tenant_id_setlist_id_key").on(t.tenantId, t.setlistId),
     sameTenantFk("events_setlist_id_fkey", t.tenantId, t.setlistId, setlists),
+    sameTenantFk(
+      "events_volunteer_template_id_fkey",
+      t.tenantId,
+      t.volunteerTemplateId,
+      volunteerTemplates,
+    ),
+    index("events_area_ids_idx").using("gin", t.areaIds),
     check(
       "events_youtube_url_check",
       sql`${t.youtubeUrl} is null or (char_length(${t.youtubeUrl}) <= 500 and ${t.youtubeUrl} ~ '^https://(((www|m|music)\\.)?youtube\\.com|youtu\\.be)/')`,

@@ -551,3 +551,65 @@ Deviations / not done (decisions needed marked Q):
 - Per-slot annotations on the sheet of an event (`setlist_item_id`) and `my-setlists` stay for later; `copy_event`,
   event sync (calendar `event-sync`) and the calendar feed wait for 4b.
 
+## 18. Phase 4b progress
+
+Owner decisions (2026-11-25): copy their event editor in 4b (4b-2), replacing the compact pages step by step; a SEPARATE
+music area tree (no `teams.parent_id`, no HR or plan contract change), area-based event access on it; keep `ical.js`, token
+routes per tenant and user; play statistics count linked plan items too; wire the plan sync now; also `copy_event`,
+`my-setlists`, event images, announcements, volunteers on items, calendar sync. Slices: 4b-1 areas/teams/volunteers/access/
+copy_event, 4b-2 editor + images + announcements, 4b-3 feed, sync wiring, statistics, my-setlists.
+
+### 4b-1 (done): areas, volunteers, event access, copy_event
+- Migration `0015_music_areas` (+ down): tables `service_areas` (tree, per tenant, one root "Mindenki" created on first use by
+  `music_root_area_id()`), `service_area_paths`, `service_area_members`, `service_area_roles`, `course_areas`,
+  `volunteer_templates` (+ `_areas`, `_members`), `event_volunteers`, `event_volunteer_areas`, `event_area_notes`,
+  `event_team_notes`, `setlist_item_volunteers`; `events.area_ids` (empty = everyone; a music event with none gets the root)
+  and `events.volunteer_template_id`. ~40 functions ported (areas, member rights, event teams, templates, replies, access:
+  `member_area_ids`, `event_member_access`, `can_see_event(.., p_is_admin)`), `set_event_items` again with volunteers
+  (image sets and announcements: 4b-2), `copy_event` (items, blocks, team; images and announcements: 4b-2).
+- Deletes without a tenant context (deleting a tenant) skip the "root stays / has sub-groups" checks.
+- Models: `groups.ts`, `volunteer-templates.ts`, `event-teams.ts`, `event-access.ts`, `profiles.ts` (people with a login, from
+  Churchy `people`), events: area access in `listEvents`/`getEvent`, `areaIds` on create/update with rights check, `copyEvent`,
+  `setMyReply`. Libs `lib/music/{groups,volunteer-templates,team-grid,event-series,event-scopes}`. Auth: `leadsGroups`,
+  `getLedGroupIds`, `requireGroupManager`.
+- Local PostgREST: `or` terms with `{…}` array values.
+- Area roles (`service_area_roles`) are stored and keep their move/delete safeguards but grant nothing through `can()` yet.
+  (Q: map an area role to `music.*` actions, or drop the roles?)
+- Pages, server actions with `withPolicy` and the `music.group.manage` action for groups come with the editor (4b-2).
+
+### 4b-2a (done): area roles through can(), groups and teams UI
+- Area roles (`service_area_roles`) map to actions: `song_admin` → `music.song.manage`, `event_admin` → `music.event.manage`,
+  `music_leader` → both; `course_admin` waits for the courses phase. `TenantActor.musicAreaGrants` (roles of the areas the user
+  belongs to, ancestors included) and `MusicAreaResource.areaIds`: `can()` allows the action when the tenant-wide matrix does
+  not and a grant sits in one of the resource's areas. No area context, no area grant. MATRIX section "Music area roles".
+- `withPolicy` has an actor enricher (`setPolicyActorEnricher`): for a resource with `areaIds` the music layer loads the grants
+  (`server/music/area-grants.ts`). Models check through `CurrentUser.canManageIn()` / `requireEventAdminOf(eventId)` (the
+  event's areas); `musicEventIn` resolves the areas of the event of an action.
+- New action `music.group.manage` (leader, music leader). Pages `/munkater/esemenyek/csoportok` (tree, create, delete,
+  members and leaders) and the Team section of the event page (team per area, volunteer's reply).
+- Left for the next slices of 4b: the copy of their drag-and-drop editor, bulk series form, event images, announcements,
+  area-role editor UI, feed, plan sync wiring, `my-setlists`, calendar sync, statistics over plan items.
+
+### 4b-3a (done): area-role editor and feed
+- Area roles are edited on the groups page (superadmin = `music.songRights.manage` only, as in the music app); area-role users
+  get "Új esemény" with an area picker limited to their areas, and edit/delete events of their areas.
+- iCal feed: their `ical.ts` builder (no dependency; `ical.js` is for announcement calendars, 4b-3d), token per tenant and user
+  (`calendar_feeds`, SHA-256 only, consent required), page `/munkater/esemenyek/naptar`, route `/api/music/calendar/<token>.ics`
+  (tenant from the host; no session; 404 in demo mode, where the data lives in a session). A volunteer's yes/unanswered events
+  of the last 90 days, with the song titles.
+- "Calendar sync": music events already live in Churchy's `events` table (internal music calendar), so the Churchy calendar
+  shows them. The realtime part of `event-sync` (topics, projection controllers) belongs to the live-session batch.
+
+### 4b-3c (done): plan sync
+- A plan belongs to a music event through `service_plans.event_id` (button on the event page; the plan page is Churchy's).
+  `server/music/plan-link.ts`: `syncPlansFromSetlist(eventId)` after every item change of an event (actions), and
+  `syncSetlistFromPlan(eventId, items)` after `savePlanItems` (worship actions, module `ws.music.events` on). Rule
+  `takeSongs`: the edited side wins, the other keeps its non-song items and the details of songs that stay; locked plans stay.
+  Because the setlist is replaced on every change, the link is the plan's `event_id` (not `setlist_id`, which the DB keeps
+  as an optional mirror and `ON DELETE SET NULL`).
+- In demo mode the mock adapter's events do not contain music events (they live in the in-process music database), so a
+  plan cannot be linked there; the sync is tested with mocked repositories (`plan-link.test.ts`) and works in Phase B (one DB).
+- Play statistics count the setlists of events; a linked plan mirrors its event, so it adds no further plays. Plans of the
+  schedule that are not linked to a music event are not counted (needs a plan read grant for the music role: open question).
+- `my-setlists` (per-slot personal data of the event sheet) and the realtime part of event sync are not copied.
+

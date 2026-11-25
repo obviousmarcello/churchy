@@ -778,6 +778,90 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
       });
     });
 
+    it("areas: events are seen by the members of their areas; copy_event copies the team and items", async () => {
+      const profiles = await ownerQuery<{ id: string }>(
+        "select id from profiles order by id limit 2",
+      );
+      const [member, other] = [profiles[0]!.id, profiles[1]!.id];
+      const [arr] = await ownerQuery<{ id: string }>(
+        "select id from arrangements where tenant_id = $1 limit 1",
+        [A],
+      );
+      await asMusic(A, async (c) => {
+        const root = (await c.query<{ id: string }>("select public.music_root_area_id() as id"))
+          .rows[0]!.id;
+        expect(
+          (await c.query<{ id: string }>("select public.music_root_area_id() as id")).rows[0]!.id,
+        ).toBe(root);
+        const band = (
+          await c.query<{ id: string }>("select public.create_service_area($1, 'Énekkar') as id", [
+            root,
+          ])
+        ).rows[0]!.id;
+        await c.query("select public.set_service_area_members($1, $2::jsonb, false, null)", [
+          band,
+          JSON.stringify([{ user_id: member, is_leader: false }]),
+        ]);
+        const cal = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        const add = (slug: string, areas: string) =>
+          c.query<{ id: string }>(
+            `insert into events (calendar_id, visibility, slug, title, starts_at, ends_at, status, area_ids)
+             values ('${cal}', 'staff', '${slug}', 'Próba', now() + interval '2 days',
+                     now() + interval '2 days 90 minutes', 'published', ${areas}) returning id`,
+          );
+        const all = (await add("areas-all", "'{}'")).rows[0]!.id;
+        const ev = (await add("areas-band", `array['${band}']::uuid[]`)).rows[0]!.id;
+        const seen = async (event: string, user: string) =>
+          (await c.query<{ r: boolean }>("select public.can_see_event($1, $2) as r", [event, user]))
+            .rows[0]!.r;
+        // No areas means the root area (everyone); the band's event is for its members only.
+        expect(await seen(all, other)).toBe(true);
+        expect(await seen(ev, member)).toBe(true);
+        expect(await seen(ev, other)).toBe(false);
+        expect(
+          (await c.query("select public.can_see_event($1, $2, true) as r", [ev, other])).rows[0]!.r,
+        ).toBe(true);
+        // Volunteers see their event, whatever its areas.
+        await c.query("select public.set_event_area_team($1, $2, $3::jsonb, true)", [
+          ev,
+          band,
+          JSON.stringify([other]),
+        ]);
+        expect(await seen(ev, other)).toBe(true);
+        // Items with the volunteer on a song, then a copy with items and volunteers.
+        await c.query("select public.set_event_items($1, $2::jsonb, null, false)", [
+          ev,
+          JSON.stringify([
+            { arrangement_id: arr!.id, volunteer_id: other },
+            { title: "Köszöntés" },
+          ]),
+        ]);
+        const copy = (
+          await c.query<{ id: string }>(
+            "select public.copy_event(gen_random_uuid(), $1, 'Másolat', now() + interval '9 days', 90, null, true, true, null) as id",
+            [ev],
+          )
+        ).rows[0]!.id;
+        expect(
+          (await c.query("select 1 from event_volunteers where event_id = $1", [copy])).rowCount,
+        ).toBe(1);
+        expect(
+          (await c.query("select 1 from setlist_item_volunteers where event_id = $1", [copy]))
+            .rowCount,
+        ).toBe(1);
+        expect(
+          (
+            await c.query(
+              "select 1 from setlist_items i join events e on e.setlist_id = i.setlist_id where e.id = $1",
+              [copy],
+            )
+          ).rowCount,
+        ).toBe(2);
+        await c.query("set constraints all immediate");
+      });
+    });
+
     it("gets permission denied on every non-music table", async () => {
       const others = Object.keys(TABLE_SCOPES).filter(
         (t) => !(MUSIC_TABLES as readonly string[]).includes(t),

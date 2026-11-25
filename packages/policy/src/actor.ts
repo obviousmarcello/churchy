@@ -4,6 +4,15 @@ import type { OrgRole, WebsiteRole, WorkspaceRole } from "./roles";
  * A scope list: explicit ids, or `"*"` for "all". A missing scope always means **none**
  * (deny by default) — the server maps an unrestricted (`NULL`) scope column to `"*"`.
  */
+/** A role that a music area gives to its members (Music Sheet DB `service_area_roles`). */
+export type MusicAreaRole = "song_admin" | "event_admin" | "music_leader" | "course_admin";
+
+/** The roles of one music area, for a member of the area or of an area below it. */
+export interface MusicAreaGrant {
+  readonly areaId: string;
+  readonly roles: readonly MusicAreaRole[];
+}
+
 export type ScopeList = readonly string[] | "*";
 
 /**
@@ -23,6 +32,12 @@ export interface TenantActor {
   readonly personId: string | null;
   readonly websiteRoles: readonly WebsiteRole[];
   readonly workspaceRoles: readonly WorkspaceRole[];
+  /**
+   * Roles that the actor gets through music areas (`service_area_roles` of the areas the actor
+   * belongs to, ancestors included). They apply only to music actions checked with an area context
+   * (`MusicAreaResource.areaIds`); the server fills the list in `getActor()`.
+   */
+  readonly musicAreaGrants?: readonly MusicAreaGrant[];
   /** `groupLeader` scope: groups (Közösségek) whose events and group page the actor manages. */
   readonly groupIds?: readonly string[];
   /** `teamLeader` scope: teams the actor leads (`team_members.is_leader`). */

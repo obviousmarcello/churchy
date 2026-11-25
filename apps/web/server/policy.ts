@@ -211,8 +211,10 @@ async function authorize<A extends Action, Args extends unknown[]>(
   if (resource === null || typeof resource !== "object") return deny(404, "not_found");
   if (foreignResource(resource, context)) return deny(404, "foreign_resource");
 
-  // The same policy the UI uses: `can()` is `explain().allowed`.
-  if (!explain(actor, action, resource).allowed) {
+  // The same policy the UI uses: `can()` is `explain().allowed`. An enricher may add context that
+  // only this resource needs (the music area roles of a resource with `areaIds`).
+  const effective = actorEnricher === null ? actor : await actorEnricher(actor, resource);
+  if (!explain(effective, action, resource).allowed) {
     return deny(options.conceal === true ? 404 : 403, "policy");
   }
 
@@ -224,6 +226,15 @@ async function authorize<A extends Action, Args extends unknown[]>(
     orgId: context.orgId ?? null,
   });
   return { ok: true, scope: { ...base, resource } };
+}
+
+let actorEnricher: ((actor: Actor, resource: object) => Promise<Actor>) | null = null;
+
+/** Registers the function that adds resource-specific grants to the actor (music area roles). */
+export function setPolicyActorEnricher(
+  fn: (actor: Actor, resource: object) => Promise<Actor>,
+): void {
+  actorEnricher = fn;
 }
 
 // ---------------------------------------------------------------------------------------------

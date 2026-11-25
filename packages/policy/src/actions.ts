@@ -19,6 +19,11 @@ export interface UserManagementResource extends TenantResource {
   readonly targetRoles: readonly WebsiteRole[];
 }
 
+/** A music action with an optional area context: the areas of the event or song (area roles apply). */
+export interface MusicAreaResource extends TenantResource {
+  readonly areaIds?: readonly string[];
+}
+
 /** Events and group pages may belong to a group (Közösség); `groupLeader` is scoped by it. */
 export interface GroupContentResource extends TenantResource {
   readonly groupId?: string | null;
@@ -153,6 +158,7 @@ export const WORKSPACE_TENANT_ACTIONS = [
   "music.sheet.personalize",
   "music.event.view",
   "music.event.manage",
+  "music.group.manage",
 ] as const;
 export type WorkspaceTenantAction = (typeof WORKSPACE_TENANT_ACTIONS)[number];
 
@@ -179,6 +185,8 @@ export type ResourceByAction = Record<ContentAction, TenantResource> &
   Record<WebsiteTenantAction | WorkspaceTenantAction | HrTenantAction, TenantResource> &
   Record<OrgAction, OrgResource> & {
     "site.users.manage": UserManagementResource;
+    "music.song.manage": MusicAreaResource;
+    "music.event.manage": MusicAreaResource;
     "directory.viewPerson": DirectoryPersonResource;
     "calendarEvent.create": CalendarEventResource;
     "room.book": RoomResource;

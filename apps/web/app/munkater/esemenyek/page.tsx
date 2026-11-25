@@ -32,6 +32,7 @@ const WHEN: Intl.DateTimeFormatOptions = {
 
 export default async function EventsPage() {
   const [user, { m }] = await Promise.all([requireEventsPageUser(), getI18n()]);
+  const canAdd = user.canEditEvents || (await user.eventAreaIds()).length > 0;
   const { upcoming, past } = await loadEvents();
   const t = m.events;
 
@@ -40,11 +41,27 @@ export default async function EventsPage() {
       <PageHeader
         title={t.title}
         actions={
-          user.canEditEvents ? (
-            <Link href="/munkater/esemenyek/uj" className={buttonVariants()}>
-              {t.add}
+          <>
+            <Link
+              href="/munkater/esemenyek/naptar"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              {t.calendar.title}
             </Link>
-          ) : undefined
+            {(user.canEditEvents || user.leadsGroups) && (
+              <Link
+                href="/munkater/esemenyek/csoportok"
+                className={buttonVariants({ variant: "outline" })}
+              >
+                {t.groupsLink}
+              </Link>
+            )}
+            {canAdd && (
+              <Link href="/munkater/esemenyek/uj" className={buttonVariants()}>
+                {t.add}
+              </Link>
+            )}
+          </>
         }
       />
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-6 sm:px-6">

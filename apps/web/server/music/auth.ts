@@ -4,8 +4,9 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { can } from "@churchy/policy";
 import { getActor } from "@/server/session";
-import { requireWorkspaceModule } from "@/server/workspace-nav";
-import { musicUserId } from "./db";
+import { isWorkspaceModuleOn, requireWorkspaceModule } from "@/server/workspace-nav";
+import { loadAreaGrants } from "./area-grants";
+import { getMusicSupabase, musicUserId } from "./db";
 import { ForbiddenError, UnauthorizedError } from "./errors";
 
 /**
@@ -27,7 +28,36 @@ export type CurrentUser = {
   canEditSongs: boolean;
   /** `music.event.manage` (leader, music leader): sees and changes all music events. */
   canEditEvents: boolean;
+  /**
+   * Whether the user may manage events (or songs, with `"song"`) of these areas: the tenant-wide
+   * permission, or an area role (`music.event.manage` / `music.song.manage` with area context).
+   */
+  canManageIn: (kind: "event" | "song", areaIds: readonly string[]) => Promise<boolean>;
+  /** The areas where an area role lets the user manage events (empty: none). */
+  eventAreaIds: () => Promise<string[]>;
+  /** Leads a music area (a leader of an area may manage its team). */
+  leadsGroups: boolean;
 };
+
+/** Whether the user leads a music area (one query; only with the events module on). */
+async function leadsAnyGroup(userId: string): Promise<boolean> {
+  if (!(await isWorkspaceModuleOn("ws.music.events"))) return false;
+  return (await getLedGroupIds(userId)).size > 0;
+}
+
+/** The ids of the music areas that the user leads, with the areas below them. */
+export async function getLedGroupIds(userId: string): Promise<Set<string>> {
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("led_area_ids", { p_user_id: userId });
+  if (error) throw new Error(`led_area_ids: ${error.message}`);
+  const rows = (data ?? []) as { id?: string; led_area_ids?: string }[] | string[];
+  return new Set(
+    rows
+      .map((row) => (typeof row === "string" ? row : (row.id ?? row.led_area_ids ?? "")))
+      .filter(Boolean),
+  );
+}
 
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const actor = await getActor();
@@ -40,6 +70,22 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     isSuperadmin: can(actor, "music.songRights.manage", resource),
     canEditSongs: can(actor, "music.song.manage", resource),
     canEditEvents: can(actor, "music.event.manage", resource),
+    leadsGroups: await leadsAnyGroup(musicUserId(actor.userId)),
+    eventAreaIds: async () => {
+      const grants = await loadAreaGrants(musicUserId(actor.userId!));
+      return grants
+        .filter((grant) =>
+          grant.roles.some((role) => role === "event_admin" || role === "music_leader"),
+        )
+        .map((grant) => grant.areaId);
+    },
+    canManageIn: async (kind, areaIds) => {
+      const action = kind === "event" ? "music.event.manage" : "music.song.manage";
+      if (can(actor, action, resource)) return true;
+      if (areaIds.length === 0) return false;
+      const grants = await loadAreaGrants(musicUserId(actor.userId!));
+      return can({ ...actor, musicAreaGrants: grants }, action, { ...resource, areaIds });
+    },
   };
 });
 
@@ -69,6 +115,20 @@ export async function requireEventsPageUser(): Promise<CurrentUser> {
   await requireWorkspaceModule("ws.music.events");
   const user = await getCurrentUser();
   if (!user) notFound();
+  return user;
+}
+
+/** May manage events of these areas (tenant-wide permission or an area role): else `ForbiddenError`. */
+export async function requireEventAdminIn(areaIds: readonly string[]): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!(await user.canManageIn("event", areaIds))) throw new ForbiddenError();
+  return user;
+}
+
+/** An event admin, or the leader of a music area (they manage the teams of their areas). */
+export async function requireGroupManager(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.canEditEvents && !user.leadsGroups) throw new ForbiddenError();
   return user;
 }
 

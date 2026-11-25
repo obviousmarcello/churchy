@@ -6243,7 +6243,9 @@
       "new": {
         "title": "Új esemény",
         "submit": "Esemény létrehozása",
-        "pending": "Létrehozás…"
+        "pending": "Létrehozás…",
+        "areas": "Területek",
+        "areasHint": "Csak a kijelölt területeken hozhatsz létre eseményt."
       },
       "edit": {
         "title": "Esemény szerkesztése",
@@ -6315,6 +6317,69 @@
       "errors": {
         "saveFailed": "Nem sikerült menteni az eseményt.",
         "notFound": "Ez az esemény már nem létezik."
+      },
+      "team": {
+        "title": "Csapat",
+        "empty": "Még nincs csapat.",
+        "note": "Megjegyzés",
+        "saved": "Mentve.",
+        "area": "Terület",
+        "people": "Emberek",
+        "save": "Csapat mentése",
+        "noPeople": "Nincs kiválasztható ember.",
+        "myReply": "Tudsz jönni?",
+        "yes": "Igen",
+        "maybe": "Talán",
+        "no": "Nem",
+        "replied": "A válaszod: {reply}",
+        "failed": "Nem sikerült menteni a csapatot."
+      },
+      "groupsLink": "Csoportok",
+      "calendar": {
+        "name": "Zenei események",
+        "eventLink": "Az esemény oldala:",
+        "youtubeLink": "Élő közvetítés:",
+        "title": "Naptár",
+        "lead": "Az eseményeid, amelyekre jelentkeztél (és nem mondtál nemet), saját naptárprogramodban. A link titkos: aki ismeri, látja az eseményeid.",
+        "consent": "A naptárprogram szolgáltatója a fájlt az EU-n kívül is tárolhatja. A fájl csak a saját eseményeidet tartalmazza, más önkéntesek nevét nem. Elfogadom.",
+        "on": "A naptár be van kapcsolva.",
+        "off": "A naptár ki van kapcsolva.",
+        "enable": "Link készítése",
+        "renew": "Új link",
+        "disable": "Kikapcsolás",
+        "linkLabel": "A naptárad linkje (csak most látod)",
+        "demo": "A bemutató módban a naptárlink nem használható, mert a naptárprogram nem tud belépni."
+      },
+      "plan": {
+        "title": "Liturgia-terv",
+        "none": "Ehhez az eseményhez még nincs liturgia-terv.",
+        "create": "Terv létrehozása",
+        "open": "Terv megnyitása",
+        "failed": "A tervet most nem sikerült létrehozni.",
+        "hint": "A dalok két irányban követik egymást: ami az egyik oldalon változik, a másikon is."
+      }
+    },
+    "groups": {
+      "title": "Csoportok",
+      "lead": "A zenei szolgálat csoportjai fában. Egy tag a fölötte lévő csoportoknak is tagja.",
+      "empty": "Még nincs csoport.",
+      "add": "Új csoport",
+      "name": "Csoport neve",
+      "parent": "Fölérendelt csoport",
+      "create": "Létrehozás",
+      "delete": "Törlés",
+      "members": "Tagok",
+      "saveMembers": "Tagok mentése",
+      "leader": "Vezető",
+      "failed": "Nem sikerült menteni a csoportot.",
+      "deleteConfirm": "Biztosan törlöd a csoportot?",
+      "rolesTitle": "Szerepek (a csoport tagjai a csoport területén kapják)",
+      "saveRoles": "Szerepek mentése",
+      "roles": {
+        "song_admin": "Dalok kezelője",
+        "event_admin": "Események kezelője",
+        "music_leader": "Zenei vezető",
+        "course_admin": "Tananyagok kezelője"
       }
     }
   },

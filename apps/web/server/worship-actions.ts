@@ -9,6 +9,7 @@ import { withPolicy, type PolicyScope } from "@/server/policy";
 import { getRequestRepositories } from "@/server/repositories";
 import { getRequestContext } from "@/server/session";
 import { getWorkspaceEnv } from "@/server/workspace";
+import { isWorkspaceModuleOn } from "@/server/workspace-nav";
 import { planAssignments, planViewResources, planWhen } from "@/server/worship";
 
 /**
@@ -32,6 +33,23 @@ async function guarded(run: () => Promise<void>): Promise<Outcome> {
     if (isContractError(error, "NOT_FOUND")) return "notFound";
     if (isContractError(error)) return "invalid";
     throw error;
+  }
+}
+
+/** A plan of a music event: its songs go to the event's setlist (music module on; never fails the save). */
+async function syncMusicEvent(
+  ctx: Parameters<Awaited<ReturnType<typeof getRequestRepositories>>["servicePlans"]["get"]>[0],
+  planId: string,
+  items: PlanItemInput[],
+): Promise<void> {
+  try {
+    const repos = await getRequestRepositories();
+    const loaded = await repos.servicePlans.get(ctx, planId);
+    if (loaded?.plan.eventId == null || !(await isWorkspaceModuleOn("ws.music.events"))) return;
+    const { syncSetlistFromPlan } = await import("@/server/music/plan-link");
+    await syncSetlistFromPlan(loaded.plan.eventId, items);
+  } catch (error) {
+    console.error("[music] plan sync failed:", error);
   }
 }
 
@@ -87,6 +105,7 @@ export const savePlanItems = withPolicy(
     guarded(async () => {
       const repos = await getRequestRepositories();
       await repos.servicePlans.setItems(scope.ctx, planId, items);
+      await syncMusicEvent(scope.ctx, planId, items);
       revalidatePath(`/munkater/liturgia/${planId}`);
     }),
 );

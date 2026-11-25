@@ -38,9 +38,8 @@ export default async function EditEventPage({
     requireEventsPageUser(),
     getI18n(),
   ]);
-  if (!user.canEditEvents) notFound();
   const event = await getEvent(id);
-  if (event === null) notFound();
+  if (event === null || !(await user.canManageIn("event", event.areaIds))) notFound();
   // `?alkalom=<original start>` edits one occurrence of a series (a child event).
   const occurrence = event.rrule !== null && alkalom ? alkalom : null;
   return (
