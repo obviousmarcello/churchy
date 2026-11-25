@@ -630,3 +630,10 @@ copy_event, 4b-2 editor + images + announcements, 4b-3 feed, sync wiring, statis
 - Left for the projection phase: `present.ts` (announcement slides) and the image adjust editor; per-slot annotations of
   `my-setlists` on the sheet.
 
+### 4d (done): editor features
+- Event items: drag and drop reorder (Up/Down buttons stay for the keyboard; a block keeps one run, `withBlocksAfterReorder`), a
+  volunteer per song item (volunteers of the event; `setlist_item_volunteers` are read and written again), bulk series form
+  `/munkater/esemenyek/uj/sorozat` (one weekly RRULE series per time slot; at most 200 occurrences).
+- Not copied: the projection controls and announcement slides / image adjust editor (phase 5), the per-slot annotations of
+  `my-setlists` on the sheet (the sheet shows no annotations yet; the annotation UI is its own piece of work).
+

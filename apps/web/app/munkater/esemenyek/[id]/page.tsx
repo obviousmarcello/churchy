@@ -137,6 +137,7 @@ export default async function EventPage({
                   musicalKey: item.musicalKey,
                   arrangementId: item.arrangement.id,
                   blockKey: item.blockKey,
+                  volunteerId: item.volunteerId,
                 }
               : {
                   key: item.key,
@@ -145,12 +146,16 @@ export default async function EventPage({
                   musicalKey: null,
                   arrangementId: null,
                   blockKey: item.blockKey,
+                  volunteerId: null,
                 },
           )}
           blocks={event.blocks.map((block) => ({ key: block.key, name: block.name }))}
           canEdit={canEdit}
           query={q}
           results={results}
+          volunteers={people
+            .filter((person) => teams.teams.some((team) => team.userIds.includes(person.id)))
+            .map((person) => ({ id: person.id, name: person.name }))}
         />
         {canEdit && (imagesOn || announcementsOn) && (
           <MediaPanel

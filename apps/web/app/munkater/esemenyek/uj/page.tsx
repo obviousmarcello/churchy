@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { PageHeader } from "@/components/music/page-header";
 import { getI18n } from "@/i18n/music/server";
@@ -36,6 +37,13 @@ export default async function NewEventPage() {
         areaOptions={areaOptions}
         cancel="/munkater/esemenyek"
       />
+      {user.canEditEvents && (
+        <p className="mx-auto w-full max-w-xl px-4 pb-8 text-sm sm:px-6">
+          <Link href="/munkater/esemenyek/uj/sorozat" className="underline">
+            {m.events.series.link}
+          </Link>
+        </p>
+      )}
     </main>
   );
 }

@@ -199,7 +199,7 @@ export function toItemsArgument(items: z.output<typeof setlistItemsInputSchema>)
                     highlight: item.highlight,
                   }),
         }),
-    // Volunteers of items come with the volunteer tables (4b): `volunteerId` is accepted and ignored.
+    ...(item.volunteerId !== undefined && { volunteer_id: item.volunteerId }),
     ...(item.themeId !== undefined && { theme_id: item.themeId }),
     ...(item.durationSeconds !== undefined && { duration_seconds: item.durationSeconds }),
     ...(item.blockKey !== undefined && { block_key: item.blockKey }),
@@ -228,6 +228,7 @@ export const setlistItemsRowSchema = z.array(
     theme: z.object({ theme_id: z.uuid() }).nullable().optional(),
     duration: z.object({ seconds: z.number().int() }).nullable().optional(),
     block: z.object({ block_key: z.uuid() }).nullable().optional(),
+    volunteer: z.object({ user_id: z.uuid() }).nullable().optional(),
   }),
 );
 
@@ -253,8 +254,9 @@ export function toSetlistItems(rows: z.infer<typeof setlistItemsRowSchema>): Set
         theme,
         duration,
         block,
+        volunteer,
       }): SetlistItemDTO => {
-        const volunteerId: string | null = null; // 4b
+        const volunteerId = volunteer?.user_id ?? null;
         const themeId = theme?.theme_id ?? null;
         const durationSeconds = duration?.seconds ?? null;
         const blockKey = block?.block_key ?? null;
@@ -314,7 +316,7 @@ export async function readSetlistItems(
   const rows = setlistItemsRowSchema.parse(items.data);
   const ids = rows.map((row) => row.id);
   if (ids.length === 0) return [];
-  const [themes, durations, blocks] = await Promise.all([
+  const [themes, durations, blocks, volunteers] = await Promise.all([
     supabase
       .from("setlist_item_themes")
       .select("setlist_item_id, theme_id")
@@ -327,8 +329,12 @@ export async function readSetlistItems(
       .from("setlist_item_blocks")
       .select("setlist_item_id, block_key")
       .in("setlist_item_id", ids),
+    supabase
+      .from("setlist_item_volunteers")
+      .select("setlist_item_id, user_id")
+      .in("setlist_item_id", ids),
   ]);
-  for (const result of [themes, durations, blocks]) {
+  for (const result of [themes, durations, blocks, volunteers]) {
     if (result.error) throw databaseError("read setlist item details", result.error);
   }
   const byItem = <T extends { setlist_item_id: string }>(data: T[] | null) =>
@@ -336,12 +342,14 @@ export async function readSetlistItems(
   const themeOf = byItem(themes.data);
   const durationOf = byItem(durations.data);
   const blockOf = byItem(blocks.data);
+  const volunteerOf = byItem(volunteers.data);
   return toSetlistItems(
     rows.map((row) => ({
       ...row,
       theme: themeOf.get(row.id) ?? null,
       duration: durationOf.get(row.id) ?? null,
       block: blockOf.get(row.id) ?? null,
+      volunteer: volunteerOf.get(row.id) ?? null,
     })),
   );
 }
@@ -355,6 +363,7 @@ export function itemsToInput(items: readonly SetlistItemDTO[]): SetlistItemInput
           key: item.key,
           arrangementId: item.arrangement.id,
           musicalKey: item.musicalKey,
+          volunteerId: item.volunteerId,
           themeId: item.themeId,
           durationSeconds: item.durationSeconds,
           blockKey: item.blockKey,
@@ -371,6 +380,7 @@ export function itemsToInput(items: readonly SetlistItemDTO[]): SetlistItemInput
           textSlide: item.textSlide,
           description: item.description,
           highlight: item.highlight,
+          volunteerId: item.volunteerId,
           themeId: item.themeId,
           durationSeconds: item.durationSeconds,
           blockKey: item.blockKey,

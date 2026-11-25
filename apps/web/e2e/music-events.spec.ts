@@ -195,3 +195,31 @@ test("a superadmin manages the announcement calendars", async ({ page }) => {
   await page.getByRole("button", { name: "Törlés" }).click();
   await expect(page.getByRole("listitem").filter({ hasText: "Plébánia" })).toHaveCount(0);
 });
+
+test("the bulk form creates series, items reorder by drag and drop and get a volunteer", async ({
+  page,
+}) => {
+  await asMusicLeader(page, "/munkater/esemenyek/uj/sorozat");
+  await page.getByLabel("Első nap").fill("2031-09-01");
+  await page.getByLabel("Utolsó nap").fill("2031-09-30");
+  await page.getByPlaceholder("Név").fill("Reggeli alkalom");
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+  await page.getByRole("button", { name: "Sorozatok létrehozása" }).click();
+  await expect(page.getByRole("link", { name: /Reggeli alkalom/ }).first()).toBeVisible();
+
+  // A single event with two text items and a team member.
+  await page.goto("/munkater/esemenyek/uj");
+  await page.getByLabel("Név").fill("Húzós alkalom");
+  await page.getByLabel("Kezdés").fill("2031-10-05T10:00");
+  await page.getByRole("button", { name: "Esemény létrehozása" }).click();
+  for (const title of ["Első", "Második"]) {
+    await page.getByLabel("Szöveges programpont").fill(title);
+    await page.getByRole("button", { name: "Hozzáadás" }).last().click();
+    await expect(page.getByRole("listitem").filter({ hasText: title })).toBeVisible();
+  }
+  const rows = page.locator("ol > li");
+  await expect(rows.first()).toContainText("Első");
+  await rows.nth(1).dragTo(rows.first());
+  await expect(rows.first()).toContainText("Második");
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+});
