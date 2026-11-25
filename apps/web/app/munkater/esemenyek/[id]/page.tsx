@@ -13,6 +13,9 @@ import { getEventTeams, getMyReply, getTeamEditor } from "@/server/music/models/
 import { listPeople } from "@/server/music/models/profiles";
 import { ItemsPanel } from "./items-panel";
 import { TeamPanel } from "./team-panel";
+import { PlanLink } from "./plan-link";
+import { getMemberEnv } from "@/server/workspace";
+import { canServer } from "@/lib/permissions/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { m } = await getI18n();
@@ -65,6 +68,7 @@ export default async function EventPage({
     getMyReply(event.id),
     listPeople(),
   ]);
+  const planInfo = await planOf(event.id);
   const editableAreaIds =
     editor === null
       ? []
@@ -132,6 +136,7 @@ export default async function EventPage({
           query={q}
           results={results}
         />
+        <PlanLink eventId={event.id} planId={planInfo.planId} canCreate={planInfo.canCreate} />
         <TeamPanel
           eventId={event.id}
           teams={teams.teams}
@@ -143,4 +148,19 @@ export default async function EventPage({
       </div>
     </main>
   );
+}
+
+/** The liturgy plan of the event, and whether the viewer may make one (the plan side is Churchy's). */
+async function planOf(eventId: string): Promise<{ planId: string | null; canCreate: boolean }> {
+  try {
+    const { repos, ctx } = await getMemberEnv();
+    const plans = await repos.servicePlans.list(ctx, { eventIds: [eventId] });
+    const tenantId = ctx.tenantId;
+    return {
+      planId: plans[0]?.id ?? null,
+      canCreate: tenantId !== undefined && (await canServer("servicePlan.edit", { tenantId })),
+    };
+  } catch {
+    return { planId: null, canCreate: false };
+  }
 }

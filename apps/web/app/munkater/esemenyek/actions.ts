@@ -19,8 +19,11 @@ import {
 import { createEventBlock, deleteEventBlock } from "@/server/music/models/event-blocks";
 import { setEventAreaTeam } from "@/server/music/models/event-teams";
 import { itemsToInput } from "@/server/music/models/setlists";
+import { syncPlansFromSetlist } from "@/server/music/plan-link";
 import { musicEventIn } from "@/server/music/policy";
 import { withPolicy } from "@/server/policy";
+import { getRequestRepositories } from "@/server/repositories";
+import { isContractError } from "@churchy/contracts";
 
 // Every action: `music.event.manage` (leader, music leader), the events module must be on, and the
 // models check the role again. Dates: a `datetime-local` value is Budapest wall-clock time.
@@ -130,6 +133,15 @@ export const skipOccurrenceAction = withPolicy(
   },
 );
 
+/** The linked plans take over the songs of the event after a successful change (never fails the change). */
+async function afterItems(eventId: string): Promise<void> {
+  try {
+    await syncPlansFromSetlist(eventId);
+  } catch (error) {
+    console.error("[music] plan sync failed:", error);
+  }
+}
+
 type ItemsResult = { ok: boolean; message: "full" | "ended" | "noArrangement" | "changed" | null };
 
 /** Adds one song (an arrangement) at the end of the event's items. */
@@ -142,7 +154,10 @@ export const addSongAction = withPolicy(
       arrangementId: text(formData, "arrangementId"),
       musicalKey: text(formData, "musicalKey") || null,
     });
-    if (result === "added") return { ok: true, message: null };
+    if (result === "added") {
+      await afterItems(text(formData, "id"));
+      return { ok: true, message: null };
+    }
     return {
       ok: false,
       message:
@@ -165,6 +180,7 @@ export const addTextItemAction = withPolicy(
       ],
       afterKey: null,
     });
+    if (result === "added") await afterItems(text(formData, "id"));
     return result === "added"
       ? { ok: true, message: null }
       : { ok: false, message: result === "too_many_items" ? "full" : "noArrangement" };
@@ -176,6 +192,7 @@ export const removeItemAction = withPolicy(
   musicEventIn,
   async (_scope, formData: FormData): Promise<ItemsResult> => {
     const removed = await removeEventItem(text(formData, "id"), text(formData, "key"));
+    if (removed) await afterItems(text(formData, "id"));
     return { ok: removed, message: removed ? null : "changed" };
   },
 );
@@ -242,4 +259,29 @@ export const setMyReplyAction = withPolicy(
   async (_scope, formData: FormData): Promise<{ ok: boolean }> => ({
     ok: await setMyReply(text(formData, "id"), { reply: text(formData, "reply") }),
   }),
+);
+
+/** A new liturgy plan for the event (`service_plans.event_id`); its songs start from the event's setlist. */
+export const createEventPlanAction = withPolicy(
+  "servicePlan.edit",
+  musicEventIn,
+  async (scope, formData: FormData): Promise<{ planId: string | null }> => {
+    const eventId = text(formData, "id");
+    const event = await getEventDetail(eventId);
+    const leaderPersonId = scope.ctx.actor.personId;
+    if (event === null || leaderPersonId === null) return { planId: null };
+    try {
+      const repos = await getRequestRepositories();
+      const plan = await repos.servicePlans.upsert(scope.ctx, {
+        eventId,
+        title: event.title,
+        leaderPersonId,
+      });
+      await afterItems(eventId);
+      return { planId: plan.id };
+    } catch (error) {
+      if (isContractError(error)) return { planId: null };
+      throw error;
+    }
+  },
 );

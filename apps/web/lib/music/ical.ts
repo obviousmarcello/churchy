@@ -65,12 +65,14 @@ export function formatUtc(time: number): string {
 
 /** A TEXT value: a backslash before `\`, `;` and `,`, and `\n` for a line break. Other control characters go. */
 export function escapeText(text: string): string {
-  return text
-    .replace(/\r\n?/g, "\n")
-    .replace(/[\\;,]/g, (char) => `\\${char}`)
-    .replace(/\n/g, "\\n")
-    // eslint-disable-next-line no-control-regex -- control characters are what it removes
-    .replace(/[\u0000-\u001f\u007f]/g, "");
+  return (
+    text
+      .replace(/\r\n?/g, "\n")
+      .replace(/[\\;,]/g, (char) => `\\${char}`)
+      .replace(/\n/g, "\\n")
+      // eslint-disable-next-line no-control-regex -- control characters are what it removes
+      .replace(/[\u0000-\u001f\u007f]/g, "")
+  );
 }
 
 function removeLineBreaks(text: string): string {

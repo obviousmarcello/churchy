@@ -600,3 +600,16 @@ copy_event, 4b-2 editor + images + announcements, 4b-3 feed, sync wiring, statis
 - "Calendar sync": music events already live in Churchy's `events` table (internal music calendar), so the Churchy calendar
   shows them. The realtime part of `event-sync` (topics, projection controllers) belongs to the live-session batch.
 
+### 4b-3c (done): plan sync
+- A plan belongs to a music event through `service_plans.event_id` (button on the event page; the plan page is Churchy's).
+  `server/music/plan-link.ts`: `syncPlansFromSetlist(eventId)` after every item change of an event (actions), and
+  `syncSetlistFromPlan(eventId, items)` after `savePlanItems` (worship actions, module `ws.music.events` on). Rule
+  `takeSongs`: the edited side wins, the other keeps its non-song items and the details of songs that stay; locked plans stay.
+  Because the setlist is replaced on every change, the link is the plan's `event_id` (not `setlist_id`, which the DB keeps
+  as an optional mirror and `ON DELETE SET NULL`).
+- In demo mode the mock adapter's events do not contain music events (they live in the in-process music database), so a
+  plan cannot be linked there; the sync is tested with mocked repositories (`plan-link.test.ts`) and works in Phase B (one DB).
+- Play statistics count the setlists of events; a linked plan mirrors its event, so it adds no further plays. Plans of the
+  schedule that are not linked to a music event are not counted (needs a plan read grant for the music role: open question).
+- `my-setlists` (per-slot personal data of the event sheet) and the realtime part of event sync are not copied.
+

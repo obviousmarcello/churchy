@@ -6349,6 +6349,14 @@
         "disable": "Kikapcsolás",
         "linkLabel": "A naptárad linkje (csak most látod)",
         "demo": "A bemutató módban a naptárlink nem használható, mert a naptárprogram nem tud belépni."
+      },
+      "plan": {
+        "title": "Liturgia-terv",
+        "none": "Ehhez az eseményhez még nincs liturgia-terv.",
+        "create": "Terv létrehozása",
+        "open": "Terv megnyitása",
+        "failed": "A tervet most nem sikerült létrehozni.",
+        "hint": "A dalok két irányban követik egymást: ami az egyik oldalon változik, a másikon is."
       }
     },
     "groups": {

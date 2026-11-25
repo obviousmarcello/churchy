@@ -24,6 +24,7 @@ import {
   setlistItemsInputSchema,
   toItemsArgument,
   type SetlistItemDTO,
+  type SetlistItemInput,
 } from "./setlists";
 import { playKeySchema } from "./arrangements";
 import { databaseError, idSchema, isId, lowerIdSchema, parseInput, requiredText } from "./shared";
@@ -497,6 +498,25 @@ export async function setEventItems(
   if (error) throw databaseError("save event items", error);
   const result = setEventItemsResultSchema.parse(data);
   return result && { status: result.status, setlistId: result.setlist_id?.toLowerCase() ?? null };
+}
+
+/**
+ * Saves the items of an event for the plan sync (`server/music/plan-link.ts`): the caller already
+ * checked that the user may edit the linked plan, so there is no event-admin check here.
+ */
+export async function applyEventItems(id: string, items: SetlistItemInput[]): Promise<boolean> {
+  if (!isId(id) || (await getEvent(id)) === null) return false;
+  const parsed = parseInput(eventItemsInputSchema, { items });
+  const { error } = await (
+    await getMusicSupabase()
+  ).rpc("set_event_items", {
+    p_event_id: id,
+    p_items: toItemsArgument(parsed.items),
+    p_base_setlist_id: null,
+    p_check_base: false,
+  });
+  if (error) throw databaseError("save event items", error);
+  return true;
 }
 
 export const ADD_TO_EVENT_RESULTS = ["added", "too_many_items", "no_event"] as const;
