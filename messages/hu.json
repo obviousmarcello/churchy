@@ -6334,7 +6334,22 @@
         "replied": "A válaszod: {reply}",
         "failed": "Nem sikerült menteni a csapatot."
       },
-      "groupsLink": "Csoportok"
+      "groupsLink": "Csoportok",
+      "calendar": {
+        "name": "Zenei események",
+        "eventLink": "Az esemény oldala:",
+        "youtubeLink": "Élő közvetítés:",
+        "title": "Naptár",
+        "lead": "Az eseményeid, amelyekre jelentkeztél (és nem mondtál nemet), saját naptárprogramodban. A link titkos: aki ismeri, látja az eseményeid.",
+        "consent": "A naptárprogram szolgáltatója a fájlt az EU-n kívül is tárolhatja. A fájl csak a saját eseményeidet tartalmazza, más önkéntesek nevét nem. Elfogadom.",
+        "on": "A naptár be van kapcsolva.",
+        "off": "A naptár ki van kapcsolva.",
+        "enable": "Link készítése",
+        "renew": "Új link",
+        "disable": "Kikapcsolás",
+        "linkLabel": "A naptárad linkje (csak most látod)",
+        "demo": "A bemutató módban a naptárlink nem használható, mert a naptárprogram nem tud belépni."
+      }
     },
     "groups": {
       "title": "Csoportok",

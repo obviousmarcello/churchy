@@ -42,6 +42,12 @@ export default async function EventsPage() {
         title={t.title}
         actions={
           <>
+            <Link
+              href="/munkater/esemenyek/naptar"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              {t.calendar.title}
+            </Link>
             {(user.canEditEvents || user.leadsGroups) && (
               <Link
                 href="/munkater/esemenyek/csoportok"

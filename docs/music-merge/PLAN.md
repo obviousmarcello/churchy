@@ -590,3 +590,13 @@ copy_event, 4b-2 editor + images + announcements, 4b-3 feed, sync wiring, statis
 - Left for the next slices of 4b: the copy of their drag-and-drop editor, bulk series form, event images, announcements,
   area-role editor UI, feed, plan sync wiring, `my-setlists`, calendar sync, statistics over plan items.
 
+### 4b-3a (done): area-role editor and feed
+- Area roles are edited on the groups page (superadmin = `music.songRights.manage` only, as in the music app); area-role users
+  get "Új esemény" with an area picker limited to their areas, and edit/delete events of their areas.
+- iCal feed: their `ical.ts` builder (no dependency; `ical.js` is for announcement calendars, 4b-3d), token per tenant and user
+  (`calendar_feeds`, SHA-256 only, consent required), page `/munkater/esemenyek/naptar`, route `/api/music/calendar/<token>.ics`
+  (tenant from the host; no session; 404 in demo mode, where the data lives in a session). A volunteer's yes/unanswered events
+  of the last 90 days, with the song titles.
+- "Calendar sync": music events already live in Churchy's `events` table (internal music calendar), so the Churchy calendar
+  shows them. The realtime part of `event-sync` (topics, projection controllers) belongs to the live-session batch.
+

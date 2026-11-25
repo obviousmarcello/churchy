@@ -134,3 +134,19 @@ test("an area role lets a volunteer create and edit events of that area only", a
   await expect(page.getByRole("heading", { level: 1, name: "Szolgálói alkalom" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Szerkesztés" })).toBeVisible();
 });
+
+test("a user turns the calendar feed on with consent and gets a private link", async ({ page }) => {
+  await asMusicLeader(page, "/munkater/esemenyek/naptar");
+  await expect(page.getByText("A naptár ki van kapcsolva.")).toBeVisible();
+  await page.getByRole("button", { name: "Link készítése" }).click();
+  // The browser's own validation holds the form until the consent is checked.
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Link készítése" }).click();
+  await expect(page.getByLabel(/A naptárad linkje/)).toHaveValue(
+    /\/api\/music\/calendar\/[0-9a-f]{64}\.ics$/,
+  );
+  await expect(page.getByText("A naptár be van kapcsolva.")).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+  await page.getByRole("button", { name: "Kikapcsolás" }).click();
+  await expect(page.getByText("A naptár ki van kapcsolva.")).toBeVisible();
+});
