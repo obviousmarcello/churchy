@@ -36,6 +36,7 @@ vi.mock("@/server/music/db", () => ({
           ends_at: db.inserts.at(-1)?.ends_at,
           youtube_url: null,
           is_private: false,
+          area_ids: [],
           rrule: db.inserts.at(-1)?.rrule ?? null,
           exdates: [],
           parent_event_id: null,
@@ -48,7 +49,13 @@ vi.mock("@/server/music/db", () => ({
     });
     return {
       from: () => query,
-      rpc: async () => ({ data: "22222222-2222-4222-8222-222222222222", error: null }),
+      rpc: async (name: string) => ({
+        data:
+          name === "event_member_access"
+            ? { area_ids: ["33333333-3333-4333-8333-333333333333"], extra_event_ids: [] }
+            : "22222222-2222-4222-8222-222222222222",
+        error: null,
+      }),
     };
   },
 }));
@@ -64,7 +71,9 @@ describe("music events", () => {
 
   it("hides private events of others from a member, not from an event admin", async () => {
     await listEvents();
-    expect(db.ors).toEqual(["is_private.eq.false,created_by.eq.u1"]);
+    expect(db.ors).toEqual([
+      "and(is_private.is.false,area_ids.ov.{33333333-3333-4333-8333-333333333333}),created_by.eq.u1",
+    ]);
     db.ors.length = 0;
     db.user = { id: "u1", tenantId: "t1", canEditEvents: true };
     await listEvents();

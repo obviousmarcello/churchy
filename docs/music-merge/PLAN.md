@@ -551,3 +551,29 @@ Deviations / not done (decisions needed marked Q):
 - Per-slot annotations on the sheet of an event (`setlist_item_id`) and `my-setlists` stay for later; `copy_event`,
   event sync (calendar `event-sync`) and the calendar feed wait for 4b.
 
+## 18. Phase 4b progress
+
+Owner decisions (2026-11-25): copy their event editor in 4b (4b-2), replacing the compact pages step by step; a SEPARATE
+music area tree (no `teams.parent_id`, no HR or plan contract change), area-based event access on it; keep `ical.js`, token
+routes per tenant and user; play statistics count linked plan items too; wire the plan sync now; also `copy_event`,
+`my-setlists`, event images, announcements, volunteers on items, calendar sync. Slices: 4b-1 areas/teams/volunteers/access/
+copy_event, 4b-2 editor + images + announcements, 4b-3 feed, sync wiring, statistics, my-setlists.
+
+### 4b-1 (done): areas, volunteers, event access, copy_event
+- Migration `0015_music_areas` (+ down): tables `service_areas` (tree, per tenant, one root "Mindenki" created on first use by
+  `music_root_area_id()`), `service_area_paths`, `service_area_members`, `service_area_roles`, `course_areas`,
+  `volunteer_templates` (+ `_areas`, `_members`), `event_volunteers`, `event_volunteer_areas`, `event_area_notes`,
+  `event_team_notes`, `setlist_item_volunteers`; `events.area_ids` (empty = everyone; a music event with none gets the root)
+  and `events.volunteer_template_id`. ~40 functions ported (areas, member rights, event teams, templates, replies, access:
+  `member_area_ids`, `event_member_access`, `can_see_event(.., p_is_admin)`), `set_event_items` again with volunteers
+  (image sets and announcements: 4b-2), `copy_event` (items, blocks, team; images and announcements: 4b-2).
+- Deletes without a tenant context (deleting a tenant) skip the "root stays / has sub-groups" checks.
+- Models: `groups.ts`, `volunteer-templates.ts`, `event-teams.ts`, `event-access.ts`, `profiles.ts` (people with a login, from
+  Churchy `people`), events: area access in `listEvents`/`getEvent`, `areaIds` on create/update with rights check, `copyEvent`,
+  `setMyReply`. Libs `lib/music/{groups,volunteer-templates,team-grid,event-series,event-scopes}`. Auth: `leadsGroups`,
+  `getLedGroupIds`, `requireGroupManager`.
+- Local PostgREST: `or` terms with `{…}` array values.
+- Area roles (`service_area_roles`) are stored and keep their move/delete safeguards but grant nothing through `can()` yet.
+  (Q: map an area role to `music.*` actions, or drop the roles?)
+- Pages, server actions with `withPolicy` and the `music.group.manage` action for groups come with the editor (4b-2).
+

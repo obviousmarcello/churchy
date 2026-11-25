@@ -159,8 +159,8 @@ function splitTop(text: string, sep = ","): string[] {
   let cur = "";
   for (const ch of text) {
     if (ch === '"') quote = !quote;
-    if (!quote && ch === "(") depth++;
-    if (!quote && ch === ")") depth--;
+    if (!quote && (ch === "(" || ch === "{")) depth++;
+    if (!quote && (ch === ")" || ch === "}")) depth--;
     if (!quote && depth === 0 && ch === sep) {
       out.push(cur);
       cur = "";

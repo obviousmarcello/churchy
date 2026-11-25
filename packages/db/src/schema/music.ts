@@ -28,6 +28,7 @@ import {
   text,
   time,
   unique,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { huText, tenantIndexes, timestamptz, tsvector } from "./columns";
@@ -1881,6 +1882,363 @@ export const setlistItemBlocks = pgTable(
       name: "setlist_item_blocks_block_fkey",
       columns: [t.tenantId, t.eventId, t.blockKey],
       foreignColumns: [eventBlocks.tenantId, eventBlocks.eventId, eventBlocks.key],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+// ---------------------------------------------------------------------------------------------
+// Music merge phase 4b-1: the music area tree ("service areas", PLAN §17), volunteers of events,
+// volunteer templates. A tree of its own, linked to nothing of Churchy's teams (owner decision).
+// Their `user_id`s are Churchy profile ids. Roles of an area (`service_area_roles`) are stored as in
+// the music app; they are not connected to `can()` yet.
+// ---------------------------------------------------------------------------------------------
+
+export const serviceAreas = pgTable(
+  "service_areas",
+  {
+    tenantId: tenantId(),
+    id: uuid().primaryKey().defaultRandom(),
+    name: huText().notNull(),
+    position: bigint({ mode: "number" }).notNull().generatedByDefaultAsIdentity(),
+    parentId: uuid(),
+    isRoot: boolean().notNull().default(false),
+    createdAt: timestamptz().notNull().defaultNow(),
+    updatedAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    ...tenantIndexes("service_areas", t),
+    unique("service_areas_parent_id_name_key")
+      .on(t.tenantId, t.parentId, t.name)
+      .nullsNotDistinct(),
+    index("service_areas_parent_id_idx").on(t.parentId),
+    uniqueIndex("service_areas_one_root_idx")
+      .on(t.tenantId)
+      .where(sql`${t.isRoot}`),
+    check(
+      "service_areas_name_check",
+      sql`((name = btrim(name)) AND ((char_length(name) >= 1) AND (char_length(name) <= 60)))`,
+    ),
+    check("service_areas_root_check", sql`((parent_id IS NULL) = is_root)`),
+    foreignKey({
+      name: "service_areas_parent_id_fkey",
+      columns: [t.tenantId, t.parentId],
+      foreignColumns: [t.tenantId, t.id],
+    }),
+  ],
+).enableRLS();
+
+export const serviceAreaPaths = pgTable(
+  "service_area_paths",
+  {
+    tenantId: tenantId(),
+    ancestorId: uuid().notNull(),
+    descendantId: uuid().notNull(),
+    depth: integer().notNull(),
+  },
+  (t) => [
+    primaryKey({
+      name: "service_area_paths_pkey",
+      columns: [t.tenantId, t.ancestorId, t.descendantId],
+    }),
+    index("service_area_paths_descendant_idx").on(t.tenantId, t.descendantId),
+    check("service_area_paths_depth_check", sql`(depth >= 0)`),
+    foreignKey({
+      name: "service_area_paths_ancestor_id_fkey",
+      columns: [t.tenantId, t.ancestorId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "service_area_paths_descendant_id_fkey",
+      columns: [t.tenantId, t.descendantId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const serviceAreaMembers = pgTable(
+  "service_area_members",
+  {
+    tenantId: tenantId(),
+    areaId: uuid().notNull(),
+    userId: uuid().notNull(),
+    isLeader: boolean().notNull().default(false),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ name: "service_area_members_pkey", columns: [t.tenantId, t.areaId, t.userId] }),
+    index("service_area_members_user_id_idx").on(t.userId),
+    foreignKey({
+      name: "service_area_members_area_id_fkey",
+      columns: [t.tenantId, t.areaId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "service_area_members_user_id_fkey",
+      columns: [t.userId],
+      foreignColumns: [profiles.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const serviceAreaRoles = pgTable(
+  "service_area_roles",
+  {
+    tenantId: tenantId(),
+    areaId: uuid().notNull(),
+    role: text().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ name: "service_area_roles_pkey", columns: [t.tenantId, t.areaId, t.role] }),
+    check(
+      "service_area_roles_role_check",
+      sql`(role = ANY (ARRAY['song_admin'::text, 'event_admin'::text, 'music_leader'::text, 'course_admin'::text]))`,
+    ),
+    foreignKey({
+      name: "service_area_roles_area_id_fkey",
+      columns: [t.tenantId, t.areaId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const volunteerTemplates = pgTable(
+  "volunteer_templates",
+  {
+    tenantId: tenantId(),
+    id: uuid().primaryKey().defaultRandom(),
+    name: huText().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+    updatedAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    ...tenantIndexes("volunteer_templates", t),
+    unique("volunteer_templates_name_key").on(t.tenantId, t.name),
+    check(
+      "volunteer_templates_name_check",
+      sql`((name = btrim(name)) AND ((char_length(name) >= 1) AND (char_length(name) <= 100)))`,
+    ),
+  ],
+).enableRLS();
+
+export const volunteerTemplateAreas = pgTable(
+  "volunteer_template_areas",
+  {
+    tenantId: tenantId(),
+    templateId: uuid().notNull(),
+    areaId: uuid().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({
+      name: "volunteer_template_areas_pkey",
+      columns: [t.tenantId, t.templateId, t.areaId],
+    }),
+    foreignKey({
+      name: "volunteer_template_areas_template_id_fkey",
+      columns: [t.tenantId, t.templateId],
+      foreignColumns: [volunteerTemplates.tenantId, volunteerTemplates.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "volunteer_template_areas_area_id_fkey",
+      columns: [t.tenantId, t.areaId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const volunteerTemplateMembers = pgTable(
+  "volunteer_template_members",
+  {
+    tenantId: tenantId(),
+    templateId: uuid().notNull(),
+    areaId: uuid().notNull(),
+    userId: uuid().notNull(),
+    position: smallint().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({
+      name: "volunteer_template_members_pkey",
+      columns: [t.tenantId, t.templateId, t.areaId, t.userId],
+    }),
+    check("volunteer_template_members_position_check", sql`("position" >= 0)`),
+    foreignKey({
+      name: "volunteer_template_members_template_id_fkey",
+      columns: [t.tenantId, t.templateId],
+      foreignColumns: [volunteerTemplates.tenantId, volunteerTemplates.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "volunteer_template_members_area_id_fkey",
+      columns: [t.tenantId, t.areaId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "volunteer_template_members_user_id_fkey",
+      columns: [t.userId],
+      foreignColumns: [profiles.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const eventVolunteers = pgTable(
+  "event_volunteers",
+  {
+    tenantId: tenantId(),
+    eventId: uuid().notNull(),
+    userId: uuid().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+    /** `yes`, `maybe` or `no`; null: no reply yet. */
+    reply: text(),
+    repliedAt: timestamptz(),
+  },
+  (t) => [
+    primaryKey({ name: "event_volunteers_pkey", columns: [t.tenantId, t.eventId, t.userId] }),
+    index("event_volunteers_user_id_idx").on(t.userId),
+    check(
+      "event_volunteers_reply_check",
+      sql`(reply = ANY (ARRAY['yes'::text, 'maybe'::text, 'no'::text]))`,
+    ),
+    check("event_volunteers_reply_time", sql`((reply IS NULL) = (replied_at IS NULL))`),
+    foreignKey({
+      name: "event_volunteers_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "event_volunteers_user_id_fkey",
+      columns: [t.userId],
+      foreignColumns: [profiles.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const eventVolunteerAreas = pgTable(
+  "event_volunteer_areas",
+  {
+    tenantId: tenantId(),
+    eventId: uuid().notNull(),
+    areaId: uuid().notNull(),
+    userId: uuid().notNull(),
+    position: smallint().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({
+      name: "event_volunteer_areas_pkey",
+      columns: [t.tenantId, t.eventId, t.areaId, t.userId],
+    }),
+    check("event_volunteer_areas_position_check", sql`("position" >= 0)`),
+    foreignKey({
+      name: "event_volunteer_areas_volunteer_fkey",
+      columns: [t.tenantId, t.eventId, t.userId],
+      foreignColumns: [eventVolunteers.tenantId, eventVolunteers.eventId, eventVolunteers.userId],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "event_volunteer_areas_area_id_fkey",
+      columns: [t.tenantId, t.areaId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const eventAreaNotes = pgTable(
+  "event_area_notes",
+  {
+    tenantId: tenantId(),
+    eventId: uuid().notNull(),
+    areaId: uuid().notNull(),
+    note: text().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+    updatedAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ name: "event_area_notes_pkey", columns: [t.tenantId, t.eventId, t.areaId] }),
+    check(
+      "event_area_notes_note_check",
+      sql`((note = btrim(note)) AND ((char_length(note) >= 1) AND (char_length(note) <= 200)))`,
+    ),
+    foreignKey({
+      name: "event_area_notes_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "event_area_notes_area_id_fkey",
+      columns: [t.tenantId, t.areaId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const eventTeamNotes = pgTable(
+  "event_team_notes",
+  {
+    tenantId: tenantId(),
+    eventId: uuid().notNull(),
+    note: text().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+    updatedAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ name: "event_team_notes_pkey", columns: [t.tenantId, t.eventId] }),
+    check(
+      "event_team_notes_note_check",
+      sql`((note = btrim(note)) AND ((char_length(note) >= 1) AND (char_length(note) <= 500)))`,
+    ),
+    foreignKey({
+      name: "event_team_notes_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const setlistItemVolunteers = pgTable(
+  "setlist_item_volunteers",
+  {
+    tenantId: tenantId(),
+    setlistItemId: uuid().notNull(),
+    eventId: uuid().notNull(),
+    userId: uuid().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ name: "setlist_item_volunteers_pkey", columns: [t.tenantId, t.setlistItemId] }),
+    index("setlist_item_volunteers_event_user_idx").on(t.eventId, t.userId),
+    foreignKey({
+      name: "setlist_item_volunteers_setlist_item_id_fkey",
+      columns: [t.tenantId, t.setlistItemId],
+      foreignColumns: [setlistItems.tenantId, setlistItems.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "setlist_item_volunteers_volunteer_fkey",
+      columns: [t.tenantId, t.eventId, t.userId],
+      foreignColumns: [eventVolunteers.tenantId, eventVolunteers.eventId, eventVolunteers.userId],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+/** The areas of a published course (courses phase 8 uses it; `service_area_uses` counts it). */
+export const courseAreas = pgTable(
+  "course_areas",
+  {
+    tenantId: tenantId(),
+    courseId: uuid().notNull(),
+    areaId: uuid().notNull(),
+  },
+  (t) => [
+    primaryKey({ name: "course_areas_pkey", columns: [t.tenantId, t.courseId, t.areaId] }),
+    index("course_areas_area_id_idx").on(t.areaId),
+    foreignKey({
+      name: "course_areas_course_id_fkey",
+      columns: [t.tenantId, t.courseId],
+      foreignColumns: [courses.tenantId, courses.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "course_areas_area_id_fkey",
+      columns: [t.tenantId, t.areaId],
+      foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
     }).onDelete("cascade"),
   ],
 ).enableRLS();

@@ -4,8 +4,8 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { can } from "@churchy/policy";
 import { getActor } from "@/server/session";
-import { requireWorkspaceModule } from "@/server/workspace-nav";
-import { musicUserId } from "./db";
+import { isWorkspaceModuleOn, requireWorkspaceModule } from "@/server/workspace-nav";
+import { getMusicSupabase, musicUserId } from "./db";
 import { ForbiddenError, UnauthorizedError } from "./errors";
 
 /**
@@ -27,7 +27,29 @@ export type CurrentUser = {
   canEditSongs: boolean;
   /** `music.event.manage` (leader, music leader): sees and changes all music events. */
   canEditEvents: boolean;
+  /** Leads a music area (a leader of an area may manage its team). */
+  leadsGroups: boolean;
 };
+
+/** Whether the user leads a music area (one query; only with the events module on). */
+async function leadsAnyGroup(userId: string): Promise<boolean> {
+  if (!(await isWorkspaceModuleOn("ws.music.events"))) return false;
+  return (await getLedGroupIds(userId)).size > 0;
+}
+
+/** The ids of the music areas that the user leads, with the areas below them. */
+export async function getLedGroupIds(userId: string): Promise<Set<string>> {
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("led_area_ids", { p_user_id: userId });
+  if (error) throw new Error(`led_area_ids: ${error.message}`);
+  const rows = (data ?? []) as { id?: string; led_area_ids?: string }[] | string[];
+  return new Set(
+    rows
+      .map((row) => (typeof row === "string" ? row : (row.id ?? row.led_area_ids ?? "")))
+      .filter(Boolean),
+  );
+}
 
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const actor = await getActor();
@@ -40,6 +62,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     isSuperadmin: can(actor, "music.songRights.manage", resource),
     canEditSongs: can(actor, "music.song.manage", resource),
     canEditEvents: can(actor, "music.event.manage", resource),
+    leadsGroups: await leadsAnyGroup(musicUserId(actor.userId)),
   };
 });
 
@@ -69,6 +92,13 @@ export async function requireEventsPageUser(): Promise<CurrentUser> {
   await requireWorkspaceModule("ws.music.events");
   const user = await getCurrentUser();
   if (!user) notFound();
+  return user;
+}
+
+/** An event admin, or the leader of a music area (they manage the teams of their areas). */
+export async function requireGroupManager(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.canEditEvents && !user.leadsGroups) throw new ForbiddenError();
   return user;
 }
 

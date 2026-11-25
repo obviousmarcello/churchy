@@ -163,6 +163,12 @@ describe("local PostgREST", () => {
       .or("title.eq.nincs-ilyen,and(title.eq.x,artist.is.null)");
     expect(either.error).toBeNull();
     expect(either.data).toEqual([]);
+    // Array values with commas inside an `or` term.
+    const arrays = await music
+      .from("events")
+      .select("id")
+      .or("and(is_private.is.false,area_ids.ov.{a1,b2}),created_by.eq.u");
+    expect(arrays.error?.message ?? "").not.toMatch(/unsupported/);
   });
 });
 
