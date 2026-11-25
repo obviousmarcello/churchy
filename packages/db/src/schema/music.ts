@@ -17,6 +17,7 @@ import {
   bigint,
   boolean,
   check,
+  date,
   foreignKey,
   index,
   integer,
@@ -2239,6 +2240,236 @@ export const courseAreas = pgTable(
       name: "course_areas_area_id_fkey",
       columns: [t.tenantId, t.areaId],
       foreignColumns: [serviceAreas.tenantId, serviceAreas.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+// ---------------------------------------------------------------------------------------------
+// Music merge phase 4c: event images (sets of projected images) and announcement items.
+// ---------------------------------------------------------------------------------------------
+
+export const eventImageSets = pgTable(
+  "event_image_sets",
+  {
+    tenantId: tenantId(),
+    id: uuid().primaryKey().defaultRandom(),
+    eventId: uuid().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+    usedAt: timestamptz(),
+  },
+  (t) => [
+    ...tenantIndexes("event_image_sets", t),
+    index("event_image_sets_event_id_idx").on(t.eventId),
+    foreignKey({
+      name: "event_image_sets_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const eventImages = pgTable(
+  "event_images",
+  {
+    tenantId: tenantId(),
+    id: uuid().primaryKey().defaultRandom(),
+    eventId: uuid().notNull(),
+    setId: uuid().notNull(),
+    position: integer().notNull(),
+    name: huText().notNull(),
+    path: text().notNull(),
+    width: integer().notNull(),
+    height: integer().notNull(),
+    sizeBytes: integer().notNull(),
+    fit: text().notNull().default("contain"),
+    scale: smallint().notNull().default(100),
+    offsetX: smallint().notNull().default(0),
+    offsetY: smallint().notNull().default(0),
+    rotation: smallint().notNull().default(0),
+    background: text().notNull().default("color"),
+    backgroundColor: text().notNull().default("#000000"),
+    createdAt: timestamptz().notNull().defaultNow(),
+    updatedAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    ...tenantIndexes("event_images", t),
+    unique("event_images_path_key").on(t.tenantId, t.path),
+    unique("event_images_set_id_position_key").on(t.tenantId, t.setId, t.position),
+    index("event_images_event_id_idx").on(t.eventId),
+    check("event_images_position_check", sql`("position" >= 1)`),
+    check(
+      "event_images_name_check",
+      sql`((name = btrim(name)) AND ((char_length(name) >= 1) AND (char_length(name) <= 100)))`,
+    ),
+    check("event_images_path_check", sql`(path ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}\\.webp$'::text)`),
+    check("event_images_width_check", sql`((width >= 1) AND (width <= 10000))`),
+    check("event_images_height_check", sql`((height >= 1) AND (height <= 10000))`),
+    check("event_images_size_bytes_check", sql`((size_bytes >= 1) AND (size_bytes <= 5242880))`),
+    check("event_images_fit_check", sql`(fit = ANY (ARRAY['contain'::text, 'cover'::text]))`),
+    check("event_images_scale_check", sql`((scale >= 10) AND (scale <= 400))`),
+    check("event_images_offset_x_check", sql`((offset_x >= '-50'::integer) AND (offset_x <= 50))`),
+    check("event_images_offset_y_check", sql`((offset_y >= '-50'::integer) AND (offset_y <= 50))`),
+    check("event_images_rotation_check", sql`(rotation = ANY (ARRAY[0, 90, 180, 270]))`),
+    check(
+      "event_images_background_check",
+      sql`(background = ANY (ARRAY['color'::text, 'theme'::text, 'blur'::text]))`,
+    ),
+    check("event_images_background_color_check", sql`(background_color ~ '^#[0-9a-f]{6}$'::text)`),
+    foreignKey({
+      name: "event_images_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "event_images_set_id_fkey",
+      columns: [t.tenantId, t.setId],
+      foreignColumns: [eventImageSets.tenantId, eventImageSets.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const eventAnnouncements = pgTable(
+  "event_announcements",
+  {
+    tenantId: tenantId(),
+    id: uuid().primaryKey().defaultRandom(),
+    eventId: uuid().notNull(),
+    calendarIds: uuid().array(),
+    showTime: boolean()
+      .notNull()
+      .default(sql`true`),
+    showLocation: boolean().notNull().default(false),
+    showDescription: boolean().notNull().default(false),
+    titleNextWeek: text(),
+    titleThisMonth: text(),
+    titleNextMonth: text(),
+    snapshot: jsonb()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+    calendarStatus: jsonb()
+      .notNull()
+      .default(sql`'{}'::jsonb`),
+    refreshedAt: timestamptz(),
+    refreshStartedAt: timestamptz(),
+    createdAt: timestamptz().notNull().defaultNow(),
+    usedAt: timestamptz(),
+  },
+  (t) => [
+    ...tenantIndexes("event_announcements", t),
+    index("event_announcements_event_id_idx").on(t.eventId),
+    check("event_announcements_calendar_ids_check", sql`(cardinality(calendar_ids) <= 50)`),
+    check("event_announcements_snapshot_check", sql`(jsonb_typeof(snapshot) = 'array'::text)`),
+    check(
+      "event_announcements_calendar_status_check",
+      sql`(jsonb_typeof(calendar_status) = 'object'::text)`,
+    ),
+    check(
+      "event_announcements_title_next_week_check",
+      sql`((title_next_week = btrim(title_next_week)) AND ((char_length(title_next_week) >= 1) AND (char_length(title_next_week) <= 100)))`,
+    ),
+    check(
+      "event_announcements_title_this_month_check",
+      sql`((title_this_month = btrim(title_this_month)) AND ((char_length(title_this_month) >= 1) AND (char_length(title_this_month) <= 100)))`,
+    ),
+    check(
+      "event_announcements_title_next_month_check",
+      sql`((title_next_month = btrim(title_next_month)) AND ((char_length(title_next_month) >= 1) AND (char_length(title_next_month) <= 100)))`,
+    ),
+    foreignKey({
+      name: "event_announcements_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
+export const eventAnnouncementEntries = pgTable(
+  "event_announcement_entries",
+  {
+    tenantId: tenantId(),
+    id: uuid().primaryKey().defaultRandom(),
+    announcementId: uuid().notNull(),
+    calendarId: uuid(),
+    uid: text(),
+    occurrence: text(),
+    title: huText(),
+    startsAt: timestamptz(),
+    endsAt: timestamptz(),
+    startDate: date({ mode: "string" }),
+    endDate: date({ mode: "string" }),
+    location: text(),
+    description: text(),
+    position: integer(),
+    highlighted: boolean().notNull().default(false),
+    excluded: boolean().notNull().default(false),
+    showTime: boolean(),
+    showLocation: boolean(),
+    showDescription: boolean(),
+    attachmentSetId: uuid(),
+    qrText: text(),
+    qrCaption: text(),
+    textFirst: boolean().notNull().default(false),
+    createdAt: timestamptz().notNull().defaultNow(),
+    updatedAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    ...tenantIndexes("event_announcement_entries", t),
+    index("event_announcement_entries_announcement_idx").on(t.announcementId),
+    unique("event_announcement_entries_attachment_set_id_key").on(t.tenantId, t.attachmentSetId),
+    check(
+      "event_announcement_entries_kind_check",
+      sql`(CASE WHEN (calendar_id IS NOT NULL) THEN ((uid IS NOT NULL) AND (occurrence IS NOT NULL) AND (title IS NULL) AND (starts_at IS NULL) AND (ends_at IS NULL) AND (start_date IS NULL) AND (end_date IS NULL) AND (location IS NULL) AND (description IS NULL) AND ("position" IS NULL)) ELSE ((uid IS NULL) AND (occurrence IS NULL) AND (title IS NOT NULL) AND ("position" IS NOT NULL)) END)`,
+    ),
+    check(
+      "event_announcement_entries_date_check",
+      sql`((NOT ((starts_at IS NOT NULL) AND (start_date IS NOT NULL))) AND ((ends_at IS NULL) OR ((starts_at IS NOT NULL) AND (ends_at >= starts_at))) AND ((end_date IS NULL) OR ((start_date IS NOT NULL) AND (end_date >= start_date))))`,
+    ),
+    check(
+      "event_announcement_entries_undated_check",
+      sql`((calendar_id IS NOT NULL) OR (starts_at IS NOT NULL) OR (start_date IS NOT NULL) OR highlighted)`,
+    ),
+    check(
+      "event_announcement_entries_qr_check",
+      sql`((qr_caption IS NULL) OR (qr_text IS NOT NULL))`,
+    ),
+    check(
+      "event_announcement_entries_uid_check",
+      sql`((char_length(uid) >= 1) AND (char_length(uid) <= 1000))`,
+    ),
+    check(
+      "event_announcement_entries_occurrence_check",
+      sql`((char_length(occurrence) >= 1) AND (char_length(occurrence) <= 40))`,
+    ),
+    check(
+      "event_announcement_entries_title_check",
+      sql`((title = btrim(title)) AND ((char_length(title) >= 1) AND (char_length(title) <= 200)))`,
+    ),
+    check(
+      "event_announcement_entries_location_check",
+      sql`((location = btrim(location)) AND ((char_length(location) >= 1) AND (char_length(location) <= 500)))`,
+    ),
+    check(
+      "event_announcement_entries_description_check",
+      sql`((char_length(description) >= 1) AND (char_length(description) <= 2000))`,
+    ),
+    check("event_announcement_entries_position_check", sql`("position" >= 0)`),
+    check(
+      "event_announcement_entries_qr_text_check",
+      sql`((qr_text = btrim(qr_text)) AND ((char_length(qr_text) >= 1) AND (char_length(qr_text) <= 500)))`,
+    ),
+    check(
+      "event_announcement_entries_qr_caption_check",
+      sql`((qr_caption = btrim(qr_caption)) AND ((char_length(qr_caption) >= 1) AND (char_length(qr_caption) <= 200)))`,
+    ),
+    foreignKey({
+      name: "event_announcement_entries_announcement_id_fkey",
+      columns: [t.tenantId, t.announcementId],
+      foreignColumns: [eventAnnouncements.tenantId, eventAnnouncements.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "event_announcement_entries_calendar_id_fkey",
+      columns: [t.tenantId, t.calendarId],
+      foreignColumns: [announcementCalendars.tenantId, announcementCalendars.id],
     }).onDelete("cascade"),
   ],
 ).enableRLS();

@@ -41,31 +41,39 @@ export default async function EventsPage() {
       <PageHeader
         title={t.title}
         actions={
-          <>
-            <Link
-              href="/munkater/esemenyek/naptar"
-              className={buttonVariants({ variant: "outline" })}
-            >
-              {t.calendar.title}
+          canAdd ? (
+            <Link href="/munkater/esemenyek/uj" className={buttonVariants()}>
+              {t.add}
             </Link>
-            {(user.canEditEvents || user.leadsGroups) && (
-              <Link
-                href="/munkater/esemenyek/csoportok"
-                className={buttonVariants({ variant: "outline" })}
-              >
-                {t.groupsLink}
-              </Link>
-            )}
-            {canAdd && (
-              <Link href="/munkater/esemenyek/uj" className={buttonVariants()}>
-                {t.add}
-              </Link>
-            )}
-          </>
+          ) : undefined
         }
       />
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-6 sm:px-6">
         <p className="text-sm text-muted">{t.lead}</p>
+        <nav aria-label={t.title} className="flex flex-wrap gap-2">
+          <Link
+            href="/munkater/esemenyek/naptar"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            {t.calendar.title}
+          </Link>
+          {(user.canEditEvents || user.leadsGroups) && (
+            <Link
+              href="/munkater/esemenyek/csoportok"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              {t.groupsLink}
+            </Link>
+          )}
+          {user.isSuperadmin && (
+            <Link
+              href="/munkater/esemenyek/hirdetesek"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              {t.media.sourcesLink}
+            </Link>
+          )}
+        </nav>
         <EventList title={t.upcoming} empty={t.emptyUpcoming} events={upcoming} />
         <EventList title={t.past} empty={t.emptyPast} events={past.slice(0, 20)} />
       </div>

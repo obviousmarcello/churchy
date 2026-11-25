@@ -14,6 +14,11 @@ import { listPeople } from "@/server/music/models/profiles";
 import { ItemsPanel } from "./items-panel";
 import { TeamPanel } from "./team-panel";
 import { PlanLink } from "./plan-link";
+import { MediaPanel } from "./media-panel";
+import type { EventImageSetsDTO } from "@/lib/music/projection-images";
+import { listEventAnnouncements } from "@/server/music/models/announcements";
+import { listEventImageSetIds, listEventImageSets } from "@/server/music/models/event-images";
+import { isWorkspaceModuleOn } from "@/server/workspace-nav";
 import { getMemberEnv } from "@/server/workspace";
 import { canServer } from "@/lib/permissions/server";
 
@@ -69,6 +74,17 @@ export default async function EventPage({
     listPeople(),
   ]);
   const planInfo = await planOf(event.id);
+  const [imagesOn, announcementsOn] = await Promise.all([
+    isWorkspaceModuleOn("ws.music.events.images"),
+    isWorkspaceModuleOn("ws.music.events.announcements"),
+  ]);
+  const [setIds, imageSets, announcementData] = await Promise.all([
+    canEdit && imagesOn ? listEventImageSetIds(event.id) : [],
+    canEdit && imagesOn ? listEventImageSets(event.id) : ({} as EventImageSetsDTO),
+    canEdit && announcementsOn
+      ? listEventAnnouncements(event.id)
+      : { announcements: {}, calendars: [], excludeWords: [] },
+  ]);
   const editableAreaIds =
     editor === null
       ? []
@@ -136,6 +152,41 @@ export default async function EventPage({
           query={q}
           results={results}
         />
+        {canEdit && (imagesOn || announcementsOn) && (
+          <MediaPanel
+            eventId={event.id}
+            imagesOn={imagesOn}
+            announcementsOn={announcementsOn}
+            sets={setIds.map((id) => ({
+              id,
+              images: (imageSets[id] ?? []).map((image) => ({
+                id: image.id,
+                name: image.name,
+                url: image.url,
+              })),
+            }))}
+            announcements={Object.values(announcementData.announcements).map((announcement) => ({
+              id: announcement.id,
+              calendarIds: announcement.calendarIds,
+              refreshedAt: announcement.refreshedAt,
+              snapshot: announcement.snapshot.map((entry) => ({
+                calendarId: entry.calendarId,
+                uid: entry.uid,
+                occurrence: entry.occurrence,
+                title: entry.title,
+              })),
+              excluded: announcement.entries.flatMap((entry) =>
+                entry.source === "calendar" && entry.excluded
+                  ? [`${entry.calendarId}|${entry.uid}|${entry.occurrence}`]
+                  : [],
+              ),
+              manual: announcement.entries.flatMap((entry) =>
+                entry.source === "manual" ? [{ id: entry.id, title: entry.title }] : [],
+              ),
+            }))}
+            calendars={announcementData.calendars}
+          />
+        )}
         <PlanLink eventId={event.id} planId={planInfo.planId} canCreate={planInfo.canCreate} />
         <TeamPanel
           eventId={event.id}

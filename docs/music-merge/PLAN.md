@@ -613,3 +613,20 @@ copy_event, 4b-2 editor + images + announcements, 4b-3 feed, sync wiring, statis
   schedule that are not linked to a music event are not counted (needs a plan read grant for the music role: open question).
 - `my-setlists` (per-slot personal data of the event sheet) and the realtime part of event sync are not copied.
 
+### 4c (done): event images, announcements, my-setlists
+- Migration `0016_music_images_announcements` (+ down): `event_image_sets`, `event_images`, `event_announcements`,
+  `event_announcement_entries`; 14 functions (images, announcements, `church_day` = Europe/Budapest), `set_event_items` and
+  `copy_event` replaced (image sets and announcements are copied, `p_files` maps the old image paths to the copies in Storage);
+  triggers (stray files bucket `event-images`, "used" marks, updated_at, calendar removal from snapshots).
+- Models: `event-images.ts` (server-side WebP conversion with `sharp`, as the song images), `announcements.ts` (calendar read with
+  `ical.js` and the SSRF guard `lib/music/public-address.ts`), `announcement-calendars.ts`, `my-setlists.ts` (personal view of an
+  event's items; embeds replaced by reads by item id). Libs `lib/music/announcements/*`, `projection-images.ts`. Dependency:
+  `ical.js` 2.2.1 (announcement calendars; the music app used the same version).
+- `copyEvent` copies image files first and `deleteEvent` removes them; `?item=<id>` of the chord sheet plays one slot with the user's
+  key (my-setlists).
+- UI on the event page: image sets (upload, remove) and announcements (calendars, read now, exclude entries, manual entries) as
+  program points; `/munkater/esemenyek/hirdetesek` (calendar sources, superadmins). Modules `ws.music.events.images` and
+  `.announcements` (children of `ws.music.events`, default off). Route `/munkater/esemenyek/fajl/kep/...` serves the images.
+- Left for the projection phase: `present.ts` (announcement slides) and the image adjust editor; per-slot annotations of
+  `my-setlists` on the sheet.
+

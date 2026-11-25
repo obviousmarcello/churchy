@@ -5,6 +5,7 @@ import { firstParam } from "@/lib/music/song-filters";
 import { requirePageUser } from "@/server/music/auth";
 import { requireWorkspaceModule } from "@/server/workspace-nav";
 import { getEvent, getEventDetail } from "@/server/music/models/events";
+import { getMySetlistItem } from "@/server/music/models/my-setlists";
 import { loadSheetPage } from "./data";
 import { SheetView } from "./sheet-view";
 
@@ -19,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 //   chart),
 // - `?song=<id>`: the song's default arrangement.
 // Each song shows with the signed-in user's capo, key, layout and marks for its arrangement.
+// - `?item=<setlist item id>`: one song of an event, in the key of its slot (`my-setlists`).
 // - `?event=<id>`: the songs of an event, in its order and keys (phase 4; the per-slot annotations
 //   of the music app stay with the arrangement for now).
 // `from` is the page that the close button goes back to. Live sessions (`?session=`) come with the
@@ -43,6 +45,14 @@ export default async function SheetPage({
       key: songs.map((item) => item.musicalKey ?? ""),
       from: params.from ?? `/munkater/esemenyek/${eventId}`,
     };
+  }
+  const itemId = firstParam(params.item);
+  if (itemId !== undefined) {
+    // One program point of an event (a song) with the user's own settings for it.
+    const item = await getMySetlistItem(itemId);
+    if (item?.kind === "song") {
+      params = { ...params, arrangement: [item.arrangement.id], key: [item.slotKey ?? ""] };
+    }
   }
   return <SheetView result={await loadSheetPage(user, params)} from={firstParam(params.from)} />;
 }

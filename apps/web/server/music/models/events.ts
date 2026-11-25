@@ -19,6 +19,14 @@ import {
   visibleEventsFilter,
   withFilter,
 } from "./event-access";
+import { readAttachmentSetIds } from "./announcements";
+import {
+  copyEventImageFiles,
+  listEventImagePaths,
+  listSetImagePaths,
+  removeEventImageFiles,
+  removeUntakenCopies,
+} from "./event-images";
 import {
   readSetlistItems,
   setlistItemsInputSchema,
@@ -322,8 +330,11 @@ export async function updateEvent(id: string, patch: EventPatchInput): Promise<E
 /** Deletes an event (with its changed occurrences). False when it is not there. */
 export async function deleteEvent(id: string): Promise<boolean> {
   if ((await requireEventAdminOf(id)) === null) return false;
+  // The files go after the rows (a stray-file row keeps them if this stops in between).
+  const paths = await listEventImagePaths(id);
   const { error } = await (await getMusicSupabase()).from("events").delete().eq("id", id);
   if (error) throw databaseError("delete an event", error);
+  await removeEventImageFiles(paths);
   return true;
 }
 
@@ -627,6 +638,20 @@ export async function copyEvent(sourceId: string, input: CopyEventInput): Promis
   await checkAreaRights(user, copy.areaIds, source.areaIds);
   const startsAt = iso(copy.startsAt);
   const id = randomUUID();
+  // The images of the image items and of the announcements go with the items: first copies of their
+  // files, in the folder of the new event.
+  let files: Record<string, string> = {};
+  if (copy.copyItems) {
+    const detail = await getEventDetail(sourceId);
+    const textItems = (detail?.items ?? []).flatMap((item) => (item.kind === "text" ? [item] : []));
+    const setIds = [
+      ...textItems.flatMap((item) => (item.imageSetId ? [item.imageSetId] : [])),
+      ...(await readAttachmentSetIds(
+        textItems.flatMap((item) => (item.announcementId ? [item.announcementId] : [])),
+      )),
+    ];
+    files = await copyEventImageFiles(id, await listSetImagePaths(setIds));
+  }
   const { data, error } = await (
     await getMusicSupabase()
   ).rpc("copy_event", {
@@ -638,12 +663,13 @@ export async function copyEvent(sourceId: string, input: CopyEventInput): Promis
     p_youtube_url: copy.youtubeUrl,
     p_copy_items: copy.copyItems,
     p_copy_volunteers: copy.copyVolunteers,
-    p_files: null,
+    p_files: files,
     p_is_private: copy.isPrivate,
     p_created_by: user.id,
     p_area_ids: copy.areaIds ?? null,
   });
   if (error) throw databaseError("copy an event", error);
   if (data === null) return null;
+  await removeUntakenCopies(id, files);
   return getEvent(id);
 }

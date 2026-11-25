@@ -30,6 +30,8 @@ const S50: readonly WorkspaceModuleKey[] = [
   "ws.music.sheet.marks",
   "ws.music.sheet.chord-diagrams",
   "ws.music.events",
+  "ws.music.events.images",
+  "ws.music.events.announcements",
 ];
 const M150: readonly WorkspaceModuleKey[] = [...S50, "ws.hr.confidential", "ws.docs"];
 const L300: readonly WorkspaceModuleKey[] = [...M150, "ws.board"];

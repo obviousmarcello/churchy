@@ -113,6 +113,13 @@
       "when": 1795597060597,
       "tag": "0015_music_areas",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1795600318407,
+      "tag": "0016_music_images_announcements",
+      "breakpoints": true
     }
   ]
 }

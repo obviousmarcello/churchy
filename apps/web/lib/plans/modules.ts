@@ -110,6 +110,8 @@ const WORKSPACE_IDS = {
   "ws.music.sheet.marks": "music_sheet_marks",
   "ws.music.sheet.chord-diagrams": "music_sheet_chord_diagrams",
   "ws.music.events": "music_events",
+  "ws.music.events.images": "music_events_images",
+  "ws.music.events.announcements": "music_events_announcements",
 } as const satisfies Record<WorkspaceModuleKey, string>;
 export type WorkspaceModuleId = (typeof WORKSPACE_IDS)[WorkspaceModuleKey];
 export const workspaceModuleId = (key: WorkspaceModuleKey): WorkspaceModuleId => WORKSPACE_IDS[key];
