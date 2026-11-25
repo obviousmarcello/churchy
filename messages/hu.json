@@ -3306,6 +3306,14 @@
           "music_events": {
             "title": "Zenei események",
             "help": "Próbák és alkalmak énekrenddel, ismétlődéssel és privát eseményekkel."
+          },
+          "music_events_images": {
+            "title": "Képek az eseményeken",
+            "help": "Vetíthető képek az énekrend programpontjaiként."
+          },
+          "music_events_announcements": {
+            "title": "Hirdetések az eseményeken",
+            "help": "Naptárakból összeállított hirdetések az énekrendben."
           }
         }
       },
@@ -3418,7 +3426,9 @@
           "music_sheet_midi_out": "MIDI-óra (munkatér)",
           "music_sheet_marks": "Rajzok az akkordlapon (munkatér)",
           "music_sheet_chord_diagrams": "Akkordábrák (munkatér)",
-          "music_events": "Zenei események (munkatér)"
+          "music_events": "Zenei események (munkatér)",
+          "music_events_images": "Képek az eseményeken (munkatér)",
+          "music_events_announcements": "Hirdetések az eseményeken (munkatér)"
         }
       },
       "catalog": {
@@ -6357,6 +6367,43 @@
         "open": "Terv megnyitása",
         "failed": "A tervet most nem sikerült létrehozni.",
         "hint": "A dalok két irányban követik egymást: ami az egyik oldalon változik, a másikon is."
+      },
+      "media": {
+        "failed": "Nem sikerült menteni.",
+        "imagesTitle": "Képek",
+        "imagesEmpty": "Még nincs képkészlet.",
+        "newSet": "Új képkészlet",
+        "setTitle": "A programpont neve",
+        "upload": "Kép feltöltése",
+        "imageName": "Kép neve (nem kötelező)",
+        "removeImage": "Kép törlése",
+        "imageAlt": "Feltöltött kép",
+        "announcementsTitle": "Hirdetések",
+        "announcementsEmpty": "Még nincs hirdetés.",
+        "newAnnouncement": "Új hirdetés",
+        "announcementTitle": "A programpont neve",
+        "calendars": "Naptárak",
+        "noCalendars": "Még nincs bekapcsolt naptár.",
+        "refresh": "Olvasás most",
+        "save": "Mentés",
+        "entries": "A naptárak bejegyzései",
+        "noEntries": "Nincs bejegyzés.",
+        "exclude": "Kihagy",
+        "include": "Visszavesz",
+        "manual": "Saját bejegyzés",
+        "manualTitle": "Cím",
+        "manualDate": "Nap",
+        "manualAdd": "Hozzáadás",
+        "removeEntry": "Törlés",
+        "lastRead": "Utolsó olvasás: {time}",
+        "never": "Még nem olvastuk.",
+        "sourcesTitle": "Hirdetési naptárak",
+        "sourcesLead": "Nyilvános naptárak (.ics, https), amelyekből a hirdetések készülnek.",
+        "sourceName": "Név",
+        "sourceUrl": "Naptár címe (https)",
+        "sourceAdd": "Naptár hozzáadása",
+        "sourceDelete": "Törlés",
+        "sourcesLink": "Hirdetési naptárak"
       }
     },
     "groups": {

@@ -150,3 +150,48 @@ test("a user turns the calendar feed on with consent and gets a private link", a
   await page.getByRole("button", { name: "Kikapcsolás" }).click();
   await expect(page.getByText("A naptár ki van kapcsolva.")).toBeVisible();
 });
+
+// A 1x1 PNG.
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+  "base64",
+);
+
+test("an event gets an image set and an announcement as program points", async ({ page }) => {
+  await asMusicLeader(page, "/munkater/esemenyek/uj");
+  await page.getByLabel("Név").fill("Képes alkalom");
+  await page.getByLabel("Kezdés").fill("2031-07-06T10:00");
+  await page.getByRole("button", { name: "Esemény létrehozása" }).click();
+  await expect(page.getByRole("heading", { level: 2, name: "Képek" })).toBeVisible();
+
+  await page.getByPlaceholder("A programpont neve").first().fill("Hírek képekben");
+  await page.getByRole("button", { name: "Új képkészlet" }).click();
+  await expect(page.getByRole("listitem").filter({ hasText: "Hírek képekben" })).toBeVisible();
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({ name: "kep.png", mimeType: "image/png", buffer: PNG });
+  await page.locator('button[type="submit"]', { hasText: "Kép feltöltése" }).click();
+  await expect(page.getByRole("img", { name: /Kép/ }).first()).toBeVisible({ timeout: 20_000 });
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+
+  await page.getByPlaceholder("A programpont neve").last().fill("Hirdetések");
+  await page.getByRole("button", { name: "Új hirdetés" }).click();
+  await expect(page.getByText("Nincs bejegyzés.")).toBeVisible();
+  await page.getByLabel("Cím", { exact: true }).fill("Takarítás");
+  await page.getByLabel("Nap").fill("2031-07-10");
+  await page.getByRole("button", { name: "Hozzáadás" }).last().click();
+  await expect(page.getByRole("listitem").filter({ hasText: "Takarítás" })).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+});
+
+test("a superadmin manages the announcement calendars", async ({ page }) => {
+  await asMusicLeader(page, "/munkater/esemenyek/hirdetesek");
+  await page.getByLabel("Név").fill("Plébánia");
+  await page.getByLabel("Naptár címe (https)").fill("https://example.com/plebania.ics");
+  await page.getByRole("button", { name: "Naptár hozzáadása" }).click();
+  await expect(page.getByRole("listitem").filter({ hasText: "Plébánia" })).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+  await page.getByRole("button", { name: "Törlés" }).click();
+  await expect(page.getByRole("listitem").filter({ hasText: "Plébánia" })).toHaveCount(0);
+});

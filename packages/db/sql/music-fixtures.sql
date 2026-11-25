@@ -12,6 +12,8 @@ DECLARE
   item uuid := gen_random_uuid();
   blk uuid := gen_random_uuid();
   evcal uuid;
+  imgset uuid := gen_random_uuid();
+  ann uuid := gen_random_uuid();
   area_root uuid := gen_random_uuid();
   area uuid := gen_random_uuid();
   tpl uuid := gen_random_uuid();
@@ -65,6 +67,16 @@ BEGIN
     SELECT t, e.id, 'Érkezés 16:00' FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
   INSERT INTO setlist_item_volunteers (tenant_id, setlist_item_id, event_id, user_id)
     SELECT t, item, e.id, u FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  -- Event images and announcements (phase 4c).
+  INSERT INTO event_image_sets (tenant_id, id, event_id)
+    SELECT t, imgset, e.id FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO event_images (tenant_id, event_id, set_id, position, name, path, width, height, size_bytes)
+    SELECT t, e.id, imgset, 1, 'Kép', gen_random_uuid() || '/' || gen_random_uuid() || '.webp', 800, 600, 1000
+    FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO event_announcements (tenant_id, id, event_id)
+    SELECT t, ann, e.id FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO event_announcement_entries (tenant_id, announcement_id, title, position, highlighted)
+    VALUES (t, ann, 'Hirdetés', 0, true);
   INSERT INTO setlist_item_durations (tenant_id, setlist_item_id, seconds) VALUES (t, item, 240);
   INSERT INTO setlist_item_themes (tenant_id, setlist_item_id, theme_id) VALUES (t, item, theme);
   INSERT INTO annotations (tenant_id, user_id, song_id, body) VALUES (t, u, song, 'Lassabban');

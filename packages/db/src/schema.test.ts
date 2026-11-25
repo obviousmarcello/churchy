@@ -181,6 +181,7 @@ describe("migrations", () => {
       "0013_music_stats",
       "0014_events_tenant_default",
       "0015_music_areas",
+      "0016_music_images_announcements",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);
@@ -194,6 +195,7 @@ describe("migrations", () => {
       readDownMigration("0006_music_schema"),
       readDownMigration("0012_music_setlists"),
       readDownMigration("0015_music_areas"),
+      readDownMigration("0016_music_images_announcements"),
       readDownMigration("0001_schema"),
     ]
       .flat()
@@ -221,6 +223,7 @@ describe("migrations", () => {
       .map((e) => readFileSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`, "utf8"))
       .join("\n");
     const down = [
+      readDownMigration("0016_music_images_announcements"),
       readDownMigration("0015_music_areas"),
       readDownMigration("0012_music_setlists"),
       readDownMigration("0008_music_songs"),

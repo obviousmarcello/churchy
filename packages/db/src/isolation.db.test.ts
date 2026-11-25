@@ -12,7 +12,7 @@
  * With REQUIRE_TEST_DATABASE=1 (CI, `pnpm test:isolation`) a missing TEST_DATABASE_URL fails the
  * run instead of skipping it.
  */
-import { createCipheriv, randomBytes } from "node:crypto";
+import { createCipheriv, randomBytes, randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { DEMO_TENANT_IDS } from "@churchy/data-mock";
@@ -855,6 +855,95 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
             await c.query(
               "select 1 from setlist_items i join events e on e.setlist_id = i.setlist_id where e.id = $1",
               [copy],
+            )
+          ).rowCount,
+        ).toBe(2);
+        await c.query("set constraints all immediate");
+      });
+    });
+
+    it("images and announcements: items hold a set and an announcement; copy_event copies both", async () => {
+      const uuid = () => randomUUID();
+      await asMusic(A, async (c) => {
+        const cal = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        const ev = (
+          await c.query<{ id: string }>(
+            `insert into events (calendar_id, visibility, slug, title, starts_at, ends_at, status)
+             values ('${cal}', 'staff', 'media-${uuid()}', 'Képes alkalom', now() + interval '3 days',
+                     now() + interval '3 days 90 minutes', 'published') returning id`,
+          )
+        ).rows[0]!.id;
+        const set = (
+          await c.query<{ id: string }>(
+            "insert into event_image_sets (event_id) values ($1) returning id",
+            [ev],
+          )
+        ).rows[0]!.id;
+        const path = `${ev}/${uuid()}.webp`;
+        await c.query("select public.add_event_image($1, 'Kép', $2, 800, 600, 1000, 20, null)", [
+          set,
+          path,
+        ]);
+        const ann = (
+          await c.query<{ id: string }>(
+            "insert into event_announcements (event_id) values ($1) returning id",
+            [ev],
+          )
+        ).rows[0]!.id;
+        await c.query(
+          "insert into event_announcement_entries (announcement_id, title, position, highlighted) values ($1, 'Hirdetés', 0, true)",
+          [ann],
+        );
+        const saved = (
+          await c.query("select public.set_event_items($1, $2::jsonb, null, false) as r", [
+            ev,
+            JSON.stringify([
+              { title: "Képek", image_set_id: set },
+              { title: "Hirdetések", announcement_id: ann },
+            ]),
+          ])
+        ).rows[0]!.r;
+        expect(saved.status).toBe("saved");
+        // The set of another event is refused.
+        const other = (
+          await c.query<{ id: string }>(
+            `insert into events (calendar_id, visibility, slug, title, starts_at, ends_at, status)
+             values ('${cal}', 'staff', 'media-${uuid()}', 'Másik', now() + interval '4 days',
+                     now() + interval '4 days 90 minutes', 'published') returning id`,
+          )
+        ).rows[0]!.id;
+        await c.query("savepoint refused");
+        await expect(
+          c.query("select public.set_event_items($1, $2::jsonb, null, false)", [
+            other,
+            JSON.stringify([{ title: "Képek", image_set_id: set }]),
+          ]),
+        ).rejects.toMatchObject({ code: "P0001" });
+        await c.query("rollback to savepoint refused");
+        // copy_event: the files map gives the new paths (in the copy's folder).
+        const copyId = uuid();
+        const files = { [path]: `${copyId}/${uuid()}.webp` };
+        await c.query(
+          "select public.copy_event($1, $2, 'Másolat', now() + interval '10 days', 90, null, true, false, $3::jsonb)",
+          [copyId, ev, JSON.stringify(files)],
+        );
+        expect(
+          (await c.query("select 1 from event_images where event_id = $1", [copyId])).rowCount,
+        ).toBe(1);
+        expect(
+          (
+            await c.query(
+              "select 1 from event_announcement_entries e join event_announcements a on a.id = e.announcement_id where a.event_id = $1",
+              [copyId],
+            )
+          ).rowCount,
+        ).toBe(1);
+        expect(
+          (
+            await c.query(
+              "select 1 from setlist_items i join events e on e.setlist_id = i.setlist_id where e.id = $1",
+              [copyId],
             )
           ).rowCount,
         ).toBe(2);

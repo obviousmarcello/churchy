@@ -66,6 +66,8 @@ const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
   "ws.music.sheet.marks",
   "ws.music.sheet.chord-diagrams",
   "ws.music.events",
+  "ws.music.events.images",
+  "ws.music.events.announcements",
 ];
 
 export function buildTenant(b: Build): void {
