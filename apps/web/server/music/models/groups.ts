@@ -97,6 +97,9 @@ const GROUP_ERRORS = {
 
 /** All groups in the order of their siblings. The caller checks the rights. */
 export async function listGroups(): Promise<GroupDTO[]> {
+  // The root group exists from the first use of the groups (music_root_area_id() creates it).
+  const ensured = await (await getMusicSupabase()).rpc("music_root_area_id");
+  if (ensured.error) throw databaseError("find the root group", ensured.error);
   const { data, error } = await (
     await getMusicSupabase()
   )

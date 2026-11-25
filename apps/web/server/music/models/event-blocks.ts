@@ -8,10 +8,11 @@ import {
   type EventBlock,
 } from "@/lib/music/event-blocks";
 import { EVENT_ITEM_DURATION_MAX_SECONDS } from "@/lib/music/event-timing";
-import { requireEventAdmin, requireUser } from "@/server/music/auth";
+import { requireUser } from "@/server/music/auth";
 import { getMusicSupabase } from "@/server/music/db";
 import { ConflictError } from "@/server/music/errors";
 import { zodMessage } from "@/server/music/zod-i18n";
+import { requireEventAdminOf } from "./event-access";
 import { databaseError, idSchema, isId, parseInput, requiredText } from "./shared";
 
 // The blocks of the items of an event: a name for some adjacent items, with
@@ -89,8 +90,7 @@ function detailsArguments(details: z.output<typeof blockDetailsSchema>) {
  * if there is no such event, or the user cannot see it.
  */
 export async function createEventBlock(eventId: string, input: unknown): Promise<string | null> {
-  await requireEventAdmin();
-  if (!isId(eventId)) return null;
+  if ((await requireEventAdminOf(eventId)) === null) return null;
   const { itemKeys, details } = parseInput(newBlockInputSchema, input);
 
   const { data, error } = await (
@@ -128,8 +128,7 @@ export async function updateEventBlock(
   key: string,
   input: unknown,
 ): Promise<boolean> {
-  await requireEventAdmin();
-  if (!isId(eventId) || !isId(key)) return false;
+  if (!isId(key) || (await requireEventAdminOf(eventId)) === null) return false;
   const details = parseInput(blockDetailsSchema, input);
 
   const { data, error } = await (
@@ -146,8 +145,7 @@ export async function updateEventBlock(
 
 /** "Remove block": the block goes away, its items stay. False if there is no such block, or the user cannot see the event. */
 export async function deleteEventBlock(eventId: string, key: string): Promise<boolean> {
-  await requireEventAdmin();
-  if (!isId(eventId) || !isId(key)) return false;
+  if (!isId(key) || (await requireEventAdminOf(eventId)) === null) return false;
 
   const { data, error } = await (
     await getMusicSupabase()

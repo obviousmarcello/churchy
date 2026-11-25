@@ -4,7 +4,8 @@ import { cache } from "react";
 import { z } from "zod";
 
 import type { GroupRights } from "@/lib/music/groups";
-import { requireEventAdmin, requireGroupManager, type CurrentUser } from "@/server/music/auth";
+import { requireGroupManager, requireUser, type CurrentUser } from "@/server/music/auth";
+import { ForbiddenError } from "@/server/music/errors";
 import { getMusicSupabase } from "@/server/music/db";
 import { groupRightsOf } from "./groups";
 import { databaseError, isId } from "./shared";
@@ -33,8 +34,20 @@ export const canSeeEvent = cache(
  * throws, or null when the user cannot see the event or there is no such event.
  */
 export async function requireEventAdminOf(eventId: string): Promise<CurrentUser | null> {
-  const user = await requireEventAdmin();
-  return (await canSeeEvent(user.id, eventId, user.canEditEvents)) ? user : null;
+  const user = await requireUser();
+  if (!isId(eventId)) return null;
+  const { data, error } = await (
+    await getMusicSupabase()
+  )
+    .from("events")
+    .select("area_ids")
+    .eq("id", eventId)
+    .maybeSingle();
+  if (error) throw databaseError("read event areas", error);
+  if (data === null || !(await canSeeEvent(user.id, eventId, user.canEditEvents))) return null;
+  if (!(await user.canManageIn("event", z.array(z.string()).parse(data.area_ids))))
+    throw new ForbiddenError();
+  return user;
 }
 
 /**

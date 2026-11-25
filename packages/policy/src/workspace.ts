@@ -1,12 +1,13 @@
 import type {
   CalendarEventResource,
   DirectoryPersonResource,
+  MusicAreaResource,
   Resource,
   RoomResource,
   ServicePlanResource,
   WorkspaceTenantAction,
 } from "./actions";
-import type { TenantActor } from "./actor";
+import type { MusicAreaRole, TenantActor } from "./actor";
 import type { Decision, MatrixRow } from "./decision";
 import { allow, deny, evaluateRow, indexRows } from "./decision";
 import type { WorkspaceRole } from "./roles";
@@ -145,6 +146,11 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: { leader: "all", musicLeader: "all" },
   },
   {
+    capability: "Music: manage the music areas (groups) and event teams",
+    actions: ["music.group.manage"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
     capability: "Music: manage songs and arrangements",
     actions: ["music.song.manage"],
     grants: { leader: "all", musicLeader: "all" },
@@ -260,6 +266,27 @@ function evaluateCalendarEvent(actor: TenantActor, event: CalendarEventResource)
   }
 }
 
+/** Music actions that an area role grants, within the areas of the resource. */
+const AREA_ROLE_ACTIONS: Readonly<Record<string, readonly MusicAreaRole[]>> = {
+  "music.song.manage": ["song_admin", "music_leader"],
+  "music.event.manage": ["event_admin", "music_leader"],
+};
+
+function evaluateMusicAreaRoles(
+  actor: TenantActor,
+  action: string,
+  resource: MusicAreaResource,
+): Decision | null {
+  const roles = AREA_ROLE_ACTIONS[action];
+  if (roles === undefined || resource.areaIds === undefined) return null;
+  const grant = actor.musicAreaGrants?.find(
+    (g) => resource.areaIds!.includes(g.areaId) && g.roles.some((role) => roles.includes(role)),
+  );
+  return grant === undefined
+    ? null
+    : allow(`a music area role (${grant.roles.join(", ")}) grants ${action}`);
+}
+
 /** Workspace capabilities (SDD §21.2, non-HR rows) for a tenant actor in the resource's tenant. */
 export function evaluateWorkspace(
   actor: TenantActor,
@@ -269,5 +296,7 @@ export function evaluateWorkspace(
   if (action === "calendarEvent.create") {
     return evaluateCalendarEvent(actor, resource as CalendarEventResource);
   }
-  return evaluateMatrix(actor, action, resource);
+  const decision = evaluateMatrix(actor, action, resource);
+  if (decision.allowed) return decision;
+  return evaluateMusicAreaRoles(actor, action, resource as MusicAreaResource) ?? decision;
 }

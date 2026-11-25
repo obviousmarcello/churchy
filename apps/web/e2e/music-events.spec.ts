@@ -73,3 +73,39 @@ test("a role without music.event.manage sees events but no edit controls", async
   await page.goto("/munkater/esemenyek/uj");
   await expect(page.getByText(/nem található|404/i).first()).toBeVisible();
 });
+
+test("groups and the team of an event", async ({ page }) => {
+  await asMusicLeader(page, "/munkater/esemenyek/csoportok");
+  await expect(page.getByRole("heading", { level: 1, name: "Csoportok" })).toBeVisible();
+  await page.getByPlaceholder("Csoport neve").fill("Énekkar");
+  await page.getByRole("button", { name: "Létrehozás" }).click();
+  await expect(page.getByRole("listitem").filter({ hasText: "Énekkar" })).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+
+  // A member of the new group.
+  await page
+    .getByRole("listitem")
+    .filter({ hasText: "Énekkar" })
+    .getByRole("button", { name: /Tagok/ })
+    .click();
+  await page.getByRole("checkbox").first().check();
+  await page.getByRole("button", { name: "Tagok mentése" }).click();
+  await expect(
+    page
+      .getByRole("listitem")
+      .filter({ hasText: "Énekkar" })
+      .getByRole("button", { name: "Tagok (1)" }),
+  ).toBeVisible();
+
+  // The team of an event: the area gets that person.
+  await page.goto("/munkater/esemenyek/uj");
+  await page.getByLabel("Név").fill("Csapatos alkalom");
+  await page.getByLabel("Kezdés").fill("2031-05-04T10:00");
+  await page.getByRole("button", { name: "Esemény létrehozása" }).click();
+  await expect(page.getByRole("heading", { level: 2, name: "Csapat" })).toBeVisible();
+  await page.getByLabel("Terület").selectOption({ label: "Énekkar" });
+  await page.getByRole("group", { name: "Emberek" }).getByRole("checkbox").first().check();
+  await page.getByRole("button", { name: "Csapat mentése" }).click();
+  await expect(page.getByText(/^Énekkar:/)).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+});

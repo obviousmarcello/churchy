@@ -9,7 +9,10 @@ import { getI18n } from "@/i18n/music/server";
 import { requireEventsPageUser } from "@/server/music/auth";
 import { getEventDetail } from "@/server/music/models/events";
 import { findSongs } from "@/server/music/models/songs";
+import { getEventTeams, getMyReply, getTeamEditor } from "@/server/music/models/event-teams";
+import { listPeople } from "@/server/music/models/profiles";
 import { ItemsPanel } from "./items-panel";
+import { TeamPanel } from "./team-panel";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { m } = await getI18n();
@@ -55,6 +58,18 @@ export default async function EventPage({
         }))
       : [];
 
+  const [teams, editor, myReply, people] = await Promise.all([
+    getEventTeams(event.id),
+    getTeamEditor(),
+    getMyReply(event.id),
+    listPeople(),
+  ]);
+  const editableAreaIds =
+    editor === null
+      ? []
+      : editor.editable === "all"
+        ? editor.areas.map((area) => area.id)
+        : editor.editable;
   return (
     <main className="flex flex-1 flex-col">
       <PageHeader
@@ -115,6 +130,14 @@ export default async function EventPage({
           canEdit={user.canEditEvents}
           query={q}
           results={results}
+        />
+        <TeamPanel
+          eventId={event.id}
+          teams={teams.teams}
+          people={people.map((person) => ({ id: person.id, name: person.name }))}
+          areas={editor?.areas ?? []}
+          editableAreaIds={editableAreaIds}
+          myReply={myReply}
         />
       </div>
     </main>

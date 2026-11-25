@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { can } from "@churchy/policy";
 import { getActor } from "@/server/session";
 import { isWorkspaceModuleOn, requireWorkspaceModule } from "@/server/workspace-nav";
+import { loadAreaGrants } from "./area-grants";
 import { getMusicSupabase, musicUserId } from "./db";
 import { ForbiddenError, UnauthorizedError } from "./errors";
 
@@ -27,6 +28,11 @@ export type CurrentUser = {
   canEditSongs: boolean;
   /** `music.event.manage` (leader, music leader): sees and changes all music events. */
   canEditEvents: boolean;
+  /**
+   * Whether the user may manage events (or songs, with `"song"`) of these areas: the tenant-wide
+   * permission, or an area role (`music.event.manage` / `music.song.manage` with area context).
+   */
+  canManageIn: (kind: "event" | "song", areaIds: readonly string[]) => Promise<boolean>;
   /** Leads a music area (a leader of an area may manage its team). */
   leadsGroups: boolean;
 };
@@ -63,6 +69,13 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     canEditSongs: can(actor, "music.song.manage", resource),
     canEditEvents: can(actor, "music.event.manage", resource),
     leadsGroups: await leadsAnyGroup(musicUserId(actor.userId)),
+    canManageIn: async (kind, areaIds) => {
+      const action = kind === "event" ? "music.event.manage" : "music.song.manage";
+      if (can(actor, action, resource)) return true;
+      if (areaIds.length === 0) return false;
+      const grants = await loadAreaGrants(musicUserId(actor.userId!));
+      return can({ ...actor, musicAreaGrants: grants }, action, { ...resource, areaIds });
+    },
   };
 });
 
@@ -92,6 +105,13 @@ export async function requireEventsPageUser(): Promise<CurrentUser> {
   await requireWorkspaceModule("ws.music.events");
   const user = await getCurrentUser();
   if (!user) notFound();
+  return user;
+}
+
+/** May manage events of these areas (tenant-wide permission or an area role): else `ForbiddenError`. */
+export async function requireEventAdminIn(areaIds: readonly string[]): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!(await user.canManageIn("event", areaIds))) throw new ForbiddenError();
   return user;
 }
 

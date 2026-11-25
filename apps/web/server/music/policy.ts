@@ -1,6 +1,10 @@
 import "server-only";
 
 import type { PolicyScope } from "@/server/policy";
+import { setPolicyActorEnricher } from "@/server/policy";
+import { loadAreaGrants } from "./area-grants";
+import { getEvent } from "./models/events";
+import { musicUserId } from "./db";
 import { getRequestContext } from "@/server/session";
 import { isWorkspaceModuleOn } from "@/server/workspace-nav";
 
@@ -45,4 +49,36 @@ export async function musicEvents(
   const tenant = await musicTenant(scope, ...args);
   if (tenant === null) return null;
   return (await isWorkspaceModuleOn("ws.music.events")) ? tenant : null;
+}
+
+// Area roles: for a music action whose resource names areas, `can()` also sees the roles that
+// the actor's music areas give (loaded once per request and user).
+setPolicyActorEnricher(async (actor, resource) => {
+  if (actor.kind !== "tenant" || actor.userId === null || !("areaIds" in resource)) return actor;
+  try {
+    return { ...actor, musicAreaGrants: await loadAreaGrants(musicUserId(actor.userId)) };
+  } catch {
+    return actor;
+  }
+});
+
+/**
+ * Resolver of an event action that names the event (an `id` form field, or a first string
+ * argument): the tenant and the areas of the event, so area roles can apply. An event the actor
+ * cannot see resolves to `null` (404). Without an id (a new event) the areas come from `areaIds` fields.
+ */
+export async function musicEventIn(
+  scope: PolicyScope,
+  ...args: unknown[]
+): Promise<{ tenantId: string; areaIds?: string[] } | null> {
+  const tenant = await musicEvents(scope, ...args);
+  if (tenant === null) return null;
+  const form = args.find((arg): arg is FormData => arg instanceof FormData);
+  const id = typeof args[0] === "string" ? args[0] : form?.get("id");
+  if (typeof id !== "string" || id === "") {
+    const areaIds = form?.getAll("areaIds").map(String);
+    return areaIds && areaIds.length > 0 ? { ...tenant, areaIds } : tenant;
+  }
+  const event = await getEvent(id);
+  return event === null ? null : { ...tenant, areaIds: event.areaIds };
 }

@@ -6315,7 +6315,39 @@
       "errors": {
         "saveFailed": "Nem sikerült menteni az eseményt.",
         "notFound": "Ez az esemény már nem létezik."
-      }
+      },
+      "team": {
+        "title": "Csapat",
+        "empty": "Még nincs csapat.",
+        "note": "Megjegyzés",
+        "saved": "Mentve.",
+        "area": "Terület",
+        "people": "Emberek",
+        "save": "Csapat mentése",
+        "noPeople": "Nincs kiválasztható ember.",
+        "myReply": "Tudsz jönni?",
+        "yes": "Igen",
+        "maybe": "Talán",
+        "no": "Nem",
+        "replied": "A válaszod: {reply}",
+        "failed": "Nem sikerült menteni a csapatot."
+      },
+      "groupsLink": "Csoportok"
+    },
+    "groups": {
+      "title": "Csoportok",
+      "lead": "A zenei szolgálat csoportjai fában. Egy tag a fölötte lévő csoportoknak is tagja.",
+      "empty": "Még nincs csoport.",
+      "add": "Új csoport",
+      "name": "Csoport neve",
+      "parent": "Fölérendelt csoport",
+      "create": "Létrehozás",
+      "delete": "Törlés",
+      "members": "Tagok",
+      "saveMembers": "Tagok mentése",
+      "leader": "Vezető",
+      "failed": "Nem sikerült menteni a csoportot.",
+      "deleteConfirm": "Biztosan törlöd a csoportot?"
     }
   },
   "portal": {

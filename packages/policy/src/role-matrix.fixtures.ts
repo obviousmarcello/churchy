@@ -5,7 +5,7 @@
 // (`WORKSPACE_MATRIX`, ...). `role-matrix.test.ts` runs every entry against `can()`, and renders
 // the same tables into `MATRIX.md` for reviewers.
 import type { Action, EventVisibility, HrCategoryRef, ResourceByAction } from "./actions";
-import type { OrgActor, TenantActor } from "./actor";
+import type { MusicAreaRole, OrgActor, TenantActor } from "./actor";
 import { tenantActor } from "./actor";
 import {
   CERTIFICATE,
@@ -313,6 +313,11 @@ export const README_ROWS: readonly MatrixRow[] = [
     variants: [v("edit music events", "music.event.manage", tenant, "YNNNYNNN")],
   },
   {
+    capability: "Music: manage the music areas and event teams (music merge)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("edit areas and teams", "music.group.manage", tenant, "YNNNYNNN")],
+  },
+  {
     capability: "Music: manage songs and arrangements (music merge)",
     sdd: ["✔", "", "", "", "✔", "", "", ""],
     variants: [v("edit songs and arrangements", "music.song.manage", tenant, "YNNNYNNN")],
@@ -431,7 +436,72 @@ function categoryCases(
   ];
 }
 
+const asVolunteerIn = (areaId: string, ...roles: MusicAreaRole[]) =>
+  workspaceActor("volunteer", { musicAreaGrants: [{ areaId, roles }] });
+
 export const WORKSPACE_SCOPE_GROUPS: readonly ScopeGroup<TenantActor>[] = [
+  {
+    title:
+      "Music area roles: the role of an area applies to the events and songs of that area only",
+    cases: [
+      c(
+        "music.event.manage, event_admin in the event's area",
+        asVolunteerIn("a1", "event_admin"),
+        "music.event.manage",
+        { tenantId: TENANT, areaIds: ["a1", "a2"] },
+        true,
+      ),
+      c(
+        "music.event.manage, music_leader in the event's area",
+        asVolunteerIn("a1", "music_leader"),
+        "music.event.manage",
+        { tenantId: TENANT, areaIds: ["a1"] },
+        true,
+      ),
+      c(
+        "music.event.manage, event_admin of another area",
+        asVolunteerIn("a9", "event_admin"),
+        "music.event.manage",
+        { tenantId: TENANT, areaIds: ["a1"] },
+        false,
+      ),
+      c(
+        "music.event.manage, song_admin only",
+        asVolunteerIn("a1", "song_admin"),
+        "music.event.manage",
+        { tenantId: TENANT, areaIds: ["a1"] },
+        false,
+      ),
+      c(
+        "music.event.manage, no area context",
+        asVolunteerIn("a1", "event_admin"),
+        "music.event.manage",
+        { tenantId: TENANT },
+        false,
+      ),
+      c(
+        "music.song.manage, song_admin in the song's area",
+        asVolunteerIn("a1", "song_admin"),
+        "music.song.manage",
+        { tenantId: TENANT, areaIds: ["a1"] },
+        true,
+      ),
+      c(
+        "music.song.manage, event_admin only",
+        asVolunteerIn("a1", "event_admin"),
+        "music.song.manage",
+        { tenantId: TENANT, areaIds: ["a1"] },
+        false,
+      ),
+      c(
+        "music.songRights.manage, any area role",
+        asVolunteerIn("a1", "song_admin", "music_leader"),
+        "music.songRights.manage",
+        { tenantId: TENANT, areaIds: ["a1"] } as never,
+        false,
+      ),
+    ],
+  },
   {
     title: "teamLeader: own team vs other team",
     cases: [

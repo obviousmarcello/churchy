@@ -40,11 +40,21 @@ export default async function EventsPage() {
       <PageHeader
         title={t.title}
         actions={
-          user.canEditEvents ? (
-            <Link href="/munkater/esemenyek/uj" className={buttonVariants()}>
-              {t.add}
-            </Link>
-          ) : undefined
+          <>
+            {(user.canEditEvents || user.leadsGroups) && (
+              <Link
+                href="/munkater/esemenyek/csoportok"
+                className={buttonVariants({ variant: "outline" })}
+              >
+                {t.groupsLink}
+              </Link>
+            )}
+            {user.canEditEvents && (
+              <Link href="/munkater/esemenyek/uj" className={buttonVariants()}>
+                {t.add}
+              </Link>
+            )}
+          </>
         }
       />
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-6 sm:px-6">

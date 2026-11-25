@@ -12,12 +12,14 @@ import {
   getEventDetail,
   removeEventItem,
   setEventItems,
+  setMyReply,
   skipOccurrence,
   updateEvent,
 } from "@/server/music/models/events";
 import { createEventBlock, deleteEventBlock } from "@/server/music/models/event-blocks";
+import { setEventAreaTeam } from "@/server/music/models/event-teams";
 import { itemsToInput } from "@/server/music/models/setlists";
-import { musicEvents } from "@/server/music/policy";
+import { musicEventIn } from "@/server/music/policy";
 import { withPolicy } from "@/server/policy";
 
 // Every action: `music.event.manage` (leader, music leader), the events module must be on, and the
@@ -50,7 +52,7 @@ function readEventFields(formData: FormData) {
 
 export const createEventAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, _previous: FormState, formData: FormData): Promise<FormState> => {
     const rrule = RRULES[text(formData, "recurrence")] ?? null;
     let id: string;
@@ -65,7 +67,7 @@ export const createEventAction = withPolicy(
 
 export const updateEventAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, _previous: FormState, formData: FormData): Promise<FormState> => {
     const id = text(formData, "id");
     const recurrenceId = text(formData, "recurrenceId");
@@ -94,7 +96,7 @@ function isRedirect(error: unknown): boolean {
 
 export const deleteEventAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, formData: FormData): Promise<FormState> => {
     try {
       await deleteEvent(text(formData, "id"));
@@ -107,7 +109,7 @@ export const deleteEventAction = withPolicy(
 
 export const skipOccurrenceAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, formData: FormData): Promise<FormState> => {
     try {
       await skipOccurrence({
@@ -126,7 +128,7 @@ type ItemsResult = { ok: boolean; message: "full" | "ended" | "noArrangement" | 
 /** Adds one song (an arrangement) at the end of the event's items. */
 export const addSongAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, formData: FormData): Promise<ItemsResult> => {
     const result = await addEventArrangement({
       eventId: text(formData, "id"),
@@ -144,7 +146,7 @@ export const addSongAction = withPolicy(
 
 export const addTextItemAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, formData: FormData): Promise<ItemsResult> => {
     const result = await addEventItems(text(formData, "id"), {
       items: [
@@ -164,7 +166,7 @@ export const addTextItemAction = withPolicy(
 
 export const removeItemAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, formData: FormData): Promise<ItemsResult> => {
     const removed = await removeEventItem(text(formData, "id"), text(formData, "key"));
     return { ok: removed, message: removed ? null : "changed" };
@@ -174,7 +176,7 @@ export const removeItemAction = withPolicy(
 /** Moves one item up or down by saving the items again in the new order. */
 export const moveItemAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, formData: FormData): Promise<ItemsResult> => {
     const event = await getEventDetail(text(formData, "id"));
     if (event === null) return { ok: false, message: "changed" };
@@ -192,7 +194,7 @@ export const moveItemAction = withPolicy(
 
 export const createBlockAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, formData: FormData): Promise<{ ok: boolean; message: string | null }> => {
     try {
       await createEventBlock(text(formData, "id"), {
@@ -209,8 +211,28 @@ export const createBlockAction = withPolicy(
 
 export const deleteBlockAction = withPolicy(
   "music.event.manage",
-  musicEvents,
+  musicEventIn,
   async (_scope, formData: FormData): Promise<{ ok: boolean }> => ({
     ok: await deleteEventBlock(text(formData, "id"), text(formData, "key")),
+  }),
+);
+
+/** Saves the team of one area of the event: `userId` fields. Leaders of the area may too (the model checks). */
+export const setAreaTeamAction = withPolicy(
+  "music.event.view",
+  musicEventIn,
+  async (_scope, formData: FormData): Promise<{ ok: boolean }> => ({
+    ok: await setEventAreaTeam(text(formData, "id"), text(formData, "areaId"), {
+      userIds: formData.getAll("userId").map(String),
+    }),
+  }),
+);
+
+/** The signed-in volunteer's reply: `yes`, `maybe` or `no`. */
+export const setMyReplyAction = withPolicy(
+  "music.event.view",
+  musicEventIn,
+  async (_scope, formData: FormData): Promise<{ ok: boolean }> => ({
+    ok: await setMyReply(text(formData, "id"), { reply: text(formData, "reply") }),
   }),
 );

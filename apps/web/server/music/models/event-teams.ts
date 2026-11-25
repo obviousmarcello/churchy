@@ -564,3 +564,23 @@ export async function getTeamGrid(range: DayRange): Promise<TeamGridDTO> {
     people: await listPeople(userIds, { emails: user.isSuperadmin }),
   };
 }
+
+/** The signed-in user's reply to an event they volunteer for (`yes`/`maybe`/`no`), or null: no reply or not a volunteer. */
+export async function getMyReply(
+  eventId: string,
+): Promise<{ volunteer: boolean; reply: string | null }> {
+  const user = await requireUser();
+  const { data, error } = await (
+    await getMusicSupabase()
+  )
+    .from("event_volunteers")
+    .select("reply")
+    .eq("event_id", eventId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (error) throw databaseError("read my reply", error);
+  return {
+    volunteer: data !== null,
+    reply: z.object({ reply: z.string().nullable() }).nullable().parse(data)?.reply ?? null,
+  };
+}

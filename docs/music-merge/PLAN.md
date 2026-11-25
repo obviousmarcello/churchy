@@ -577,3 +577,16 @@ copy_event, 4b-2 editor + images + announcements, 4b-3 feed, sync wiring, statis
   (Q: map an area role to `music.*` actions, or drop the roles?)
 - Pages, server actions with `withPolicy` and the `music.group.manage` action for groups come with the editor (4b-2).
 
+### 4b-2a (done): area roles through can(), groups and teams UI
+- Area roles (`service_area_roles`) map to actions: `song_admin` → `music.song.manage`, `event_admin` → `music.event.manage`,
+  `music_leader` → both; `course_admin` waits for the courses phase. `TenantActor.musicAreaGrants` (roles of the areas the user
+  belongs to, ancestors included) and `MusicAreaResource.areaIds`: `can()` allows the action when the tenant-wide matrix does
+  not and a grant sits in one of the resource's areas. No area context, no area grant. MATRIX section "Music area roles".
+- `withPolicy` has an actor enricher (`setPolicyActorEnricher`): for a resource with `areaIds` the music layer loads the grants
+  (`server/music/area-grants.ts`). Models check through `CurrentUser.canManageIn()` / `requireEventAdminOf(eventId)` (the
+  event's areas); `musicEventIn` resolves the areas of the event of an action.
+- New action `music.group.manage` (leader, music leader). Pages `/munkater/esemenyek/csoportok` (tree, create, delete,
+  members and leaders) and the Team section of the event page (team per area, volunteer's reply).
+- Left for the next slices of 4b: the copy of their drag-and-drop editor, bulk series form, event images, announcements,
+  area-role editor UI, feed, plan sync wiring, `my-setlists`, calendar sync, statistics over plan items.
+

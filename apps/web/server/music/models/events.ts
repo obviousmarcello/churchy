@@ -8,12 +8,17 @@ import { z } from "zod";
 
 import { EVENT_AREAS_MAX, forbiddenEventAreaChanges } from "@/lib/music/event-scopes";
 import { toYoutubeUrl } from "@/lib/music/youtube";
-import { requireEventAdmin, requireUser, type CurrentUser } from "@/server/music/auth";
+import { requireEventAdminIn, requireUser, type CurrentUser } from "@/server/music/auth";
 import { getMusicSupabase } from "@/server/music/db";
 import { ConflictError, ValidationError } from "@/server/music/errors";
 import { zodMessage } from "@/server/music/zod-i18n";
 import { readEventBlocks, type EventBlockDTO } from "./event-blocks";
-import { eventAreaRightsOf, visibleEventsFilter, withFilter } from "./event-access";
+import {
+  eventAreaRightsOf,
+  requireEventAdminOf,
+  visibleEventsFilter,
+  withFilter,
+} from "./event-access";
 import {
   readSetlistItems,
   setlistItemsInputSchema,
@@ -253,8 +258,8 @@ export async function getEvent(id: string): Promise<EventDTO | null> {
 
 /** Adds an event, or a series when `rrule` is given. */
 export async function createEvent(input: NewEventInput): Promise<EventDTO> {
-  const user = await requireEventAdmin();
   const event = parseInput(newEventInputSchema, input);
+  const user = await requireEventAdminIn(event.areaIds ?? []);
   await checkAreaRights(user, event.areaIds, []);
   const startsAt = iso(event.startsAt);
   const supabase = await getMusicSupabase();
@@ -285,7 +290,8 @@ export async function createEvent(input: NewEventInput): Promise<EventDTO> {
  * `changeOccurrence()` for one occurrence). Null when the event is not there or not visible.
  */
 export async function updateEvent(id: string, patch: EventPatchInput): Promise<EventDTO | null> {
-  const user = await requireEventAdmin();
+  const user = await requireEventAdminOf(id);
+  if (user === null) return null;
   if (!isId(id)) return null;
   const changes = parseInput(eventPatchInputSchema, patch);
   const current = await getEvent(id);
@@ -314,8 +320,7 @@ export async function updateEvent(id: string, patch: EventPatchInput): Promise<E
 
 /** Deletes an event (with its changed occurrences). False when it is not there. */
 export async function deleteEvent(id: string): Promise<boolean> {
-  await requireEventAdmin();
-  if (!isId(id) || (await getEvent(id)) === null) return false;
+  if ((await requireEventAdminOf(id)) === null) return false;
   const { error } = await (await getMusicSupabase()).from("events").delete().eq("id", id);
   if (error) throw databaseError("delete an event", error);
   return true;
@@ -360,8 +365,9 @@ export async function changeOccurrence(
   input: z.input<typeof occurrenceInputSchema>,
   patch: EventPatchInput,
 ): Promise<EventDTO> {
-  const user = await requireEventAdmin();
   const { masterId, recurrenceId } = parseInput(occurrenceInputSchema, input);
+  const user = await requireEventAdminOf(masterId);
+  if (user === null) throw new ConflictError(({ m }) => m.server.events.occurrenceMissing);
   const changes = parseInput(eventPatchInputSchema, patch);
   const master = await seriesMaster(masterId, recurrenceId);
   const supabase = await getMusicSupabase();
@@ -408,8 +414,9 @@ export async function changeOccurrence(
 
 /** Leaves one occurrence out of a series (an `exdate`, Europe/Budapest day). */
 export async function skipOccurrence(input: z.input<typeof occurrenceInputSchema>): Promise<void> {
-  await requireEventAdmin();
   const { masterId, recurrenceId } = parseInput(occurrenceInputSchema, input);
+  if ((await requireEventAdminOf(masterId)) === null)
+    throw new ConflictError(({ m }) => m.server.events.occurrenceMissing);
   const master = await seriesMaster(masterId, recurrenceId);
   const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Budapest" }).format(
     new Date(recurrenceId),
@@ -477,8 +484,7 @@ export async function setEventItems(
   id: string,
   input: EventItemsInput,
 ): Promise<SetEventItemsResult> {
-  await requireEventAdmin();
-  if (!isId(id) || (await getEvent(id)) === null) return null;
+  if ((await requireEventAdminOf(id)) === null) return null;
   const { items, baseSetlistId } = parseInput(eventItemsInputSchema, input);
   const { data, error } = await (
     await getMusicSupabase()
@@ -501,8 +507,7 @@ export async function addEventItems(
   id: string,
   input: z.input<typeof addItemsInputSchema>,
 ): Promise<AddToEventResult> {
-  await requireEventAdmin();
-  if (!isId(id) || (await getEvent(id)) === null) return "no_event";
+  if ((await requireEventAdminOf(id)) === null) return "no_event";
   const { items, afterKey } = parseInput(addItemsInputSchema, input);
   const { data, error } = await (
     await getMusicSupabase()
@@ -517,8 +522,7 @@ export async function addEventItems(
 
 /** Removes the item of the key. False when the event or the item is not there. */
 export async function removeEventItem(id: string, key: string): Promise<boolean> {
-  await requireEventAdmin();
-  if (!isId(id) || !isId(key) || (await getEvent(id)) === null) return false;
+  if (!isId(key) || (await requireEventAdminOf(id)) === null) return false;
   const { data, error } = await (
     await getMusicSupabase()
   ).rpc("remove_event_item", {
@@ -549,9 +553,8 @@ export type AddArrangementResult = (typeof ADD_ARRANGEMENT_RESULTS)[number];
 export async function addEventArrangement(
   input: z.input<typeof addArrangementInputSchema>,
 ): Promise<AddArrangementResult> {
-  await requireEventAdmin();
   const { eventId, arrangementId, musicalKey } = parseInput(addArrangementInputSchema, input);
-  if ((await getEvent(eventId)) === null) return "no_event";
+  if ((await requireEventAdminOf(eventId)) === null) return "no_event";
   const { data, error } = await (
     await getMusicSupabase()
   ).rpc("add_event_arrangement", {
@@ -596,8 +599,8 @@ export type CopyEventInput = z.input<typeof copyEventInputSchema>;
 
 /** A copy of an event with new details; the items and the team are optional. Null: no such event. */
 export async function copyEvent(sourceId: string, input: CopyEventInput): Promise<EventDTO | null> {
-  const user = await requireEventAdmin();
-  if (!isId(sourceId)) return null;
+  const user = await requireEventAdminOf(sourceId);
+  if (user === null) return null;
   const source = await getEvent(sourceId);
   if (source === null) return null;
   const copy = parseInput(copyEventInputSchema, input);
