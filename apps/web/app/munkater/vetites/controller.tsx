@@ -446,7 +446,7 @@ export function ProjectionController({
   const { follow: followBibleVerse } = bible;
   useEffect(() => {
     if (!followedChapter) return;
-    const [key, chapter] = followedChapter.split(" ");
+    const [key = "", chapter] = followedChapter.split(" ");
     followBibleVerse(key, Number(chapter));
   }, [followedChapter, followBibleVerse]);
   const selected = items.find((item) => item.key === selectedKey) ?? items[0] ?? null;

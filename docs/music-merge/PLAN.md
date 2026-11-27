@@ -827,3 +827,18 @@ become optional per-translation mappings. Hungarian only.
   isolation suite (translation per tenant, reserved id, cache limits, cross-tenant cache); PGlite bundle regenerated (+7 KB).
 - Not yet (6b): Bible panel, paste dialog, roll slides, readings UI, translations page. (6c): daily psalm,
   sheet scripture items. `lib/psalms/hu.ts` of the source is 169 verses of RÚF 2014 (copyrighted) and is NOT copied.
+
+### 6b (done): Bible panel, paste dialog, roll slides, translations page
+- The 5a stubs are replaced by the copies of the music app (`vetites/{bible,scripture,bible-panel,paste-scripture-dialog,scripture-roll}`,
+  `components/music/scripture-translation-select`), copy-edited for imports and strictness; the language select shows only when a church has a
+  text in a second language (Hungarian only). The controller, the event editor, the print view and the add-item box read the church's translations
+  from `MusicModulesProvider` (`scripture` prop, `useScriptureTranslations`); the layout of `/munkater/vetites`, the event page and `projections.ts`
+  `onModules()` use the real module flags (`ws.music.scripture`, `ws.music.projection.bible-panel`).
+- New server actions `cachedVersesAction` / `cacheVersesAction` (`withPolicy` `music.scripture.use`, resolver `musicScripture`, `actions-client` unwrappers).
+- Page `/munkater/biblia-forditasok` (nav "Bibliafordítások", module `ws.music.scripture`, action `music.scripture.translations.manage`): the Károli switch,
+  add/edit/delete the church's translations (id, names, notice, source pasted/database, optional site mappings), JSON upload of a book of a "database"
+  translation. Messages `music.bibleTranslations`; the messages that told a superadmin to use the Configuration tab and that spoke of a shared cache now speak of the church.
+- Fixes found by e2e/axe: dialogs got `z-50` (`dialog-parts`: a dialog opened over the projection controller, itself `z-50`, was unreachable);
+  the book buttons of the Bible panel have an accessible name that starts with their visible abbreviation.
+- e2e `music-scripture.spec.ts` (translations page with upload and delete, Károli text of a reading on the controller, pasted translation through the
+  controller dialog and cache; axe 0). The existing projection, events and live specs still pass.

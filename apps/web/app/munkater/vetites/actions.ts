@@ -6,6 +6,11 @@ import type { EventAnnouncementsDTO } from "@/lib/music/announcements/schema";
 import type { EventImageSetsDTO } from "@/lib/music/projection/images";
 import type { ProjectionThemeDTO } from "@/lib/music/projection/themes";
 import { SafeError } from "@/server/music/errors";
+import {
+  cacheVerses,
+  getCachedVerses,
+  type CachedVerseDTO,
+} from "@/server/music/models/scripture-cache";
 import { listEventAnnouncements } from "@/server/music/models/announcements";
 import { requireEventAdminOf } from "@/server/music/models/event-access";
 import { listEventImageSets } from "@/server/music/models/event-images";
@@ -43,7 +48,12 @@ import {
   type RehearsalProjectionSongDTO,
   type ReorderedEventProjectionDTO,
 } from "@/server/music/models/projections";
-import { musicEventIn, musicProjection, musicProjectionChild } from "@/server/music/policy";
+import {
+  musicEventIn,
+  musicProjection,
+  musicProjectionChild,
+  musicScripture,
+} from "@/server/music/policy";
 import { withPolicy, type PolicyScope } from "@/server/policy";
 
 // The model checks the session and the input. These actions only turn its results and errors into
@@ -355,4 +365,47 @@ export const eventItemsEditorAction = withPolicy(
       return cause instanceof SafeError ? null : undefined;
     }
   },
+);
+
+/**
+ * The verses of the chapters of the book in the church's cache of a pasted translation (see
+ * `getCachedVerses`). Undefined when the load fails, e.g. without a network.
+ */
+export const cachedVersesAction = withPolicy(
+  "music.scripture.use",
+  musicScripture,
+  async (
+    _scope: PolicyScope,
+    translation: string,
+    book: string,
+    chapters: number[],
+  ): Promise<CachedVerseDTO[] | undefined> => {
+    try {
+      return await getCachedVerses({ translation, book, chapters });
+    } catch (cause) {
+      if (!(cause instanceof SafeError))
+        console.error("[projection] Failed to load the cached verses:", cause);
+      return undefined;
+    }
+  },
+);
+
+/** Puts the pasted verses of a scripture reading in the church's cache (see `cacheVerses`). `eventId`: of the projection, else null. */
+export const cacheVersesAction = withPolicy(
+  "music.scripture.use",
+  musicScripture,
+  (
+    _scope: PolicyScope,
+    translation: string,
+    book: string,
+    verses: CachedVerseDTO[],
+    eventId: string | null = null,
+  ): Promise<SaveResult> =>
+    runSave(
+      {
+        failure: ({ m }) => m.project.paste.saveFailed,
+        notFound: ({ m }) => m.project.paste.saveFailed,
+      },
+      () => cacheVerses({ translation, book, verses }, eventId),
+    ),
 );

@@ -1,6 +1,7 @@
 import type { SaveResult } from "@/server/music/form-state";
 import type { PolicyResult } from "@/server/policy";
 import type { QuickItemInput } from "@/lib/music/projection/quick-items";
+import type { CachedVerseDTO } from "@/server/music/models/scripture-cache";
 import * as server from "./actions";
 import * as eventServer from "./event-actions";
 
@@ -65,3 +66,12 @@ export const listQuickAddCatalogAction = () =>
   run(server.listQuickAddCatalogAction(), { status: "error" as const, message: "" });
 export const eventItemsEditorAction = (eventId: string, parts: unknown) =>
   run(server.eventItemsEditorAction(eventId, parts), undefined);
+
+export const cachedVersesAction = (translation: string, book: string, chapters: number[]) =>
+  run(server.cachedVersesAction(translation, book, chapters), undefined);
+export const cacheVersesAction = (
+  translation: string,
+  book: string,
+  verses: CachedVerseDTO[],
+  eventId: string | null = null,
+) => run(server.cacheVersesAction(translation, book, verses, eventId), DENIED);

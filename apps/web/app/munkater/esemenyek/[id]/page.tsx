@@ -21,6 +21,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
   const [{ id }, { m }] = await Promise.all([params, getI18n(), requireEventsPageUser()]);
   const result = await loadEventPage(id);
   const modules = "transient" in result ? result.transient.modules : {};
+  const scripture = "transient" in result ? result.transient.scripture : undefined;
   const plan = "data" in result ? await planOf(id) : null;
   return (
     <main className="flex flex-1 flex-col">
@@ -31,7 +32,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
       >
         {m.events.title}
       </Link>
-      <MusicModulesProvider modules={modules}>
+      <MusicModulesProvider modules={modules} scripture={scripture}>
         <EventView result={result} />
       </MusicModulesProvider>
       {plan && (
