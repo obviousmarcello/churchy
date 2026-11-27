@@ -842,3 +842,16 @@ become optional per-translation mappings. Hungarian only.
   the book buttons of the Bible panel have an accessible name that starts with their visible abbreviation.
 - e2e `music-scripture.spec.ts` (translations page with upload and delete, Károli text of a reading on the controller, pasted translation through the
   controller dialog and cache; axe 0). The existing projection, events and live specs still pass.
+
+### 6c (done): daily psalm and the scripture items of the chord sheet
+- Daily psalm: `lib/music/daily-psalm.ts` (the day's psalm number as in the music app, plus `psalmExcerpt`) and `components/music/daily-psalm.tsx`. The text comes
+  from **Károli 1908** (`public/bible/karoli1908/Ps.json`): from the first verse on, up to three verses and about 260 characters. The curated RÚF excerpts
+  of the music app (`lib/psalms/hu.ts`) are not copied (copyrighted). Shown on the workspace home (Ma) with the module `ws.music.scripture.daily-psalm`
+  (child of `ws.music.scripture`, default off, in the demo seeds and `/admin/modulok`); collapsible per day like in the music app. Messages: reference
+  "(Károli)", new "failed".
+- Chord sheet: an event sheet (`?event=`, a live session of an event) now shows the event's text items between the songs, in the order of the event
+  (`withEventTextItems`, `toSheetText` of the music app; text items of modules that are off are hidden; an event with text items only works too). A scripture reading shows
+  its verses under the reference (`ScriptureVerses`, loading, failed, needs-text with retry, notice) from the church's translations (`SheetPageData.scripture`
+  via `MusicModulesProvider`); a single slot (`?item=`) still shows its song only.
+- Tests: `daily-psalm.test.ts`, e2e `music-scripture.spec.ts` (sheet with reading between songs, psalm of the day with collapse, axe 0); sheet, live, annotations and workspace specs still pass.
+- Deviation from the music app: the daily psalm is not curated (the first verses of the day's psalm, so a title verse can be the excerpt); a curated Károli list can replace `psalmExcerpt` later.

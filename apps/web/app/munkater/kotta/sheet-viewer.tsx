@@ -27,6 +27,14 @@ import {
 } from "lucide-react";
 
 import { useModule } from "@/components/music/app-config";
+import {
+  scriptureSlide,
+  type ProjectionPassage,
+  type ProjectionSource,
+} from "@/lib/music/projection/slides";
+import { MAX_PASSAGE_VERSES } from "@/lib/music/scripture/passage";
+import { referenceStyle } from "@/lib/music/scripture/reference";
+import { useScripturePassages, type ScriptureReading } from "@/app/munkater/vetites/scripture";
 import { NoteNamesSelect, useNoteNames } from "@/components/music/note-names";
 import { invalidatePageCache, invalidatePageCacheExcept } from "@/components/music/page-cache";
 import { Button, buttonVariants } from "@/components/music/ui/button";
@@ -485,6 +493,26 @@ export function SheetViewer({
       noteNames,
     ],
   );
+  // The verses of the scripture readings of an event. The browser loads them, also offline after the
+  // first time. They come after the first layout, so the sheet measures its pages again.
+  const scriptureSources = useMemo(
+    () =>
+      songs.flatMap((song): ProjectionSource[] =>
+        song.scripture
+          ? [
+              {
+                kind: "text",
+                key: song.id,
+                title: song.title,
+                scripture: true,
+                translation: song.scripture,
+              },
+            ]
+          : [],
+      ),
+    [songs],
+  );
+  const scripture = useScripturePassages(scriptureSources, NO_TRANSLATIONS);
   // Marks go on the lines of the chords. A song that shows a score, a PDF file or an image has none.
   // No marks while the module "sheet.marks" is off.
   const marksOn = useModule("sheet.marks");
@@ -833,7 +861,16 @@ export function SheetViewer({
       active = false;
       observer.disconnect();
     };
-  }, [charts, songSettings, groupFormats, groups, songs.length, fileLayouts, columnCounts]);
+  }, [
+    charts,
+    scripture,
+    songSettings,
+    groupFormats,
+    groups,
+    songs.length,
+    fileLayouts,
+    columnCounts,
+  ]);
 
   const leaderPosition = liveOn && !live.isLeader ? (live.state?.position ?? null) : null;
   const leaderSong = leaderPosition
@@ -1372,6 +1409,14 @@ export function SheetViewer({
       {song.description && <p className="whitespace-pre-line">{song.description}</p>}
       {song.highlight && <p className="font-semibold whitespace-pre-line">{song.highlight}</p>}
       {song.notes && <p className="whitespace-pre-line">{song.notes}</p>}
+      {song.scripture && (
+        <ScriptureVerses
+          reference={song.title}
+          reading={scripture.readings.get(song.id)}
+          passage={scripture.passages.get(song.id)}
+          onRetry={scripture.retry}
+        />
+      )}
     </div>
   );
 
@@ -2097,6 +2142,78 @@ function lastDetails({ m, format }: I18n, song: SheetSong): string[] {
   const details = song.arrangementName ? [song.arrangementName] : [];
   if (song.volunteer) details.push(format(m.sheet.details.volunteer, { name: song.volunteer }));
   return details;
+}
+
+/** The sheet has no choice of the translation: each scripture reading uses its own. */
+const NO_TRANSLATIONS: ReadonlyMap<string, string> = new Map();
+
+/**
+ * The verses of a scripture reading under its reference, with their numbers as on the screens, or
+ * why they do not show. A reference that the app does not recognize shows nothing more.
+ */
+function ScriptureVerses({
+  reference,
+  reading,
+  passage,
+  onRetry,
+}: {
+  reference: string;
+  reading: ScriptureReading | undefined;
+  passage: ProjectionPassage | undefined;
+  /** Loads the books that did not load again. */
+  onRetry: () => void;
+}) {
+  const { m, format } = useI18n();
+  const t = m.sheet.scripture;
+  const style = referenceStyle(reference);
+  if (!reading || !style) return null;
+  const translation = reading.translation.shortName;
+  const note = (text: string) => <p className="text-(--sheet-muted) italic">{text}</p>;
+
+  switch (reading.status.status) {
+    case "unrecognized":
+      return null;
+    case "off":
+      return note(t.off);
+    case "loading":
+      return note(t.loading);
+    case "failed":
+    case "needsText":
+      // A tap on a button does not turn the page.
+      return (
+        <div className="flex flex-wrap items-center gap-2">
+          {note(
+            reading.status.status === "failed" ? t.failed : format(t.needsText, { translation }),
+          )}
+          <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+            {t.retry}
+          </Button>
+        </div>
+      );
+    case "notInstalled":
+      return note(format(t.notInstalled, { translation }));
+    case "unavailable":
+      return note(format(t.unavailable, { translation }));
+  }
+  const slide = passage && scriptureSlide({ ...style, translation }, passage.verses);
+  if (slide?.kind !== "scripture") return null;
+  return (
+    <>
+      <p>
+        {slide.verses.map((verse, index) => (
+          <span key={`${index}:${verse.label}`}>
+            <sup className="mr-[0.2em] text-[0.6em] font-semibold text-(--sheet-muted)">
+              {verse.label}
+            </sup>
+            {verse.text}{" "}
+          </span>
+        ))}
+      </p>
+      {reading.status.missing && note(format(t.missing, { translation }))}
+      {reading.status.truncated && note(format(t.truncated, { count: MAX_PASSAGE_VERSES }))}
+      {reading.translation.notice && note(reading.translation.notice)}
+    </>
+  );
 }
 
 function emptyChartMessage({ m, format }: I18n, partCount: number) {

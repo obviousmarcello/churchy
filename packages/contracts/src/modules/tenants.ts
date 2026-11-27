@@ -83,6 +83,7 @@ export const WorkspaceModuleKeySchema = z.enum([
   "ws.music.projection.pptx-export",
   "ws.music.projection.quick-add",
   "ws.music.scripture",
+  "ws.music.scripture.daily-psalm",
   "ws.music.projection.bible-panel",
 ]);
 export type WorkspaceModuleKey = z.infer<typeof WorkspaceModuleKeySchema>;

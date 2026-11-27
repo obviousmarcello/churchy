@@ -41,6 +41,7 @@ const S50: readonly WorkspaceModuleKey[] = [
   "ws.music.projection.pptx-export",
   "ws.music.projection.quick-add",
   "ws.music.scripture",
+  "ws.music.scripture.daily-psalm",
   "ws.music.projection.bible-panel",
 ];
 const M150: readonly WorkspaceModuleKey[] = [...S50, "ws.hr.confidential", "ws.docs"];

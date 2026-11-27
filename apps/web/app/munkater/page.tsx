@@ -7,7 +7,8 @@ import { getEntryLabels } from "@/components/workspace/entry-labels";
 import { getT } from "@/i18n/server";
 import { creatableVisibilities } from "@/lib/workspace/event-access";
 import { getMemberEnv } from "@/server/workspace";
-import { getWorkspaceSections } from "@/server/workspace-nav";
+import { DailyPsalm } from "@/components/music/daily-psalm";
+import { getWorkspaceSections, isWorkspaceModuleOn } from "@/server/workspace-nav";
 import { loadToday } from "@/server/workspace-today";
 import { respondToAssignment } from "@/server/workspace-actions";
 
@@ -59,11 +60,12 @@ function greetingKey(now: Date): "morning" | "day" | "evening" {
  * the workspace sections the actor may use.
  */
 export default async function WorkspaceTodayPage() {
-  const [env, t, labels, sections] = await Promise.all([
+  const [env, t, labels, sections, psalmOn] = await Promise.all([
     getMemberEnv(),
     getT("munkater.home"),
     getEntryLabels(),
     getWorkspaceSections(),
+    isWorkspaceModuleOn("ws.music.scripture.daily-psalm"),
   ]);
   const data = await loadToday(env);
   const ids = new Set(sections.map((s) => s.id));
@@ -82,6 +84,8 @@ export default async function WorkspaceTodayPage() {
           <FormattedDate value={env.today} format="long" />
         </p>
       </header>
+
+      {psalmOn ? <DailyPsalm /> : null}
 
       {data.tier ? (
         <Alert
