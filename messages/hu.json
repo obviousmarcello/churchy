@@ -6319,7 +6319,8 @@
       "delete": {
         "button": "Esemény törlése",
         "confirm": "Biztosan törlöd az eseményt és az énekrendjét?",
-        "series": "Az egész sorozat törlődik."
+        "series": "Az egész sorozat törlődik.",
+        "endProjection": "Az esemény vetítése nyitva van. Ha törlöd az eseményt, a vetítés bezárul. Folytatod?"
       },
       "items": {
         "title": "Énekrend",
@@ -6524,6 +6525,15 @@
         "removeDescription": "A(z) „{name}” kép kikerül a programpontból és a vetítéséből.",
         "removeConfirm": "Eltávolítás",
         "removing": "Eltávolítás…"
+      },
+      "theme": {
+        "label": "Vetítési téma",
+        "defaultOption": "Alapértelmezett ({name})",
+        "saving": "Mentés…",
+        "saveFailed": "A téma nem mentődött el. Próbáld újra.",
+        "manage": "Témák szerkesztése",
+        "itemLabel": "Téma: {title}",
+        "itemsSummary": "Programpontok témái"
       }
     },
     "groups": {

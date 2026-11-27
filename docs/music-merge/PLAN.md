@@ -702,3 +702,29 @@ Left out in 5a, with the reason:
 - Left out: web-push on session start (notifications phase), the rate limit of rehearsal sessions, the live session in the search
   palette, `check_projection_users`. The sheet of an event session uses the occurrence ids of the sheet (arrangement id and
   number) for the leader's place and keys, the same for every participant.
+
+### 5c (done, in part): event-editor controls, announcement slides, image adjust
+- Announcement slides: `announcementSource` (`lib/music/announcements/present.ts`, copied with its tests) builds the slides of an
+  announcements item in the projection model (`getEventProjection`); the image-adjust editor (`image-adjust-dialog.tsx`,
+  `updateEventImageAction`) opens from the controller's gallery. Both were copied in 5a because the controller needs them.
+- Event page: the projection theme of the event and of each item (`ThemeSelect`, `setEventThemeAction` /
+  `setItemThemeAction`, module `ws.music.projection.themes`; users who may project the event and event admins), the
+  "Kivetítés" button, delete with "end the open projection" (`deleteEvent(id, { endProjections })`, header
+  `x-app-end-projections`; `ProjectionOpenError` from the database hint). The default theme of a church is made on the first read.
+- e2e: theme chosen on the event page and kept (axe 0).
+
+Not done (needs a decision or the copy of the whole event editor, which is still the compact Churchy page):
+- Quick add of the controller (`QuickAddBox`: song, text slide, images, announcements while projecting) and the items editor
+  ("edit" mode of the controller): they are built on `AddItemBox`, `setlist-rows`, the image upload (images, PDF, PowerPoint
+  pages) and `AnnouncementItem` of the music app's event editor. Copying that editor (about 6k lines) is its own slice; the
+  controller has a stub (`quick-add.tsx`) with the copied shape. Module `ws.music.projection.quick-add` is not registered until then.
+- Per-slot annotations of `my-setlists` on the sheet: not small (an annotation UI in the chord sheet viewer, the `annotations`
+  model exists): left for the editor slice.
+- Rehearsal projection (`?rehearsal`) and the mixer sync button (rehearsal page / mixer phases).
+
+### Open questions (phase 5)
+1. Realtime with the minted token: please confirm on a real Supabase project that Realtime accepts an HS256 token signed with the
+   project JWT secret with `role: authenticated` and extra claims `rt_topics` / `rt_send`, and that `realtime.messages` policies
+   created by migration 0017 apply (`realtime.send` is used by `notify_event` as a SECURITY DEFINER function).
+2. Copy the music app's event editor (drag-and-drop editor, `AddItemBox`, quick add, per-slot annotations) now, as one slice?
+3. Live sessions: web-push on start and the rate limit of rehearsal sessions wait for the notifications phase (OK?).

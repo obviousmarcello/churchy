@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
+import type { ProjectionThemeDTO } from "@/lib/music/projection/themes";
+import { ThemeSelect } from "./theme-select";
 import { Button } from "@/components/music/ui/button";
 import { Input } from "@/components/music/ui/input";
 import { Label } from "@/components/music/ui/label";
@@ -48,7 +50,14 @@ export function ItemsPanel({
   query,
   results,
   volunteers,
+  themes = null,
 }: {
+  /** The projection themes, when the user may choose them: of each item, and of the event for "none". */
+  themes?: {
+    list: ProjectionThemeDTO[];
+    eventThemeId: string | null;
+    itemThemeIds: Record<string, string | null>;
+  } | null;
   /** The volunteers of the event: who can be given an item. */
   volunteers: { id: string; name: string }[];
   eventId: string;
@@ -58,7 +67,7 @@ export function ItemsPanel({
   query: string;
   results: SongResult[];
 }) {
-  const { m } = useI18n();
+  const { m, format } = useI18n();
   const router = useRouter();
   const [pending, start] = useTransition();
   const [notice, setNotice] = useState<string | null>(null);
@@ -216,6 +225,27 @@ export function ItemsPanel({
           ))}
         </ol>
       )}
+      {themes && items.length > 0 && (
+        <details className="text-sm">
+          <summary className="cursor-pointer text-muted">{m.events.theme.itemsSummary}</summary>
+          <ul className="mt-2 flex flex-col gap-2">
+            {items.map((item, index) => (
+              <li key={item.key} className="flex items-center gap-2">
+                <span className="text-muted tabular-nums">{index + 1}.</span>
+                <ThemeSelect
+                  eventId={eventId}
+                  itemKey={item.key}
+                  themes={themes.list}
+                  value={themes.itemThemeIds[item.key] ?? null}
+                  inheritedName={themeName(themes.list, themes.eventThemeId)}
+                  label={format(m.events.theme.itemLabel, { title: item.title })}
+                  hideLabel
+                />
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
       {canEdit && items.length > 1 && <p className="text-sm text-muted">{t.dragHint}</p>}
       {notice && (
         <p role="alert" className="text-sm text-danger">
@@ -351,5 +381,12 @@ export function ItemsPanel({
         </>
       )}
     </section>
+  );
+}
+
+/** The name of the theme `id`, or of the default theme. */
+function themeName(themes: ProjectionThemeDTO[], id: string | null): string {
+  return (
+    (themes.find((theme) => theme.id === id) ?? themes.find((theme) => theme.isDefault))?.name ?? ""
   );
 }

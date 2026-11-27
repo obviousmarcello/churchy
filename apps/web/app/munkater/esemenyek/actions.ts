@@ -111,7 +111,9 @@ export const deleteEventAction = withPolicy(
   musicEventIn,
   async (_scope, formData: FormData): Promise<FormState> => {
     try {
-      await deleteEvent(text(formData, "id"));
+      await deleteEvent(text(formData, "id"), {
+        endProjections: text(formData, "endProjections") === "1",
+      });
     } catch (error) {
       return errorState(error, ({ m }) => m.events.errors.saveFailed);
     }

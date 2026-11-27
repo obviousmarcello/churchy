@@ -160,7 +160,22 @@ export async function readProjectionThemes(): Promise<ProjectionThemeDTO[]> {
     .order("is_default", { ascending: false })
     .order("name");
   if (error) throw databaseError("list projection themes", error);
-  return z.array(themeRowSchema).parse(data).map(toTheme);
+  const rows = z.array(themeRowSchema).parse(data);
+  if (rows.length > 0) return rows.map(toTheme);
+
+  // A church starts without themes: its default theme (the look from before the themes) is made
+  // on the first read.
+  const created = await (await getMusicSupabase()).rpc("default_projection_theme_id");
+  if (created.error) throw databaseError("create the default projection theme", created.error);
+  const again = await (
+    await getMusicSupabase()
+  )
+    .from("projection_themes")
+    .select(THEME_COLUMNS)
+    .order("is_default", { ascending: false })
+    .order("name");
+  if (again.error) throw databaseError("list projection themes", again.error);
+  return z.array(themeRowSchema).parse(again.data).map(toTheme);
 }
 
 /** The look of the default theme, e.g. for a rehearsal projection. Every signed-in user can read it. */

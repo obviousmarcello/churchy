@@ -15,6 +15,8 @@ import { ItemsPanel } from "./items-panel";
 import { TeamPanel } from "./team-panel";
 import { PlanLink } from "./plan-link";
 import { EventSync } from "./event-sync";
+import { ThemeSelect } from "./theme-select";
+import { readProjectionThemes } from "@/server/music/models/projection-themes";
 import { getEventConnection } from "@/server/music/models/event-sync";
 import { projectionHref } from "@/lib/music/next-path";
 import { canProjectEvent } from "@/server/music/models/realtime-access";
@@ -78,9 +80,10 @@ export default async function EventPage({
     listPeople(),
   ]);
   const planInfo = await planOf(event.id);
-  const [canProject, eventConnection] = await Promise.all([
+  const [canProject, eventConnection, themeControls] = await Promise.all([
     canProjectEvent(event.id),
     getEventConnection(event.id),
+    themeControlsOf(event.id, canEdit),
   ]);
   const [imagesOn, announcementsOn] = await Promise.all([
     isWorkspaceModuleOn("ws.music.events.images"),
@@ -144,6 +147,13 @@ export default async function EventPage({
           </a>
         )}
         <ItemsPanel
+          themes={
+            themeControls && {
+              ...themeControls,
+              eventThemeId: event.projectionThemeId,
+              itemThemeIds: Object.fromEntries(event.items.map((item) => [item.key, item.themeId])),
+            }
+          }
           eventId={event.id}
           items={event.items.map((item) =>
             item.kind === "song"
@@ -174,6 +184,15 @@ export default async function EventPage({
             .filter((person) => teams.teams.some((team) => team.userIds.includes(person.id)))
             .map((person) => ({ id: person.id, name: person.name }))}
         />
+        {themeControls && (
+          <ThemeSelect
+            eventId={event.id}
+            themes={themeControls.list}
+            value={event.projectionThemeId}
+            inheritedName={themeControls.defaultName}
+            label={m.events.theme.label}
+          />
+        )}
         {canEdit && (imagesOn || announcementsOn) && (
           <MediaPanel
             eventId={event.id}
@@ -236,4 +255,12 @@ async function planOf(eventId: string): Promise<{ planId: string | null; canCrea
   } catch {
     return { planId: null, canCreate: false };
   }
+}
+
+/** The themes to choose from, for those who may change the event's themes (the model checks again). */
+async function themeControlsOf(eventId: string, canEdit: boolean) {
+  if (!(await isWorkspaceModuleOn("ws.music.projection.themes"))) return null;
+  if (!canEdit && !(await canProjectEvent(eventId))) return null;
+  const list = await readProjectionThemes();
+  return { list, defaultName: list.find((theme) => theme.isDefault)?.name ?? "" };
 }

@@ -69,9 +69,26 @@ test("a music leader creates and renames a projection theme", async ({ page }) =
   await expect(page.getByRole("heading", { level: 1, name: "Vetítési témák" })).toBeVisible();
   expect(await axeSeriousOrCritical(page)).toEqual([]);
   await page.getByRole("button", { name: "Új téma" }).first().click();
-  await expect(page.getByLabel("Név").first()).toBeVisible();
+  await expect(page.getByLabel("Név").first()).toHaveValue("Új téma");
   await page.getByLabel("Név").first().fill("Reggeli téma");
   await page.getByRole("button", { name: "Mentés" }).first().click();
   await expect(page.getByText("Reggeli téma").first()).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+});
+
+test("the theme of an event is chosen on its page and kept", async ({ page }) => {
+  await asMusicLeader(page, "/munkater/vetitesi-temak");
+  await page.getByRole("button", { name: "Új téma" }).first().click();
+  await expect(page.getByLabel("Név").first()).toHaveValue("Új téma");
+  await page.getByLabel("Név").first().fill("Esti téma");
+  await page.getByRole("button", { name: "Mentés" }).first().click();
+  await expect(page.getByText("Esti téma").first()).toBeVisible();
+
+  await newEvent(page, "Esti alkalom");
+  const select = page.getByLabel("Vetítési téma", { exact: true });
+  await select.selectOption({ label: "Esti téma" });
+  await expect(select).toBeEnabled();
+  await page.reload();
+  await expect(page.getByLabel("Vetítési téma", { exact: true })).toHaveValue(/.+/);
   expect(await axeSeriousOrCritical(page)).toEqual([]);
 });
