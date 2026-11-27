@@ -683,3 +683,22 @@ Left out in 5a, with the reason:
 - Rehearsal projection (`?rehearsal`) and the mixer sync button: the rehearsal page / mixer are later phases.
 - `check_projection_users` (loss of access of an open projection): needs roles in SQL; the controller revalidates on each
   heartbeat instead.
+
+### 5b (done): live sessions, event sync, shared metronome
+- Migration `0018_music_live` (+ down): table `live_sessions` (event xor rehearsal list, one running session per event,
+  RLS, scopes, isolation fixture and DB test) and the event-sync notices: `public.notify_event` (SECURITY DEFINER, the one
+  exception: the music role cannot reach the `realtime` schema; it reads only the event's tenant and does nothing where
+  `realtime.send` does not exist) with invoker triggers on events and their parts, sending `{kind, author}` to
+  `t:<tenant>:event:<id>`.
+- Model `live-sessions.ts` (start event/rehearsal session, join, hand over, take lead, end; access: volunteers of the event, event
+  admins who can see it; only a volunteer starts an event session). Realtime topic `live:<id>`: the leader's token has `rt_send`.
+  The sheet (`?session=<id>`) shows the session's event or list of arrangements; `useLiveSession` is the copied hook over the
+  transport; header controls `LiveControl` / `StartLiveControl`; the shared metronome grid, the leader's key and place are the
+  copied pure libs (`lib/music/live/*`). The event page refreshes on notices (`EventSync`), the projection controller follows the
+  leader of the event's session (`leader.ts`).
+- Policy `music.live.join`, `music.live.lead` (every role; the model decides); module `ws.music.sheet.live`.
+- e2e `music-live.spec.ts` (start, lead, join in a second window, unknown session; axe 0). The local transport carries it in
+  the demo (windows of one browser).
+- Left out: web-push on session start (notifications phase), the rate limit of rehearsal sessions, the live session in the search
+  palette, `check_projection_users`. The sheet of an event session uses the occurrence ids of the sheet (arrangement id and
+  number) for the leader's place and keys, the same for every participant.

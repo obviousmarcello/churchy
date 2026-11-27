@@ -36,7 +36,7 @@ naming the tenant.
 | `private.course_is_open_to(p_course_id uuid, p_user_id uuid)` | invoker | 8 (courses) |
 | `private.course_lesson_document(p_lesson course_lessons)` | invoker | 8 (courses) |
 | `private.courses_before_area_delete()` | invoker, trigger | 8 (courses) |
-| `private.event_topic_access(p_topic text)` | definer | 4 (events, setlists, volunteers) |
+| `private.event_topic_access(p_topic text)` | definer | replaced in 5a by `public.music_realtime_allowed(topic, send)` (token claims; `authorizeRealtimeTopics`) |
 | `private.events_before_area_delete()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.leads_service_area(p_area_id uuid, p_user_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.live_session_access(p_topic text)` | definer | dropped (Churchy login / user admin, PLAN §11) |
@@ -44,10 +44,10 @@ naming the tenant.
 | `private.lock_service_area_tree()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.normalize_event_areas()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.normalize_event_blocks(p_event_id uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
-| `private.notify_event(p_event_id uuid, p_kind text)` | definer | 8 (notifications) |
-| `private.notify_event_change()` | definer, trigger | 8 (notifications) |
-| `private.notify_event_part_change()` | definer, trigger | 8 (notifications) |
-| `private.notify_song_change()` | definer, trigger | 8 (notifications) |
+| `private.notify_event(p_event_id uuid, p_kind text)` | definer | 5b - 0018_music_live, `public.notify_event` (stays definer: the music role cannot reach `realtime`; reads only the tenant of the event; no-op without `realtime.send`) |
+| `private.notify_event_change()` | definer, trigger | 5b - 0018_music_live (`public.`, invoker) |
+| `private.notify_event_part_change()` | definer, trigger | 5b - 0018_music_live (`public.`, invoker) |
+| `private.notify_song_change()` | definer, trigger | 5b - 0018_music_live (`public.`, invoker) |
 | `private.projection_access(p_topic text)` | definer | 5a - 0017_music_projection (replaced by `public.music_realtime_allowed(topic, send)` (claims of the Realtime token)) |
 | `private.projection_open_since()` | invoker | 5a - 0017_music_projection (now public.projection_open_since()) |
 | `private.rebuild_service_area_paths()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |

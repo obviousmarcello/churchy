@@ -2505,3 +2505,52 @@ export const eventProjectionControllers = pgTable(
     }).onDelete("cascade"),
   ],
 ).enableRLS();
+
+// ---------------------------------------------------------------------------------------------
+// Live sessions (phase 5b): many users follow one leader on the chord sheet of an event or of a
+// rehearsal list. The leader sends the song, the place and the shared metronome grid on a
+// realtime channel (`live:<id>`); this table only holds who leads and whether it runs.
+// ---------------------------------------------------------------------------------------------
+
+export const liveSessions = pgTable(
+  "live_sessions",
+  {
+    tenantId: tenantId(),
+    id: uuid().primaryKey().defaultRandom(),
+    /** An event session. Null for a rehearsal session. */
+    eventId: uuid(),
+    /** A rehearsal session: the arrangements in playing order. Null for an event session. */
+    arrangementIds: uuid().array(),
+    /** The key of each arrangement of a rehearsal session (null: the key of the chart). */
+    musicalKeys: text().array(),
+    leaderId: uuid().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+    endedAt: timestamptz(),
+  },
+  (t) => [
+    ...tenantIndexes("live_sessions", t),
+    index("live_sessions_leader_id_idx").on(t.leaderId),
+    // One running session per event; it also covers the lookup of the session of an event.
+    uniqueIndex("live_sessions_one_per_event_idx")
+      .on(t.tenantId, t.eventId)
+      .where(sql`${t.endedAt} is null`),
+    check(
+      "live_sessions_event_or_rehearsal",
+      sql`(${t.eventId} is null) <> (${t.arrangementIds} is null)`,
+    ),
+    check(
+      "live_sessions_arrangement_ids_check",
+      sql`cardinality(${t.arrangementIds}) between 1 and 100`,
+    ),
+    foreignKey({
+      name: "live_sessions_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "live_sessions_leader_id_fkey",
+      columns: [t.leaderId],
+      foreignColumns: [profiles.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();

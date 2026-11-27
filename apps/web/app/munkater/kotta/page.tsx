@@ -3,10 +3,19 @@ import type { Metadata } from "next";
 import { getI18n } from "@/i18n/music/server";
 import { firstParam } from "@/lib/music/song-filters";
 import { requirePageUser } from "@/server/music/auth";
-import { requireWorkspaceModule } from "@/server/workspace-nav";
+import { isWorkspaceModuleOn, requireWorkspaceModule } from "@/server/workspace-nav";
 import { getEvent, getEventDetail } from "@/server/music/models/events";
 import { getMySetlistItem } from "@/server/music/models/my-setlists";
+import {
+  canStartEventLiveSession,
+  getEventLiveSession,
+  getLiveConnection,
+  getLiveSession,
+} from "@/server/music/models/live-sessions";
+import { listPeople } from "@/server/music/models/profiles";
 import { loadSheetPage } from "./data";
+import type { LiveSessionProps } from "./live-session";
+import type { StartLive } from "./start-live-control";
 import { SheetView } from "./sheet-view";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,6 +42,27 @@ export default async function SheetPage({
   await requireWorkspaceModule("ws.music.sheet");
   const user = await requirePageUser();
   let params = await searchParams;
+  // A live session (`?session=<id>`): its event or its list of arrangements is what the sheet shows.
+  const liveModuleOn = await isWorkspaceModuleOn("ws.music.sheet.live");
+  const sessionId = firstParam(params.session);
+  let live: LiveSessionProps | undefined;
+  if (sessionId !== undefined && liveModuleOn) {
+    const session = await getLiveSession(sessionId);
+    if (session) {
+      const [people, connection] = await Promise.all([listPeople([user.id]), getLiveConnection()]);
+      // The name that the other participants see: never the email.
+      live = { session, me: { id: user.id, name: people[0]?.name ?? "" }, connection };
+      params = session.eventId
+        ? { ...params, event: session.eventId }
+        : {
+            ...params,
+            arrangement: session.arrangementIds,
+            key: session.musicalKeys.map((key) => key ?? ""),
+          };
+    } else if (firstParam(params.event) === undefined) {
+      return <SheetView result={{ notFound: "session" }} from={firstParam(params.from)} />;
+    }
+  }
   const eventId = firstParam(params.event);
   if (eventId !== undefined && (await getEvent(eventId)) !== null) {
     // An event's songs in playing order, each in the key of its item (text items are skipped).
@@ -54,5 +84,34 @@ export default async function SheetPage({
       params = { ...params, arrangement: [item.arrangement.id], key: [item.slotKey ?? ""] };
     }
   }
-  return <SheetView result={await loadSheetPage(user, params)} from={firstParam(params.from)} />;
+  // Without a session: how the user can start or join one.
+  let startLive: StartLive | undefined;
+  if (live === undefined && liveModuleOn) {
+    if (eventId !== undefined) {
+      const [running, canStart] = await Promise.all([
+        getEventLiveSession(eventId),
+        canStartEventLiveSession(eventId),
+      ]);
+      if (running) startLive = { kind: "join", sessionId: running.id, eventId };
+      else if (canStart) startLive = { kind: "event", eventId };
+    } else {
+      const arrangementIds = [params.arrangement ?? []].flat();
+      if (arrangementIds.length > 0) {
+        const keys = [params.key ?? []].flat();
+        startLive = {
+          kind: "rehearsal",
+          arrangementIds,
+          musicalKeys: arrangementIds.map((_, index) => keys[index] || null),
+        };
+      }
+    }
+  }
+  return (
+    <SheetView
+      result={await loadSheetPage(user, params)}
+      from={firstParam(params.from)}
+      live={live}
+      startLive={startLive}
+    />
+  );
 }

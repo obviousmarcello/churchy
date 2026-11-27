@@ -114,6 +114,8 @@ const ROWS: Row<Action>[] = [
   { cell: "Music: project an event", action: "music.projection.use", resource: { tenantId: TENANT }, expected: "YYYYYYYY" },
   { cell: "Music: edit projection themes", action: "music.projection.themes.manage", resource: { tenantId: TENANT }, expected: "YNNNYNNN" },
   { cell: "Music: set default theme", action: "music.projection.themes.setDefault", resource: { tenantId: TENANT }, expected: "YNNNYNNN" },
+  { cell: "Music: join live", action: "music.live.join", resource: { tenantId: TENANT }, expected: "YYYYYYYY" },
+  { cell: "Music: lead live", action: "music.live.lead", resource: { tenantId: TENANT }, expected: "YYYYYYYY" },
   { cell: "Music: manage areas", action: "music.group.manage", resource: { tenantId: TENANT }, expected: "YNNNYNNN" },
   { cell: "Music: manage songs", action: "music.song.manage", resource: { tenantId: TENANT }, expected: "YNNNYNNN" },
   { cell: "Music: song rights", action: "music.songRights.manage", resource: { tenantId: TENANT }, expected: "YNNNYNNN" },

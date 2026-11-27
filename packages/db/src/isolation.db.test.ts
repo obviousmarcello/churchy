@@ -1055,6 +1055,59 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
       });
     });
 
+    it("live sessions: one running session per event, an event or a rehearsal list, never both", async () => {
+      const uuid = () => randomUUID();
+      const [profile] = await ownerQuery<{ id: string }>(
+        "select id from profiles order by id limit 1",
+      );
+      await asMusic(A, async (c) => {
+        const cal = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        const ev = (
+          await c.query<{ id: string }>(
+            `insert into events (calendar_id, visibility, slug, title, starts_at, ends_at, status)
+             values ('${cal}', 'staff', 'elo-${uuid()}', 'Élő alkalom', now() + interval '3 days',
+                     now() + interval '3 days 90 minutes', 'published') returning id`,
+          )
+        ).rows[0]!.id;
+        await c.query("insert into live_sessions (event_id, leader_id) values ($1, $2)", [
+          ev,
+          profile!.id,
+        ]);
+        await c.query("savepoint s1");
+        expect(
+          await attempt(
+            c,
+            `insert into live_sessions (event_id, leader_id) values ('${ev}', '${profile!.id}')`,
+          ),
+        ).toMatchObject({ code: "23505" });
+        await c.query("rollback to savepoint s1");
+        // A session that ended makes room for the next one.
+        await c.query("update live_sessions set ended_at = now() where event_id = $1", [ev]);
+        await c.query("insert into live_sessions (event_id, leader_id) values ($1, $2)", [
+          ev,
+          profile!.id,
+        ]);
+        await c.query("savepoint s2");
+        expect(
+          await attempt(
+            c,
+            `insert into live_sessions (event_id, arrangement_ids, leader_id) values ('${ev}', ARRAY['${uuid()}']::uuid[], '${profile!.id}')`,
+          ),
+        ).toMatchObject({ code: "23514" });
+        await c.query("rollback to savepoint s2");
+        await c.query(
+          "insert into live_sessions (arrangement_ids, leader_id) values (ARRAY[$1]::uuid[], $2)",
+          [uuid(), profile!.id],
+        );
+        // Deleting the event deletes its sessions.
+        await c.query("delete from events where id = $1", [ev]);
+        expect(
+          (await c.query("select 1 from live_sessions where event_id = $1", [ev])).rowCount,
+        ).toBe(0);
+      });
+    });
+
     it("realtime: the policies compare the topic with the claims of the token, per tenant", async () => {
       async function allowed(claims: object, topic: string, send: boolean): Promise<boolean> {
         const client = await owner.connect();

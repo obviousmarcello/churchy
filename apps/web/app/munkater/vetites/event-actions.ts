@@ -5,6 +5,8 @@ import type { QuickItemInput } from "@/lib/music/projection/quick-items";
 import { SafeError } from "@/server/music/errors";
 import { runSave, type SaveResult } from "@/server/music/form-state";
 import { addEventItems, removeEventItem } from "@/server/music/models/events";
+import { getEventLiveSession } from "@/server/music/models/live-sessions";
+import { isWorkspaceModuleOn } from "@/server/workspace-nav";
 import { musicEventIn } from "@/server/music/policy";
 import { withPolicy, type PolicyScope } from "@/server/policy";
 
@@ -58,5 +60,15 @@ export const removeQuickItemAction = withPolicy(
 export const eventLiveTopicAction = withPolicy(
   "music.projection.use",
   musicEventIn,
-  async (_scope: PolicyScope, _eventId: string): Promise<string | null | undefined> => null,
+  async (_scope: PolicyScope, eventId: string): Promise<string | null | undefined> => {
+    try {
+      // No live session while the module "sheet.live" is off.
+      if (!(await isWorkspaceModuleOn("ws.music.sheet.live"))) return null;
+      return (await getEventLiveSession(eventId))?.topic ?? null;
+    } catch (cause) {
+      if (!(cause instanceof SafeError))
+        console.error("[projection] Failed to check the live session:", cause);
+      return undefined;
+    }
+  },
 );

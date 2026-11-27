@@ -109,6 +109,7 @@ const WORKSPACE_IDS = {
   "ws.music.sheet.midi-out": "music_sheet_midi_out",
   "ws.music.sheet.marks": "music_sheet_marks",
   "ws.music.sheet.chord-diagrams": "music_sheet_chord_diagrams",
+  "ws.music.sheet.live": "music_sheet_live",
   "ws.music.events": "music_events",
   "ws.music.events.images": "music_events_images",
   "ws.music.events.announcements": "music_events_announcements",

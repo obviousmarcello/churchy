@@ -65,6 +65,7 @@ const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
   "ws.music.sheet.midi-out",
   "ws.music.sheet.marks",
   "ws.music.sheet.chord-diagrams",
+  "ws.music.sheet.live",
   "ws.music.events",
   "ws.music.events.images",
   "ws.music.events.announcements",

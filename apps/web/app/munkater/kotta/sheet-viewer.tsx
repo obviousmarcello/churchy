@@ -23,6 +23,7 @@ import {
   Settings2Icon,
   SquareIcon,
   XIcon,
+  RadioIcon,
 } from "lucide-react";
 
 import { useModule } from "@/components/music/app-config";
@@ -88,7 +89,9 @@ import { ChordSheet, sheetBlocks } from "./chord-sheet";
 import { Choice } from "./choice";
 import { FileZoomSetting } from "./file-zoom-setting";
 import { KeyButton, KeySetting, type SlotKind, type SongKeys } from "./key-setting";
-import { useLiveSession } from "./live-session";
+import { LiveControl } from "./live-control";
+import { useLiveSession, type LiveSessionProps } from "./live-session";
+import { StartLiveControl, type StartLive } from "./start-live-control";
 import { MetronomeControl, useMetronome } from "./metronome-control";
 import { PRINT_FONT_PX, PrintButton, PrintImage, PrintSheet } from "./print-sheet";
 import { RehearsalPanel, type RehearsalSong, type ScorePlayback } from "./rehearsal-panel";
@@ -281,6 +284,8 @@ export function SheetViewer({
   backHref,
   slotKind = "rehearsal",
   startSongId,
+  live: liveProps,
+  startLive,
   canEditSongs = false,
 }: {
   /** The key of the page in the page cache. A save of the user's own capo, key or marks updates its copy. */
@@ -297,6 +302,10 @@ export function SheetViewer({
   slotKind?: SlotKind;
   /** The song that the sheet opens at, e.g. the setlist slot that a live session started from. Else the first one. */
   startSongId?: string;
+  /** The running live session of the sheet. */
+  live?: LiveSessionProps;
+  /** Without `live`: how the user can start or join a live session. */
+  startLive?: StartLive;
   /** Song admins and superadmins can save the tempo of the metronome to the arrangement. */
   canEditSongs?: boolean;
 }) {
@@ -365,7 +374,7 @@ export function SheetViewer({
 
   // A live session. The users who follow see the leader's song and section,
   // on the page where it is on their screen. All users see the leader's keys.
-  const live = useLiveSession(null);
+  const live = useLiveSession(liveProps ?? null);
   const liveOn = live.active && (live.status === "connecting" || live.status === "live");
   // The same object until the keys change: the leader sends the state every few seconds.
   const liveKeysText = liveOn ? JSON.stringify(live.state?.keys ?? {}) : "{}";
@@ -1303,6 +1312,17 @@ export function SheetViewer({
           },
         ]
       : []),
+    ...(!liveProps && startLive
+      ? [
+          {
+            key: "live",
+            icon: <RadioIcon />,
+            label: m.sheet.live.title,
+            opensPopover: true,
+            onSelect: () => setHeaderPopover("live"),
+          },
+        ]
+      : []),
     ...(nothingToShow
       ? []
       : songs.length > 1
@@ -1493,6 +1513,18 @@ export function SheetViewer({
             {/* Tablets and small laptops: the header has more buttons, and no room for the text. */}
             <span className="hidden sm:max-md:inline xl:inline">{m.sheet.live.backToLeader}</span>
           </Button>
+        )}
+        {liveProps ? (
+          <LiveControl live={live} session={liveProps.session} title={title} />
+        ) : (
+          startLive && (
+            <StartLiveControl
+              start={startLive}
+              backHref={backHref}
+              control={popoverControl("live")}
+              className="hidden lg:inline-flex"
+            />
+          )
         )}
         {hasViews && (
           <SongViewButton
@@ -1919,7 +1951,7 @@ export function SheetViewer({
 }
 
 /** The header popovers that the "more" menu opens on small screens. */
-type HeaderPopover = "content";
+type HeaderPopover = "content" | "live";
 
 /** No notes sound: the same array each time, so the score does not light up again. */
 const NO_NOTES: string[] = [];

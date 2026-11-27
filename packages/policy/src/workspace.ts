@@ -167,6 +167,16 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: { leader: "all", musicLeader: "all" },
   },
   {
+    capability: "Music: join a live session (the model checks the event)",
+    actions: ["music.live.join"],
+    grants: EVERY_ROLE,
+  },
+  {
+    capability: "Music: start and lead a live session (volunteers of the event; the model checks)",
+    actions: ["music.live.lead"],
+    grants: EVERY_ROLE,
+  },
+  {
     capability: "Music: manage songs and arrangements",
     actions: ["music.song.manage"],
     grants: { leader: "all", musicLeader: "all" },

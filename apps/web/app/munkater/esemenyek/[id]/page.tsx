@@ -14,6 +14,8 @@ import { listPeople } from "@/server/music/models/profiles";
 import { ItemsPanel } from "./items-panel";
 import { TeamPanel } from "./team-panel";
 import { PlanLink } from "./plan-link";
+import { EventSync } from "./event-sync";
+import { getEventConnection } from "@/server/music/models/event-sync";
 import { projectionHref } from "@/lib/music/next-path";
 import { canProjectEvent } from "@/server/music/models/realtime-access";
 import { MediaPanel } from "./media-panel";
@@ -76,7 +78,10 @@ export default async function EventPage({
     listPeople(),
   ]);
   const planInfo = await planOf(event.id);
-  const canProject = await canProjectEvent(event.id);
+  const [canProject, eventConnection] = await Promise.all([
+    canProjectEvent(event.id),
+    getEventConnection(event.id),
+  ]);
   const [imagesOn, announcementsOn] = await Promise.all([
     isWorkspaceModuleOn("ws.music.events.images"),
     isWorkspaceModuleOn("ws.music.events.announcements"),
@@ -96,6 +101,7 @@ export default async function EventPage({
         : editor.editable;
   return (
     <main className="flex flex-1 flex-col">
+      <EventSync eventId={event.id} connection={eventConnection} />
       <PageHeader
         title={event.title}
         back={{ href: "/munkater/esemenyek", label: m.events.title }}

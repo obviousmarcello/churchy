@@ -127,6 +127,13 @@
       "when": 1795617367908,
       "tag": "0017_music_projection",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1795785804825,
+      "tag": "0018_music_live",
+      "breakpoints": true
     }
   ]
 }

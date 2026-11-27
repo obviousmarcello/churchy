@@ -8,7 +8,9 @@ import {
   getEventProjection,
   getEventProjectionConnection,
 } from "@/server/music/models/projections";
+import { getEventLiveSession } from "@/server/music/models/live-sessions";
 import { canProjectEvent } from "@/server/music/models/realtime-access";
+import { isWorkspaceModuleOn } from "@/server/workspace-nav";
 import type { ProjectionPageProps } from "./page-props";
 import { EventProjectionController } from "./event-controller";
 import { ProjectionGate, ProjectionLoading } from "./gate";
@@ -38,15 +40,20 @@ async function Controller({ searchParams }: ProjectionPageProps) {
 
   if (eventId) {
     if (!(await canProjectEvent(eventId))) return <ProjectionGate reason="forbidden" />;
-    const [projection, connection] = await Promise.all([
+    const [projection, connection, live] = await Promise.all([
       getEventProjection(eventId),
       getEventProjectionConnection(eventId),
+      // The controller follows the leader of the live session, while the module "sheet.live" is on.
+      isWorkspaceModuleOn("ws.music.sheet.live").then((on) =>
+        on ? getEventLiveSession(eventId) : null,
+      ),
     ]);
     if (!projection || !connection) return <ProjectionGate reason="notFound" />;
     return (
       <EventProjectionController
         projection={projection}
         connection={connection}
+        liveTopic={live?.topic ?? null}
         canEditItems={user.canEditEvents}
       />
     );
