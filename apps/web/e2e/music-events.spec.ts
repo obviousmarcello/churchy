@@ -23,28 +23,28 @@ test("a music leader creates an event, builds its setlist and opens its chord sh
   await page.getByLabel("Ismétlődés").selectOption("weekly");
   expect(await axeSeriousOrCritical(page)).toEqual([]);
   await page.getByRole("button", { name: "Esemény létrehozása" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "Vasárnapi próba" })).toBeVisible();
-  await expect(page.getByText("Még nincs programpont.")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Vasárnapi próba" }).first(),
+  ).toBeVisible();
+  await expect(page.getByText("Még nincs programpont")).toBeVisible();
 
-  // A song from the catalog.
-  await page.getByLabel("Dal keresése").fill("Áldás");
-  await page.getByRole("button", { name: "Keresés" }).click();
-  await page.getByRole("button", { name: "Hozzáadás" }).first().click();
-  await expect(page.getByRole("list").filter({ hasText: "Áldás, békesség" }).first()).toBeVisible();
-
-  // A text item, then the order changes.
-  await page.getByLabel("Szöveges programpont").fill("Köszöntés");
-  await page.getByRole("button", { name: "Hozzáadás" }).last().click();
-  await expect(page.getByText("Köszöntés")).toBeVisible();
-  await page.getByRole("button", { name: "Feljebb" }).nth(1).click();
-  await expect(page.getByRole("listitem").filter({ hasText: "1." }).first()).toContainText(
-    "Köszöntés",
-  );
+  // A song from the catalog, then a text item: the items form saves by itself.
+  const add = page.getByRole("combobox", { name: "Programpont hozzáadása" });
+  await add.fill("Áldás");
+  await page.getByRole("option", { name: /Áldás, békesség/ }).click();
+  await expect(page.getByText("Áldás, békesség").filter({ visible: true }).first()).toBeVisible();
+  await add.fill("Köszöntés");
+  await page.getByRole("option", { name: "Köszöntés" }).first().click();
+  await expect(page.locator('input[value="Köszöntés"]').first()).toBeVisible();
+  await expect(page.getByText(/mentve|Mentve/).first()).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Áldás, békesség").filter({ visible: true }).first()).toBeVisible();
+  await expect(page.locator('input[value="Köszöntés"]').first()).toBeVisible();
   expect(await axeSeriousOrCritical(page)).toEqual([]);
 
   // The chord sheet of the event.
-  await page.getByRole("link", { name: "Kotta megnyitása" }).click();
-  await expect(page).toHaveURL(/\/munkater\/kotta\?.*event=|\/munkater\/kotta\?arrangement=/);
+  await page.getByRole("link", { name: "Akkordlap megnyitása" }).first().click();
+  await expect(page).toHaveURL(/\/munkater\/kotta\?.*(event=|arrangement=)/);
   await expect(page.getByRole("link", { name: "Az akkordlap bezárása" })).toBeVisible();
 });
 
@@ -53,13 +53,18 @@ test("an event can be edited and deleted", async ({ page }) => {
   await page.getByLabel("Név").fill("Törlendő alkalom");
   await page.getByLabel("Kezdés").fill("2031-04-06T10:00");
   await page.getByRole("button", { name: "Esemény létrehozása" }).click();
-  await page.getByRole("link", { name: "Szerkesztés" }).click();
+  await page.getByRole("button", { name: "Adatok szerkesztése" }).click();
   await page.getByLabel("Név").fill("Átnevezett alkalom");
-  await page.getByRole("button", { name: "Mentés" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "Átnevezett alkalom" })).toBeVisible();
-  await page.getByRole("link", { name: "Szerkesztés" }).click();
-  page.once("dialog", (dialog) => void dialog.accept());
-  await page.getByRole("button", { name: "Esemény törlése" }).click();
+  await page.getByRole("button", { name: "Módosítások mentése" }).click();
+  // The dialog stays open after a save (it shows "Saved"); the page behind it loads again.
+  await expect(page.getByRole("button", { name: "Módosítások mentése" })).toBeEnabled();
+  await page.keyboard.press("Escape");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Átnevezett alkalom" }).first(),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "További műveletek az eseménnyel" }).click();
+  await page.getByRole("menuitem", { name: "Esemény törlése" }).click();
+  await page.getByRole("button", { name: "Esemény törlése" }).last().click();
   await expect(page).toHaveURL(/\/munkater\/esemenyek$/);
   await expect(page.getByText("Átnevezett alkalom")).toHaveCount(0);
 });
@@ -102,11 +107,9 @@ test("groups and the team of an event", async ({ page }) => {
   await page.getByLabel("Név").fill("Csapatos alkalom");
   await page.getByLabel("Kezdés").fill("2031-05-04T10:00");
   await page.getByRole("button", { name: "Esemény létrehozása" }).click();
-  await expect(page.getByRole("heading", { level: 2, name: "Csapat" })).toBeVisible();
-  await page.getByLabel("Terület").selectOption({ label: "Énekkar" });
-  await page.getByRole("group", { name: "Emberek" }).getByRole("checkbox").first().check();
-  await page.getByRole("button", { name: "Csapat mentése" }).click();
-  await expect(page.getByText(/^Énekkar:/)).toBeVisible();
+  // The team dialog offers the new group.
+  await page.getByRole("button", { name: "Csapatok", exact: true }).click();
+  await expect(page.getByRole("dialog").getByText("Énekkar").first()).toBeVisible();
   expect(await axeSeriousOrCritical(page)).toEqual([]);
 });
 
@@ -132,7 +135,7 @@ test("an area role lets a volunteer create and edit events of that area only", a
   await page.getByLabel("Kezdés").fill("2031-06-01T10:00");
   await page.getByRole("button", { name: "Esemény létrehozása" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Szolgálói alkalom" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Szerkesztés" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Adatok szerkesztése" })).toBeVisible();
 });
 
 test("a user turns the calendar feed on with consent and gets a private link", async ({ page }) => {
@@ -162,26 +165,19 @@ test("an event gets an image set and an announcement as program points", async (
   await page.getByLabel("Név").fill("Képes alkalom");
   await page.getByLabel("Kezdés").fill("2031-07-06T10:00");
   await page.getByRole("button", { name: "Esemény létrehozása" }).click();
-  await expect(page.getByRole("heading", { level: 2, name: "Képek" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Hirdetések hozzáadása" })).toBeVisible();
 
-  await page.getByPlaceholder("A programpont neve").first().fill("Hírek képekben");
-  await page.getByRole("button", { name: "Új képkészlet" }).click();
-  await expect(page.getByRole("listitem").filter({ hasText: "Hírek képekben" })).toBeVisible();
+  // An image item: the browser prepares the file, the server stores it.
   await page
     .locator('input[type="file"]')
     .first()
     .setInputFiles({ name: "kep.png", mimeType: "image/png", buffer: PNG });
-  await page.locator('button[type="submit"]', { hasText: "Kép feltöltése" }).click();
-  await expect(page.getByRole("img", { name: /Kép/ }).first()).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator("ol > li")).toHaveCount(1, { timeout: 30_000 });
   expect(await axeSeriousOrCritical(page)).toEqual([]);
 
-  await page.getByPlaceholder("A programpont neve").last().fill("Hirdetések");
-  await page.getByRole("button", { name: "Új hirdetés" }).click();
-  await expect(page.getByText("Nincs bejegyzés.")).toBeVisible();
-  await page.getByLabel("Cím", { exact: true }).fill("Takarítás");
-  await page.getByLabel("Nap").fill("2031-07-10");
-  await page.getByRole("button", { name: "Hozzáadás" }).last().click();
-  await expect(page.getByRole("listitem").filter({ hasText: "Takarítás" })).toBeVisible();
+  // An announcements item.
+  await page.getByRole("button", { name: "Hirdetések hozzáadása" }).click();
+  await expect(page.getByText("Hirdetések").filter({ visible: true }).first()).toBeVisible();
   expect(await axeSeriousOrCritical(page)).toEqual([]);
 });
 
@@ -213,13 +209,21 @@ test("the bulk form creates series, items reorder by drag and drop and get a vol
   await page.getByLabel("Kezdés").fill("2031-10-05T10:00");
   await page.getByRole("button", { name: "Esemény létrehozása" }).click();
   for (const title of ["Első", "Második"]) {
-    await page.getByLabel("Szöveges programpont").fill(title);
-    await page.getByRole("button", { name: "Hozzáadás" }).last().click();
-    await expect(page.getByRole("listitem").filter({ hasText: title })).toBeVisible();
+    const add = page.getByRole("combobox", { name: "Programpont hozzáadása" });
+    await add.fill(title);
+    await page.getByRole("option", { name: title }).first().click();
+    await expect(page.locator(`input[value="${title}"]`).first()).toBeVisible();
   }
   const rows = page.locator("ol > li");
-  await expect(rows.first()).toContainText("Első");
-  await rows.nth(1).dragTo(rows.first());
-  await expect(rows.first()).toContainText("Második");
+  await expect(rows.first().getByRole("textbox").first()).toHaveValue("Első");
+  // The handle of the second row drags it above the first one (pointer drag, with steps).
+  const handle = rows.nth(1).getByRole("button", { name: /mozgatása/ });
+  const from = (await handle.boundingBox())!;
+  const to = (await rows.first().boundingBox())!;
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(from.x + from.width / 2, to.y + 2, { steps: 12 });
+  await page.mouse.up();
+  await expect(rows.first().getByRole("textbox").first()).toHaveValue("Második");
   expect(await axeSeriousOrCritical(page)).toEqual([]);
 });

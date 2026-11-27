@@ -26,13 +26,19 @@ test("the controller shows the setlist of an event and puts a slide on the scree
   context,
 }) => {
   const id = await newEvent(page, "Vetített alkalom");
-  await page.getByLabel("Dal keresése").fill("Áldás");
-  await page.getByRole("button", { name: "Keresés" }).click();
-  await page.getByRole("button", { name: "Hozzáadás" }).first().click();
-  await expect(page.getByRole("list").filter({ hasText: "Áldás, békesség" }).first()).toBeVisible();
-  await page.getByLabel("Szöveges programpont").fill("Köszöntés");
-  await page.getByRole("button", { name: "Hozzáadás" }).last().click();
-  await expect(page.getByText("Köszöntés")).toBeVisible();
+  const add = page.getByRole("combobox", { name: "Programpont hozzáadása" });
+  await add.fill("Áldás");
+  await page.getByRole("option", { name: /Áldás, békesség/ }).click();
+  await expect(page.getByText("Áldás, békesség").filter({ visible: true }).first()).toBeVisible();
+  await add.fill("Köszöntés");
+  await page.getByRole("option", { name: "Köszöntés" }).first().click();
+  await expect(page.locator('input[value="Köszöntés"]').first()).toBeVisible();
+  await expect(
+    page
+      .getByRole("button", { name: /Minden módosítás mentve|Mentve/ })
+      .or(page.getByText(/Mentve|mentve/))
+      .first(),
+  ).toBeVisible();
 
   // The screen of the same browser: a second window.
   const screen = await context.newPage();

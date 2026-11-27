@@ -5,7 +5,11 @@ import { redirect } from "next/navigation";
 
 import { getRequestI18n } from "@/i18n/music/server";
 import { errorState, runUpdate, text, type FormState } from "@/server/music/form-state";
-import { deleteSong, updateSongWithArrangement } from "@/server/music/models/songs";
+import { getArrangement } from "@/server/music/models/arrangements";
+import { readProjectionThemes } from "@/server/music/models/projection-themes";
+import { deleteSong, getSong, updateSongWithArrangement } from "@/server/music/models/songs";
+import { isWorkspaceModuleOn } from "@/server/workspace-nav";
+import type { SongFormValues } from "../../song-form";
 import { musicTenant } from "@/server/music/policy";
 import { withPolicy } from "@/server/policy";
 import { readSongInput } from "../../song-input";
@@ -75,3 +79,36 @@ async function deleteSongFromForm(formData: FormData): Promise<FormState | null>
     return errorState(error, ({ m }) => m.songs.actions.deleteFailed);
   }
 }
+
+/** The values for the song form, e.g. in the dialog of the event page. Null if the song or the arrangement does not exist. */
+export const getSongFormValuesAction = withPolicy(
+  "music.song.manage",
+  musicTenant,
+  async (_scope, songId: string, arrangementId: string): Promise<SongFormValues | null> => {
+    if (typeof songId !== "string" || typeof arrangementId !== "string") return null;
+    // Only the names of the themes (the form has no theme field without the module).
+    const [song, arrangement, themes] = await Promise.all([
+      getSong(songId),
+      getArrangement(arrangementId),
+      isWorkspaceModuleOn("ws.music.projection.themes").then((on) =>
+        on ? readProjectionThemes() : undefined,
+      ),
+    ]);
+    if (!song || !arrangement || arrangement.songId !== song.id) return null;
+    return {
+      id: song.id,
+      title: song.title,
+      artist: song.artist,
+      tags: song.tags,
+      copyright: song.copyright,
+      songbook: song.songbook,
+      authors: song.authors,
+      originalTitle: song.originalTitle,
+      translator: song.translator,
+      rightsStatus: song.rightsStatus,
+      rightsNote: song.rightsNote,
+      arrangement,
+      themes: themes?.map(({ id, name }) => ({ id, name })),
+    };
+  },
+);

@@ -101,3 +101,17 @@ export function musicProjectionChild(child: "themes" | "text-slides" | "overlay"
     return (await isWorkspaceModuleOn(`ws.music.projection.${child}`)) ? tenant : null;
   };
 }
+
+/**
+ * For the actions of the image sets and the announcements of an event: the music events module and
+ * the child module (`ws.music.events.<module>`) must be on. The first argument can be an id of an
+ * image or an announcement (not an event), so no area context is resolved; the models check the
+ * event and its areas again.
+ */
+export function musicEventModule(module: "images" | "announcements") {
+  return async (scope: PolicyScope, ..._args: unknown[]): Promise<{ tenantId: string } | null> => {
+    const tenant = await musicEvents(scope);
+    if (tenant === null) return null;
+    return (await isWorkspaceModuleOn(`ws.music.events.${module}`)) ? tenant : null;
+  };
+}

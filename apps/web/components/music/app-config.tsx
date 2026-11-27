@@ -39,3 +39,20 @@ export function useModule(id: string): boolean {
 export function ModuleGate({ id, children }: { id: string; children: React.ReactNode }) {
   return useModule(id) ? <>{children}</> : null;
 }
+
+/**
+ * The configuration of the page as the copied components read it: the ids (of the music app) of the
+ * modules that are on. Scripture (Bible texts, translations) comes with phase 6: until then no
+ * translation is on.
+ */
+export function useAppConfig(): { modules: string[] } {
+  const modules = useContext(ModulesContext);
+  return { modules: Object.keys(modules).filter((id) => modules[id] === true) };
+}
+
+const NO_TRANSLATIONS: never[] = [];
+
+/** The translations that are on: none until the scripture phase (phase 6). */
+export function useScriptureTranslations(): never[] {
+  return NO_TRANSLATIONS;
+}
