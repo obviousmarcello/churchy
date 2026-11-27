@@ -333,6 +333,16 @@ export const README_ROWS: readonly MatrixRow[] = [
     variants: [v("set the default theme", "music.projection.themes.setDefault", tenant, "YNNNYNNN")],
   },
   {
+    capability: "Music: read scripture and share pasted verses (music merge)",
+    sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
+    variants: [v("use scripture", "music.scripture.use", tenant, "YYYYYYYY")],
+  },
+  {
+    capability: "Music: manage the church's Bible translations (music merge)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("edit Bible translations", "music.scripture.translations.manage", tenant, "YNNNYNNN")],
+  },
+  {
     capability: "Music: join a live session (music merge)",
     sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
     variants: [v("join a live session", "music.live.join", tenant, "YYYYYYYY")],

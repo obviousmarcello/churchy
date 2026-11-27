@@ -130,6 +130,8 @@ BEGIN
   INSERT INTO announcement_calendars (tenant_id, id, name, ics_url, position)
     VALUES (t, cal, 'Hirdetések', 'https://example.org/cal.ics', 0);
   INSERT INTO announcement_settings (tenant_id) VALUES (t);
+  INSERT INTO scripture_translations (tenant_id, id, name, short_name, source)
+    VALUES (t, 'sajat', 'Saját fordítás', 'Saját', 'database');
   INSERT INTO scripture_books (tenant_id, translation, book, chapters) VALUES (t, 'sajat', 'Gen', '[50]');
   INSERT INTO scripture_verse_cache (tenant_id, translation, book, chapter, verse, text)
     VALUES (t, 'sajat', 'Gen', 1, 1, 'Kezdetben');

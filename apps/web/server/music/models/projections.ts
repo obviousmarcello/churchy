@@ -11,7 +11,7 @@ import { itemPlannedSeconds } from "@/lib/music/event-timing";
 import type { EventImageSetsDTO } from "@/lib/music/projection/images";
 import type { ProjectionSource } from "@/lib/music/projection/slides";
 import type { ProjectionThemeChoice } from "@/lib/music/projection/themes";
-import { TRANSLATION_IDS } from "@/lib/music/scripture/translations";
+import { TRANSLATION_ID_PATTERN } from "@/lib/music/scripture/translations";
 import { requireEventAdmin, requireUser } from "@/server/music/auth";
 import { ConflictError, ForbiddenError } from "@/server/music/errors";
 import { isWorkspaceModuleOn } from "@/server/workspace-nav";
@@ -331,7 +331,10 @@ function toItemInput(item: SetlistItemDTO): SetlistItemInput {
     };
   }
   // A translation that the app does not have anymore becomes the default one, as in the items form.
-  const translation = TRANSLATION_IDS.find((id) => id === item.scriptureTranslation) ?? null;
+  const translation =
+    item.scriptureTranslation !== null && TRANSLATION_ID_PATTERN.test(item.scriptureTranslation)
+      ? item.scriptureTranslation
+      : null;
   return {
     kind: "text",
     key,

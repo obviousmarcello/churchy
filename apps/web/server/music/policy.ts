@@ -117,3 +117,13 @@ export function musicEventModule(module: "images" | "announcements") {
     return (await isWorkspaceModuleOn(`ws.music.events.${module}`)) ? tenant : null;
   };
 }
+
+/** Scripture (`ws.music.scripture`, a child of the events module) must be on too. */
+export async function musicScripture(
+  scope: PolicyScope,
+  ..._args: unknown[]
+): Promise<{ tenantId: string } | null> {
+  const tenant = await musicEvents(scope);
+  if (tenant === null) return null;
+  return (await isWorkspaceModuleOn("ws.music.scripture")) ? tenant : null;
+}

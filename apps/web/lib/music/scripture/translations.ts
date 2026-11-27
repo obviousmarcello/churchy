@@ -1,27 +1,17 @@
 import type { TextSources } from "./source-links";
 
-// The translations of the Bible that the app has. The text of a "files"
-// translation is in `public/bible/<id>/<book>.json` (see `load.ts` and
-// `scripts/import-bible.mts`). Only translations that the app can show
-// without a licence: public domain, or with a permission for this use. The
-// `scripture_translation` migration checks the form of the ids.
+// The translations of the Bible. Károli 1908 is the platform catalog: public domain, its text is in
+// `public/bible/karoli1908/<book>.json` (see `load.ts` and `scripts/import-bible.mts`). Every other
+// translation belongs to one church (table `scripture_translations`, PLAN §24) and is shown under that
+// church's own licence; the ids of the church's translations are lower case letters and digits.
 //
-// A "pasted" translation has no files: the app may quote only a few of its
-// verses. The users paste the text of a reading on the projection
-// controller, into a shared cache that keeps 331 verses for 24 hours (see
-// `cache-limits.ts` and the migration `scripture_verse_cache`). Only the
-// items of a setlist can use it, not the Bible panel of the controller.
+// A "pasted" translation has no stored text: the users paste the text of a reading on the projection
+// controller into the church's own cache, which keeps 331 verses for 24 hours (see `cache-limits.ts`
+// and the migration `scripture_verse_cache`). Only the items of a setlist can use it, not the Bible
+// panel of the controller.
 //
-// A "database" translation has its text in the table `scripture_books`, one
-// row per book, for the signed-in users only (see `load.ts`): a translation
-// with a permit, not public domain.
-//
-// A superadmin turns the translations on and off on the Bible translations tab of Configuration
-// (`ScriptureConfig`, in `app_config`). RÚF 2014 is "pasted" without a
-// written permit of the Hungarian Bible Society, and "database" with one.
-
-/** The copyright notice of RÚF 2014: the short form from point 7 of the policy of the Hungarian Bible Society. */
-export const RUF_NOTICE = "RÚF 2014 © 2014 Magyar Bibliatársulat. Minden jog fenntartva.";
+// A "database" translation has its full text in the table `scripture_books`, one row per book, for
+// the signed-in users of the church only (see `load.ts`).
 
 export type TranslationSource = "files" | "database" | "pasted";
 
@@ -38,85 +28,62 @@ export type ScriptureTranslation = {
   notice: string | null;
   /** The translation has the deuterocanonical books (see `DEUTEROCANONICAL_BOOKS`). */
   deuterocanon: boolean;
-  /** Where the text comes from: the files of the app, the table `scripture_books`, or the shared cache of the pasted verses. */
+  /** Where the text comes from: the files of the app, the table `scripture_books`, or the cache of the pasted verses. */
   source: TranslationSource;
   /** The websites with the text, for links: the users copy a "pasted" translation from there. */
   sources?: TextSources;
 };
 
-export const TRANSLATIONS = [
-  {
-    id: "karoli1908",
-    language: "hu",
-    name: "Károli Gáspár revideált fordítása (1908)",
-    shortName: "Károli",
-    notice: null,
-    deuterocanon: false,
-    source: "files",
-  },
-  {
-    id: "ruf2014",
-    language: "hu",
-    name: "Revideált új fordítás (2014)",
-    shortName: "RÚF",
-    notice: RUF_NOTICE,
-    deuterocanon: false,
-    source: "pasted",
-    sources: {
-      szentiras: "RUF",
-      bibliaMindenkie: "uj",
-      bibleCom: { id: 920, abbreviation: "RÚF" },
-    },
-  },
-] as const satisfies ScriptureTranslation[];
+/** The translation of the platform catalog. */
+export const KAROLI: ScriptureTranslation = {
+  id: "karoli1908",
+  language: "hu",
+  name: "Károli Gáspár revideált fordítása (1908)",
+  shortName: "Károli",
+  notice: null,
+  deuterocanon: false,
+  source: "files",
+};
 
-export type TranslationId = (typeof TRANSLATIONS)[number]["id"];
+export const TRANSLATIONS: ScriptureTranslation[] = [KAROLI];
 
-export const TRANSLATION_IDS = TRANSLATIONS.map((translation) => translation.id) as [
-  TranslationId,
-  ...TranslationId[],
-];
+export const TRANSLATION_ID_PATTERN = /^[a-z0-9]{1,30}$/;
 
 /** For a scripture reading without a translation. */
-export const DEFAULT_TRANSLATION: TranslationId = "karoli1908";
-
-/** The translation of the id, on or off, or the default one for null and for an id that the app does not have (anymore). For names, e.g. in a printed setlist. */
-export function scriptureTranslation(id: string | null | undefined): ScriptureTranslation {
-  return (
-    TRANSLATIONS.find((translation) => translation.id === id) ??
-    TRANSLATIONS.find(({ id }) => id === DEFAULT_TRANSLATION)!
-  );
-}
-
-// The settings of the Bible translations tab of Configuration ---------------
+export const DEFAULT_TRANSLATION = KAROLI.id;
 
 /**
- * RÚF 2014: "off"; "pasted" without a permit (the shared cache, at most 500
- * verses with the daily psalm, see `cache-limits.ts`); "permit" with a written
- * permit of the Hungarian Bible Society (its text is in `scripture_books`).
+ * The translation of the id: Károli, one of the church's `own` translations, or the default one for
+ * null and for an id that the church does not have (anymore). For names, e.g. in a printed setlist.
  */
-export const RUF_MODES = ["pasted", "permit", "off"] as const;
-export type RufMode = (typeof RUF_MODES)[number];
+export function scriptureTranslation(
+  id: string | null | undefined,
+  own: readonly ScriptureTranslation[] = [],
+): ScriptureTranslation {
+  return [KAROLI, ...own].find((translation) => translation.id === id) ?? KAROLI;
+}
 
-/** Which translations the app shows (the columns `scripture_*` of `app_config`). */
-export type ScriptureConfig = { karoli: boolean; ruf: RufMode };
+// The settings of a church ----------------------------------------------------
 
-export const DEFAULT_SCRIPTURE_CONFIG: ScriptureConfig = { karoli: true, ruf: "pasted" };
+/**
+ * Which translations a church shows: Károli (`app_config.scripture_karoli`) and the church's own
+ * translations that are on, each with its source ("pasted" or "database").
+ */
+export type ScriptureConfig = { karoli: boolean; own: ScriptureTranslation[] };
+
+export const DEFAULT_SCRIPTURE_CONFIG: ScriptureConfig = { karoli: true, own: [] };
 
 // One list for each configuration, so the lists keep their identity between renders.
-const enabledLists = new Map<string, ScriptureTranslation[]>();
+const enabledLists = new WeakMap<ScriptureTranslation[], ScriptureTranslation[]>();
+const karoliLists = new WeakMap<ScriptureTranslation[], ScriptureTranslation[]>();
 
-/** The translations that are on, in the order of `TRANSLATIONS`, each with the source of its text. Empty when all are off. */
+/** The translations that are on: Károli first, then the church's own ones. Empty when all are off. */
 export function enabledTranslations(config: ScriptureConfig): ScriptureTranslation[] {
-  const key = `${config.karoli}/${config.ruf}`;
-  let list = enabledLists.get(key);
+  const lists = config.karoli ? enabledLists : karoliLists;
+  let list = lists.get(config.own);
   if (!list) {
-    list = TRANSLATIONS.flatMap((translation): ScriptureTranslation[] => {
-      if (translation.id === "karoli1908") return config.karoli ? [translation] : [];
-      if (config.ruf === "off") return [];
-      return [{ ...translation, source: config.ruf === "permit" ? "database" : "pasted" }];
-    });
-    enabledLists.set(key, list);
+    list = config.karoli ? [KAROLI, ...config.own] : [...config.own];
+    lists.set(config.own, list);
   }
   return list;
 }
@@ -132,7 +99,7 @@ export function resolveTranslation(
 ): ScriptureTranslation | null {
   const own = enabled.find((translation) => translation.id === id);
   if (own) return own;
-  const language = scriptureTranslation(id).language;
+  const language = scriptureTranslation(id, enabled).language;
   return enabled.find((translation) => translation.language === language) ?? enabled[0] ?? null;
 }
 
@@ -166,9 +133,6 @@ export function translationsOf(
 export function defaultTranslationFor(
   locale: string,
   enabled: ScriptureTranslation[],
-): TranslationId | null {
-  return (
-    ((enabled.find((translation) => translation.language === locale) ?? enabled[0])?.id as
-      TranslationId | undefined) ?? null
-  );
+): string | null {
+  return (enabled.find((translation) => translation.language === locale) ?? enabled[0])?.id ?? null;
 }

@@ -1108,6 +1108,62 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
       });
     });
 
+    it("scripture: translations are per tenant, Károli is reserved, the verse cache has per-tenant limits", async () => {
+      await asMusic(A, async (c) => {
+        await c.query(
+          "insert into scripture_translations (id, name, short_name, source) values ('proba', 'Próba', 'Próba', 'pasted')",
+        );
+        for (const sql of [
+          "insert into scripture_translations (id, name, short_name, source) values ('karoli1908', 'K', 'K', 'pasted')",
+          "insert into scripture_translations (id, name, short_name, source) values ('masik', 'M', 'M', 'file')",
+          "insert into scripture_books (translation, book, chapters) values ('nincs', 'Gen', '[]')",
+        ]) {
+          await c.query("savepoint s");
+          expect(await attempt(c, sql)).toMatchObject({ code: expect.stringMatching(/^23/) });
+          await c.query("rollback to savepoint s");
+        }
+        const put = (n: number, book = "John", limit = 331) =>
+          c.query("select put_scripture_cache_verses('proba', $1, $2::jsonb, $3)", [
+            book,
+            JSON.stringify(
+              Array.from({ length: n }, (_, i) => ({ chapter: 1, verse: i + 1, text: `v${i}` })),
+            ),
+            limit,
+          ]);
+        await put(5);
+        await put(3, "John", 4);
+        // The book limit keeps the newest verses (a paste never removes its own).
+        expect(
+          (
+            await c.query(
+              "select count(*)::int as n from scripture_verse_cache where translation = 'proba'",
+            )
+          ).rows[0]!.n,
+        ).toBe(4);
+        await c.query("savepoint s");
+        expect(
+          await attempt(c, "select put_scripture_cache_verses('proba', 'John', '[]'::jsonb, 10)"),
+        ).toMatchObject({
+          code: "22023",
+        });
+        await c.query("rollback to savepoint s");
+      });
+      // The other tenant sees neither the translation nor its cache, and cannot cache into it.
+      await asMusic(B, async (c) => {
+        expect(
+          (await c.query("select 1 from scripture_translations where id = 'proba'")).rowCount,
+        ).toBe(0);
+        await c.query("savepoint s");
+        expect(
+          await attempt(
+            c,
+            `select put_scripture_cache_verses('proba', 'John', '[{"chapter":1,"verse":1,"text":"x"}]'::jsonb, 10)`,
+          ),
+        ).toMatchObject({ code: "23503" });
+        await c.query("rollback to savepoint s");
+      });
+    });
+
     it("realtime: the policies compare the topic with the claims of the token, per tenant", async () => {
       async function allowed(claims: object, topic: string, send: boolean): Promise<boolean> {
         const client = await owner.connect();

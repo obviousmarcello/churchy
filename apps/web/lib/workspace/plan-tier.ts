@@ -40,6 +40,8 @@ const S50: readonly WorkspaceModuleKey[] = [
   "ws.music.projection.countdown",
   "ws.music.projection.pptx-export",
   "ws.music.projection.quick-add",
+  "ws.music.scripture",
+  "ws.music.projection.bible-panel",
 ];
 const M150: readonly WorkspaceModuleKey[] = [...S50, "ws.hr.confidential", "ws.docs"];
 const L300: readonly WorkspaceModuleKey[] = [...M150, "ws.board"];
@@ -97,7 +99,7 @@ export function musicParent(key: WorkspaceModuleKey): WorkspaceModuleKey | null 
   if (key === "ws.music.songs") return null;
   if (key === "ws.music.song-rights" || key === "ws.music.sheet" || key === "ws.music.events")
     return "ws.music.songs";
-  if (key === "ws.music.projection") return "ws.music.events";
+  if (key === "ws.music.projection" || key === "ws.music.scripture") return "ws.music.events";
   if (key === "ws.music.sheet.midi-out") return "ws.music.sheet.metronome";
   const parent = key.slice(0, key.lastIndexOf("."));
   return parent.startsWith(MUSIC_PREFIX) ? (parent as WorkspaceModuleKey) : null;
