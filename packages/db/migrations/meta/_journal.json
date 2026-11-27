@@ -120,6 +120,20 @@
       "when": 1795600318407,
       "tag": "0016_music_images_announcements",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1795617367908,
+      "tag": "0017_music_projection",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1795785804825,
+      "tag": "0018_music_live",
+      "breakpoints": true
     }
   ]
 }

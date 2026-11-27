@@ -10,7 +10,7 @@ import { EVENT_AREAS_MAX, forbiddenEventAreaChanges } from "@/lib/music/event-sc
 import { toYoutubeUrl } from "@/lib/music/youtube";
 import { requireEventAdminIn, requireUser, type CurrentUser } from "@/server/music/auth";
 import { getMusicSupabase } from "@/server/music/db";
-import { ConflictError, ValidationError } from "@/server/music/errors";
+import { ConflictError, ProjectionOpenError, ValidationError } from "@/server/music/errors";
 import { zodMessage } from "@/server/music/zod-i18n";
 import { readEventBlocks, type EventBlockDTO } from "./event-blocks";
 import {
@@ -35,7 +35,15 @@ import {
   type SetlistItemInput,
 } from "./setlists";
 import { playKeySchema } from "./arrangements";
-import { databaseError, idSchema, isId, lowerIdSchema, parseInput, requiredText } from "./shared";
+import {
+  databaseError,
+  endingProjections,
+  idSchema,
+  isId,
+  lowerIdSchema,
+  parseInput,
+  requiredText,
+} from "./shared";
 
 // Music events (Music Sheet DB `events.ts`, merged into Churchy's one `events` table, PLAN §11).
 // Every music event lives in the tenant's music calendar (`music_calendar_id()`, internal
@@ -69,6 +77,8 @@ export type EventDTO = {
   areaIds: string[];
   /** The event's own setlist, else null. */
   setlistId: string | null;
+  /** The projection theme of the event. Null: the default theme. */
+  projectionThemeId: string | null;
   createdBy: string | null;
 };
 
@@ -154,7 +164,7 @@ export type NewEventInput = z.input<typeof newEventInputSchema>;
 export type EventPatchInput = z.input<typeof eventPatchInputSchema>;
 
 const EVENT_COLUMNS =
-  "id, title, starts_at, ends_at, youtube_url, is_private, area_ids, rrule, exdates, parent_event_id, recurrence_id, setlist_id, created_by";
+  "id, title, starts_at, ends_at, youtube_url, is_private, area_ids, rrule, exdates, parent_event_id, recurrence_id, setlist_id, projection_theme_id, created_by";
 
 const eventRowSchema = z.object({
   id: z.uuid(),
@@ -169,6 +179,7 @@ const eventRowSchema = z.object({
   parent_event_id: z.uuid().nullable(),
   recurrence_id: z.string().nullable(),
   setlist_id: z.uuid().nullable(),
+  projection_theme_id: z.uuid().nullable(),
   created_by: z.uuid().nullable(),
 });
 
@@ -193,6 +204,7 @@ function toEvent(row: EventRow): EventDTO {
     parentEventId: row.parent_event_id?.toLowerCase() ?? null,
     recurrenceId: row.recurrence_id === null ? null : iso(row.recurrence_id),
     setlistId: row.setlist_id?.toLowerCase() ?? null,
+    projectionThemeId: row.projection_theme_id?.toLowerCase() ?? null,
     createdBy: row.created_by?.toLowerCase() ?? null,
   };
 }
@@ -328,11 +340,19 @@ export async function updateEvent(id: string, patch: EventPatchInput): Promise<E
 }
 
 /** Deletes an event (with its changed occurrences). False when it is not there. */
-export async function deleteEvent(id: string): Promise<boolean> {
+export async function deleteEvent(
+  id: string,
+  options: { endProjections?: boolean } = {},
+): Promise<boolean> {
   if ((await requireEventAdminOf(id)) === null) return false;
   // The files go after the rows (a stray-file row keeps them if this stops in between).
   const paths = await listEventImagePaths(id);
-  const { error } = await (await getMusicSupabase()).from("events").delete().eq("id", id);
+  // An open projection stops the delete; with `endProjections` the open controllers close.
+  const { error } = await endingProjections(
+    (await getMusicSupabase()).from("events").delete().eq("id", id),
+    options.endProjections === true,
+  );
+  if (error?.hint === "projection_open") throw new ProjectionOpenError();
   if (error) throw databaseError("delete an event", error);
   await removeEventImageFiles(paths);
   return true;

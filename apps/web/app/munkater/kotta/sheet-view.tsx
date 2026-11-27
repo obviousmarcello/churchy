@@ -17,6 +17,8 @@ import { useI18n } from "@/i18n/music/client";
 import { useBrowserValue } from "@/lib/music/browser";
 import { safeNextPath } from "@/lib/music/next-path";
 import type { SheetNotFound, SheetPageData } from "./data";
+import type { LiveSessionProps } from "./live-session";
+import type { StartLive } from "./start-live-control";
 import { SheetViewer } from "./sheet-viewer";
 
 type Result = { data: SheetPageData } | { notFound: SheetNotFound };
@@ -24,7 +26,17 @@ type Result = { data: SheetPageData } | { notFound: SheetNotFound };
 // Music Sheet DB's `SheetView` kept the page in an offline copy and followed events and live
 // sessions; Churchy renders the data on the server per request. The sheet covers the workspace
 // shell: it is a full-screen page.
-export function SheetView({ result, from }: { result: Result; from?: string }) {
+export function SheetView({
+  result,
+  from,
+  live,
+  startLive,
+}: {
+  result: Result;
+  from?: string;
+  live?: LiveSessionProps;
+  startLive?: StartLive;
+}) {
   const { m } = useI18n();
   // The hydration uses the server's values: the sheet would first show the desktop layout and the
   // default settings, then jump to the device's. So it waits for the browser's values.
@@ -50,6 +62,8 @@ export function SheetView({ result, from }: { result: Result; from?: string }) {
           canEditSongs={canEditSongs}
           title={title}
           songs={songs}
+          live={live}
+          startLive={startLive}
           backHref={from ? safeNextPath(from) : backHref}
         />
       </MusicModulesProvider>
@@ -67,6 +81,7 @@ function NotFound({ reason, from }: { reason: SheetNotFound; from?: string }) {
     },
     song: { title: notFound.songTitle, description: notFound.songDescription },
     songs: { title: notFound.songsTitle, description: notFound.songsDescription },
+    session: { title: notFound.sessionTitle, description: notFound.sessionDescription },
   }[reason];
   const backHref = from ? safeNextPath(from) : "/munkater/enektar";
 

@@ -44,7 +44,7 @@ export type SheetPageData = {
   modules: Record<string, boolean>;
 };
 
-export type SheetNotFound = "noArrangement" | "song" | "songs";
+export type SheetNotFound = "noArrangement" | "song" | "songs" | "session";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -55,17 +55,19 @@ export async function loadSheetPage(
   params: SearchParams,
 ): Promise<{ data: SheetPageData } | { notFound: SheetNotFound }> {
   const i18n = createI18n((await getRequestI18n()).m);
-  const [marksOn, metronomeOn, midiOn, diagramsOn] = await Promise.all([
+  const [marksOn, metronomeOn, midiOn, diagramsOn, liveOn] = await Promise.all([
     isWorkspaceModuleOn("ws.music.sheet.marks"),
     isWorkspaceModuleOn("ws.music.sheet.metronome"),
     isWorkspaceModuleOn("ws.music.sheet.midi-out"),
     isWorkspaceModuleOn("ws.music.sheet.chord-diagrams"),
+    isWorkspaceModuleOn("ws.music.sheet.live"),
   ]);
   const modules = {
     "sheet.marks": marksOn,
     "sheet.metronome": metronomeOn,
     "sheet.midi-out": midiOn,
     "sheet.chord-diagrams": diagramsOn,
+    "sheet.live": liveOn,
   };
   const listMarks = (arrangementIds: string[]) =>
     marksOn ? listMySheetMarks(arrangementIds) : Promise.resolve(new Map<string, SheetMark[]>());

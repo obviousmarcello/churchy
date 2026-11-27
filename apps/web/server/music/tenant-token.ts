@@ -29,6 +29,9 @@ export interface TenantTokenClaims {
   readonly role: string;
   readonly iat: number;
   readonly exp: number;
+  /** Realtime topics the token may receive on, and may broadcast on (see `realtime.ts`). */
+  readonly rt_topics?: readonly string[];
+  readonly rt_send?: readonly string[];
 }
 
 export interface MintTenantTokenInput {
@@ -38,6 +41,8 @@ export interface MintTenantTokenInput {
   readonly secret: string;
   readonly now?: Date;
   readonly ttlSeconds?: number;
+  /** Realtime authorization claims: the full topics of the channels (policies on `realtime.messages`). */
+  readonly realtime?: { readonly topics: readonly string[]; readonly send: readonly string[] };
 }
 
 const b64url = (data: string | Buffer) => Buffer.from(data).toString("base64url");
@@ -68,6 +73,7 @@ export function mintTenantToken(input: MintTenantTokenInput): string {
     role,
     iat,
     exp: iat + ttl,
+    ...(input.realtime ? { rt_topics: input.realtime.topics, rt_send: input.realtime.send } : {}),
   };
   const unsigned = `${b64url(JSON.stringify({ alg: "HS256", typ: "JWT" }))}.${b64url(JSON.stringify(claims))}`;
   return `${unsigned}.${sign(unsigned, secret)}`;

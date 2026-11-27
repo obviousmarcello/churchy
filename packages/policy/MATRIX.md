@@ -88,33 +88,38 @@ A cell passes only when every check of its row gives the result shown for that r
 
 These capabilities are not rows of the SDD table; the README documents the resolved ambiguity.
 
-| Capability                                                                    | Check                                      | Action                       |  L  |  E  |  V  | TL  | ML  | RM  | HR  | CH  |
-| ----------------------------------------------------------------------------- | ------------------------------------------ | ---------------------------- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Music: view songs (owner decision 2026-11-24, music merge)                    | view the song catalog                      | `music.song.view`            |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Music: use the chord sheet, own capo, key, layout and marks (music merge)     | personalise the chord sheet                | `music.sheet.personalize`    |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Music: view events (music merge)                                              | view music events                          | `music.event.view`           |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Music: manage events and setlists (music merge)                               | edit music events                          | `music.event.manage`         |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
-| Music: manage the music areas and event teams (music merge)                   | edit areas and teams                       | `music.group.manage`         |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
-| Music: manage songs and arrangements (music merge)                            | edit songs and arrangements                | `music.song.manage`          |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
-| Music: shared song rights and research (music merge)                          | song rights and research                   | `music.songRights.manage`    |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
-| Create private events (README: every workspace role has a personal calendar)  | private event                              | `calendarEvent.create`       |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Own leave balance (README)                                                    | own leave balance                          | `hr.leaveBalance.view`       |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Absence calendar „Távol” (README)                                             | absence calendar                           | `hr.absence.viewCalendar`    |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Requester of a non-confidential ticket: read and reply, never handle (README) | read own ticket                            | `hr.ticket.read`             |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Requester of a non-confidential ticket: read and reply, never handle (README) | reply to own ticket                        | `hr.ticket.reply`            |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Requester of a non-confidential ticket: read and reply, never handle (README) | handle own ticket                          | `hr.ticket.handle`           |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
-| Requester of a confidential ticket: read and reply, never handle (README)     | read own confidential ticket               | `hr.ticket.read`             |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Requester of a confidential ticket: read and reply, never handle (README)     | reply to own confidential ticket           | `hr.ticket.reply`            |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
-| Requester of a confidential ticket: read and reply, never handle (README)     | handle own confidential ticket             | `hr.ticket.handle`           |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
-| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | read a handed-over ticket                  | `hr.ticket.read`             |  –  |  –  |  –  |  –  |  –  |  –  |  ✔  |  –  |
-| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | reply to a handed-over ticket              | `hr.ticket.reply`            |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
-| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | handle a handed-over ticket                | `hr.ticket.handle`           |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
-| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | read a handed-over confidential ticket     | `hr.ticket.read`             |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  ✔  |
-| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | reply to a handed-over confidential ticket | `hr.ticket.reply`            |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
-| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | handle a handed-over confidential ticket   | `hr.ticket.handle`           |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
-| Managers never approve their own or confidential requests (README, SDD §25.4) | own request                                | `hr.ticket.approveAsManager` |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
-| Managers never approve their own or confidential requests (README, SDD §25.4) | confidential request of a direct report    | `hr.ticket.approveAsManager` |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
-| Managers never approve their own or confidential requests (README, SDD §25.4) | anonymous request                          | `hr.ticket.approveAsManager` |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Capability                                                                    | Check                                      | Action                               |  L  |  E  |  V  | TL  | ML  | RM  | HR  | CH  |
+| ----------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------ | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Music: view songs (owner decision 2026-11-24, music merge)                    | view the song catalog                      | `music.song.view`                    |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: use the chord sheet, own capo, key, layout and marks (music merge)     | personalise the chord sheet                | `music.sheet.personalize`            |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: view events (music merge)                                              | view music events                          | `music.event.view`                   |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: manage events and setlists (music merge)                               | edit music events                          | `music.event.manage`                 |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: manage the music areas and event teams (music merge)                   | edit areas and teams                       | `music.group.manage`                 |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: project an event (music merge)                                         | use the projection of an event             | `music.projection.use`               |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: manage the projection themes (music merge)                             | edit projection themes                     | `music.projection.themes.manage`     |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: choose the default projection theme (music merge)                      | set the default theme                      | `music.projection.themes.setDefault` |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: join a live session (music merge)                                      | join a live session                        | `music.live.join`                    |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: start and lead a live session (music merge)                            | lead a live session                        | `music.live.lead`                    |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: manage songs and arrangements (music merge)                            | edit songs and arrangements                | `music.song.manage`                  |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: shared song rights and research (music merge)                          | song rights and research                   | `music.songRights.manage`            |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Create private events (README: every workspace role has a personal calendar)  | private event                              | `calendarEvent.create`               |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Own leave balance (README)                                                    | own leave balance                          | `hr.leaveBalance.view`               |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Absence calendar „Távol” (README)                                             | absence calendar                           | `hr.absence.viewCalendar`            |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Requester of a non-confidential ticket: read and reply, never handle (README) | read own ticket                            | `hr.ticket.read`                     |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Requester of a non-confidential ticket: read and reply, never handle (README) | reply to own ticket                        | `hr.ticket.reply`                    |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Requester of a non-confidential ticket: read and reply, never handle (README) | handle own ticket                          | `hr.ticket.handle`                   |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Requester of a confidential ticket: read and reply, never handle (README)     | read own confidential ticket               | `hr.ticket.read`                     |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Requester of a confidential ticket: read and reply, never handle (README)     | reply to own confidential ticket           | `hr.ticket.reply`                    |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Requester of a confidential ticket: read and reply, never handle (README)     | handle own confidential ticket             | `hr.ticket.handle`                   |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | read a handed-over ticket                  | `hr.ticket.read`                     |  –  |  –  |  –  |  –  |  –  |  –  |  ✔  |  –  |
+| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | reply to a handed-over ticket              | `hr.ticket.reply`                    |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | handle a handed-over ticket                | `hr.ticket.handle`                   |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | read a handed-over confidential ticket     | `hr.ticket.read`                     |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  ✔  |
+| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | reply to a handed-over confidential ticket | `hr.ticket.reply`                    |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Handed-over tickets (Átadás) are read-only (README, SDD §25.4)                | handle a handed-over confidential ticket   | `hr.ticket.handle`                   |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Managers never approve their own or confidential requests (README, SDD §25.4) | own request                                | `hr.ticket.approveAsManager`         |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Managers never approve their own or confidential requests (README, SDD §25.4) | confidential request of a direct report    | `hr.ticket.approveAsManager`         |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Managers never approve their own or confidential requests (README, SDD §25.4) | anonymous request                          | `hr.ticket.approveAsManager`         |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
 
 ## 4. Workspace scope boundaries
 

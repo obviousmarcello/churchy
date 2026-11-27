@@ -3,7 +3,7 @@
  * and workspace directory, §8.2/§21.1), `teams`, `team_positions`, `team_members`, `calendars` and
  * the single `events` table with `calendar_id` + `visibility` (§22.1). Plus `availability_blocks`.
  */
-import { setlists, volunteerTemplates } from "./music";
+import { projectionThemes, setlists, volunteerTemplates } from "./music";
 import type { Calendar, ContactVisibility, RichText } from "@churchy/contracts";
 import { sql } from "drizzle-orm";
 import {
@@ -219,6 +219,8 @@ export const events = pgTable(
     areaIds: uuid().array().notNull().default(emptyArray),
     /** The volunteer template the event's team started from (music module). */
     volunteerTemplateId: uuid(),
+    /** The projection theme of the event (music module); null: the default theme. */
+    projectionThemeId: uuid(),
     ...timestamps(),
   },
   (t) => [
@@ -230,6 +232,12 @@ export const events = pgTable(
       t.tenantId,
       t.volunteerTemplateId,
       volunteerTemplates,
+    ),
+    sameTenantFk(
+      "events_projection_theme_id_fkey",
+      t.tenantId,
+      t.projectionThemeId,
+      projectionThemes,
     ),
     index("events_area_ids_idx").using("gin", t.areaIds),
     check(

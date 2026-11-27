@@ -12,6 +12,10 @@ export type PersonDTO = {
   /** The profile id, as the music tables store it. */
   id: string;
   name: string;
+  /** The name as the music app's avatar and name helpers know it (`name`). */
+  displayName: string | null;
+  /** Churchy has no avatar images of people. */
+  avatarUrl: string | null;
   /** Only with `emails: true`. */
   email: string | null;
 };
@@ -37,6 +41,13 @@ export async function listPeople(
                 prefix: person.prefix ?? undefined,
                 suffix: person.suffix ?? undefined,
               }),
+              displayName: formatPersonName({
+                familyName: person.familyName,
+                givenName: person.givenName,
+                prefix: person.prefix ?? undefined,
+                suffix: person.suffix ?? undefined,
+              }),
+              avatarUrl: null,
             },
           ],
     )

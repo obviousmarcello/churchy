@@ -39,7 +39,18 @@ export function DeleteEvent({
           const data = new FormData();
           data.set("id", id);
           start(async () => {
-            await run(data);
+            const result = await run(data);
+            // An open projection stops the delete: with a second yes it closes and the event goes.
+            if (
+              typeof result === "object" &&
+              result !== null &&
+              "message" in result &&
+              result.message === m.server.events.projectionOpen &&
+              window.confirm(m.events.delete.endProjection)
+            ) {
+              data.set("endProjections", "1");
+              await run(data);
+            }
           });
         }}
       >

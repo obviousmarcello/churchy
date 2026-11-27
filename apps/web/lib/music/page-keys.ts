@@ -6,4 +6,5 @@ export const changedPages = {
   songs: none,
   song: none,
   sheets: none,
+  event: (_eventId: string): string[] => [],
 };

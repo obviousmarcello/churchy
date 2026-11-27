@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const colorSchema = z.string().regex(/^#[0-9a-f]{6}$/);
+import { colorSchema } from "./themes";
 
 // The images of an event, e.g. announcements or photos (see the migrations
 // `event_images` and `event_image_items`). They are in sets: an image item of
@@ -74,10 +74,11 @@ export type EventImageDTO = {
 export type EventImageSetsDTO = Readonly<Record<string, EventImageDTO[]>>;
 
 /**
- * The images of the events, as `/event-images/<event id>/<random id>.webp`.
+ * The images of the events, as `/munkater/esemenyek/fajl/kep/<event id>/<random id>.webp`.
  * Only these: a screen must not load a file from another site.
  */
-const EVENT_IMAGE_PATH_PATTERN = /^\/event-images\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.webp$/;
+const EVENT_IMAGE_PATH_PATTERN =
+  /^\/munkater\/esemenyek\/fajl\/kep\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.webp$/;
 
 export const eventImageUrlSchema = z.string().regex(EVENT_IMAGE_PATH_PATTERN);
 

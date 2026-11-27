@@ -32,9 +32,10 @@ export const SHEET_PATH = "/munkater/kotta";
 
 // The projection: the controller, the screen and the stream overlay, also
 // full-screen pages. They take the event from the query for the same reason.
-export const PROJECT_PATH = "/project";
-export const PROJECT_SCREEN_PATH = "/project/screen";
-export const PROJECT_OVERLAY_PATH = "/project/overlay";
+export const PROJECT_PATH = "/munkater/vetites";
+export const PROJECT_SCREEN_PATH = "/munkater/vetites/kepernyo";
+export const PROJECT_OVERLAY_PATH = "/munkater/vetites/overlay";
+export const PROJECTION_THEMES_PATH = "/munkater/vetitesi-temak";
 
 export function isFullScreenPath(pathname: string): boolean {
   return (

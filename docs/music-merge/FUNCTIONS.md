@@ -22,7 +22,7 @@ naming the tenant.
 | `private.check_course_image(p_id uuid, p_doc jsonb)` | invoker | 8 (courses) |
 | `private.check_course_lessons(p_id uuid, p_doc jsonb)` | invoker | 8 (courses) |
 | `private.check_moved_group_projections()` | invoker, trigger | 5 (projection) |
-| `private.check_open_projection_before_delete()` | invoker, trigger | 5 (projection) |
+| `private.check_open_projection_before_delete()` | invoker, trigger | 5a - 0017_music_projection (now public.check_open_projection_before_delete()) |
 | `private.check_projection_users()` | definer, trigger | 5 (projection) |
 | `private.check_projection_users_of(p_user_ids uuid[])` | definer | 5 (projection) |
 | `private.check_removed_member_projections()` | invoker, trigger | 5 (projection) |
@@ -36,7 +36,7 @@ naming the tenant.
 | `private.course_is_open_to(p_course_id uuid, p_user_id uuid)` | invoker | 8 (courses) |
 | `private.course_lesson_document(p_lesson course_lessons)` | invoker | 8 (courses) |
 | `private.courses_before_area_delete()` | invoker, trigger | 8 (courses) |
-| `private.event_topic_access(p_topic text)` | definer | 4 (events, setlists, volunteers) |
+| `private.event_topic_access(p_topic text)` | definer | replaced in 5a by `public.music_realtime_allowed(topic, send)` (token claims; `authorizeRealtimeTopics`) |
 | `private.events_before_area_delete()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.leads_service_area(p_area_id uuid, p_user_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.live_session_access(p_topic text)` | definer | dropped (Churchy login / user admin, PLAN §11) |
@@ -44,12 +44,12 @@ naming the tenant.
 | `private.lock_service_area_tree()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.normalize_event_areas()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.normalize_event_blocks(p_event_id uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
-| `private.notify_event(p_event_id uuid, p_kind text)` | definer | 8 (notifications) |
-| `private.notify_event_change()` | definer, trigger | 8 (notifications) |
-| `private.notify_event_part_change()` | definer, trigger | 8 (notifications) |
-| `private.notify_song_change()` | definer, trigger | 8 (notifications) |
-| `private.projection_access(p_topic text)` | definer | 5 (projection) |
-| `private.projection_open_since()` | invoker | 5 (projection) |
+| `private.notify_event(p_event_id uuid, p_kind text)` | definer | 5b - 0018_music_live, `public.notify_event` (stays definer: the music role cannot reach `realtime`; reads only the tenant of the event; no-op without `realtime.send`) |
+| `private.notify_event_change()` | definer, trigger | 5b - 0018_music_live (`public.`, invoker) |
+| `private.notify_event_part_change()` | definer, trigger | 5b - 0018_music_live (`public.`, invoker) |
+| `private.notify_song_change()` | definer, trigger | 5b - 0018_music_live (`public.`, invoker) |
+| `private.projection_access(p_topic text)` | definer | 5a - 0017_music_projection (replaced by `public.music_realtime_allowed(topic, send)` (claims of the Realtime token)) |
+| `private.projection_open_since()` | invoker | 5a - 0017_music_projection (now public.projection_open_since()) |
 | `private.rebuild_service_area_paths()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.root_area_ids()` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.service_area_gives_roles(p_area_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
@@ -129,7 +129,7 @@ naming the tenant.
 | `public.has_distinct_elements(p_values uuid[])` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.hook_mfa_verification_attempt(event jsonb)` | invoker | dropped (Churchy login / user admin, PLAN §11) |
 | `public.import_song_rights_findings(p_model text, p_findings jsonb)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER; ON CONFLICT on the tenant-scoped open-proposal index) |
-| `public.keep_default_projection_theme()` | invoker, trigger | 5 (projection) |
+| `public.keep_default_projection_theme()` | invoker, trigger | 5a - 0017_music_projection |
 | `public.keep_one_superadmin()` | definer, trigger | dropped (Churchy login / user admin, PLAN §11) |
 | `public.keep_session_after_totp_removal(p_user_id uuid, p_session_id uuid)` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.keep_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
@@ -162,15 +162,15 @@ naming the tenant.
 | `public.set_announcement_entry_attachment(p_entry_id uuid, p_set_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `public.set_course_order(p_ids uuid[])` | invoker | 8 (courses) |
 | `public.set_default_arrangement(p_id uuid)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
-| `public.set_default_projection_theme(p_id uuid)` | invoker | 5 (projection) |
+| `public.set_default_projection_theme(p_id uuid)` | invoker | 5a - 0017_music_projection |
 | `public.set_event_area_note(p_event_id uuid, p_area_id uuid, p_note text)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `public.set_event_area_team(p_event_id uuid, p_area_id uuid, p_user_ids jsonb, p_any_user boolean)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `public.set_event_area_teams(p_event_id uuid, p_teams jsonb, p_any_user boolean)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
-| `public.set_event_item_theme(p_event_id uuid, p_item_id uuid, p_theme_id uuid)` | invoker | 5 (projection) |
+| `public.set_event_item_theme(p_event_id uuid, p_item_id uuid, p_theme_id uuid)` | invoker | 5a - 0017_music_projection |
 | `public.set_event_items(p_event_id uuid, p_items jsonb)` | invoker | 4 (events, setlists, volunteers) |
 | `public.set_event_items(p_event_id uuid, p_items jsonb, p_base_setlist_id uuid, p_check_base boolean)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.set_event_teams(p_event_id uuid, p_template_id uuid, p_teams jsonb)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
-| `public.set_projection_theme_video(p_theme_id uuid, p_video_path text, p_poster_path text)` | invoker | 5 (projection) |
+| `public.set_projection_theme_video(p_theme_id uuid, p_video_path text, p_poster_path text)` | invoker | 5a - 0017_music_projection |
 | `public.set_service_area_members(p_area_id uuid, p_members jsonb, p_grant_roles boolean, p_actor_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `public.set_service_area_order(p_parent_id uuid, p_ids uuid[])` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `public.set_service_area_roles(p_area_id uuid, p_roles text[])` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
@@ -194,11 +194,11 @@ naming the tenant.
 | `public.songs_for_local_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.songs_for_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.start_event_block(p_event_id uuid, p_key uuid, p_restart boolean)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
-| `public.start_projection_video_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 5 (projection) |
+| `public.start_projection_video_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 5a - 0017_music_projection |
 | `public.start_song_pdf_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.start_song_sound_file_upload(p_user_id uuid, p_path text, p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.swap_announcement_calendars(p_id uuid, p_other_id uuid)` | invoker | 4 (events, setlists, volunteers) |
-| `public.touch_projection_controller(p_id uuid, p_event_id uuid, p_user_id uuid)` | invoker | 5 (projection) |
+| `public.touch_projection_controller(p_id uuid, p_event_id uuid, p_user_id uuid)` | invoker | 5a - 0017_music_projection |
 | `public.update_event_block(p_event_id uuid, p_key uuid, p_name text, p_countdown text, p_until time without time zone)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.update_event_block(p_event_id uuid, p_key uuid, p_name text, p_countdown text, p_until time without time zone, p_duration_seconds integer)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.update_profile(p_user_id uuid, p_changes jsonb)` | invoker | dropped (Churchy login / user admin, PLAN §11) |

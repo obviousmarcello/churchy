@@ -15,7 +15,7 @@ import {
   imageAdjustSchema,
   type EventImageDTO,
   type EventImageSetsDTO,
-} from "@/lib/music/projection-images";
+} from "@/lib/music/projection/images";
 import { requireEventAdmin, requirePrivateFileAccess, requireUser } from "@/server/music/auth";
 import { ConflictError, ForbiddenError } from "@/server/music/errors";
 import { NOT_MODIFIED } from "@/server/music/private-file";
@@ -48,6 +48,8 @@ import { removeUnusedFiles, STRAY_FILE_MAX_AGE_MS, startStrayFileUpload } from "
 const EVENT_IMAGE_MAX_SIDE_PX = 3840;
 
 const EVENT_IMAGE_BUCKET = "event-images";
+/** Where the route serves the images (`app/munkater/esemenyek/fajl/kep`). */
+const EVENT_IMAGE_URL_PREFIX = "/munkater/esemenyek/fajl/kep/";
 
 // `<event id>/<random id>.webp`, as `addEventImage` makes it.
 const EVENT_IMAGE_PATH_PATTERN = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.webp$/;
@@ -198,7 +200,7 @@ export async function addEventImage(
   return {
     id: z.uuid().parse(data),
     name: imageName,
-    url: `/${EVENT_IMAGE_BUCKET}/${path}`,
+    url: `${EVENT_IMAGE_URL_PREFIX}${path}`,
     width: image.width,
     height: image.height,
     adjust: DEFAULT_IMAGE_ADJUST,
@@ -457,7 +459,7 @@ function toEventImage(row: z.infer<typeof eventImageRowSchema>): EventImageDTO {
   return {
     id: row.id,
     name: row.name,
-    url: `/${EVENT_IMAGE_BUCKET}/${row.path}`,
+    url: `${EVENT_IMAGE_URL_PREFIX}${row.path}`,
     width: row.width,
     height: row.height,
     adjust: {

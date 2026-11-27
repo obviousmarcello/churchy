@@ -159,6 +159,11 @@ export const WORKSPACE_TENANT_ACTIONS = [
   "music.event.view",
   "music.event.manage",
   "music.group.manage",
+  "music.projection.use",
+  "music.projection.themes.manage",
+  "music.projection.themes.setDefault",
+  "music.live.join",
+  "music.live.lead",
 ] as const;
 export type WorkspaceTenantAction = (typeof WORKSPACE_TENANT_ACTIONS)[number];
 

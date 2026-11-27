@@ -318,6 +318,31 @@ export const README_ROWS: readonly MatrixRow[] = [
     variants: [v("edit areas and teams", "music.group.manage", tenant, "YNNNYNNN")],
   },
   {
+    capability: "Music: project an event (music merge)",
+    sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
+    variants: [v("use the projection of an event", "music.projection.use", tenant, "YYYYYYYY")],
+  },
+  {
+    capability: "Music: manage the projection themes (music merge)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("edit projection themes", "music.projection.themes.manage", tenant, "YNNNYNNN")],
+  },
+  {
+    capability: "Music: choose the default projection theme (music merge)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("set the default theme", "music.projection.themes.setDefault", tenant, "YNNNYNNN")],
+  },
+  {
+    capability: "Music: join a live session (music merge)",
+    sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
+    variants: [v("join a live session", "music.live.join", tenant, "YYYYYYYY")],
+  },
+  {
+    capability: "Music: start and lead a live session (music merge)",
+    sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
+    variants: [v("lead a live session", "music.live.lead", tenant, "YYYYYYYY")],
+  },
+  {
     capability: "Music: manage songs and arrangements (music merge)",
     sdd: ["✔", "", "", "", "✔", "", "", ""],
     variants: [v("edit songs and arrangements", "music.song.manage", tenant, "YNNNYNNN")],

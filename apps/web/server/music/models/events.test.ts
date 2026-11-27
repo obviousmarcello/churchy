@@ -45,6 +45,7 @@ vi.mock("@/server/music/db", () => ({
           parent_event_id: null,
           recurrence_id: null,
           setlist_id: null,
+          projection_theme_id: null,
           created_by: null,
         },
         error: null,

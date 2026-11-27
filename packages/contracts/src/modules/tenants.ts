@@ -71,9 +71,16 @@ export const WorkspaceModuleKeySchema = z.enum([
   "ws.music.sheet.midi-out",
   "ws.music.sheet.marks",
   "ws.music.sheet.chord-diagrams",
+  "ws.music.sheet.live",
   "ws.music.events",
   "ws.music.events.images",
   "ws.music.events.announcements",
+  "ws.music.projection",
+  "ws.music.projection.themes",
+  "ws.music.projection.text-slides",
+  "ws.music.projection.overlay",
+  "ws.music.projection.countdown",
+  "ws.music.projection.pptx-export",
 ]);
 export type WorkspaceModuleKey = z.infer<typeof WorkspaceModuleKeySchema>;
 
