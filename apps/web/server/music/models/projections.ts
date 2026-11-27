@@ -470,17 +470,17 @@ async function listSongs(arrangementIds: string[]): Promise<Map<string, SongCont
 
 /** The workspace modules that are on, under the ids of the music app (`lib/music/modules/items.ts`). */
 async function onModules(): Promise<string[]> {
-  const [images, announcements, textSlides] = await Promise.all([
+  const [images, announcements, textSlides, scripture] = await Promise.all([
     isWorkspaceModuleOn("ws.music.events.images"),
     isWorkspaceModuleOn("ws.music.events.announcements"),
     isWorkspaceModuleOn("ws.music.projection.text-slides"),
+    isWorkspaceModuleOn("ws.music.scripture"),
   ]);
   return [
     ...(images ? ["projection.images"] : []),
     ...(announcements ? ["projection.announcements"] : []),
     ...(textSlides ? ["projection.text-slides"] : []),
-    // The scripture module comes with phase 6: its items show as their reference until then.
-    "scripture",
+    ...(scripture ? ["scripture"] : []),
   ];
 }
 

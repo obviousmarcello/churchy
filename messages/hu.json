@@ -30,6 +30,7 @@
         "songs": "Énektár",
         "musicEvents": "Zenei események",
         "projectionThemes": "Vetítési témák",
+        "bibleTranslations": "Bibliafordítások",
         "musicNotifications": "Értesítések",
         "absences": "Távollétek",
         "hr": "HR-ügyintézés",
@@ -4578,8 +4579,8 @@
         "referenceNotRecognized": "Az alkalmazás nem ismeri fel ezt az igehelyet, ezért a vetítés csak az igehelyet mutatja. Például: Jn 3,16–21 vagy John 3:16–21.",
         "pasteScripture": "Szöveg bemásolása",
         "pasteScriptureOf": "{title} szövegének bemásolása",
-        "pasteScriptureHint": "A közös gyorsítótár csak 24 óráig tárolja a {translation} szöveget, ezért az esemény napján másold be, vagy a vetítés vezérlőjén.",
-        "scripturePasted": "A {translation} szöveg 24 óráig van a közös gyorsítótárban.",
+        "pasteScriptureHint": "A gyülekezet gyorsítótára csak 24 óráig tárolja a {translation} szöveget, ezért az esemény napján másold be, vagy a vetítés vezérlőjén.",
+        "scripturePasted": "A {translation} szöveg 24 óráig van a gyülekezet gyorsítótárában.",
         "volunteerOf": "„{title}” önkéntese",
         "noVolunteer": "Nincs önkéntes",
         "themeOf": "„{title}” vetítési témája",
@@ -4631,7 +4632,7 @@
         "language": "Nyelv",
         "languageOf": "„{title}” nyelve",
         "translationOf": "„{title}” fordítása",
-        "allOff": "Minden bibliafordítás ki van kapcsolva. Egy szuperadmin bekapcsolhat egyet a Konfiguráció > Bibliafordítások lapon."
+        "allOff": "Minden bibliafordítás ki van kapcsolva. Kapcsold be a Károlit, vagy vegyél fel saját fordítást a Bibliafordítások oldalon."
       },
       "addItemBox": {
         "addLabel": "Programpont hozzáadása",
@@ -5943,7 +5944,7 @@
         "unavailable": "A(z) {translation} fordításban nincs meg ez az igehely.",
         "missing": "A(z) {translation} fordításban nincs meg az igehely minden verse.",
         "truncated": "Ez az igehely túl hosszú. Csak az első {count} verse látszik.",
-        "needsText": "Az igehely {translation} szövege nincs a közös gyorsítótárban. Másold be a vetítés vezérlőjén, aztán próbáld újra."
+        "needsText": "Az igehely {translation} szövege nincs a gyülekezet gyorsítótárában. Másold be a vetítés vezérlőjén, aztán próbáld újra."
       },
       "viewer": {
         "close": "Az akkordlap bezárása",
@@ -6997,8 +6998,8 @@
         "scriptureUnavailable": "A(z) {translation} fordításban nincs meg ez az igehely, ezért a képernyők csak az igehelyet mutatják. Válassz másik fordítást.",
         "scriptureMissing": "A(z) {translation} fordításban nincs meg az igehely minden verse. A diák a meglévő verseket mutatják.",
         "scriptureTruncated": "Ez az igehely túl hosszú. A diák csak az első {count} versét mutatják.",
-        "scriptureNeedsText": "A közös gyorsítótárban nincs meg az igehely {translation} szövege, ezért a képernyők csak az igehelyet mutatják. Másold be a szöveget egy Biblia-alkalmazásból vagy egy weboldalról.",
-        "scriptureOff": "Minden bibliafordítás ki van kapcsolva, ezért a képernyők csak az igehelyet mutatják. Egy szuperadmin bekapcsolhat egyet a Konfiguráció > Bibliafordítások lapon.",
+        "scriptureNeedsText": "A gyülekezet gyorsítótárában nincs meg az igehely {translation} szövege, ezért a képernyők csak az igehelyet mutatják. Másold be a szöveget egy Biblia-alkalmazásból vagy egy weboldalról.",
+        "scriptureOff": "Minden bibliafordítás ki van kapcsolva, ezért a képernyők csak az igehelyet mutatják. Kapcsold be a Károlit, vagy vegyél fel saját fordítást a Bibliafordítások oldalon.",
         "scripturePaste": "Szöveg bemásolása",
         "scriptureReplace": "Szöveg cseréje",
         "scriptureTile": "Igehely",
@@ -7088,7 +7089,7 @@
       "biblePanel": {
         "title": "Biblia",
         "open": "Biblia panel megnyitása",
-        "unavailable": "A Biblia panelhez egy teljes szövegű fordítás kell. Egy szuperadmin bekapcsolhat egyet a Konfiguráció > Bibliafordítások lapon.",
+        "unavailable": "A Biblia panelhez egy teljes szövegű fordítás kell. Kapcsold be a Károlit, vagy vegyél fel saját fordítást a Bibliafordítások oldalon.",
         "minimize": "Biblia panel kis méretre",
         "close": "Biblia panel bezárása",
         "resize": "Biblia panel átméretezése",
@@ -7202,7 +7203,7 @@
       },
       "paste": {
         "title": "{reference} – {translation} szöveg",
-        "description": "Másold ki a verseket a számukkal együtt egy Biblia-alkalmazásból vagy egy weboldalról, és illeszd be ide. A szöveg 24 óráig marad a közös gyorsítótárban, minden felhasználónak. A gyorsítótár legfeljebb {max} verset tárol: ha megtelik, a legrégebbi versek kikerülnek.",
+        "description": "Másold ki a verseket a számukkal együtt egy Biblia-alkalmazásból vagy egy weboldalról, és illeszd be ide. A szöveg 24 óráig marad a gyülekezet gyorsítótárában, a gyülekezet minden felhasználójának. A gyorsítótár legfeljebb {max} verset tárol: ha megtelik, a legrégebbi versek kikerülnek.",
         "openSource": "Megnyitás: {site}",
         "sourceHint": "Jelöld ki egérrel a(z) {reference} verseit az első versszámtól az utolsó vers végéig, és másold ki őket.",
         "label": "Szöveg",
@@ -7668,6 +7669,78 @@
         "empty": "Nincs bejegyzés a következő hetekre.",
         "highlighted": "Kiemelt"
       }
+    },
+    "bibleTranslations": {
+      "page": {
+        "title": "Bibliafordítások",
+        "lead": "Itt állíthatod be, milyen bibliafordításokból olvassatok igeszakaszokat. A Károli-fordítást (1908) a platform adja, mindenkinek ingyen. A többi fordítás a gyülekezeté: csak olyat vegyél fel, amelyhez van engedélyetek. A szöveget nem osztjuk meg más gyülekezetekkel.",
+        "checkingAccess": "Jogosultság ellenőrzése…"
+      },
+      "gate": {
+        "forbidden": {
+          "title": "Nincs jogosultságod",
+          "description": "A bibliafordításokat a zenei vezetők és a gyülekezet vezetői kezelhetik."
+        },
+        "signIn": {
+          "title": "Jelentkezz be",
+          "description": "A bibliafordítások beállításához be kell jelentkezned."
+        }
+      },
+      "karoli": {
+        "title": "Károli Gáspár revideált fordítása (1908)",
+        "description": "Közkincs, a platform adja, ezért nem kell hozzá engedély.",
+        "enabled": "Használjátok a gyülekezetben"
+      },
+      "own": {
+        "title": "A gyülekezet saját fordításai",
+        "empty": "Még nincs saját fordításotok.",
+        "add": "Fordítás felvétele",
+        "enabled": "Bekapcsolva",
+        "off": "Kikapcsolva",
+        "edit": "Szerkesztés",
+        "delete": "Törlés",
+        "deleteConfirm": "Biztosan törlöd a(z) {name} fordítást a feltöltött szövegével és a másolt versekkel együtt?",
+        "sourcePasted": "Bemásolt versek",
+        "sourceDatabase": "Feltöltött szöveg",
+        "books": "{count} könyv feltöltve"
+      },
+      "form": {
+        "id": "Azonosító",
+        "idHint": "Kisbetűk és számok, legfeljebb 30 karakter, később nem változtatható. Például: ruf2014.",
+        "name": "Teljes név",
+        "shortName": "Rövid név",
+        "shortNameHint": "A hivatkozás után jelenik meg, például: RÚF.",
+        "notice": "Szerzői jogi közlemény",
+        "noticeHint": "A szöveg mellett jelenik meg a vetítésen. Hagyd üresen, ha nem kell.",
+        "source": "A szöveg forrása",
+        "sourcePasted": "Bemásolt versek: az igeszakaszok szövegét a vetítés közben másolják be, rövid időre megmarad (legfeljebb 331 vers, 24 óráig).",
+        "sourceDatabase": "Feltöltött szöveg: a teljes szöveget te töltöd fel, a gyülekezet saját engedélyével.",
+        "deuterocanon": "Vannak benne deuterokanonikus könyvek",
+        "links": "Hivatkozások a bemásoláshoz (nem kötelező)",
+        "szentiras": "szentiras.eu rövidítés",
+        "bibliaMindenkie": "abibliamindenkie.hu útvonal",
+        "bibleComId": "bible.com azonosító",
+        "bibleComAbbreviation": "bible.com rövidítés",
+        "save": "Mentés",
+        "cancel": "Mégse",
+        "saved": "Elmentettük a fordítást.",
+        "saveFailed": "A fordítás mentése nem sikerült.",
+        "deleted": "Töröltük a fordítást.",
+        "deleteFailed": "A fordítás törlése nem sikerült."
+      },
+      "text": {
+        "title": "Feltöltött szöveg",
+        "book": "Könyv",
+        "file": "Könyv szövege (JSON)",
+        "fileHint": "A fájl JSON legyen, a „chapters” mezője fejezetenként tartalmazza a versek listáját.",
+        "upload": "Feltöltés",
+        "uploaded": "Feltöltöttük a könyvet.",
+        "uploadFailed": "A könyv feltöltése nem sikerült. Ellenőrizd, hogy a fájl a megadott formájú JSON.",
+        "remove": "Könyv törlése",
+        "removeFailed": "A könyv törlése nem sikerült.",
+        "none": "Még nincs feltöltött könyv."
+      },
+      "karoliSaveFailed": "A beállítás mentése nem sikerült."
     }
   },
   "portal": {

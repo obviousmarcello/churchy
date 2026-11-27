@@ -25,6 +25,7 @@ export type NavKey =
   | "sections.songs"
   | "sections.musicEvents"
   | "sections.projectionThemes"
+  | "sections.bibleTranslations"
   | "sections.musicNotifications"
   | "sections.absences"
   | "sections.hr"
@@ -207,6 +208,13 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           href: "/munkater/vetitesi-temak",
           module: "ws.music.projection.themes",
           requires: { action: "music.projection.themes.manage" },
+        },
+        {
+          id: "bibleTranslations",
+          label: t("sections.bibleTranslations"),
+          href: "/munkater/biblia-forditasok",
+          module: "ws.music.scripture",
+          requires: { action: "music.scripture.translations.manage" },
         },
         {
           id: "musicNotifications",

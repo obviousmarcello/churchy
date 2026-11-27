@@ -12,6 +12,8 @@ import type { VolunteerReply } from "@/lib/music/volunteer-replies";
 import type { EventTeamsDTO } from "@/lib/music/volunteer-templates";
 import { requireUser } from "@/server/music/auth";
 import { listEventAnnouncements } from "@/server/music/models/announcements";
+import { DEFAULT_SCRIPTURE_CONFIG, type ScriptureConfig } from "@/lib/music/scripture/translations";
+import { getScriptureConfig } from "@/server/music/models/scripture-translations";
 import { listEventImageSets } from "@/server/music/models/event-images";
 import { getEventConnection, type EventConnectionDTO } from "@/server/music/models/event-sync";
 import {
@@ -87,6 +89,8 @@ export type EventPageTransient = {
   teamEditor?: TeamEditorDTO | null;
   /** The modules that are on, under the ids of the music app (`MusicModulesProvider`). */
   modules: Record<string, boolean>;
+  /** The Bible translations of the church (read with the scripture module on). */
+  scripture: ScriptureConfig;
 };
 
 export type EventPageResult =
@@ -109,6 +113,8 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
     sheetOn,
     textSlidesOn,
     quickAddOn,
+    scriptureOn,
+    biblePanelOn,
   ] = await Promise.all([
     isWorkspaceModuleOn("ws.music.projection.themes"),
     isWorkspaceModuleOn("ws.music.events.images"),
@@ -118,6 +124,8 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
     isWorkspaceModuleOn("ws.music.sheet"),
     isWorkspaceModuleOn("ws.music.projection.text-slides"),
     isWorkspaceModuleOn("ws.music.projection.quick-add"),
+    isWorkspaceModuleOn("ws.music.scripture"),
+    isWorkspaceModuleOn("ws.music.projection.bible-panel"),
   ]);
   const [
     event,
@@ -135,6 +143,7 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
     teamEditor,
     groups,
     canProject,
+    scripture,
   ] = await Promise.all([
     Promise.resolve(found),
     listEventVolunteers(id),
@@ -151,6 +160,7 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
     getTeamEditor(),
     groupLabels,
     canProjectEvent(id),
+    scriptureOn ? getScriptureConfig() : DEFAULT_SCRIPTURE_CONFIG,
   ]);
   if (!event) return { notFound: "event" };
   const me = volunteers.find((person) => person.id === user.id);
@@ -185,6 +195,7 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
             }
           : null,
       teamEditor,
+      scripture,
       modules: {
         projection: projectionOn,
         "projection.themes": themesOn,
@@ -193,8 +204,8 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
         "projection.text-slides": textSlidesOn,
         sheet: sheetOn,
         "sheet.live": liveOn,
-        // Scripture and the quick add of the controller come later (phase 6, slice 5e-2).
-        scripture: false,
+        scripture: scriptureOn,
+        "projection.bible-panel": biblePanelOn,
         "projection.quick-add": quickAddOn,
       },
     },
