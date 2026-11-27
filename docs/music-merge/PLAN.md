@@ -728,3 +728,12 @@ Not done (needs a decision or the copy of the whole event editor, which is still
    created by migration 0017 apply (`realtime.send` is used by `notify_event` as a SECURITY DEFINER function).
 2. Copy the music app's event editor (drag-and-drop editor, `AddItemBox`, quick add, per-slot annotations) now, as one slice?
 3. Live sessions: web-push on start and the rate limit of rehearsal sessions wait for the notifications phase (OK?).
+
+## 20. Phase 5d: rehearsal-session rate limit; push (open)
+- Rehearsal sessions: at most 20 per user and hour (`REHEARSAL_SESSIONS_PER_HOUR`, in-memory limiter as the request forms;
+  moves to the DB/edge with the request limiter in Phase B). Test `live-sessions.test.ts`.
+- Web-push on live-session start is NOT done: Churchy has no push infrastructure (no `web-push` dependency, VAPID keys, service
+  worker, subscription UI or `packages/notify`; the outbox is the demo e-mail viewer and the in-app `notifications` repo has no
+  UI and no live-session kind). Question for the owner: add a real web-push stack (new runtime dep `web-push`, platform VAPID
+  secrets, SW scoped to `/munkater`, subscription UI, `push_subscriptions` + `notification_preferences.live_session`), or send an
+  in-app notification (new `notification_kind` value) until the notifications phase?

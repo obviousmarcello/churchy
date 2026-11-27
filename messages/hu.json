@@ -5623,7 +5623,8 @@
         "leaderChanged": "Most egy másik felhasználó vezeti ezt a közös alkalmat. Töltsd újra az oldalt.",
         "notParticipant": "Ez a felhasználó nem önkéntese ennek az eseménynek. Válassz egy másik felhasználót.",
         "startFailed": "Nem tudtuk elindítani a közös alkalmat. Próbáld újra.",
-        "changeFailed": "Nem tudtuk módosítani a közös alkalmat. Próbáld újra."
+        "changeFailed": "Nem tudtuk módosítani a közös alkalmat. Próbáld újra.",
+        "tooManyRehearsals": "Túl sok próbát indítottál egymás után. Próbáld újra később."
       },
       "profiles": {
         "chooseImage": "Válassz egy képet",
