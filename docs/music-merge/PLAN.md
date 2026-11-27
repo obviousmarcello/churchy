@@ -774,3 +774,14 @@ volunteers list and replies, edit-song dialog, live-session join link, projectio
   dialogs, images and announcements items, drag with the handle); an a11y fix of the row select button (its name starts with the visible number).
 - Left for 5e-2: quick add and the controller edit mode (still the stub), and the scripture reference detection (phase 6,
   `looksLikeScriptureReference` returns false). 5e-3: per-slot annotations.
+
+## 22. Phase 5e-2: quick add and the controller's edit mode
+- `vetites/quick-add.tsx` is the copy of the music app's quick add (song search and add, text slide, images, PDF/PowerPoint pages,
+  announcements, new song, SongPraise) over the copied `AddItemBox`, `event-image-upload` and `announcement-item`; `vetites/items-editor.tsx`
+  is the "edit" mode of the controller (the event page's items form inside the controller) with `eventItemsEditorAction` and the reload of its
+  parts after each change notice (`useEditorReload` in `event-controller.tsx`).
+- Actions (`withPolicy`, `*-client` unwrappers): `listQuickAddCatalogAction`, `listRehearsalSongsAction` (module `.quick-add`),
+  `eventItemsEditorAction` (`music.event.manage`, the event's areas), `createSongInPlaceAction` (`music.song.manage`).
+- New module `ws.music.projection.quick-add` (child of `ws.music.projection`, default off, in the demo seeds and `/admin/modulok`).
+- e2e: the controller's quick add adds a song to the event (axe 0).
+- Left: the rehearsal projection (`?rehearsal`) still waits for the rehearsal page.

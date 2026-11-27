@@ -4,7 +4,12 @@ import type { QuickItemInput } from "@/lib/music/projection/quick-items";
 import * as server from "./actions";
 import * as eventServer from "./event-actions";
 
-export type { ReorderResult, StartBlockResult } from "./actions";
+export type {
+  ItemsEditorPart,
+  ItemsEditorPartsDTO,
+  ReorderResult,
+  StartBlockResult,
+} from "./actions";
 export type { ProjectionConnectionDTO } from "@/server/music/models/projections";
 
 // The server actions of the projection are wrapped by `withPolicy` and answer `{ ok, value }` (or a
@@ -51,3 +56,12 @@ export const removeQuickItemAction = (eventId: string, key: string) =>
   run(eventServer.removeQuickItemAction(eventId, key), DENIED);
 export const eventLiveTopicAction = (eventId: string) =>
   run(eventServer.eventLiveTopicAction(eventId), undefined);
+export const listRehearsalSongsAction = (arrangementIds: string[]) =>
+  run(server.listRehearsalSongsAction(arrangementIds), {
+    status: "error" as const,
+    message: "",
+  });
+export const listQuickAddCatalogAction = () =>
+  run(server.listQuickAddCatalogAction(), { status: "error" as const, message: "" });
+export const eventItemsEditorAction = (eventId: string, parts: unknown) =>
+  run(server.eventItemsEditorAction(eventId, parts), undefined);

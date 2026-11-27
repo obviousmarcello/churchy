@@ -3344,6 +3344,10 @@
           "music_sheet_live": {
             "title": "Közös alkalom (élő)",
             "help": "Az akkordlapot a vezető követőivel együtt, közös metronómmal."
+          },
+          "music_projection_quick_add": {
+            "title": "Gyors hozzáadás",
+            "help": "Dalok, szöveges diák, képek és hirdetések gyors hozzáadása vetítés közben."
           }
         }
       },
@@ -3465,7 +3469,8 @@
           "music_projection_overlay": "Közvetítési overlay (munkatér)",
           "music_projection_countdown": "Blokk-visszaszámlálás (munkatér)",
           "music_projection_pptx_export": "Diák letöltése (munkatér)",
-          "music_sheet_live": "Közös alkalom (munkatér)"
+          "music_sheet_live": "Közös alkalom (munkatér)",
+          "music_projection_quick_add": "Gyors hozzáadás (munkatér)"
         }
       },
       "catalog": {

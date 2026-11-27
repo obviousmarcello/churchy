@@ -94,7 +94,9 @@ export async function musicProjection(
 }
 
 /** Like `musicProjection`, for a child module of the projection. */
-export function musicProjectionChild(child: "themes" | "text-slides" | "overlay" | "countdown") {
+export function musicProjectionChild(
+  child: "themes" | "text-slides" | "overlay" | "countdown" | "quick-add",
+) {
   return async (scope: PolicyScope, ..._args: unknown[]): Promise<{ tenantId: string } | null> => {
     const tenant = await musicProjection(scope);
     if (tenant === null) return null;

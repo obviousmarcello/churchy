@@ -119,6 +119,7 @@ const WORKSPACE_IDS = {
   "ws.music.projection.overlay": "music_projection_overlay",
   "ws.music.projection.countdown": "music_projection_countdown",
   "ws.music.projection.pptx-export": "music_projection_pptx_export",
+  "ws.music.projection.quick-add": "music_projection_quick_add",
 } as const satisfies Record<WorkspaceModuleKey, string>;
 export type WorkspaceModuleId = (typeof WORKSPACE_IDS)[WorkspaceModuleKey];
 export const workspaceModuleId = (key: WorkspaceModuleKey): WorkspaceModuleId => WORKSPACE_IDS[key];

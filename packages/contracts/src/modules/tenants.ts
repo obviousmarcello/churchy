@@ -81,6 +81,7 @@ export const WorkspaceModuleKeySchema = z.enum([
   "ws.music.projection.overlay",
   "ws.music.projection.countdown",
   "ws.music.projection.pptx-export",
+  "ws.music.projection.quick-add",
 ]);
 export type WorkspaceModuleKey = z.infer<typeof WorkspaceModuleKeySchema>;
 

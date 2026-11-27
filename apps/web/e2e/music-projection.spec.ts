@@ -98,3 +98,21 @@ test("the theme of an event is chosen on its page and kept", async ({ page }) =>
   await expect(page.getByLabel("Vetítési téma", { exact: true })).toHaveValue(/.+/);
   expect(await axeSeriousOrCritical(page)).toEqual([]);
 });
+
+test("the quick add of the controller adds an item to the event", async ({ page }) => {
+  const id = await newEvent(page, "Gyors alkalom");
+  await page.goto(`/munkater/vetites?event=${id}`);
+  const add = page.getByRole("combobox", { name: "Gyors hozzáadás" }).first();
+  await add.fill("Áldás");
+  await page
+    .getByRole("option", { name: /Áldás, békesség/ })
+    .first()
+    .click();
+  await expect(page.getByText("Áldás, békesség").filter({ visible: true }).first()).toBeVisible({
+    timeout: 20_000,
+  });
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+  // The item is in the event now.
+  await page.goto(`/munkater/esemenyek/${id}`);
+  await expect(page.getByText("Áldás, békesség").filter({ visible: true }).first()).toBeVisible();
+});

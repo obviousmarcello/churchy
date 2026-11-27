@@ -2,7 +2,27 @@
 
 import type { I18n } from "@/i18n/music/i18n";
 import { getRequestI18n } from "@/i18n/music/server";
+import type { EventAnnouncementsDTO } from "@/lib/music/announcements/schema";
+import type { EventImageSetsDTO } from "@/lib/music/projection/images";
+import type { ProjectionThemeDTO } from "@/lib/music/projection/themes";
 import { SafeError } from "@/server/music/errors";
+import { listEventAnnouncements } from "@/server/music/models/announcements";
+import { requireEventAdminOf } from "@/server/music/models/event-access";
+import { listEventImageSets } from "@/server/music/models/event-images";
+import {
+  getEventDetail,
+  listEventVolunteers,
+  type VolunteerDTO,
+} from "@/server/music/models/events";
+import { readProjectionThemes } from "@/server/music/models/projection-themes";
+import { SETLIST_MAX_ITEMS, type SetlistItemDTO } from "@/server/music/models/setlists";
+import { isWorkspaceModuleOn } from "@/server/workspace-nav";
+import { getCurrentUser } from "@/server/music/auth";
+import {
+  listSongTags,
+  listSongsWithArrangements,
+  type SongWithArrangementsDTO,
+} from "@/server/music/models/songs";
 import { runSave, type SaveResult } from "@/server/music/form-state";
 import type { EventBlockDTO } from "@/server/music/models/event-blocks";
 import {
@@ -13,12 +33,14 @@ import {
   getEventProjection,
   getEventProjectionBlocks,
   getEventProjectionConnection,
+  listRehearsalProjectionSongs,
   reorderEventProjection,
   setEventItemProjectionTheme,
   setEventProjectionTheme,
   startEventBlock,
   type EventProjectionDTO,
   type ProjectionConnectionDTO,
+  type RehearsalProjectionSongDTO,
   type ReorderedEventProjectionDTO,
 } from "@/server/music/models/projections";
 import { musicEventIn, musicProjection, musicProjectionChild } from "@/server/music/policy";
@@ -197,6 +219,140 @@ export const reorderEventItemsAction = withPolicy(
       if (cause instanceof SafeError) return { status: "error", message: cause.text(i18n) };
       console.error("[projection] Failed to reorder the items:", cause);
       return { status: "error", message: i18n.m.project.controller.reorderFailed };
+    }
+  },
+);
+
+export type RehearsalSongsResult =
+  { status: "success"; songs: RehearsalProjectionSongDTO[] } | { status: "error"; message: string };
+
+/** The songs by arrangement (a song that the quick add chose). */
+export const listRehearsalSongsAction = withPolicy(
+  "music.projection.use",
+  musicProjectionChild("quick-add"),
+  async (_scope: PolicyScope, arrangementIds: string[]): Promise<RehearsalSongsResult> => {
+    try {
+      return { status: "success", songs: await listRehearsalProjectionSongs(arrangementIds) };
+    } catch (cause) {
+      if (!(cause instanceof SafeError))
+        console.error("[projection] Failed to list the songs:", cause);
+      return { status: "error", message: (await getRequestI18n()).m.project.gate.loadFailed };
+    }
+  },
+);
+
+export type QuickAddCatalogResult =
+  | {
+      status: "success";
+      catalog: SongWithArrangementsDTO[];
+      /** Only song admins can add a song here (the button only; the save checks again). */
+      newSong: { tagOptions: string[] } | null;
+    }
+  | { status: "error"; message: string };
+
+/** Every song with its arrangements, for the quick add of the controller. */
+export const listQuickAddCatalogAction = withPolicy(
+  "music.projection.use",
+  musicProjectionChild("quick-add"),
+  async (_scope: PolicyScope): Promise<QuickAddCatalogResult> => {
+    try {
+      const [catalog, user] = await Promise.all([listSongsWithArrangements(), getCurrentUser()]);
+      const newSong = user?.canEditSongs ? { tagOptions: await listSongTags() } : null;
+      return { status: "success", catalog, newSong };
+    } catch (cause) {
+      if (!(cause instanceof SafeError))
+        console.error("[projection] Failed to list the songs for the quick add:", cause);
+      return { status: "error", message: (await getRequestI18n()).m.project.quickAdd.loadFailed };
+    }
+  },
+);
+
+/** A part of the data of the items editor of the controller, which a change of the event can make old. */
+export type ItemsEditorPart =
+  "event" | "volunteers" | "catalog" | "themes" | "images" | "announcements";
+
+/** The items of the event and its times: the `event` part. */
+export type ItemsEditorEventDTO = {
+  /** The setlist of the saved items: the base of the next save of the editor. */
+  setlistId: string | null;
+  items: SetlistItemDTO[];
+  blocks: EventBlockDTO[];
+  projectionThemeId: string | null;
+  startsAt: string;
+  endsAt: string;
+  durationMinutes: number;
+};
+
+/** The parts that the editor asked for; the other parts are not in it. */
+export type ItemsEditorPartsDTO = {
+  event?: ItemsEditorEventDTO;
+  /** Without emails. */
+  volunteers?: VolunteerDTO[];
+  catalog?: SongWithArrangementsDTO[];
+  /** The projection themes, the default first, with their look. */
+  themes?: ProjectionThemeDTO[];
+  imageSets?: EventImageSetsDTO;
+  announcements?: EventAnnouncementsDTO;
+  canEditSongs: boolean;
+  maxItems: number;
+};
+
+/**
+ * The parts of the data of the items editor of the controller, as on the page of the event. For the
+ * event admins. After a change of the event, the editor loads only the parts that the change can
+ * make old. Null when the user has no access, or there is no such event. Undefined when the load fails.
+ */
+export const eventItemsEditorAction = withPolicy(
+  "music.event.manage",
+  musicEventIn,
+  async (
+    _scope: PolicyScope,
+    eventId: string,
+    parts: unknown,
+  ): Promise<ItemsEditorPartsDTO | null | undefined> => {
+    try {
+      const user = await requireEventAdminOf(eventId);
+      if (!user) return null;
+      const wanted = new Set(Array.isArray(parts) ? parts : []);
+      // Not the parts of a module that is off: the editor hides them.
+      const [themesOn, imagesOn, announcementsOn] = await Promise.all([
+        isWorkspaceModuleOn("ws.music.projection.themes"),
+        isWorkspaceModuleOn("ws.music.events.images"),
+        isWorkspaceModuleOn("ws.music.events.announcements"),
+      ]);
+      const [event, volunteers, catalog, themes, imageSets, announcements] = await Promise.all([
+        wanted.has("event") ? getEventDetail(eventId) : undefined,
+        wanted.has("volunteers") ? listEventVolunteers(eventId) : undefined,
+        wanted.has("catalog") ? listSongsWithArrangements() : undefined,
+        wanted.has("themes") && themesOn ? readProjectionThemes() : undefined,
+        wanted.has("images") && imagesOn ? listEventImageSets(eventId) : undefined,
+        wanted.has("announcements") && announcementsOn
+          ? listEventAnnouncements(eventId)
+          : undefined,
+      ]);
+      if (event === null) return null;
+      return {
+        event: event && {
+          setlistId: event.setlistId ?? null,
+          items: event.items,
+          blocks: event.blocks,
+          projectionThemeId: event.projectionThemeId ?? null,
+          startsAt: event.startsAt,
+          endsAt: event.endsAt,
+          durationMinutes: event.durationMinutes,
+        },
+        volunteers: volunteers?.map((person) => ({ ...person, email: null })),
+        catalog,
+        themes,
+        imageSets,
+        announcements,
+        canEditSongs: user.canEditSongs,
+        maxItems: SETLIST_MAX_ITEMS,
+      };
+    } catch (cause) {
+      if (!(cause instanceof SafeError))
+        console.error("[projection] Failed to load the items editor:", cause);
+      return cause instanceof SafeError ? null : undefined;
     }
   },
 );
