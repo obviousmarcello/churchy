@@ -50,10 +50,10 @@ export function SheetView({
       </div>
     );
   }
-  const { viewerKey, title, songs, canEditSongs, backHref, modules } = result.data;
+  const { viewerKey, title, songs, canEditSongs, backHref, modules, scripture } = result.data;
   return (
     <div className="fixed inset-0 z-50 bg-surface">
-      <MusicModulesProvider modules={modules}>
+      <MusicModulesProvider modules={modules} scripture={scripture}>
         <SheetViewer
           key={viewerKey}
           cacheKey=""

@@ -117,3 +117,35 @@ test("the text of a pasted translation goes into the church's cache from the con
     .selectOption({ label: "Beill" });
   await expect(page.getByText("Kitalált szöveg a bemásolt fordításból.").first()).toBeVisible();
 });
+
+test("the chord sheet of an event shows its scripture reading between the songs", async ({
+  page,
+}) => {
+  await asMusicLeader(page, "/munkater/esemenyek/uj");
+  await page.getByLabel("Név").fill("Igés kotta");
+  await page.getByLabel("Kezdés").fill("2031-06-15T10:00");
+  await page.getByRole("button", { name: "Esemény létrehozása" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Igés kotta" })).toBeVisible();
+  const id = /\/munkater\/esemenyek\/([0-9a-f-]{36})/.exec(page.url())?.[1];
+  const add = page.getByRole("combobox", { name: "Programpont hozzáadása" });
+  await add.fill("Áldás");
+  await page.getByRole("option", { name: /Áldás, békesség/ }).click();
+  await add.fill("Jn 3,16");
+  await page.getByRole("option", { name: /igeolvasásként/ }).click();
+  await expect(page.getByText("Minden módosítás mentve").first()).toBeVisible();
+
+  await page.goto(`/munkater/kotta?event=${id}`);
+  await expect(page.getByText(/Mert úgy szerette Isten e világot/).first()).toBeVisible();
+  await expect(page.getByText("Áldás, békesség").first()).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+});
+
+test("the workspace home shows the psalm of the day from Károli", async ({ page }) => {
+  await asMusicLeader(page, "/munkater");
+  const psalm = page.getByTestId("daily-psalm");
+  await expect(psalm).toBeVisible();
+  await expect(psalm.getByText(/Zsoltárok \d+,\d+(–\d+)? \(Károli\)/)).toBeVisible();
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+  await psalm.getByRole("button", { name: "A nap zsoltára" }).click();
+  await expect(psalm.getByText(/Zsoltárok/)).toBeHidden();
+});

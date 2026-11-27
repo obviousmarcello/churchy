@@ -121,6 +121,7 @@ const WORKSPACE_IDS = {
   "ws.music.projection.pptx-export": "music_projection_pptx_export",
   "ws.music.projection.quick-add": "music_projection_quick_add",
   "ws.music.scripture": "music_scripture",
+  "ws.music.scripture.daily-psalm": "music_scripture_daily_psalm",
   "ws.music.projection.bible-panel": "music_projection_bible_panel",
 } as const satisfies Record<WorkspaceModuleKey, string>;
 export type WorkspaceModuleId = (typeof WORKSPACE_IDS)[WorkspaceModuleKey];

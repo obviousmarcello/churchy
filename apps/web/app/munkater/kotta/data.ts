@@ -28,6 +28,19 @@ import { listSoundFilesOfSongs, type SongSoundFileDTO } from "@/server/music/mod
 import { isWorkspaceModuleOn } from "@/server/workspace-nav";
 import type { SheetAnnotation, SheetSong } from "./sheet-viewer";
 import { listMyAnnotations } from "@/server/music/models/annotations";
+import { itemsOn } from "@/lib/music/modules/items";
+import { textItemKind } from "@/lib/music/event-items";
+import {
+  DEFAULT_SCRIPTURE_CONFIG,
+  enabledTranslations,
+  resolveTranslation,
+  scriptureTranslation,
+  type ScriptureConfig,
+  type ScriptureTranslation,
+} from "@/lib/music/scripture/translations";
+import { getEventDetail } from "@/server/music/models/events";
+import { getScriptureConfig } from "@/server/music/models/scripture-translations";
+import type { SetlistItemDTO } from "@/server/music/models/setlists";
 
 /** The most songs on a sheet that is not saved (the most items of a setlist in the music app). */
 const SHEET_MAX_ITEMS = 100;
@@ -43,6 +56,8 @@ export type SheetPageData = {
   backHref: string;
   /** The modules of the chord sheet that are on (`ws.music.sheet.*`), by their id in the music app. */
   modules: Record<string, boolean>;
+  /** The Bible translations of the church, for the scripture readings of an event. */
+  scripture: ScriptureConfig;
 };
 
 export type SheetNotFound = "noArrangement" | "song" | "songs" | "session";
@@ -56,12 +71,13 @@ export async function loadSheetPage(
   params: SearchParams,
 ): Promise<{ data: SheetPageData } | { notFound: SheetNotFound }> {
   const i18n = createI18n((await getRequestI18n()).m);
-  const [marksOn, metronomeOn, midiOn, diagramsOn, liveOn] = await Promise.all([
+  const [marksOn, metronomeOn, midiOn, diagramsOn, liveOn, scriptureOn] = await Promise.all([
     isWorkspaceModuleOn("ws.music.sheet.marks"),
     isWorkspaceModuleOn("ws.music.sheet.metronome"),
     isWorkspaceModuleOn("ws.music.sheet.midi-out"),
     isWorkspaceModuleOn("ws.music.sheet.chord-diagrams"),
     isWorkspaceModuleOn("ws.music.sheet.live"),
+    isWorkspaceModuleOn("ws.music.scripture"),
   ]);
   const modules = {
     "sheet.marks": marksOn,
@@ -69,13 +85,38 @@ export async function loadSheetPage(
     "sheet.midi-out": midiOn,
     "sheet.chord-diagrams": diagramsOn,
     "sheet.live": liveOn,
+    scripture: scriptureOn,
   };
+  const scriptureConfig = scriptureOn ? await getScriptureConfig() : DEFAULT_SCRIPTURE_CONFIG;
   const listMarks = (arrangementIds: string[]) =>
     marksOn ? listMySheetMarks(arrangementIds) : Promise.resolve(new Map<string, SheetMark[]>());
 
   // One arrangement, or several in playing order: a list that is not saved. Each can have its key.
   let arrangementIds = [params.arrangement ?? []].flat().slice(0, SHEET_MAX_ITEMS);
   const keyParams = [params.key ?? []].flat();
+  if (arrangementIds.length === 0 && firstParam(params.event) !== undefined) {
+    // An event with text items only (e.g. a reading and a prayer).
+    const texts = await withEventTextItems(
+      i18n,
+      firstParam(params.event)!,
+      [],
+      scriptureConfig,
+      modules,
+    );
+    if (texts.length > 0) {
+      return {
+        data: {
+          viewerKey: `event:${firstParam(params.event)}`,
+          canEditSongs: user.canEditSongs,
+          title: i18n.m.sheet.page.setlist,
+          songs: texts,
+          backHref: "/munkater/enektar",
+          modules,
+          scripture: scriptureConfig,
+        },
+      };
+    }
+  }
   if (arrangementIds.length === 0) {
     const song = await getSong(firstParam(params.song) ?? "");
     // The default arrangement is first.
@@ -134,32 +175,40 @@ export async function loadSheetPage(
       }));
   };
   const single = items.length === 1 ? items[0] : null;
+  // A song can come more than once: its id then has the number of the time, e.g. "<arrangement id>:2".
+  const songSheets = items.map(({ song, arrangement }, index) =>
+    toSheetSong(i18n, occurrenceId(items, index), song, arrangement, {
+      capo: settings.get(arrangement.id)?.capo ?? null,
+      key: settings.get(arrangement.id)?.key ?? null,
+      views: settings.get(arrangement.id)?.views ?? {},
+      slotKey: slotKeys[index] ?? null,
+      marks: marks.get(arrangement.id) ?? [],
+      scores: scores.get(song.id) ?? [],
+      pdfs: pdfs.get(song.id) ?? [],
+      images: images.get(song.id) ?? [],
+      soundFiles: soundFiles.get(song.id) ?? [],
+      links: links.get(song.id) ?? [],
+      fileViews,
+      volunteer: null,
+      slotItemId: slotItemIds[index] ?? null,
+      annotations: annotationsOf(index),
+    }),
+  );
+  // The text items of an event (readings, prayers, …) between its songs. Not for one slot (`item`).
+  const eventId = firstParam(params.event);
+  const eventSongs =
+    eventId !== undefined && firstParam(params.item) === undefined
+      ? await withEventTextItems(i18n, eventId, songSheets, scriptureConfig, modules)
+      : songSheets;
   return {
     data: {
       viewerKey: arrangementIds.join(),
       canEditSongs: user.canEditSongs,
       title: single ? single.song.title : i18n.m.sheet.page.setlist,
-      // A song can come more than once: its id then has the number of the time, e.g. "<arrangement id>:2".
-      songs: items.map(({ song, arrangement }, index) =>
-        toSheetSong(i18n, occurrenceId(items, index), song, arrangement, {
-          capo: settings.get(arrangement.id)?.capo ?? null,
-          key: settings.get(arrangement.id)?.key ?? null,
-          views: settings.get(arrangement.id)?.views ?? {},
-          slotKey: slotKeys[index] ?? null,
-          marks: marks.get(arrangement.id) ?? [],
-          scores: scores.get(song.id) ?? [],
-          pdfs: pdfs.get(song.id) ?? [],
-          images: images.get(song.id) ?? [],
-          soundFiles: soundFiles.get(song.id) ?? [],
-          links: links.get(song.id) ?? [],
-          fileViews,
-          volunteer: null,
-          slotItemId: slotItemIds[index] ?? null,
-          annotations: annotationsOf(index),
-        }),
-      ),
+      songs: eventSongs,
       backHref: single ? `/munkater/enektar?song=${single.song.id}` : "/munkater/enektar",
       modules,
+      scripture: scriptureConfig,
     },
   };
 }
@@ -259,4 +308,96 @@ function occurrenceId(items: { arrangement: { id: string } }[], index: number): 
   const id = items[index]!.arrangement.id;
   const times = items.slice(0, index + 1).filter((item) => item.arrangement.id === id).length;
   return times === 1 ? id : `${id}:${times}`;
+}
+
+/**
+ * The songs of an event sheet with its text items (scripture readings, prayers, text slides, …) in
+ * the order of the event. The text items of the modules that are off do not show. Without the event
+ * (or when it has no text item) the songs stay as they are.
+ */
+async function withEventTextItems(
+  i18n: I18n,
+  eventId: string,
+  songs: SheetSong[],
+  scripture: ScriptureConfig,
+  modules: Record<string, boolean>,
+): Promise<SheetSong[]> {
+  const detail = await getEventDetail(eventId);
+  if (!detail) return songs;
+  const on = [
+    ...(modules.scripture ? ["scripture"] : []),
+    ...((await isWorkspaceModuleOn("ws.music.events.images")) ? ["projection.images"] : []),
+    ...((await isWorkspaceModuleOn("ws.music.events.announcements"))
+      ? ["projection.announcements"]
+      : []),
+    ...((await isWorkspaceModuleOn("ws.music.projection.text-slides"))
+      ? ["projection.text-slides"]
+      : []),
+  ];
+  const translations = enabledTranslations(scripture);
+  const bySlot = new Map(
+    songs.flatMap((song) => (song.slotItemId ? [[song.slotItemId, song]] : [])),
+  );
+  const merged = itemsOn(detail.items, on).flatMap((item): SheetSong[] => {
+    if (item.kind === "song") {
+      const song = bySlot.get(item.id);
+      return song ? [song] : [];
+    }
+    return [toSheetText(i18n, item, translations, scripture.own)];
+  });
+  return merged.length > 0 ? merged : songs;
+}
+
+/**
+ * A text item of an event, without a chart: its title, its kind under it (e.g. "Scripture reading"
+ * or "Text slide") and its notes. A scripture reading also has its translation, and the sheet loads
+ * its verses. A text slide has its description and its highlighted text. An image item and an
+ * announcements item show only their title and kind.
+ */
+function toSheetText(
+  { m }: I18n,
+  item: Extract<SetlistItemDTO, { kind: "text" }>,
+  translations: ScriptureTranslation[],
+  own: ScriptureTranslation[],
+): SheetSong {
+  const kind = textItemKind(item);
+  const translation =
+    kind === "scripture"
+      ? (resolveTranslation(item.scriptureTranslation, translations) ??
+        scriptureTranslation(item.scriptureTranslation, own))
+      : null;
+  return {
+    kind: "text",
+    id: item.key,
+    arrangementId: null,
+    title: item.title,
+    artist: kind === "text" ? null : m.sheet.details[kind],
+    key: null,
+    otherKeys: [],
+    slotKey: null,
+    ownKey: null,
+    views: {},
+    bpm: null,
+    timeSignature: null,
+    details: translation ? [translation.shortName] : [],
+    capo: null,
+    arrangementName: null,
+    chordpro: "",
+    sectionOrder: [],
+    notes: item.notes,
+    description: kind === "textSlide" ? item.description : null,
+    highlight: kind === "textSlide" ? item.highlight : null,
+    scripture: translation?.id ?? null,
+    volunteer: null,
+    songId: null,
+    slotItemId: null,
+    annotations: [],
+    marks: [],
+    scores: [],
+    pdfs: [],
+    images: [],
+    soundFiles: [],
+    links: [],
+    fileViews: {},
+  };
 }

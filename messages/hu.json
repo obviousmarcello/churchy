@@ -3354,6 +3354,10 @@
             "title": "Igeolvasások",
             "help": "Igehelyek az alkalmak tételeiben, a szövegük a vetítésben, saját bibliafordítások a gyülekezet saját engedélyével."
           },
+          "music_scripture_daily_psalm": {
+            "title": "A nap zsoltára",
+            "help": "Naponta egy másik zsoltár néhány verse (Károli) a munkatér kezdőlapján."
+          },
           "music_projection_bible_panel": {
             "title": "Biblia panel",
             "help": "Igehelyek keresése és megjelenítése a vetítésvezérlőben."
@@ -3481,6 +3485,7 @@
           "music_sheet_live": "Közös alkalom (munkatér)",
           "music_projection_quick_add": "Gyors hozzáadás (munkatér)",
           "music_scripture": "Igeolvasások (munkatér)",
+          "music_scripture_daily_psalm": "A nap zsoltára (munkatér)",
           "music_projection_bible_panel": "Biblia panel (munkatér)"
         }
       },
@@ -4668,8 +4673,9 @@
       },
       "dailyPsalm": {
         "title": "A nap zsoltára",
-        "reference": "Zsoltárok {psalm},{verses} (RÚF)",
-        "loading": "A nap zsoltára betöltődik…"
+        "reference": "Zsoltárok {psalm},{verses} (Károli)",
+        "loading": "A nap zsoltára betöltődik…",
+        "failed": "A nap zsoltárát most nem sikerült betölteni."
       },
       "songMedia": {
         "player": "{name} lejátszása",
