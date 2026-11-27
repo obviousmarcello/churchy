@@ -103,3 +103,10 @@ and an insert of `t/<tenant B>/x` is rejected.
   (`musicResearchPerMonth`).
 - Without `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_JWT_SECRET` the music models run
   in local mode (in-process PGlite with the demo data, PLAN §14); staging and production refuse.
+
+## Web push (phase 5d)
+
+- Generate a VAPID pair once per platform (`npx web-push generate-vapid-keys`), keep it in the secrets manager and set
+  `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` (`mailto:…` or `https://…`) on the server. Never in the demo (it
+  refuses to start with them) and never in the repository.
+- The service worker is served at `/munkater/sw.js` with scope `/munkater/`; push needs HTTPS on the workspace host.

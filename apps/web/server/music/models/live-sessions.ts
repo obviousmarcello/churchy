@@ -10,6 +10,7 @@ import type { RealtimeConnection } from "@/lib/music/realtime/client";
 import { playKeySchema } from "./arrangements";
 import { canSeeEvent, visibleEventsFilter } from "./event-access";
 import { listPeople } from "./profiles";
+import { notifyLiveSessionStarted } from "./live-push";
 import { getConnection } from "./realtime-access";
 import { SETLIST_MAX_ITEMS } from "./setlists";
 import { databaseError, idSchema, isId, parseInput } from "./shared";
@@ -253,6 +254,8 @@ export async function startEventLiveSession(eventId: string): Promise<LiveSessio
   if (error) throw databaseError("start event live session", error);
 
   const session = sessionRowSchema.parse(data);
+  // Only for a new session: a user who joins a running one tells nobody.
+  await notifyLiveSessionStarted(eventId, session.id, user.id);
   return toSession(session, user);
 }
 
