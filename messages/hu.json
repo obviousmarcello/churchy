@@ -30,6 +30,7 @@
         "songs": "Énektár",
         "musicEvents": "Zenei események",
         "projectionThemes": "Vetítési témák",
+        "musicNotifications": "Értesítések",
         "absences": "Távollétek",
         "hr": "HR-ügyintézés",
         "news": "Hírek",
@@ -5623,7 +5624,8 @@
         "leaderChanged": "Most egy másik felhasználó vezeti ezt a közös alkalmat. Töltsd újra az oldalt.",
         "notParticipant": "Ez a felhasználó nem önkéntese ennek az eseménynek. Válassz egy másik felhasználót.",
         "startFailed": "Nem tudtuk elindítani a közös alkalmat. Próbáld újra.",
-        "changeFailed": "Nem tudtuk módosítani a közös alkalmat. Próbáld újra."
+        "changeFailed": "Nem tudtuk módosítani a közös alkalmat. Próbáld újra.",
+        "tooManyRehearsals": "Túl sok próbát indítottál egymás után. Próbáld újra később."
       },
       "profiles": {
         "chooseImage": "Válassz egy képet",
@@ -6980,6 +6982,32 @@
         "deleteFailed": "A téma nem törlődött. Próbáld újra.",
         "defaultSet": "Mostantól ez az alapértelmezett téma.",
         "defaultFailed": "Az alapértelmezett téma nem változott. Próbáld újra."
+      }
+    },
+    "notifications": {
+      "page": {
+        "title": "Értesítések",
+        "lead": "Értesítést kapsz a készülékedre, amikor elindul egy közös alkalom azokon az eseményeken, amelyeken szolgálsz.",
+        "metadataTitle": "Értesítések"
+      },
+      "push": {
+        "liveSession": {
+          "title": "Közös alkalom indult",
+          "body": "Csatlakozhatsz az alkalom énekeihez."
+        }
+      },
+      "settings": {
+        "liveSession": "Értesítés a közös alkalmak indulásáról",
+        "liveSessionHint": "Ez a beállítás minden készülékedre vonatkozik.",
+        "devices": "Értesítést kapó készülékeid: {count}",
+        "enable": "Értesítések bekapcsolása ezen a készüléken",
+        "disable": "Értesítések kikapcsolása ezen a készüléken",
+        "enabled": "Ezen a készüléken be van kapcsolva.",
+        "denied": "A böngésző letiltotta az értesítéseket. Engedélyezd a böngésző beállításaiban.",
+        "unsupported": "Ez a böngésző nem támogatja az értesítéseket.",
+        "unavailable": "Az értesítések ezen a telepítésen nincsenek bekapcsolva (demó).",
+        "failed": "Nem sikerült beállítani az értesítést. Próbáld újra.",
+        "saved": "Elmentve."
       }
     }
   },

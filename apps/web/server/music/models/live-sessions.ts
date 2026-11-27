@@ -4,11 +4,13 @@ import { z } from "zod";
 
 import { requireUser, type CurrentUser } from "@/server/music/auth";
 import { ConflictError, ForbiddenError } from "@/server/music/errors";
+import { createRateLimiter, type RateLimiter } from "@/lib/requests/rate-limit";
 import { getMusicSupabase } from "@/server/music/db";
 import type { RealtimeConnection } from "@/lib/music/realtime/client";
 import { playKeySchema } from "./arrangements";
 import { canSeeEvent, visibleEventsFilter } from "./event-access";
 import { listPeople } from "./profiles";
+import { notifyLiveSessionStarted } from "./live-push";
 import { getConnection } from "./realtime-access";
 import { SETLIST_MAX_ITEMS } from "./setlists";
 import { databaseError, idSchema, isId, parseInput } from "./shared";
@@ -111,6 +113,15 @@ const sessionSummaryRowSchema = z.object({
   created_at: z.string(),
   event: z.object({ title: z.string() }),
 });
+
+/** At most this many rehearsal sessions per user and hour (each start is a new row). */
+export const REHEARSAL_SESSIONS_PER_HOUR = 20;
+const REHEARSAL_LIMITER = "__churchyRehearsalSessionLimiter";
+
+function rehearsalLimiter(): RateLimiter {
+  const store = globalThis as unknown as Record<string, RateLimiter | undefined>;
+  return (store[REHEARSAL_LIMITER] ??= createRateLimiter(REHEARSAL_SESSIONS_PER_HOUR));
+}
 
 const LEADER_CHANGED = () => new ConflictError(({ m }) => m.server.liveSessions.leaderChanged);
 
@@ -243,6 +254,8 @@ export async function startEventLiveSession(eventId: string): Promise<LiveSessio
   if (error) throw databaseError("start event live session", error);
 
   const session = sessionRowSchema.parse(data);
+  // Only for a new session: a user who joins a running one tells nobody.
+  await notifyLiveSessionStarted(eventId, session.id, user.id);
   return toSession(session, user);
 }
 
@@ -250,6 +263,10 @@ export async function startEventLiveSession(eventId: string): Promise<LiveSessio
 export async function startRehearsalLiveSession(input: unknown): Promise<LiveSessionDTO> {
   const user = await requireUser();
   const { arrangementIds, musicalKeys } = parseInput(rehearsalInputSchema, input);
+  // Each start is a new row: a limit, so one user cannot fill the table.
+  if (!rehearsalLimiter().take(`${user.tenantId}|${user.id}`, Date.now())) {
+    throw new ConflictError(({ m }) => m.server.liveSessions.tooManyRehearsals);
+  }
   // A song can come more than once, each time with its own key.
   const keys = arrangementIds.map((_, index) => musicalKeys?.[index] ?? null);
   const { data, error } = await (

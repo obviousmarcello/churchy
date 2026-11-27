@@ -25,6 +25,7 @@ export type NavKey =
   | "sections.songs"
   | "sections.musicEvents"
   | "sections.projectionThemes"
+  | "sections.musicNotifications"
   | "sections.absences"
   | "sections.hr"
   | "sections.news"
@@ -206,6 +207,13 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           href: "/munkater/vetitesi-temak",
           module: "ws.music.projection.themes",
           requires: { action: "music.projection.themes.manage" },
+        },
+        {
+          id: "musicNotifications",
+          label: t("sections.musicNotifications"),
+          href: "/munkater/ertesitesek",
+          module: "ws.music.sheet.live",
+          requires: { action: "music.live.join" },
         },
         {
           id: "absences",

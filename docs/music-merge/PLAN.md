@@ -728,3 +728,25 @@ Not done (needs a decision or the copy of the whole event editor, which is still
    created by migration 0017 apply (`realtime.send` is used by `notify_event` as a SECURITY DEFINER function).
 2. Copy the music app's event editor (drag-and-drop editor, `AddItemBox`, quick add, per-slot annotations) now, as one slice?
 3. Live sessions: web-push on start and the rate limit of rehearsal sessions wait for the notifications phase (OK?).
+
+## 20. Phase 5d: rehearsal-session rate limit; push (open)
+- Rehearsal sessions: at most 20 per user and hour (`REHEARSAL_SESSIONS_PER_HOUR`, in-memory limiter as the request forms;
+  moves to the DB/edge with the request limiter in Phase B). Test `live-sessions.test.ts`.
+### 5d-2 (done): web push for live sessions  [security-review]
+- New runtime dependency `web-push` 3.6.7 (+ `@types/web-push`): VAPID signing and the encrypted push protocol; nothing in the
+  stack covers it, and the music app used the same library.
+- Configuration only from the environment: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (`mailto:` or `https:`); never
+  committed. Without all three push is off. The demo refuses to start with `VAPID_*` set (`lib/demo/safety.ts`, existing rule) and
+  shows the notice "not switched on (demo)" on the page.
+- Service worker `/munkater/sw.js` (route handler, `Service-Worker-Allowed: /munkater/`): shows the push, opens its link; no cache,
+  no fetch handler. Public hosts never register it.
+- Page `/munkater/ertesitesek` (module `ws.music.sheet.live`, action `music.live.join`): this device on/off (subscription of the
+  browser into `push_subscriptions`, at most 10 per user) and the preference `notification_preferences.live_session` (default yes).
+- Sending: `notifyLiveSessionStarted` after a NEW event session starts, to the volunteers of the event except the leader, those who
+  replied "no" and those who switched it off; endpoints that the push service reports gone (404/410) are removed. The payload is a
+  fixed title and text, the link `/munkater/kotta?session=<id>` and a tag: no name, no event title. A failure never fails the start.
+- Tenant isolation: the tables are tenant tables with RLS; the volunteers' user ids are the music profile ids, the same space as
+  `push_subscriptions.user_id`, so no id mapping is needed. `endpoint` is unique across tenants: a device registered in another
+  church is refused, not taken over.
+- Tests: `push.test.ts` (config, send, gone endpoints, link guard), e2e `music-notifications.spec.ts`.
+- Needs a real device and a real Supabase project to verify end to end (not possible here).
