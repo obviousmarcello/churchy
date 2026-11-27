@@ -100,16 +100,25 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
   const canEdit = await user.canManageIn("event", found.areaIds);
   // The model functions check the event admin role again. One read of the groups for both.
   const groupLabels = listGroupLabels();
-  const [themesOn, imagesOn, announcementsOn, liveOn, projectionOn, sheetOn, textSlidesOn] =
-    await Promise.all([
-      isWorkspaceModuleOn("ws.music.projection.themes"),
-      isWorkspaceModuleOn("ws.music.events.images"),
-      isWorkspaceModuleOn("ws.music.events.announcements"),
-      isWorkspaceModuleOn("ws.music.sheet.live"),
-      isWorkspaceModuleOn("ws.music.projection"),
-      isWorkspaceModuleOn("ws.music.sheet"),
-      isWorkspaceModuleOn("ws.music.projection.text-slides"),
-    ]);
+  const [
+    themesOn,
+    imagesOn,
+    announcementsOn,
+    liveOn,
+    projectionOn,
+    sheetOn,
+    textSlidesOn,
+    quickAddOn,
+  ] = await Promise.all([
+    isWorkspaceModuleOn("ws.music.projection.themes"),
+    isWorkspaceModuleOn("ws.music.events.images"),
+    isWorkspaceModuleOn("ws.music.events.announcements"),
+    isWorkspaceModuleOn("ws.music.sheet.live"),
+    isWorkspaceModuleOn("ws.music.projection"),
+    isWorkspaceModuleOn("ws.music.sheet"),
+    isWorkspaceModuleOn("ws.music.projection.text-slides"),
+    isWorkspaceModuleOn("ws.music.projection.quick-add"),
+  ]);
   const [
     event,
     volunteers,
@@ -186,7 +195,7 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
         "sheet.live": liveOn,
         // Scripture and the quick add of the controller come later (phase 6, slice 5e-2).
         scripture: false,
-        "projection.quick-add": false,
+        "projection.quick-add": quickAddOn,
       },
     },
   };

@@ -75,6 +75,7 @@ const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
   "ws.music.projection.overlay",
   "ws.music.projection.countdown",
   "ws.music.projection.pptx-export",
+  "ws.music.projection.quick-add",
 ];
 
 export function buildTenant(b: Build): void {

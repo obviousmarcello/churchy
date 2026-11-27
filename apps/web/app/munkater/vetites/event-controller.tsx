@@ -36,7 +36,9 @@ import {
   setEventThemeAction,
   setItemThemeAction,
   startEventBlockAction,
+  type ItemsEditorPart,
 } from "./actions-client";
+import { ALL_EDITOR_PARTS, ItemsEditorPanel, type EditorReload } from "./items-editor";
 import {
   ProjectionController,
   type ReorderOutcome,
@@ -61,6 +63,26 @@ const HEARTBEAT_MS = 30_000;
 
 /** The tries of a reorder that meets changes of other users. */
 const REORDER_TRIES = 3;
+
+/** The wait for more changes before the open editor loads again, e.g. for the images of a PDF, which arrive one by one. */
+const EDITOR_RELOAD_DELAY_MS = 1000;
+
+/** The parts of the data of the editor that a change of the event can make old. */
+const EDITOR_PARTS: Record<EventChange["kind"], readonly ItemsEditorPart[]> = {
+  items: ["event", "images", "announcements"],
+  // The name, the countdown or the start of a block.
+  blocks: ["event"],
+  details: ["event"],
+  themes: ["themes"],
+  // A volunteer who leaves the event leaves their items too.
+  volunteers: ["volunteers", "event"],
+  images: ["images"],
+  announcements: ["announcements"],
+  songs: ["catalog", "event"],
+  live: [],
+  deleted: ["event"],
+  load: ALL_EDITOR_PARTS,
+};
 
 /** The controller of an event's projection, with the data from the server. */
 export function EventProjectionController({
@@ -91,6 +113,8 @@ export function EventProjectionController({
   const [addedKeys, addKey] = useAddedKeys(eventId);
   // The items that this controller removed: no faded item for them.
   const ownRemoves = useRef(new Set<string>());
+  // Each change of the event loads the parts of the open editor that it can make old.
+  const [editorReload, reloadEditor] = useEditorReload();
   const notify = useChangeNotices(eventId, connection.connection.userId);
 
   const { reload, reloadNow } = useReload(eventId, (next, authors) => {
@@ -142,6 +166,7 @@ export function EventProjectionController({
     }
     const rest = changes.filter((change) => change.kind !== "live");
     if (rest.length === 0) return;
+    reloadEditor(rest.flatMap((change) => EDITOR_PARTS[change.kind]));
     // Only the blocks changed, e.g. the start of a countdown: only the blocks load again.
     if (rest.every((change) => change.kind === "blocks")) reloadBlocks();
     else reload(changes);
@@ -178,6 +203,7 @@ export function EventProjectionController({
       changeTheme={changeTheme}
       onThemesChanged={() => {
         reload([]);
+        reloadEditor(["themes"]);
       }}
       onImageSaved={(saved) => {
         setProjection((current) => ({
@@ -188,11 +214,26 @@ export function EventProjectionController({
       }}
       onImagesChanged={() => {
         reload([]);
+        reloadEditor(["images", "event"]);
       }}
       schedule={projection.schedule}
       startBlock={startBlock}
       assignees={projection.assignees}
-      itemsEditor={null}
+      itemsEditor={
+        canEditItems
+          ? ({ liveKey }) => (
+              <ItemsEditorPanel
+                eventId={eventId}
+                liveKey={liveKey}
+                reload={editorReload}
+                onSongSaved={() => {
+                  reload([]);
+                  reloadEditor(["catalog", "event"]);
+                }}
+              />
+            )
+          : null
+      }
     />
   );
 
@@ -366,6 +407,33 @@ function useReload(
     [reloadNow],
   );
   return { reload, reloadNow };
+}
+
+/**
+ * The parts of the data of the open items editor that a change makes old (see `ItemsEditorPanel`):
+ * the parts of the changes within `EDITOR_RELOAD_DELAY_MS` load together.
+ */
+function useEditorReload(): [EditorReload, (parts: readonly ItemsEditorPart[]) => void] {
+  const [reload, setReload] = useState<EditorReload>({ token: 0, parts: [] });
+  const state = useRef<{ parts: Set<ItemsEditorPart>; timer?: ReturnType<typeof setTimeout> }>({
+    parts: new Set(),
+  });
+  useEffect(() => {
+    const current = state.current;
+    return () => clearTimeout(current.timer);
+  }, []);
+  const request = useCallback((parts: readonly ItemsEditorPart[]) => {
+    if (parts.length === 0) return;
+    const current = state.current;
+    for (const part of parts) current.parts.add(part);
+    clearTimeout(current.timer);
+    current.timer = setTimeout(() => {
+      const next = [...current.parts];
+      current.parts.clear();
+      setReload((before) => ({ token: before.token + 1, parts: next }));
+    }, EDITOR_RELOAD_DELAY_MS);
+  }, []);
+  return [reload, request];
 }
 
 /**

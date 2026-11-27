@@ -39,6 +39,7 @@ const S50: readonly WorkspaceModuleKey[] = [
   "ws.music.projection.overlay",
   "ws.music.projection.countdown",
   "ws.music.projection.pptx-export",
+  "ws.music.projection.quick-add",
 ];
 const M150: readonly WorkspaceModuleKey[] = [...S50, "ws.hr.confidential", "ws.docs"];
 const L300: readonly WorkspaceModuleKey[] = [...M150, "ws.board"];
