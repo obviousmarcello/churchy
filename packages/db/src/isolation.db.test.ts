@@ -951,6 +951,142 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
       });
     });
 
+    it("projection: the default theme stays, controllers block the delete of an event, realtime claims decide the topics", async () => {
+      const uuid = () => randomUUID();
+      const [profile] = await ownerQuery<{ id: string }>(
+        "select id from profiles order by id limit 1",
+      );
+      await asMusic(A, async (c) => {
+        // The default theme of the tenant: created once, and it cannot be deleted.
+        const def = (
+          await c.query<{ id: string }>("select public.default_projection_theme_id() as id")
+        ).rows[0]!.id;
+        expect(
+          (await c.query<{ id: string }>("select public.default_projection_theme_id() as id"))
+            .rows[0]!.id,
+        ).toBe(def);
+        await c.query("delete from projection_themes where id = $1", [def]);
+        expect(await attempt(c, "set constraints all immediate")).toMatchObject({ code: "P0001" });
+      });
+      await asMusic(A, async (c) => {
+        const def = (
+          await c.query<{ id: string }>("select public.default_projection_theme_id() as id")
+        ).rows[0]!.id;
+        // Another theme becomes the default; the old default can then go.
+        const other = (
+          await c.query<{ id: string }>(
+            `insert into projection_themes (name, background_color, font, text_color)
+             values ('Másik ${uuid()}', '#101010', 'inter', '#ffffff') returning id`,
+          )
+        ).rows[0]!.id;
+        expect(
+          (await c.query("select public.set_default_projection_theme($1) as ok", [other])).rows[0]
+            .ok,
+        ).toBe(true);
+        await c.query("delete from projection_themes where id = $1", [def]);
+        await c.query("set constraints all immediate");
+        expect(
+          (await c.query("select is_default from projection_themes where id = $1", [other])).rows[0]
+            .is_default,
+        ).toBe(true);
+        expect(
+          (await c.query("select public.set_default_projection_theme($1) as ok", [uuid()])).rows[0]
+            .ok,
+        ).toBe(false);
+
+        // The theme of an event; a deleted theme leaves the event with the default.
+        const cal = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        const ev = (
+          await c.query<{ id: string }>(
+            `insert into events (calendar_id, visibility, slug, title, starts_at, ends_at, status, projection_theme_id, created_by)
+             values ('${cal}', 'staff', 'vetites-${uuid()}', 'Vetítés', now() + interval '3 days',
+                     now() + interval '3 days 90 minutes', 'published', $1, $2) returning id`,
+            [other, profile!.id],
+          )
+        ).rows[0]!.id;
+        expect(
+          (await c.query("select public.set_event_item_theme($1, $2, null) as r", [ev, uuid()]))
+            .rows[0].r,
+        ).toBe("no_item");
+        expect(
+          (await c.query("select public.set_event_item_theme($1, $2, null) as r", [uuid(), uuid()]))
+            .rows[0].r,
+        ).toBe("no_event");
+
+        // The controllers: at most 5 rows per user and event, and an open one blocks the delete.
+        for (let i = 0; i < 7; i++) {
+          expect(
+            (
+              await c.query("select public.touch_projection_controller($1, $2, $3) as ok", [
+                uuid(),
+                ev,
+                profile!.id,
+              ])
+            ).rows[0].ok,
+          ).toBe(true);
+        }
+        expect(
+          (
+            await c.query(
+              "select count(*)::int as n from event_projection_controllers where event_id = $1",
+              [ev],
+            )
+          ).rows[0].n,
+        ).toBe(5);
+        await c.query("savepoint s");
+        expect(await attempt(c, "delete from events where id = '" + ev + "'")).toMatchObject({
+          code: "P0001",
+        });
+        await c.query("rollback to savepoint s");
+        // The server ends the projections with a header: then the delete goes on.
+        await c.query(
+          "select set_config('request.headers', '{\"x-app-end-projections\":\"true\"}', true)",
+        );
+        await c.query("delete from events where id = $1", [ev]);
+        expect(
+          (
+            await c.query(
+              "select count(*)::int as n from event_projection_controllers where event_id = $1",
+              [ev],
+            )
+          ).rows[0].n,
+        ).toBe(0);
+      });
+    });
+
+    it("realtime: the policies compare the topic with the claims of the token, per tenant", async () => {
+      async function allowed(claims: object, topic: string, send: boolean): Promise<boolean> {
+        const client = await owner.connect();
+        try {
+          await client.query("begin");
+          await client.query("select set_config('request.jwt.claims', $1, true)", [
+            JSON.stringify(claims),
+          ]);
+          return (
+            await client.query("select public.music_realtime_allowed($1, $2) as ok", [topic, send])
+          ).rows[0].ok;
+        } finally {
+          await client.query("rollback").catch(() => undefined);
+          client.release();
+        }
+      }
+      const topic = (tenant: string) => `t:${tenant}:projection:event:${randomUUID()}`;
+      const own = topic(A);
+      const claims = { iss: "churchy", tenant_id: A, rt_topics: [own], rt_send: [own] };
+      expect(await allowed(claims, own, false)).toBe(true);
+      expect(await allowed(claims, own, true)).toBe(true);
+      // A topic that the token does not name, another tenant's topic, send without rt_send, no issuer.
+      expect(await allowed(claims, topic(A), false)).toBe(false);
+      const foreign = topic(B);
+      expect(
+        await allowed({ ...claims, rt_topics: [foreign], rt_send: [foreign] }, foreign, false),
+      ).toBe(false);
+      expect(await allowed({ ...claims, rt_send: [] }, own, true)).toBe(false);
+      expect(await allowed({ ...claims, iss: "other" }, own, false)).toBe(false);
+      expect(await allowed({}, own, false)).toBe(false);
+    });
+
     it("gets permission denied on every non-music table", async () => {
       const others = Object.keys(TABLE_SCOPES).filter(
         (t) => !(MUSIC_TABLES as readonly string[]).includes(t),

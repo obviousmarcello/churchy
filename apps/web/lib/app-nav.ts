@@ -24,6 +24,7 @@ export type NavKey =
   | "sections.rooms"
   | "sections.songs"
   | "sections.musicEvents"
+  | "sections.projectionThemes"
   | "sections.absences"
   | "sections.hr"
   | "sections.news"
@@ -198,6 +199,13 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           href: "/munkater/esemenyek",
           module: "ws.music.events",
           requires: { action: "music.event.view" },
+        },
+        {
+          id: "projectionThemes",
+          label: t("sections.projectionThemes"),
+          href: "/munkater/vetitesi-temak",
+          module: "ws.music.projection.themes",
+          requires: { action: "music.projection.themes.manage" },
         },
         {
           id: "absences",

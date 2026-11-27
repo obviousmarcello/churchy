@@ -82,3 +82,22 @@ export async function musicEventIn(
   const event = await getEvent(id);
   return event === null ? null : { ...tenant, areaIds: event.areaIds };
 }
+
+/** The projection (`ws.music.projection`, and its child module when named) must be on too. */
+export async function musicProjection(
+  scope: PolicyScope,
+  ..._args: unknown[]
+): Promise<{ tenantId: string } | null> {
+  const tenant = await musicEvents(scope);
+  if (tenant === null) return null;
+  return (await isWorkspaceModuleOn("ws.music.projection")) ? tenant : null;
+}
+
+/** Like `musicProjection`, for a child module of the projection. */
+export function musicProjectionChild(child: "themes" | "text-slides" | "overlay" | "countdown") {
+  return async (scope: PolicyScope, ..._args: unknown[]): Promise<{ tenantId: string } | null> => {
+    const tenant = await musicProjection(scope);
+    if (tenant === null) return null;
+    return (await isWorkspaceModuleOn(`ws.music.projection.${child}`)) ? tenant : null;
+  };
+}

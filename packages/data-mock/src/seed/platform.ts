@@ -68,6 +68,12 @@ const WS_S50: WorkspaceModuleKey[] = [
   "ws.music.events",
   "ws.music.events.images",
   "ws.music.events.announcements",
+  "ws.music.projection",
+  "ws.music.projection.themes",
+  "ws.music.projection.text-slides",
+  "ws.music.projection.overlay",
+  "ws.music.projection.countdown",
+  "ws.music.projection.pptx-export",
 ];
 const WS_M150: WorkspaceModuleKey[] = [...WS_S50, "ws.hr.confidential", "ws.docs"];
 const WS_L300: WorkspaceModuleKey[] = [...WS_M150, "ws.board"];

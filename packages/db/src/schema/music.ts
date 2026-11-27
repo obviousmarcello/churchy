@@ -2473,3 +2473,35 @@ export const eventAnnouncementEntries = pgTable(
     }).onDelete("cascade"),
   ],
 ).enableRLS();
+
+// ---------------------------------------------------------------------------------------------
+// Projection (phase 5): the controllers open on an event, so that an event with an open
+// projection is not deleted by accident and a user does not lose it.
+// ---------------------------------------------------------------------------------------------
+
+export const eventProjectionControllers = pgTable(
+  "event_projection_controllers",
+  {
+    tenantId: tenantId(),
+    id: uuid().primaryKey().defaultRandom(),
+    eventId: uuid().notNull(),
+    userId: uuid().notNull(),
+    seenAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    ...tenantIndexes("event_projection_controllers", t),
+    index("event_projection_controllers_event_id_idx").on(t.eventId, t.seenAt),
+    index("event_projection_controllers_user_id_idx").on(t.userId),
+    index("event_projection_controllers_seen_at_idx").on(t.seenAt),
+    foreignKey({
+      name: "event_projection_controllers_event_id_fkey",
+      columns: [t.tenantId, t.eventId],
+      foreignColumns: [events.tenantId, events.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "event_projection_controllers_user_id_fkey",
+      columns: [t.userId],
+      foreignColumns: [profiles.id],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();

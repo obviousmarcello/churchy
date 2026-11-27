@@ -90,7 +90,7 @@ export function MediaPanel({
                   <li key={image.id} className="flex flex-col gap-1">
                     {/* eslint-disable-next-line @next/next/no-img-element -- a private, already resized file */}
                     <img
-                      src={image.url.replace("/event-images/", "/munkater/esemenyek/fajl/kep/")}
+                      src={image.url}
                       alt={image.name}
                       className="h-20 w-32 rounded object-cover"
                     />

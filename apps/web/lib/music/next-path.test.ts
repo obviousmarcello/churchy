@@ -33,9 +33,9 @@ describe("isPublicPath", () => {
 describe("isFullScreenPath", () => {
   it("covers the sheet and the three projection pages", () => {
     expect(isFullScreenPath("/munkater/kotta")).toBe(true);
-    expect(isFullScreenPath("/project")).toBe(true);
-    expect(isFullScreenPath("/project/screen")).toBe(true);
-    expect(isFullScreenPath("/project/overlay")).toBe(true);
+    expect(isFullScreenPath("/munkater/vetites")).toBe(true);
+    expect(isFullScreenPath("/munkater/vetites/kepernyo")).toBe(true);
+    expect(isFullScreenPath("/munkater/vetites/overlay")).toBe(true);
     expect(isFullScreenPath("/projects")).toBe(false);
     expect(isFullScreenPath("/munkater/enektar")).toBe(false);
   });
@@ -43,15 +43,17 @@ describe("isFullScreenPath", () => {
 
 describe("the projection pages", () => {
   it("open the projection of an event or of the rehearsal", () => {
-    expect(projectionHref("e1")).toBe("/project?event=e1");
-    expect(projectionHref(null)).toBe("/project?rehearsal");
-    expect(projectionScreenHref("e1")).toBe("/project/screen?event=e1");
-    expect(projectionScreenHref(null)).toBe("/project/screen?rehearsal");
+    expect(projectionHref("e1")).toBe("/munkater/vetites?event=e1");
+    expect(projectionHref(null)).toBe("/munkater/vetites?rehearsal");
+    expect(projectionScreenHref("e1")).toBe("/munkater/vetites/kepernyo?event=e1");
+    expect(projectionScreenHref(null)).toBe("/munkater/vetites/kepernyo?rehearsal");
   });
 
   it("open the stream overlay of an event, with the background only when it is not the default", () => {
-    expect(projectionOverlayHref("e1", "black")).toBe("/project/overlay?event=e1");
-    expect(projectionOverlayHref("e1", "green")).toBe("/project/overlay?event=e1&background=green");
+    expect(projectionOverlayHref("e1", "black")).toBe("/munkater/vetites/overlay?event=e1");
+    expect(projectionOverlayHref("e1", "green")).toBe(
+      "/munkater/vetites/overlay?event=e1&background=green",
+    );
   });
 });
 

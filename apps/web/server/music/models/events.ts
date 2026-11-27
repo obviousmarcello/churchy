@@ -69,6 +69,8 @@ export type EventDTO = {
   areaIds: string[];
   /** The event's own setlist, else null. */
   setlistId: string | null;
+  /** The projection theme of the event. Null: the default theme. */
+  projectionThemeId: string | null;
   createdBy: string | null;
 };
 
@@ -154,7 +156,7 @@ export type NewEventInput = z.input<typeof newEventInputSchema>;
 export type EventPatchInput = z.input<typeof eventPatchInputSchema>;
 
 const EVENT_COLUMNS =
-  "id, title, starts_at, ends_at, youtube_url, is_private, area_ids, rrule, exdates, parent_event_id, recurrence_id, setlist_id, created_by";
+  "id, title, starts_at, ends_at, youtube_url, is_private, area_ids, rrule, exdates, parent_event_id, recurrence_id, setlist_id, projection_theme_id, created_by";
 
 const eventRowSchema = z.object({
   id: z.uuid(),
@@ -169,6 +171,7 @@ const eventRowSchema = z.object({
   parent_event_id: z.uuid().nullable(),
   recurrence_id: z.string().nullable(),
   setlist_id: z.uuid().nullable(),
+  projection_theme_id: z.uuid().nullable(),
   created_by: z.uuid().nullable(),
 });
 
@@ -193,6 +196,7 @@ function toEvent(row: EventRow): EventDTO {
     parentEventId: row.parent_event_id?.toLowerCase() ?? null,
     recurrenceId: row.recurrence_id === null ? null : iso(row.recurrence_id),
     setlistId: row.setlist_id?.toLowerCase() ?? null,
+    projectionThemeId: row.projection_theme_id?.toLowerCase() ?? null,
     createdBy: row.created_by?.toLowerCase() ?? null,
   };
 }

@@ -151,6 +151,22 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: { leader: "all", musicLeader: "all" },
   },
   {
+    capability:
+      "Music: project an event (its volunteers, and event admins; the model checks the event)",
+    actions: ["music.projection.use"],
+    grants: EVERY_ROLE,
+  },
+  {
+    capability: "Music: manage the projection themes",
+    actions: ["music.projection.themes.manage"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
+    capability: "Music: choose the default projection theme",
+    actions: ["music.projection.themes.setDefault"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
     capability: "Music: manage songs and arrangements",
     actions: ["music.song.manage"],
     grants: { leader: "all", musicLeader: "all" },

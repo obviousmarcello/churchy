@@ -14,8 +14,10 @@ import { listPeople } from "@/server/music/models/profiles";
 import { ItemsPanel } from "./items-panel";
 import { TeamPanel } from "./team-panel";
 import { PlanLink } from "./plan-link";
+import { projectionHref } from "@/lib/music/next-path";
+import { canProjectEvent } from "@/server/music/models/realtime-access";
 import { MediaPanel } from "./media-panel";
-import type { EventImageSetsDTO } from "@/lib/music/projection-images";
+import type { EventImageSetsDTO } from "@/lib/music/projection/images";
 import { listEventAnnouncements } from "@/server/music/models/announcements";
 import { listEventImageSetIds, listEventImageSets } from "@/server/music/models/event-images";
 import { isWorkspaceModuleOn } from "@/server/workspace-nav";
@@ -74,6 +76,7 @@ export default async function EventPage({
     listPeople(),
   ]);
   const planInfo = await planOf(event.id);
+  const canProject = await canProjectEvent(event.id);
   const [imagesOn, announcementsOn] = await Promise.all([
     isWorkspaceModuleOn("ws.music.events.images"),
     isWorkspaceModuleOn("ws.music.events.announcements"),
@@ -113,6 +116,14 @@ export default async function EventPage({
           {event.rrule && ` · ${m.events.seriesBadge}`}
           {event.isPrivate && ` · ${m.events.privateBadge}`}
         </p>
+        {canProject && (
+          <Link
+            href={projectionHref(event.id)}
+            className={buttonVariants({ variant: "outline" }) + " self-start"}
+          >
+            {m.events.items.project}
+          </Link>
+        )}
         {event.items.some((item) => item.kind === "song") && (
           <Link
             href={`/munkater/kotta?event=${event.id}`}

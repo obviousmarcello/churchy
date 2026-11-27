@@ -637,3 +637,49 @@ copy_event, 4b-2 editor + images + announcements, 4b-3 feed, sync wiring, statis
 - Not copied: the projection controls and announcement slides / image adjust editor (phase 5), the per-slot annotations of
   `my-setlists` on the sheet (the sheet shows no annotations yet; the annotation UI is its own piece of work).
 
+
+## 19. Phase 5 progress (music-05-projection)
+
+Owner decision (2026-11-25): realtime transport = Supabase Realtime with the tenant JWT; channels namespaced per tenant,
+authorization by policies on `realtime.messages`; the PGlite demo gets a local `BroadcastChannel` transport with the same
+interface. Slices: 5a projection themes/viewer/controller, 5b live sessions + realtime + shared metronome, 5c announcement
+slides, image adjust, event-editor controls.
+
+### 5a (done): themes, controller, screen, overlay
+- Migration `0017_music_projection` (+ down): `events.projection_theme_id` (composite FK, `ON DELETE SET NULL (col)`),
+  table `event_projection_controllers` (RLS, `table-scopes`, isolation fixture), theme triggers (updated_at, stray files for
+  image and video), `keep_default_projection_theme` (per tenant, deferred), `set_default_projection_theme`,
+  `default_projection_theme_id()` (gets or creates the tenant's default theme), `set_event_item_theme`, video upload
+  functions, `touch_projection_controller` (5 rows per user and event), `can_project_event(event, user, is_admin)`,
+  `check_open_projection_before_delete` (header `x-app-end-projections`; skipped without tenant context), `copy_event`
+  replaced (copies the event theme). All SECURITY INVOKER.
+- Realtime authorization: `public.music_realtime_allowed(topic, send)` compares the topic with the claims `rt_topics` /
+  `rt_send` of a short-lived token minted by the server (`server/music/realtime.ts`, after `can()` and the models decided:
+  `authorizeRealtimeTopics`); policies on `realtime.messages` are created only where that table exists. No table read, so no
+  `security definer` (the music app used definer functions reading `event_volunteers`/`user_roles`; deviation).
+  Topics: `t:<tenant id>:projection:event:<id>`, `…:event:<id>`, `…:live:<id>`.
+  Client: `lib/music/realtime/{client,browser}.ts` (supabase-js or local BroadcastChannel; same channel subset the copied
+  hooks use). Server action `realtimeTokenAction`. NOT verifiable here: a real Supabase Realtime project must accept the
+  token (role `authenticated`, HS256 with the project secret) - see open questions.
+- Policy: `music.projection.use` (every role; the model checks volunteer / event admin through `can_project_event`),
+  `music.projection.themes.manage`, `music.projection.themes.setDefault` (leader, music leader). MATRIX regenerated.
+- Modules (default off, child needs parent): `ws.music.projection` (parent `ws.music.events`) with `.themes`,
+  `.text-slides`, `.overlay`, `.countdown`, `.pptx-export`; nav item "Vetítési témák".
+- Copied (imports, routes, strictness edited): libs `lib/music/projection/*` (slides, protocol, themes, overlay, images,
+  quick-items, pptx, videos, fonts, running) and `lib/music/scripture/{passage,books,reference,translations,...}` (pure, the
+  slide model needs them), `lib/music/announcements/present.ts`, `xml`, `zip`, `pending-saves`; models
+  `projection-themes`, `projections`, `event-sync`, `realtime-access`; components `event-changes`, `block-*`, `user-avatar`,
+  `row-menu`, `color-field`; pages `/munkater/vetites` (controller), `/kepernyo`, `/overlay`, `/munkater/vetitesi-temak`
+  (themes, background image and video), file routes `fajl/hatter`, `fajl/video`. Messages `music.project`,
+  `music.projectionThemes`. Projection files are served under `/munkater/...` paths; the URL patterns of the libs follow.
+- Server actions are `withPolicy` and unwrapped for the client by `actions-client.ts` files.
+- Tests: copied lib tests, themes model tests, DB tests (default theme, controllers, delete block, realtime claims),
+  e2e `music-projection.spec.ts` (axe 0).
+
+Left out in 5a, with the reason:
+- Bible panel, scripture text, paste dialog, roll slides: phase 6 (stubs `bible*.ts`, `scripture*.ts` keep the copied
+  controller's shape).
+- Quick add and the items editor ("edit" mode) of the controller: they are built on the event editor components -> 5c.
+- Rehearsal projection (`?rehearsal`) and the mixer sync button: the rehearsal page / mixer are later phases.
+- `check_projection_users` (loss of access of an open projection): needs roles in SQL; the controller revalidates on each
+  heartbeat instead.

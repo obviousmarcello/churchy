@@ -48,6 +48,9 @@ export function createMusicSupabaseClient(
 /** The Postgres role of the music tables (migration 0007_music_rls). */
 export const MUSIC_DB_ROLE = "churchy_music";
 
+/** The role of the Realtime token: it can read no table, the policies on `realtime.messages` check its claims. */
+export const MUSIC_REALTIME_ROLE = "authenticated";
+
 /** Whether a Supabase project is configured for the music module (else: local mode). */
 export function musicSupabaseConfigured(env: MusicSupabaseEnv = process.env as MusicSupabaseEnv) {
   return Boolean(env.SUPABASE_URL && env.SUPABASE_PUBLISHABLE_KEY && env.SUPABASE_JWT_SECRET);

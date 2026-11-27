@@ -112,6 +112,12 @@ const WORKSPACE_IDS = {
   "ws.music.events": "music_events",
   "ws.music.events.images": "music_events_images",
   "ws.music.events.announcements": "music_events_announcements",
+  "ws.music.projection": "music_projection",
+  "ws.music.projection.themes": "music_projection_themes",
+  "ws.music.projection.text-slides": "music_projection_text_slides",
+  "ws.music.projection.overlay": "music_projection_overlay",
+  "ws.music.projection.countdown": "music_projection_countdown",
+  "ws.music.projection.pptx-export": "music_projection_pptx_export",
 } as const satisfies Record<WorkspaceModuleKey, string>;
 export type WorkspaceModuleId = (typeof WORKSPACE_IDS)[WorkspaceModuleKey];
 export const workspaceModuleId = (key: WorkspaceModuleKey): WorkspaceModuleId => WORKSPACE_IDS[key];
