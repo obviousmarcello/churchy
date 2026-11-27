@@ -6273,6 +6273,24 @@
         "measured": "A késés {ms} ms.",
         "measureUneven": "A koppintások túl egyenetlenek voltak. Próbáld újra.",
         "measureNoClicks": "Először indítsd el a metronómot."
+      },
+      "annotations": {
+        "title": "Jegyzeteid",
+        "buttonLabel": "Jegyzeteid ({count})",
+        "empty": "Még nincs jegyzeted ehhez a dalhoz. Csak te látod őket.",
+        "wholeSong": "Az egész dal",
+        "thisSlotOnly": "Csak ennél a programpontnál",
+        "bodyLabel": "Jegyzet",
+        "bodyPlaceholder": "Pl. a dobok a refrénnél szállnak be",
+        "sectionLabel": "Szakasz (nem kötelező)",
+        "sectionPlaceholder": "Pl. Refrén",
+        "add": "Jegyzet hozzáadása",
+        "save": "Mentés",
+        "cancel": "Mégse",
+        "edit": "Szerkesztés",
+        "delete": "Jegyzet törlése",
+        "saveFailed": "A jegyzet nem mentődött el. Próbáld újra.",
+        "gone": "Ez a jegyzet már nem létezik."
       }
     },
     "events": {

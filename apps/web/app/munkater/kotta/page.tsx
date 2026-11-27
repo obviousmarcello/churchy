@@ -73,6 +73,8 @@ export default async function SheetPage({
       ...params,
       arrangement: songs.map((item) => item.arrangement.id),
       key: songs.map((item) => item.musicalKey ?? ""),
+      // The setlist slots: the notes of the slot show on its song.
+      slot: songs.map((item) => item.id),
       from: params.from ?? `/munkater/esemenyek/${eventId}`,
     };
   }
@@ -81,7 +83,12 @@ export default async function SheetPage({
     // One program point of an event (a song) with the user's own settings for it.
     const item = await getMySetlistItem(itemId);
     if (item?.kind === "song") {
-      params = { ...params, arrangement: [item.arrangement.id], key: [item.slotKey ?? ""] };
+      params = {
+        ...params,
+        arrangement: [item.arrangement.id],
+        key: [item.slotKey ?? ""],
+        slot: [item.id],
+      };
     }
   }
   // Without a session: how the user can start or join one.
