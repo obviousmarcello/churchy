@@ -785,3 +785,12 @@ volunteers list and replies, edit-song dialog, live-session join link, projectio
 - New module `ws.music.projection.quick-add` (child of `ws.music.projection`, default off, in the demo seeds and `/admin/modulok`).
 - e2e: the controller's quick add adds a song to the event (axe 0).
 - Left: the rehearsal projection (`?rehearsal`) still waits for the rehearsal page.
+
+## 23. Phase 5e-3: the user's notes on the chord sheet
+The music app has the `annotations` table and reads them in `my-setlists`, but its sheet shows no notes (there is no UI to copy), so this
+is new, small UI over the existing model: `kotta/annotations-button.tsx` (header popover of the song on the sheet: the notes with their
+section and "this slot only", add, edit, delete), server actions `annotation-actions.ts` (`withPolicy` `music.sheet.personalize`, `*-client`
+unwrapper), messages `music.sheet.annotations`. Event sheets pass the setlist slot of each song (`slot` parameters from the event and item
+routes), so a note can belong to one slot (`setlist_item_id`, checked by the existing trigger); the sheet data loads the user's notes of the
+songs (`listMyAnnotations`) and keeps those of every arrangement plus those of the slot. Notes are not drawn inline in the chart yet.
+e2e `music-annotations.spec.ts` (add, see, reload, delete; axe 0).

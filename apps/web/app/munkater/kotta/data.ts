@@ -26,7 +26,8 @@ import {
 } from "@/server/music/models/songs";
 import { listSoundFilesOfSongs, type SongSoundFileDTO } from "@/server/music/models/sound-files";
 import { isWorkspaceModuleOn } from "@/server/workspace-nav";
-import type { SheetSong } from "./sheet-viewer";
+import type { SheetAnnotation, SheetSong } from "./sheet-viewer";
+import { listMyAnnotations } from "@/server/music/models/annotations";
 
 /** The most songs on a sheet that is not saved (the most items of a setlist in the music app). */
 const SHEET_MAX_ITEMS = 100;
@@ -105,6 +106,33 @@ export async function loadSheetPage(
     found++;
     return [canonicalKey(keyParams[index])];
   });
+  // The setlist slot of each song on an event sheet (`slot` parameters, in the order of the songs;
+  // `items` leaves out the arrangements that do not exist, as for the keys).
+  const slotParams = [params.slot ?? []].flat();
+  let seen = 0;
+  const slotItemIds = arrangementIds.flatMap((id, index) => {
+    if (items[seen]?.arrangement.id !== id) return [];
+    seen++;
+    return [slotParams[index] || null];
+  });
+  // The notes of the user on each song: of the song in every arrangement, and of the slot.
+  const noteSongIds = [...new Set(items.map(({ song }) => song.id))];
+  const notes = new Map(
+    await Promise.all(noteSongIds.map(async (id) => [id, await listMyAnnotations(id)] as const)),
+  );
+  const annotationsOf = (index: number): SheetAnnotation[] => {
+    const item = items[index];
+    if (!item) return [];
+    const slot = slotItemIds[index] ?? null;
+    return (notes.get(item.song.id) ?? [])
+      .filter((note) => note.setlistItemId === null || note.setlistItemId === slot)
+      .map(({ id, setlistItemId, sectionLabel, body }) => ({
+        id,
+        setlistItemId,
+        sectionLabel,
+        body,
+      }));
+  };
   const single = items.length === 1 ? items[0] : null;
   return {
     data: {
@@ -126,6 +154,8 @@ export async function loadSheetPage(
           links: links.get(song.id) ?? [],
           fileViews,
           volunteer: null,
+          slotItemId: slotItemIds[index] ?? null,
+          annotations: annotationsOf(index),
         }),
       ),
       backHref: single ? `/munkater/enektar?song=${single.song.id}` : "/munkater/enektar",
@@ -171,6 +201,9 @@ function toSheetSong(
     fileViews: Map<string, FileView>;
     /** The name of the volunteer of the event slot. */
     volunteer: string | null;
+    /** The setlist slot of an event sheet, and the user's notes on the song (and this slot). */
+    slotItemId: string | null;
+    annotations: SheetAnnotation[];
   },
 ): SheetSong {
   // The sheet shows the key first, in the user's note names.
@@ -203,6 +236,9 @@ function toSheetSong(
     highlight: null,
     scripture: null,
     volunteer: own.volunteer,
+    songId: song.id,
+    slotItemId: own.slotItemId,
+    annotations: own.annotations,
     marks: own.marks,
     scores: own.scores,
     pdfs,

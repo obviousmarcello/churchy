@@ -89,6 +89,7 @@ import { ChordSheet, sheetBlocks } from "./chord-sheet";
 import { Choice } from "./choice";
 import { FileZoomSetting } from "./file-zoom-setting";
 import { KeyButton, KeySetting, type SlotKind, type SongKeys } from "./key-setting";
+import { AnnotationsButton } from "./annotations-button";
 import { LiveControl } from "./live-control";
 import { useLiveSession, type LiveSessionProps } from "./live-session";
 import { StartLiveControl, type StartLive } from "./start-live-control";
@@ -119,6 +120,14 @@ import {
  * event it can also be a text item, e.g. a prayer, a scripture reading or a
  * text slide: a title, its kind under it, its texts and notes, with an empty chart.
  */
+/** A note of the user on a song: of the whole song or of a section, in every arrangement or one slot. */
+export type SheetAnnotation = {
+  id: string;
+  setlistItemId: string | null;
+  sectionLabel: string | null;
+  body: string;
+};
+
 export type SheetSong = {
   kind: "song" | "text";
   /** The arrangement, or the setlist slot in an event. */
@@ -160,6 +169,12 @@ export type SheetSong = {
   scripture: string | null;
   /** The name of the volunteer of the event item. Null without one, and outside an event. */
   volunteer: string | null;
+  /** The song of the arrangement (the notes are anchored to it). Null for a text item. */
+  songId: string | null;
+  /** The setlist slot of an event sheet, for the notes of that slot only. Null outside an event. */
+  slotItemId: string | null;
+  /** The user's own notes on the song (and on this slot). Empty for a text item. */
+  annotations: SheetAnnotation[];
   /** The user's own marks on the arrangement. Empty for a text item. */
   marks: SheetMark[];
   /** The MusicXML scores of the song, by name. Empty for a text item. */
@@ -1526,6 +1541,7 @@ export function SheetViewer({
             />
           )
         )}
+        {capoChart?.song.kind === "song" && <AnnotationsButton song={capoChart.song} />}
         {hasViews && (
           <SongViewButton
             scores={capoChart.song.scores}
