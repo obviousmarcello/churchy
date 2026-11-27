@@ -6,6 +6,7 @@ export function ScriptureTranslationSelect(_props: {
   onChange: (translation: string) => void;
   title: string;
   offNote?: boolean;
+  className?: string;
 }) {
   return null;
 }

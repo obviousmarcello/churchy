@@ -6,14 +6,28 @@ import { expandEvents, tryParseRRule, type ExpandWindow } from "@churchy/events"
 import { slugify } from "@churchy/hu";
 import { z } from "zod";
 
-import { EVENT_AREAS_MAX, forbiddenEventAreaChanges } from "@/lib/music/event-scopes";
+import {
+  EVENT_AREAS_MAX,
+  forbiddenEventAreaChanges,
+  type EventScopeOptions,
+} from "@/lib/music/event-scopes";
+import { pathLabel, treeOrder } from "@/lib/music/groups";
+import { VOLUNTEER_REPLIES, type VolunteerReply } from "@/lib/music/volunteer-replies";
 import { toYoutubeUrl } from "@/lib/music/youtube";
-import { requireEventAdminIn, requireUser, type CurrentUser } from "@/server/music/auth";
+import {
+  requireEventAdmin,
+  requireEventAdminIn,
+  requireUser,
+  type CurrentUser,
+} from "@/server/music/auth";
 import { getMusicSupabase } from "@/server/music/db";
 import { ConflictError, ProjectionOpenError, ValidationError } from "@/server/music/errors";
 import { zodMessage } from "@/server/music/zod-i18n";
 import { readEventBlocks, type EventBlockDTO } from "./event-blocks";
+import { listGroups } from "./groups";
+import { listPeople, type PersonDTO } from "./profiles";
 import {
+  canSeeEvent,
   eventAreaRightsOf,
   requireEventAdminOf,
   visibleEventsFilter,
@@ -37,6 +51,7 @@ import {
 import { playKeySchema } from "./arrangements";
 import {
   databaseError,
+  withAuthor,
   endingProjections,
   idSchema,
   isId,
@@ -310,7 +325,11 @@ export async function createEvent(input: NewEventInput): Promise<EventDTO> {
  * Changes the details of an event (a series master changes the whole series; use
  * `changeOccurrence()` for one occurrence). Null when the event is not there or not visible.
  */
-export async function updateEvent(id: string, patch: EventPatchInput): Promise<EventDTO | null> {
+export async function updateEvent(
+  id: string,
+  patch: EventPatchInput,
+  { endProjections = false }: { endProjections?: boolean } = {},
+): Promise<EventDTO | null> {
   const user = await requireEventAdminOf(id);
   if (user === null) return null;
   if (!isId(id)) return null;
@@ -320,21 +339,22 @@ export async function updateEvent(id: string, patch: EventPatchInput): Promise<E
   await checkAreaRights(user, changes.areaIds, current.areaIds);
   const startsAt = iso(changes.startsAt ?? current.startsAt);
   const durationMinutes = changes.durationMinutes ?? current.durationMinutes;
-  const { data, error } = await (
-    await getMusicSupabase()
-  )
-    .from("events")
-    .update({
-      title: changes.title ?? current.title,
-      starts_at: startsAt,
-      ends_at: endOf(startsAt, durationMinutes),
-      youtube_url: changes.youtubeUrl === undefined ? current.youtubeUrl : changes.youtubeUrl,
-      is_private: changes.isPrivate ?? current.isPrivate,
-      ...(changes.areaIds !== undefined && { area_ids: changes.areaIds }),
-    })
-    .eq("id", id)
-    .select(EVENT_COLUMNS)
-    .maybeSingle();
+  const { data, error } = await endingProjections(
+    (await getMusicSupabase())
+      .from("events")
+      .update({
+        title: changes.title ?? current.title,
+        starts_at: startsAt,
+        ends_at: endOf(startsAt, durationMinutes),
+        youtube_url: changes.youtubeUrl === undefined ? current.youtubeUrl : changes.youtubeUrl,
+        is_private: changes.isPrivate ?? current.isPrivate,
+        ...(changes.areaIds !== undefined && { area_ids: changes.areaIds }),
+      })
+      .eq("id", id)
+      .select(EVENT_COLUMNS)
+      .maybeSingle(),
+    endProjections,
+  );
   if (error) throw databaseError("update an event", error);
   return data === null ? null : toEvent(eventRowSchema.parse(data));
 }
@@ -506,7 +526,10 @@ const addItemsInputSchema = z.strictObject({
   afterKey: z.union([idSchema, z.literal(START_KEY)]).nullable(),
 });
 
-export type SetEventItemsResult = { status: "saved" | "changed"; setlistId: string | null } | null;
+export type SetEventItemsResult =
+  | { status: "saved"; setlistId: string | null }
+  | { status: "changed"; setlistId: string | null; items: SetlistItemDTO[] }
+  | null;
 
 /**
  * Saves the items of an event (the event gets a new setlist when they changed). `changed`: the
@@ -528,7 +551,15 @@ export async function setEventItems(
   });
   if (error) throw databaseError("save event items", error);
   const result = setEventItemsResultSchema.parse(data);
-  return result && { status: result.status, setlistId: result.setlist_id?.toLowerCase() ?? null };
+  if (!result) return null;
+  const setlistId = result.setlist_id?.toLowerCase() ?? null;
+  if (result.status === "saved") return { status: "saved", setlistId };
+  // Another change came first and was kept: the caller merges with the items that the event has now.
+  return {
+    status: "changed",
+    setlistId,
+    items: setlistId === null ? [] : await readSetlistItems(setlistId),
+  };
 }
 
 /**
@@ -692,4 +723,159 @@ export async function copyEvent(sourceId: string, input: CopyEventInput): Promis
   if (data === null) return null;
   await removeUntakenCopies(id, files);
   return getEvent(id);
+}
+
+// ---------------------------------------------------------------------------------------------
+// The volunteers of an event and the groups of the event forms (the copied event editor).
+// ---------------------------------------------------------------------------------------------
+
+export type VolunteerDTO = PersonDTO & { reply: VolunteerReply | null };
+
+/** An upcoming event for "Add to event" of a user. */
+export type EventForVolunteerDTO = EventDTO & {
+  /** True when the event has started but not ended yet. */
+  hasStarted: boolean;
+  /** The user volunteers for the event already. */
+  isVolunteer: boolean;
+};
+
+/**
+ * The volunteers of the event, with their profiles and replies, by name. Everyone who can see the
+ * event sees them, but only superadmins get the emails. Empty when the event is not there or not
+ * visible.
+ */
+export async function listEventVolunteers(eventId: string): Promise<VolunteerDTO[]> {
+  const user = await requireUser();
+  if (!(await canSeeEvent(user.id, eventId, user.canEditEvents))) return [];
+  const { data, error } = await (
+    await getMusicSupabase()
+  )
+    .from("event_volunteers")
+    .select("user_id, reply")
+    .eq("event_id", eventId);
+  if (error) throw databaseError("list event volunteers", error);
+  const rows = z
+    .array(z.object({ user_id: z.uuid(), reply: z.enum(VOLUNTEER_REPLIES).nullable() }))
+    .parse(data);
+  const replies = new Map(rows.map((row) => [row.user_id, row.reply]));
+  const people = await listPeople([...replies.keys()], { emails: user.isSuperadmin });
+  return people.map((person) => ({ ...person, reply: replies.get(person.id) ?? null }));
+}
+
+/** Marks a user as a volunteer. False when there is no such event or user, or the event is not the user's to change. */
+export async function addEventVolunteer(eventId: string, userId: string): Promise<boolean> {
+  const current = await requireEventAdminOf(eventId);
+  if (!current || !isId(userId)) return false;
+  const { error } = await withAuthor(
+    (await getMusicSupabase())
+      .from("event_volunteers")
+      .upsert(
+        { event_id: eventId, user_id: userId },
+        { onConflict: "event_id,user_id", ignoreDuplicates: true },
+      ),
+    current.id,
+  );
+  if (error?.code === "23503") return false;
+  if (error) throw databaseError("add event volunteer", error);
+  return true;
+}
+
+/** False when the user is not a volunteer of the event. With `endProjections`, an open projection of the user closes. */
+export async function removeEventVolunteer(
+  eventId: string,
+  userId: string,
+  { endProjections = false }: { endProjections?: boolean } = {},
+): Promise<boolean> {
+  const current = await requireEventAdminOf(eventId);
+  if (!current || !isId(userId)) return false;
+  const { data, error } = await endingProjections(
+    withAuthor(
+      (await getMusicSupabase())
+        .from("event_volunteers")
+        .delete()
+        .eq("event_id", eventId)
+        .eq("user_id", userId)
+        .select("event_id"),
+      current.id,
+    ),
+    endProjections,
+  );
+  if (error) throw databaseError("remove event volunteer", error);
+  return data.length > 0;
+}
+
+/** The upcoming events (not ended) with whether the user volunteers for each, for "Add to event" of a user. */
+export async function listUpcomingEventsForVolunteer(
+  userId: string,
+): Promise<EventForVolunteerDTO[]> {
+  await requireEventAdmin();
+  if (!isId(userId)) return [];
+  const now = Date.now();
+  const events = (await listEvents()).filter(
+    (event) => event.rrule === null && Date.parse(event.endsAt) > now,
+  );
+  if (events.length === 0) return [];
+  const { data, error } = await (
+    await getMusicSupabase()
+  )
+    .from("event_volunteers")
+    .select("event_id")
+    .eq("user_id", userId)
+    .in(
+      "event_id",
+      events.map((event) => event.id),
+    );
+  if (error) throw databaseError("list volunteer events", error);
+  const mine = new Set(
+    z
+      .array(z.object({ event_id: z.uuid() }))
+      .parse(data)
+      .map((row) => row.event_id),
+  );
+  return events
+    .toSorted((a, b) => a.startsAt.localeCompare(b.startsAt))
+    .map((event) => ({
+      ...event,
+      hasStarted: Date.parse(event.startsAt) <= now,
+      isVolunteer: mine.has(event.id),
+    }));
+}
+
+/** All groups in the order of the tree, the root group first, each with its path. */
+export async function listGroupLabels(): Promise<EventScopeOptions["groups"]> {
+  return treeOrder(await listGroups()).map((group) => ({
+    id: group.id,
+    label: pathLabel(group),
+    isRoot: group.isRoot,
+  }));
+}
+
+/**
+ * The data of the "Groups" field of the event forms: all groups, and the groups that the user can
+ * change. For the event admins.
+ */
+export async function loadEventScopeOptions(
+  groupLabels?: Promise<EventScopeOptions["groups"]>,
+  admin?: CurrentUser,
+): Promise<EventScopeOptions> {
+  // The caller can name the user it checked (an area role does not pass `requireEventAdmin`).
+  const user = admin ?? (await requireEventAdmin());
+  const [groups, rights] = await Promise.all([
+    groupLabels ?? listGroupLabels(),
+    eventAreaRightsOf(user),
+  ]);
+  return { groups, editable: rights === "all" ? "all" : [...rights] };
+}
+
+/** The labels of the groups of the events, without the root group: for the badges of the events. */
+export function usedGroupLabels(
+  groups: EventScopeOptions["groups"],
+  events: readonly Pick<EventDTO, "areaIds">[],
+): Record<string, string> {
+  const used = new Set(events.flatMap((event) => event.areaIds));
+  return Object.fromEntries(
+    groups
+      .filter((group) => !group.isRoot && used.has(group.id))
+      .map((group) => [group.id, group.label]),
+  );
 }

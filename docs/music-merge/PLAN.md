@@ -750,3 +750,27 @@ Not done (needs a decision or the copy of the whole event editor, which is still
   church is refused, not taken over.
 - Tests: `push.test.ts` (config, send, gone endpoints, link guard), e2e `music-notifications.spec.ts`.
 - Needs a real device and a real Supabase project to verify end to end (not possible here).
+
+## 21. Phase 5e-1: the event editor (copy-edit)
+The compact event page (`items-panel`, `media-panel`, `team-panel`, `theme-select`, `event-sync`) is replaced by the music app's
+event editor, copied with its imports, strictness and routes edited (`app/munkater/esemenyek/editor/*`, `components/music/{setlist-rows,
+add-item-box,text-kind-menu,run-sheet,people-picker,confirm-action-button,volunteer-reply,print-setlist,group-option,date-badge,avatar-picker}`,
+`lib/music/{volunteer-replies,pptx-slides,pdf-pages,modules/*}`, `app/munkater/enektar/edit-song-dialog.tsx`): summary with edit-details and
+more-menu (copy, delete with "end the open projection"), items form (drag and drop with pointer and keyboard, blocks with countdowns, selection,
+volunteer per item, theme per item, print), image items (upload of images, PDF and PowerPoint pages), announcements items, teams dialog,
+volunteers list and replies, edit-song dialog, live-session join link, projection status, `EventTheme` select.
+- Data layer: `editor/data.ts` resolves the page on the server (`loadEventPage(id)` -> `{ data, transient }`, always fresh): there is no
+  browser page cache, `loadPage` or stale copy notice; `EventView` takes plain props. The page wraps it in `MusicModulesProvider` with the
+  music-app module ids (`projection`, `projection.themes`, `projection.images`, `projection.announcements`, `projection.text-slides`,
+  `sheet`, `sheet.live`; `scripture` is off until phase 6). Whoever may manage the event in its areas (`canManageIn`) gets the edit controls.
+- New model functions (`events.ts`): `listEventVolunteers`, `addEventVolunteer`, `removeEventVolunteer`, `listUpcomingEventsForVolunteer`,
+  `listGroupLabels`, `loadEventScopeOptions`, `usedGroupLabels`; `setEventItems` returns the current items when the setlist changed;
+  `updateEvent` takes `endProjections`. Plus `getSongFormValuesAction` for the edit-song dialog.
+- Server actions are `withPolicy` (`music.event.manage`, `music.event.view` for replies and teams) with `*-client.ts` unwrappers; the image
+  and announcement actions use the module-only resolver `musicEventModule`.
+- Messages: the source `events`, `announcements` (and the notification settings) parts are merged into `music.*` where keys were missing;
+  `events.items.full` is the source's plural form now.
+- e2e `music-events.spec.ts` rewritten for the editor (add song and text item by the combobox, autosave and reload, edit and delete through the
+  dialogs, images and announcements items, drag with the handle); an a11y fix of the row select button (its name starts with the visible number).
+- Left for 5e-2: quick add and the controller edit mode (still the stub), and the scripture reference detection (phase 6,
+  `looksLikeScriptureReference` returns false). 5e-3: per-slot annotations.

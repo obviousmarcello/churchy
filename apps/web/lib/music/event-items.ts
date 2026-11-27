@@ -25,3 +25,11 @@ export function textItemKind(item: {
   if (item.textSlide) return "textSlide";
   return "text";
 }
+
+/**
+ * Whether `text` looks like a scripture reference. Scripture (the reference parser and the Bible
+ * texts) is phase 6, so until then nothing is recognised and a text item stays a plain text item.
+ */
+export function looksLikeScriptureReference(_text: string): boolean {
+  return false;
+}

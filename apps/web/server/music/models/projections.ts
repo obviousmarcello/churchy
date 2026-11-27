@@ -19,7 +19,7 @@ import type { RealtimeConnection } from "@/lib/music/realtime/client";
 import { getMusicSupabase } from "@/server/music/db";
 import { ensureFreshAnnouncements, readEventAnnouncements } from "./announcements";
 import { canSeeEvent } from "./event-access";
-import { itemsOn } from "@/lib/music/event-items-modules";
+import { itemsOn } from "@/lib/music/modules/items";
 import { readEventBlocks, type EventBlockDTO } from "./event-blocks";
 import { readEventImageSets } from "./event-images";
 import { getEventDetail, setEventItems } from "./events";
@@ -465,7 +465,7 @@ async function listSongs(arrangementIds: string[]): Promise<Map<string, SongCont
   );
 }
 
-/** The workspace modules that are on, as the ids `itemsOn` knows (the item kinds of a module). */
+/** The workspace modules that are on, under the ids of the music app (`lib/music/modules/items.ts`). */
 async function onModules(): Promise<string[]> {
   const [images, announcements, textSlides] = await Promise.all([
     isWorkspaceModuleOn("ws.music.events.images"),
@@ -473,9 +473,9 @@ async function onModules(): Promise<string[]> {
     isWorkspaceModuleOn("ws.music.projection.text-slides"),
   ]);
   return [
-    ...(images ? ["images"] : []),
-    ...(announcements ? ["announcements"] : []),
-    ...(textSlides ? ["textSlide"] : []),
+    ...(images ? ["projection.images"] : []),
+    ...(announcements ? ["projection.announcements"] : []),
+    ...(textSlides ? ["projection.text-slides"] : []),
     // The scripture module comes with phase 6: its items show as their reference until then.
     "scripture",
   ];
