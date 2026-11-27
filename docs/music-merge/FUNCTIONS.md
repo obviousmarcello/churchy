@@ -146,7 +146,7 @@ naming the tenant.
 | `public.prevent_setlist_update()` | invoker, trigger | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.prevent_song_id_update()` | invoker, trigger | 2b — 0009_music_files (song files and arrangements) |
 | `public.publish_course(p_id uuid, p_revision integer, p_doc jsonb)` | invoker | 8 (courses) |
-| `public.put_scripture_cache_verses(p_translation text, p_book text, p_verses jsonb, p_book_limit integer)` | invoker | 6 (scripture) |
+| `public.put_scripture_cache_verses(p_translation text, p_book text, p_verses jsonb, p_book_limit integer)` | invoker | 6a — 0019_music_scripture (SECURITY INVOKER, tenant from `app.current_tenant_id()`: per-tenant cache and lock; the hourly pg_cron expiry is dropped, reads and pastes expire verses) |
 | `public.recent_closed_song_rights_proposals(p_limit integer)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.remove_calendar_entries_from_snapshots()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `public.remove_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8 (courses) |

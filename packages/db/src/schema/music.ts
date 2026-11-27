@@ -1280,10 +1280,67 @@ export const mixerSettings = pgTable(
   ],
 ).enableRLS();
 
+/**
+ * The Bible translations of a church besides Károli 1908 (the platform catalog, static files, no row):
+ * "pasted" = the verses of a reading are pasted into a per-tenant cache (limits in
+ * `scripture_verse_cache`), "database" = the full text under the church's own licence in
+ * `scripture_books`. Replaces the hard-coded RÚF 2014 of the music app (PLAN §24).
+ */
+export const scriptureTranslations = pgTable(
+  "scripture_translations",
+  {
+    tenantId: tenantId(),
+    id: text().notNull(),
+    language: text()
+      .notNull()
+      .default(sql`'hu'::text`),
+    name: huText().notNull(),
+    shortName: huText().notNull(),
+    notice: text(),
+    source: text().notNull(),
+    deuterocanon: boolean()
+      .notNull()
+      .default(sql`false`),
+    enabled: boolean()
+      .notNull()
+      .default(sql`true`),
+    sourceLinks: jsonb(),
+    createdAt: timestamptz().notNull().defaultNow(),
+    updatedAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ name: "scripture_translations_pkey", columns: [t.tenantId, t.id] }),
+    index("scripture_translations_tenant_id_idx").on(t.tenantId),
+    check(
+      "scripture_translations_id_check",
+      sql`((id ~ '^[a-z0-9]{1,30}$'::text) AND (id <> 'karoli1908'::text))`,
+    ),
+    check("scripture_translations_language_check", sql`(language = 'hu'::text)`),
+    check(
+      "scripture_translations_name_check",
+      sql`((char_length(btrim(name)) BETWEEN 1 AND 120) AND (char_length(btrim(short_name)) BETWEEN 1 AND 20))`,
+    ),
+    check(
+      "scripture_translations_notice_check",
+      sql`((notice IS NULL) OR (char_length(notice) BETWEEN 1 AND 500))`,
+    ),
+    check(
+      "scripture_translations_source_check",
+      sql`(source = ANY (ARRAY['pasted'::text, 'database'::text]))`,
+    ),
+    check(
+      "scripture_translations_source_links_check",
+      sql`((source_links IS NULL) OR (jsonb_typeof(source_links) = 'object'::text))`,
+    ),
+  ],
+).enableRLS();
+
 export const scriptureBooks = pgTable(
   "scripture_books",
   {
-    tenantId: uuid().references(() => tenants.id, { onDelete: "cascade" }),
+    tenantId: uuid()
+      .default(sql`app.current_tenant_id()`)
+      .references(() => tenants.id, { onDelete: "cascade" }),
     translation: text().notNull(),
     book: text().notNull(),
     chapters: jsonb().notNull(),
@@ -1291,6 +1348,11 @@ export const scriptureBooks = pgTable(
   },
   (t) => [
     index("scripture_books_tenant_id_idx").on(t.tenantId),
+    foreignKey({
+      name: "scripture_books_translation_fkey",
+      columns: [t.tenantId, t.translation],
+      foreignColumns: [scriptureTranslations.tenantId, scriptureTranslations.id],
+    }).onDelete("cascade"),
     unique("scripture_books_key").on(t.tenantId, t.translation, t.book).nullsNotDistinct(),
     check("scripture_books_book_check", sql`(book ~ '^[1-4]?[A-Za-z]{2,10}$'::text)`),
     check("scripture_books_chapters_check", sql`(jsonb_typeof(chapters) = 'array'::text)`),
@@ -1301,7 +1363,9 @@ export const scriptureBooks = pgTable(
 export const scriptureVerseCache = pgTable(
   "scripture_verse_cache",
   {
-    tenantId: uuid().references(() => tenants.id, { onDelete: "cascade" }),
+    tenantId: uuid()
+      .default(sql`app.current_tenant_id()`)
+      .references(() => tenants.id, { onDelete: "cascade" }),
     translation: text().notNull(),
     book: text().notNull(),
     chapter: integer().notNull(),
@@ -1314,6 +1378,11 @@ export const scriptureVerseCache = pgTable(
   },
   (t) => [
     index("scripture_verse_cache_tenant_id_idx").on(t.tenantId),
+    foreignKey({
+      name: "scripture_verse_cache_translation_fkey",
+      columns: [t.tenantId, t.translation],
+      foreignColumns: [scriptureTranslations.tenantId, scriptureTranslations.id],
+    }).onDelete("cascade"),
     unique("scripture_verse_cache_key")
       .on(t.tenantId, t.translation, t.book, t.chapter, t.verse)
       .nullsNotDistinct(),
@@ -1493,9 +1562,6 @@ export const appConfig = pgTable(
     scriptureKaroli: boolean()
       .notNull()
       .default(sql`true`),
-    scriptureRuf: text()
-      .notNull()
-      .default(sql`'pasted'::text`),
     theme: jsonb(),
   },
   (t) => [
@@ -1537,10 +1603,6 @@ export const appConfig = pgTable(
       sql`(((char_length(btrim(email_sender_name)) >= 1) AND (char_length(btrim(email_sender_name)) <= 60)) AND (email_sender_name !~ '[<>"\\\\\\r\\n]'::text))`,
     ),
     check("app_config_icon_path_check", sql`(icon_path ~ '^[0-9a-f-]{36}\\.png$'::text)`),
-    check(
-      "app_config_scripture_ruf_check",
-      sql`(scripture_ruf = ANY (ARRAY['pasted'::text, 'permit'::text, 'off'::text]))`,
-    ),
     check(
       "app_config_short_name_check",
       sql`((char_length(btrim(short_name)) >= 1) AND (char_length(btrim(short_name)) <= 12))`,

@@ -162,6 +162,8 @@ export const WORKSPACE_TENANT_ACTIONS = [
   "music.projection.use",
   "music.projection.themes.manage",
   "music.projection.themes.setDefault",
+  "music.scripture.use",
+  "music.scripture.translations.manage",
   "music.live.join",
   "music.live.lead",
 ] as const;

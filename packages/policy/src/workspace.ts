@@ -167,6 +167,17 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: { leader: "all", musicLeader: "all" },
   },
   {
+    capability:
+      "Music: read scripture and share pasted verses (the model checks the event for its volunteers)",
+    actions: ["music.scripture.use"],
+    grants: EVERY_ROLE,
+  },
+  {
+    capability: "Music: manage the church's own Bible translations (its own licence)",
+    actions: ["music.scripture.translations.manage"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
     capability: "Music: join a live session (the model checks the event)",
     actions: ["music.live.join"],
     grants: EVERY_ROLE,

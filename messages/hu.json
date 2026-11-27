@@ -3348,6 +3348,14 @@
           "music_projection_quick_add": {
             "title": "Gyors hozzáadás",
             "help": "Dalok, szöveges diák, képek és hirdetések gyors hozzáadása vetítés közben."
+          },
+          "music_scripture": {
+            "title": "Igeolvasások",
+            "help": "Igehelyek az alkalmak tételeiben, a szövegük a vetítésben, saját bibliafordítások a gyülekezet saját engedélyével."
+          },
+          "music_projection_bible_panel": {
+            "title": "Biblia panel",
+            "help": "Igehelyek keresése és megjelenítése a vetítésvezérlőben."
           }
         }
       },
@@ -3470,7 +3478,9 @@
           "music_projection_countdown": "Blokk-visszaszámlálás (munkatér)",
           "music_projection_pptx_export": "Diák letöltése (munkatér)",
           "music_sheet_live": "Közös alkalom (munkatér)",
-          "music_projection_quick_add": "Gyors hozzáadás (munkatér)"
+          "music_projection_quick_add": "Gyors hozzáadás (munkatér)",
+          "music_scripture": "Igeolvasások (munkatér)",
+          "music_projection_bible_panel": "Biblia panel (munkatér)"
         }
       },
       "catalog": {
@@ -5748,8 +5758,11 @@
         "announcementMissing": "Ez a hirdetések programpont már nincs ebben az eseményben. Töltsd újra az oldalt, majd add hozzá újra."
       },
       "scripture": {
-        "cacheForbidden": "Csak a zenei vezetők, az eseményadminok és az esemény önkéntesei menthetnek igeverseket minden felhasználónak. Kérd meg valamelyiküket.",
-        "pasteOff": "Ehhez a fordításhoz most nem lehet igeverseket bemásolni. Töltsd újra az oldalt."
+        "cacheForbidden": "Csak a zenei vezetők, az eseményadminok és az esemény önkéntesei menthetnek igeverseket a gyülekezet minden felhasználójának. Kérd meg valamelyiküket.",
+        "pasteOff": "Ehhez a fordításhoz most nem lehet igeverseket bemásolni. Töltsd újra az oldalt.",
+        "tooManyPastes": "Túl sokszor másoltál be igeverseket. Várj egy kicsit, és próbáld újra.",
+        "sourceFixed": "A fordítás forrása nem változtatható, mert már van hozzá szöveg. Törölheted a fordítást, és újra felveheted.",
+        "notDatabase": "Csak az adatbázisban tárolt fordításhoz tölthetsz fel szöveget."
       },
       "setlists": {
         "tooManyItems": "Egy eseménynek legfeljebb {max} programpontja lehet",

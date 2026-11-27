@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  KAROLI,
+  type ScriptureTranslation,
   defaultTranslationFor,
   enabledTranslations,
   fullTextTranslations,
@@ -8,66 +10,67 @@ import {
   scriptureTranslation,
 } from "./translations";
 
-const ids = (list: { id: string }[]) => list.map(({ id }) => id);
+const own = (id: string, source: "pasted" | "database"): ScriptureTranslation => ({
+  id,
+  language: "hu",
+  name: `Fordítás ${id}`,
+  shortName: id,
+  notice: "Saját engedéllyel.",
+  deuterocanon: false,
+  source,
+});
+const pasted = own("proba", "pasted");
+const stored = own("tarolt", "database");
+const config = (karoli: boolean, list: ScriptureTranslation[]) => ({ karoli, own: list });
+const ids = (list: ScriptureTranslation[]) => list.map(({ id }) => id);
 
-describe("Bible translation settings", () => {
-  it("gives RÚF the source of its mode", () => {
-    expect(
-      enabledTranslations({ karoli: true, ruf: "pasted" }).map(({ id, source }) => [id, source]),
-    ).toEqual([
-      ["karoli1908", "files"],
-      ["ruf2014", "pasted"],
-    ]);
-    expect(
-      enabledTranslations({ karoli: true, ruf: "permit" }).map(({ id, source }) => [id, source]),
-    ).toEqual([
-      ["karoli1908", "files"],
-      ["ruf2014", "database"],
-    ]);
-    expect(ids(enabledTranslations({ karoli: false, ruf: "off" }))).toEqual([]);
-    // The catalog keeps its own entry.
-    expect(scriptureTranslation("ruf2014").source).toBe("pasted");
-  });
-
-  it("keeps the same lists for the same settings", () => {
-    const list = enabledTranslations({ karoli: true, ruf: "permit" });
-    expect(enabledTranslations({ karoli: true, ruf: "permit" })).toBe(list);
-    expect(fullTextTranslations(list)).toBe(fullTextTranslations(list));
-  });
-
-  it("gives the Bible panel only the translations with their full text", () => {
-    expect(ids(fullTextTranslations(enabledTranslations({ karoli: true, ruf: "pasted" })))).toEqual(
-      ["karoli1908"],
-    );
-    expect(
-      ids(fullTextTranslations(enabledTranslations({ karoli: false, ruf: "permit" }))),
-    ).toEqual(["ruf2014"]);
-    expect(
-      ids(fullTextTranslations(enabledTranslations({ karoli: false, ruf: "pasted" }))),
-    ).toEqual([]);
-  });
-
-  it("replaces a translation that is off", () => {
-    const rufOnly = enabledTranslations({ karoli: false, ruf: "pasted" });
-    expect(resolveTranslation("karoli1908", rufOnly)?.id).toBe("ruf2014");
-    expect(resolveTranslation(null, rufOnly)?.id).toBe("ruf2014");
-    expect(
-      resolveTranslation("ruf2014", enabledTranslations({ karoli: true, ruf: "off" }))?.id,
-    ).toBe("karoli1908");
-    expect(
-      resolveTranslation("ruf2014", enabledTranslations({ karoli: false, ruf: "off" })),
-    ).toBeNull();
-  });
-
-  it("starts a new reading in a translation that is on", () => {
-    expect(defaultTranslationFor("hu", enabledTranslations({ karoli: false, ruf: "permit" }))).toBe(
-      "ruf2014",
-    );
-    expect(defaultTranslationFor("en", enabledTranslations({ karoli: true, ruf: "off" }))).toBe(
+describe("enabledTranslations", () => {
+  it("lists Károli first, then the church's own translations", () => {
+    expect(ids(enabledTranslations(config(true, [pasted, stored])))).toEqual([
       "karoli1908",
+      "proba",
+      "tarolt",
+    ]);
+    expect(ids(enabledTranslations(config(false, [pasted])))).toEqual(["proba"]);
+    expect(enabledTranslations(config(false, []))).toEqual([]);
+  });
+
+  it("returns the same list for the same configuration", () => {
+    const list = [pasted];
+    expect(enabledTranslations(config(true, list))).toBe(enabledTranslations(config(true, list)));
+  });
+});
+
+describe("fullTextTranslations", () => {
+  it("leaves out the pasted ones", () => {
+    expect(ids(fullTextTranslations(enabledTranslations(config(true, [pasted, stored]))))).toEqual([
+      "karoli1908",
+      "tarolt",
+    ]);
+  });
+});
+
+describe("resolveTranslation", () => {
+  it("takes the own translation when it is on, else the first one in its language", () => {
+    const enabled = enabledTranslations(config(true, [pasted]));
+    expect(resolveTranslation("proba", enabled)?.id).toBe("proba");
+    expect(resolveTranslation("megszunt", enabled)?.id).toBe("karoli1908");
+    expect(resolveTranslation("proba", enabledTranslations(config(false, [])))).toBeNull();
+  });
+});
+
+describe("scriptureTranslation and defaultTranslationFor", () => {
+  it("names a translation of the church, else Károli", () => {
+    expect(scriptureTranslation("proba", [pasted])).toBe(pasted);
+    expect(scriptureTranslation("proba")).toBe(KAROLI);
+    expect(scriptureTranslation(null)).toBe(KAROLI);
+  });
+
+  it("defaults to the first translation in the language", () => {
+    expect(defaultTranslationFor("hu", enabledTranslations(config(false, [stored])))).toBe(
+      "tarolt",
     );
-    expect(
-      defaultTranslationFor("hu", enabledTranslations({ karoli: false, ruf: "off" })),
-    ).toBeNull();
+    expect(defaultTranslationFor("hu", enabledTranslations(config(true, [])))).toBe("karoli1908");
+    expect(defaultTranslationFor("hu", [])).toBeNull();
   });
 });

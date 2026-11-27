@@ -72,9 +72,8 @@ import { parseScriptureReference } from "@/lib/music/scripture/reference";
 import {
   defaultTranslationFor,
   resolveTranslation,
-  TRANSLATIONS,
+  TRANSLATION_ID_PATTERN,
   type ScriptureTranslation,
-  type TranslationId,
 } from "@/lib/music/scripture/translations";
 import { cn } from "@/lib/music/utils";
 import type { ArrangementSummaryDTO } from "@/server/music/models/arrangements";
@@ -158,9 +157,11 @@ export function isTextRow(row: SetlistRow | ItemRow): row is TextRow {
  * The translation of a text row for `setEventItems`: null for another text
  * item and for a translation that the app does not have (anymore).
  */
-export function scriptureTranslationInput(row: TextRow): TranslationId | null {
+export function scriptureTranslationInput(row: TextRow): string | null {
   return row.scripture
-    ? (TRANSLATIONS.find((translation) => translation.id === row.scriptureTranslation)?.id ?? null)
+    ? row.scriptureTranslation !== null && TRANSLATION_ID_PATTERN.test(row.scriptureTranslation)
+      ? row.scriptureTranslation
+      : null
     : null;
 }
 

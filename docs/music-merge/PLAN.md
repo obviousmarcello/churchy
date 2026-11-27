@@ -794,3 +794,36 @@ unwrapper), messages `music.sheet.annotations`. Event sheets pass the setlist sl
 routes), so a note can belong to one slot (`setlist_item_id`, checked by the existing trigger); the sheet data loads the user's notes of the
 songs (`listMyAnnotations`) and keeps those of every arrangement plus those of the slot. Notes are not drawn inline in the chart yet.
 e2e `music-annotations.spec.ts` (add, see, reload, delete; axe 0).
+
+## 24. Phase 6: scripture and psalms
+
+Decisions by the product owner (2026-11-27): Károli 1908 is the platform catalog, committed as the
+static files `apps/web/public/bible/karoli1908/<book>.json` (4.2 MB, `{ "chapters": string[][] }`, from
+the SWORD `HunKar` module by `apps/web/scripts/import-bible.mts`). **Its public-domain status is
+asserted by the owner and not verified here** (the module's `.conf` is not in the repository). Other
+translations are per church, under the church's own licence (no real copyrighted translation text in the
+repository; fixtures use fictitious text). Tenants upload full text in the same JSON format. Source links
+become optional per-translation mappings. Hungarian only.
+
+### 6a (done): catalog, models, parsing
+- Migration `0019_music_scripture` (+ down): table `scripture_translations` (per tenant: id, name, short
+  name, notice, source `pasted` | `database`, deuterocanon, enabled, `source_links`; id `karoli1908`
+  reserved), composite FKs from `scripture_books` / `scripture_verse_cache` (platform rows with
+  `tenant_id` null are not affected), `tenant_id` default of both, `app_config.scripture_ruf` dropped
+  (the hard-coded RÚF mode is replaced by translation rows; `scripture_karoli` stays), RLS + grants,
+  `table-scopes.ts` (`tenant`). Platform rows (Károli, if ever stored) are readable by every tenant
+  (`catalog_read`) and written by the owner only. `put_scripture_cache_verses` is tenant-aware
+  SECURITY INVOKER (limits: 331 verses per church, less than half a book, 24 h; the pg_cron expiry of
+  the source is not migrated: reads filter expired verses and every paste deletes them). No SECURITY DEFINER.
+- Pure libs copied: `lib/music/scripture/{paste,search,load,more,cache-limits}` (+ tests);
+  `translations.ts` rewritten for the model above (`ScriptureConfig = { karoli, own }`, no `RUF`);
+  `cache-limits` without the daily-psalm share. `looksLikeScriptureReference` now parses references.
+  Text of a "database" translation is served by `/munkater/biblia-szoveg/<translation>/<book>`.
+- Models `scripture-translations`, `scripture-books`, `scripture-cache` (supabase-js, RLS, rate limit
+  30 pastes / 15 min / user); policy actions `music.scripture.use` (every role) and
+  `music.scripture.translations.manage` (leader, music leader), MATRIX regenerated; modules
+  `ws.music.scripture` (child of `ws.music.events`) and `ws.music.projection.bible-panel`, default off.
+- Tests: translations, cache-limits (against the files), paste, search, more, reference, model schema;
+  isolation suite (translation per tenant, reserved id, cache limits, cross-tenant cache); PGlite bundle regenerated (+7 KB).
+- Not yet (6b): Bible panel, paste dialog, roll slides, readings UI, translations page. (6c): daily psalm,
+  sheet scripture items. `lib/psalms/hu.ts` of the source is 169 verses of RÚF 2014 (copyrighted) and is NOT copied.
