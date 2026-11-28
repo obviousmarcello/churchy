@@ -1,5 +1,6 @@
 import "server-only";
 
+import { AsyncLocalStorage } from "node:async_hooks";
 import { cache } from "react";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { demoModeEnabled } from "@/lib/demo/flag";
@@ -26,7 +27,20 @@ export function musicUserId(userId: string): string {
   return musicSupabaseConfigured() ? userId : localMusicUserId(userId);
 }
 
+/**
+ * The client of the background jobs (`server/jobs`): a job runs for one church at a time without a
+ * request, so there is no actor. `runWithMusicClient` makes the models of that scope use the given
+ * tenant client (`getMusicSupabase()` returns it).
+ */
+const jobClient = new AsyncLocalStorage<SupabaseClient>();
+
+export function runWithMusicClient<T>(client: SupabaseClient, run: () => Promise<T>): Promise<T> {
+  return jobClient.run(client, run);
+}
+
 export const getMusicSupabase = cache(async (): Promise<SupabaseClient> => {
+  const scoped = jobClient.getStore();
+  if (scoped) return scoped;
   const actor = await getActor();
   if (musicSupabaseConfigured()) return createMusicSupabaseClient(actor, MUSIC_DB_ROLE);
   const appEnv = process.env.APP_ENV;

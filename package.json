@@ -15,6 +15,7 @@
     "test:contract": "TZ=Europe/Budapest vitest run --passWithNoTests --config packages/contracts/vitest.contract.config.ts",
     "test:isolation": "pnpm --filter @churchy/db test:isolation",
     "e2e": "pnpm --filter @churchy/web e2e",
+    "worker": "pnpm --filter @churchy/web worker",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

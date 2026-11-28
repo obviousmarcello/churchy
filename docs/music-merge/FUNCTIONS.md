@@ -83,14 +83,14 @@ naming the tenant.
 | `public.church_time_zone()` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
 | `public.claim_announcement_refresh(p_id uuid, p_force boolean)` | invoker | 4 (events, setlists, volunteers) |
 | `public.claim_song_for_rights_research(p_song_id uuid, p_provider text, p_model text)` | invoker | 2b — 0009_music_files (AI research now, ON CONFLICT on the tenant-scoped open-proposal index; the nightly batch stays phase 8) |
-| `public.claim_songs_for_rights_research(p_batch integer, p_provider text, p_model text)` | invoker | 8 (rights research) |
+| `public.claim_songs_for_rights_research(p_batch integer, p_provider text, p_model text)` | invoker | 8c — 0023_music_rights_batch (advisory lock instead of the cron token; run per church by the job) |
 | `public.claim_songs_for_rights_research_now(p_count integer, p_provider text, p_model text)` | invoker | 2b — 0009_music_files (AI research now, ON CONFLICT on the tenant-scoped open-proposal index; the nightly batch stays phase 8) |
 | `public.claim_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.clamp_live_session_end()` | invoker, trigger | dropped (Churchy login / user admin, PLAN §11) |
 | `public.clear_email_mfa_codes(p_user_id uuid)` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.clone_arrangement(p_id uuid, p_name text)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.close_crashed_song_rights_research(p_song_id uuid)` | invoker | 2b — 0009_music_files (AI research now, ON CONFLICT on the tenant-scoped open-proposal index; the nightly batch stays phase 8) |
-| `public.consume_cron_token(p_token text)` | definer | 8 (pg_cron → pg-boss) |
+| `public.consume_cron_token(p_token text)` | definer | 8c — not ported (pg_cron and the token are replaced by pg-boss) |
 | `public.consume_rate_limit(p_key text, p_max integer, p_window_seconds integer)` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.copy_announcement_entries(p_source_id uuid, p_target_id uuid, p_files jsonb)` | invoker | 4 (events, setlists, volunteers) |
 | `public.copy_event(p_id uuid, p_source_id uuid, p_title text, p_starts_at timestamp with time zone, p_duration_minutes integer, p_youtube_url text, p_copy_items boolean, p_copy_volunteers boolean, p_files jsonb)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
@@ -177,7 +177,7 @@ naming the tenant.
 | `public.set_song_image_arrangements(p_image_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.set_song_link_arrangements(p_link_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.set_song_pdf_arrangements(p_pdf_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
-| `public.set_song_rights_research_api_key(p_key text, p_user uuid)` | definer | 8 (rights research) |
+| `public.set_song_rights_research_api_key(p_key text, p_user uuid)` | definer | 8c — not ported (platform `ANTHROPIC_API_KEY`, owner decision) |
 | `public.set_song_sound_file_arrangements(p_sound_file_id uuid, p_song_id uuid, p_arrangement_ids uuid[])` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.set_updated_at()` | invoker, trigger | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.set_user_roles(p_user_id uuid, p_roles text[])` | invoker | dropped (Churchy login / user admin, PLAN §11) |
@@ -189,7 +189,7 @@ naming the tenant.
 | `public.song_image_pages_keep_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.song_play_stats(p_song_ids uuid[])` | invoker | 2 — 0008_music_songs as a stub (`{}`): plays come from events, phase 4 |
 | `public.song_play_stats(p_song_ids uuid[], p_user_id uuid)` | invoker | 4a-3 — 0013_music_stats (private events: creator only; areas in 4b) |
-| `public.song_rights_research_api_key()` | definer | 8 (rights research) |
+| `public.song_rights_research_api_key()` | definer | 8c — not ported (platform `ANTHROPIC_API_KEY`, owner decision) |
 | `public.song_tags()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.songs_for_local_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.songs_for_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |

@@ -206,7 +206,7 @@ export async function setEventTeams(
     .parse(data);
   if (!result) return false;
 
-  queueEventAddedNotifications(
+  await queueEventAddedNotifications(
     eventId,
     result.added.filter((row) => row.user_id !== currentUser.id).map((row) => row.user_id),
   );
@@ -266,7 +266,7 @@ export async function setEventAreaTeam(
     .parse(data);
   if (!result) return false;
 
-  queueEventAddedNotifications(
+  await queueEventAddedNotifications(
     eventId,
     result.added.filter((row) => row.user_id !== currentUser.id).map((row) => row.user_id),
   );

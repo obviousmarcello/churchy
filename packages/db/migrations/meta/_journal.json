@@ -162,6 +162,13 @@
       "when": 1795851097891,
       "tag": "0022_music_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1795852403930,
+      "tag": "0023_music_rights_batch",
+      "breakpoints": true
     }
   ]
 }

@@ -38,6 +38,7 @@ export const FORBIDDEN_DEMO_CREDENTIALS: Readonly<
     names: [
       "DATABASE_URL",
       "DATABASE_URL_UNPOOLED",
+      "PGBOSS_DATABASE_URL",
       "DIRECT_URL",
       "POSTGRES_URL",
       "POSTGRES_PRISMA_URL",

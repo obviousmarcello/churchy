@@ -6,6 +6,7 @@ import {
   importResearchFindings,
   researchSongNow,
   runResearchNow,
+  saveResearchSettings,
 } from "@/server/music/models/song-rights-research";
 import { musicTenant } from "@/server/music/policy";
 import { withPolicy } from "@/server/policy";
@@ -118,4 +119,29 @@ export const researchSongAction = withPolicy(
       () => researchSongNow(text(formData, "id")),
     );
   },
+);
+
+/** "Research every night": the `enabled` checkbox and the `nightlyLimit` field. */
+export const saveSettingsAction = withPolicy(
+  "music.songRights.manage",
+  musicTenant,
+  async (
+    _scope,
+    _previous: SongRightsFormState,
+    formData: FormData,
+  ): Promise<SongRightsFormState> =>
+    runUpdate(
+      {
+        success: ({ m }) => m.songRights.settings.saved,
+        failure: ({ m }) => m.songRights.settings.saveFailed,
+        notFound: ({ m }) => m.songRights.settings.saveFailed,
+      },
+      async () => {
+        await saveResearchSettings({
+          enabled: formData.get("enabled") === "on",
+          nightlyLimit: text(formData, "nightlyLimit"),
+        });
+        return true;
+      },
+    ),
 );

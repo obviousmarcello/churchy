@@ -134,6 +134,7 @@ pnpm typecheck        # tsc --noEmit in every package
 pnpm test             # unit tests (Vitest) in every package, TZ=Europe/Budapest
 pnpm test:coverage    # unit tests with coverage thresholds (80 %; 90 % schedule/calendar/events; 95 % hu/policy)
 pnpm --filter @churchy/policy matrix   # regenerate packages/policy/MATRIX.md (a test fails if it is stale)
+pnpm worker           # background jobs (pg-boss): notifications, song-rights research, cleanups; needs DATABASE_URL/PGBOSS_DATABASE_URL + Supabase env, off in demo (docs/runbooks/jobs-worker.md)
 pnpm test:contract    # contract suites (*.contract.test.ts) against mock (and DB when DATABASE_URL is set)
 pnpm e2e              # Playwright against `next start` on :3100 — run `pnpm build` first; pass --trace off unless debugging
 pnpm --filter @churchy/db db:generate  # Drizzle schema → migrations/NNNN_*.sql (also write migrations/down/<tag>.sql)

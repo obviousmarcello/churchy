@@ -18,6 +18,8 @@ import {
   RESEARCH_FINDINGS_MAX_BYTES,
   DEFAULT_RESEARCH_NIGHTLY_LIMIT,
   DEFAULT_RESEARCH_MODELS,
+  RESEARCH_NIGHTLY_LIMIT_MAX,
+  RESEARCH_NIGHTLY_LIMIT_MIN,
   RESEARCH_RUN_NOW_MAX,
   RESEARCH_RUN_NOW_MIN,
   type ProposalProvider,
@@ -200,6 +202,41 @@ export async function getResearchSettings(): Promise<ResearchSettingsDTO> {
       createdAt: row.created_at,
     })),
   };
+}
+
+const settingsInputSchema = z.strictObject({
+  enabled: z.boolean(),
+  nightlyLimit: z.coerce
+    .number()
+    .int()
+    .min(RESEARCH_NIGHTLY_LIMIT_MIN)
+    .max(RESEARCH_NIGHTLY_LIMIT_MAX),
+});
+
+/**
+ * Switches the nightly research on or off and sets its songs per night. The provider is Anthropic
+ * with the platform key (no key is stored); the model stays as saved, else the default. The job
+ * (`server/jobs`) also needs the plan's monthly cap and the platform key.
+ */
+export async function saveResearchSettings(input: unknown): Promise<void> {
+  const user = await requireSuperadmin();
+  const { enabled, nightlyLimit } = parseInput(settingsInputSchema, input);
+  const current = await readSettings();
+  const model =
+    current.provider === "anthropic" && current.model
+      ? current.model
+      : DEFAULT_RESEARCH_MODELS.anthropic;
+  const { error } = await (await getMusicSupabase()).from("song_rights_research_settings").upsert(
+    {
+      enabled,
+      provider: "anthropic",
+      model,
+      nightly_limit: nightlyLimit,
+      updated_by: user.id,
+    },
+    { onConflict: "tenant_id" },
+  );
+  if (error) throw databaseError("save song rights research settings", error);
 }
 
 // --- Proposals -------------------------------------------------------------
@@ -468,6 +505,42 @@ export async function getResearchQuota(): Promise<ResearchQuotaDTO> {
   await requireSuperadmin();
   const [limit, used] = await Promise.all([researchLimit(), researchesThisMonth()]);
   return { available: platformKey() !== null, limit, used };
+}
+
+/** The songs that one scheduled run researches at the same time. */
+const BATCH_SIZE = 4;
+
+/**
+ * The scheduled research of the next few songs of this church (the job of phase 8c runs it every
+ * ten minutes at night, for each church in turn, inside `runWithMusicClient`). It checks nothing of
+ * a session: the job decides which church. Nothing happens unless the superadmins switched the
+ * research on, the platform key is set (never in demo mode), and the plan's cap of the month
+ * (`monthlyLimit`, from `entitlements().musicResearchPerMonth`) is not used up; the claim also
+ * keeps the nightly limit of the church. The result of each song waits as a proposal for a review.
+ */
+export async function runScheduledResearch(monthlyLimit: number): Promise<ResearchBatchResult> {
+  const none = { researched: 0, failed: 0 };
+  const apiKey = platformKey();
+  if (!apiKey || monthlyLimit <= 0) return none;
+  const settings = await readSettings();
+  if (!settings.enabled) return none;
+  const left = monthlyLimit - (await researchesThisMonth());
+  if (left <= 0) return none;
+  const model =
+    settings.provider === "anthropic" && settings.model
+      ? settings.model
+      : DEFAULT_RESEARCH_MODELS.anthropic;
+  const { data, error } = await (
+    await getMusicSupabase()
+  ).rpc("claim_songs_for_rights_research", {
+    p_batch: Math.min(BATCH_SIZE, left),
+    p_provider: "anthropic",
+    p_model: model,
+  });
+  if (error) throw databaseError("claim songs for rights research", error);
+  const claimed = z.array(claimRowSchema).parse(data);
+  if (claimed.length === 0) return none;
+  return batchResult(await researchClaimed(claimed, { provider: "anthropic", model, apiKey }));
 }
 
 /**

@@ -1693,5 +1693,15 @@ export const MIGRATION_SQL: readonly { tag: string; statements: readonly string[
    "REVOKE ALL ON FUNCTION public.reset_notification_deliveries() FROM PUBLIC;",
    "GRANT EXECUTE ON FUNCTION public.reset_notification_deliveries() TO churchy_app, churchy_music;"
   ]
+ },
+ {
+  "tag": "0023_music_rights_batch",
+  "statements": [
+   "ALTER TABLE \"song_rights_research_settings\" DROP CONSTRAINT \"song_rights_research_settings_enabled_check\";",
+   "ALTER TABLE \"song_rights_research_settings\" ADD CONSTRAINT \"song_rights_research_settings_enabled_check\" CHECK (((NOT enabled) OR ((provider IS NOT NULL) AND (model IS NOT NULL))));",
+   "-- With the platform key (phase 8c) the research needs no saved API key: switching it on needs a provider and a model.\n-- Music merge phase 8c (nightly song-rights research). `claim_songs_for_rights_research` of Music Sheet DB:\n-- marks at most `p_batch` songs `running` and returns them with the chart of their default arrangement.\n-- Fewer when the nightly limit of the church (`song_rights_research_settings.nightly_limit`) is near. Two calls\n-- at the same time never get the same song (the advisory lock, as in `claim_songs_for_rights_research_now`, and\n-- the unique index on the open proposals). SECURITY INVOKER: the tenant comes from RLS; the job runs it per church.\nCREATE OR REPLACE FUNCTION public.claim_songs_for_rights_research(p_batch integer, p_provider text, p_model text)\nreturns table (proposal_id uuid, song_id uuid, title text, artist text, copyright text, songbook text, chordpro text)\nlanguage plpgsql\nsecurity invoker\nset search_path = ''\nas $$\n#variable_conflict use_column\ndeclare\n  v_limit integer;\n  v_done integer;\nbegin\n  perform pg_advisory_xact_lock(hashtext('claim_songs_for_rights_research'));\n  -- A run that crashed: its songs can go again.\n  perform public.close_crashed_song_rights_research(null);\n\n  select nightly_limit into v_limit from public.song_rights_research_settings;\n  select count(*) into v_done\n  from public.song_rights_proposals\n  where created_at > now() - interval '20 hours' and provider <> 'local';\n\n  return query\n  with candidates as (\n    select c.id from public.songs_for_rights_research() c\n    limit greatest(0, least(p_batch, coalesce(v_limit, 0) - v_done))\n  ),\n  claimed as (\n    insert into public.song_rights_proposals (song_id, provider, model)\n    select candidates.id, p_provider, p_model from candidates\n    on conflict (tenant_id, song_id) where status in ('running', 'pending') do nothing\n    returning song_rights_proposals.id, song_rights_proposals.song_id\n  )\n  select claimed.id, s.id, s.title, s.artist, s.copyright, s.songbook, a.chordpro\n  from claimed\n  join public.songs s on s.id = claimed.song_id\n  join public.arrangements a on a.song_id = s.id and a.is_default;\nend;\n$$;",
+   "REVOKE ALL ON FUNCTION public.claim_songs_for_rights_research(integer, text, text) FROM PUBLIC;",
+   "GRANT EXECUTE ON FUNCTION public.claim_songs_for_rights_research(integer, text, text) TO churchy_app, churchy_music;"
+  ]
  }
 ];

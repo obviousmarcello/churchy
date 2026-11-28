@@ -11,6 +11,7 @@ vi.mock("@/server/music/outbox", () => ({
     enqueued.push(message);
   },
   eventLink: (eventId: string) => `/munkater/esemenyek/${eventId}`,
+  outboxSessionId: async () => null,
 }));
 vi.mock("@/server/music/push", () => ({ isPushEnabled: () => false, sendPush: vi.fn() }));
 

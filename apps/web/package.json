@@ -9,6 +9,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test",
+    "worker": "tsx --tsconfig tsconfig.worker.json server/jobs/main.ts",
     "test": "TZ=Europe/Budapest vitest run --passWithNoTests"
   },
   "dependencies": {
@@ -44,6 +45,7 @@
     "next": "16.4.6",
     "next-intl": "^4.15.1",
     "pdfjs-dist": "^6.4.299",
+    "pg-boss": "12.38.2",
     "postcss": "^8.5.32",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

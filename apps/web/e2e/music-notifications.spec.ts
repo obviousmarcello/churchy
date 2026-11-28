@@ -53,3 +53,34 @@ test("the service worker script is served for the workspace scope", async ({ pag
   expect(response.headers()["service-worker-allowed"]).toBe("/munkater/");
   expect(await response.text()).toContain("showNotification");
 });
+
+test("adding a volunteer puts the 'added to an event' mail in the outbox, with the time and a link only", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await switchPersona(page, "zenei");
+  await page.goto("/munkater/esemenyek/uj");
+  await page.getByLabel("Név").fill("Értesítési próba");
+  await page.getByLabel("Kezdés").fill("2031-03-02T17:00");
+  await page.getByRole("button", { name: "Esemény létrehozása" }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Értesítési próba" }).first(),
+  ).toBeVisible();
+
+  // A user who is not a volunteer yet (the last of the list: not the leader, who is first).
+  await page.getByRole("button", { name: "Kezelés" }).first().click();
+  const select = page.getByLabel("Önkéntes hozzáadása").first();
+  await select.selectOption({ index: (await select.locator("option").count()) - 1 });
+  await page.getByRole("button", { name: "Önkéntes hozzáadása" }).last().click();
+  await expect(page.getByText("Önkéntes hozzáadva.").first()).toBeVisible();
+
+  // The mail is queued after the response: the outbox viewer lists it, without a name or a title.
+  await expect(async () => {
+    await page.goto("/fejlesztes/kimeno-levelek");
+    await expect(page.getByText("Felvettek egy eseményre: 2031. március 2.").first()).toBeVisible({
+      timeout: 1000,
+    });
+  }).toPass({ timeout: 20_000 });
+  await expect(page.getByText("Értesítési próba")).toHaveCount(0);
+  expect(await axeSeriousOrCritical(page)).toEqual([]);
+});

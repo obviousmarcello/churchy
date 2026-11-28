@@ -12,6 +12,8 @@ import { Card } from "@/components/music/ui/card";
 import { Input } from "@/components/music/ui/input";
 import { useI18n } from "@/i18n/music/client";
 import {
+  RESEARCH_NIGHTLY_LIMIT_MAX,
+  RESEARCH_NIGHTLY_LIMIT_MIN,
   DEFAULT_RESEARCH_RUN_NOW_COUNT,
   RESEARCH_FINDINGS_MAX,
   RESEARCH_FINDINGS_MAX_BYTES,
@@ -28,6 +30,7 @@ import {
   exportSongsAction,
   researchSongAction,
   runNowAction,
+  saveSettingsAction,
   uploadFindingsAction,
   type SongRightsFormState,
 } from "./actions";
@@ -58,7 +61,10 @@ export function ResearchSettings({
       description={m.songRights.settings.description}
     >
       {ai ? (
-        <RunNowCard settings={settings} quota={quota} />
+        <>
+          <NightlyCard settings={settings} />
+          <RunNowCard settings={settings} quota={quota} />
+        </>
       ) : (
         <p
           role="note"
@@ -301,6 +307,61 @@ function RunNowCard({
           </FormFooter>
         </form>
       )}
+    </Card>
+  );
+}
+
+/** The nightly research: on or off, and the songs per night. The job needs the platform key and the plan's cap. */
+function NightlyCard({ settings }: { settings: ResearchSettingsDTO }) {
+  const { m, format } = useI18n();
+  const t = m.songRights.settings;
+  const [state, formAction, saving] = useActionState(
+    usePolicyAction(saveSettingsAction),
+    initialState,
+  );
+  return (
+    <Card className="gap-4" data-testid="ai-nightly">
+      <form onSubmit={submitWithoutReset(formAction)} className="flex flex-col gap-4">
+        <label className="flex items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            name="enabled"
+            defaultChecked={settings.enabled}
+            aria-describedby="nightly-enabled-hint"
+            className="mt-0.5 size-4 accent-primary"
+          />
+          <span className="flex flex-col gap-1">
+            <span className="font-medium">{t.enabled}</span>
+            <span id="nightly-enabled-hint" className="text-muted">
+              {t.enabledHint}
+            </span>
+          </span>
+        </label>
+        <Field
+          name="nightly-limit"
+          label={t.nightlyLimit}
+          hint={format(t.nightlyLimitHint, { max: RESEARCH_NIGHTLY_LIMIT_MAX })}
+          errors={state.fieldErrors.nightlyLimit}
+        >
+          <Input
+            id="nightly-limit"
+            name="nightlyLimit"
+            type="number"
+            inputMode="numeric"
+            required
+            min={RESEARCH_NIGHTLY_LIMIT_MIN}
+            max={RESEARCH_NIGHTLY_LIMIT_MAX}
+            defaultValue={settings.nightlyLimit}
+            className="w-28"
+            aria-describedby="nightly-limit-description"
+          />
+        </Field>
+        <FormFooter state={state}>
+          <Button type="submit" disabled={saving}>
+            {saving ? t.saving : t.save}
+          </Button>
+        </FormFooter>
+      </form>
     </Card>
   );
 }

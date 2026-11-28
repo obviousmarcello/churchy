@@ -720,7 +720,7 @@ export const songRightsResearchSettings = pgTable(
     ),
     check(
       "song_rights_research_settings_enabled_check",
-      sql`((NOT enabled) OR ((provider IS NOT NULL) AND (model IS NOT NULL) AND (api_key_hint IS NOT NULL)))`,
+      sql`((NOT enabled) OR ((provider IS NOT NULL) AND (model IS NOT NULL)))`,
     ),
     check(
       "song_rights_research_settings_model_check",

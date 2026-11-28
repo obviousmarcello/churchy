@@ -7,7 +7,12 @@ import { z } from "zod";
 
 import type { NotificationKind } from "@/lib/music/notifications";
 import { getMusicSupabase } from "@/server/music/db";
-import { eventLink, enqueueMusicOutbox, type MusicOutboxMessage } from "@/server/music/outbox";
+import {
+  enqueueMusicOutbox,
+  eventLink,
+  outboxSessionId,
+  type MusicOutboxMessage,
+} from "@/server/music/outbox";
 import { isPushEnabled, sendPush } from "@/server/music/push";
 import { getActor } from "@/server/session";
 import {
@@ -48,24 +53,42 @@ const KIND_TEXT = {
 
 const uuidList = z.array(z.uuid());
 
+/** Puts a message in the outbox (the request's demo session, or the default store). */
+type Enqueue = (message: MusicOutboxMessage) => Promise<void>;
+
 /**
  * Tells each of `userIds` that they were added to the event, after the response, if they turned it
  * on and the event has not started. A user who added themselves is left out by the caller.
  */
-export function queueEventAddedNotifications(eventId: string, userIds: readonly string[]): void {
+export async function queueEventAddedNotifications(
+  eventId: string,
+  userIds: readonly string[],
+): Promise<void> {
   if (userIds.length === 0) return;
-  after(async () => {
-    try {
-      const actor = await getActor();
-      if (actor.kind !== "tenant") return;
-      await notifyEventAdded(await getMusicSupabase(), actor.tenantId, eventId, userIds);
-    } catch (error) {
-      console.error(
-        "[notifications] event_added failed:",
-        error instanceof Error ? error.name : "error",
-      );
-    }
-  });
+  try {
+    // Resolved inside the request: after the response the cookies are not read again.
+    const actor = await getActor();
+    if (actor.kind !== "tenant") return;
+    const db = await getMusicSupabase();
+    const sessionId = await outboxSessionId();
+    after(async () => {
+      try {
+        await notifyEventAdded(db, actor.tenantId, eventId, userIds, (message) =>
+          enqueueMusicOutbox(message, sessionId),
+        );
+      } catch (error) {
+        console.error(
+          "[notifications] event_added failed:",
+          error instanceof Error ? error.name : "error",
+        );
+      }
+    });
+  } catch (error) {
+    console.error(
+      "[notifications] could not queue event_added:",
+      error instanceof Error ? error.name : "error",
+    );
+  }
 }
 
 export async function notifyEventAdded(
@@ -73,6 +96,7 @@ export async function notifyEventAdded(
   tenantId: string,
   eventId: string,
   userIds: readonly string[],
+  enqueue: Enqueue = enqueueMusicOutbox,
 ): Promise<number> {
   const preferences = await listNotificationPreferences([...userIds], db);
   const wanted = [...preferences].filter(([, p]) => p.eventAdded).map(([id]) => id);
@@ -87,6 +111,7 @@ export async function notifyEventAdded(
     const userPreferences = preferences.get(userId);
     if (!userPreferences) continue;
     const delivered = await deliver(
+      enqueue,
       db,
       tenantId,
       "event_added",
@@ -109,7 +134,7 @@ export async function notifyEventAdded(
 export async function sendDueNotifications(
   db: SupabaseClient,
   tenantId: string,
-  { limit = 40 }: { limit?: number } = {},
+  { limit = 40, enqueue = enqueueMusicOutbox }: { limit?: number; enqueue?: Enqueue } = {},
 ): Promise<{ sent: number; failed: number }> {
   const { data, error } = await db.rpc("list_due_notifications", { p_limit: limit });
   if (error) throw databaseError("list due notifications", error);
@@ -149,6 +174,7 @@ export async function sendDueNotifications(
     }
     try {
       const delivered = await deliver(
+        enqueue,
         db,
         tenantId,
         kind,
@@ -178,6 +204,7 @@ export async function sendDueNotifications(
  * for a user who gets no email: then a later run can try again.
  */
 async function deliver(
+  enqueue: Enqueue,
   db: SupabaseClient,
   tenantId: string,
   kind: NotificationKind,
@@ -194,7 +221,7 @@ async function deliver(
     eventId,
     startsAt,
   } as const;
-  if (preferences.email) await enqueueMusicOutbox({ ...message, channel: "email" });
+  if (preferences.email) await enqueue({ ...message, channel: "email" });
 
   let pushed = false;
   if (isPushEnabled() && devices.length > 0) {
@@ -213,7 +240,7 @@ async function deliver(
     await removeGoneEndpoints(gone, db);
     if (sent > 0) {
       pushed = true;
-      await enqueueMusicOutbox({ ...message, channel: "push" });
+      await enqueue({ ...message, channel: "push" });
     } else if (!preferences.email && failed > 0) {
       throw new Error("push failed");
     }

@@ -27,9 +27,17 @@ export function eventLink(eventId: string, template: MusicOutboxMessage["templat
     : `/munkater/esemenyek/${eventId}`;
 }
 
-export async function enqueueMusicOutbox(message: MusicOutboxMessage): Promise<void> {
-  const sessionId = demoModeEnabled() ? ((await getDemoState())?.sessionId ?? null) : null;
-  appendMusicOutbox(sessionId, {
+/** The demo session of the request (its own outbox), or null. Resolve it inside the request: it reads the cookies. */
+export async function outboxSessionId(): Promise<string | null> {
+  return demoModeEnabled() ? ((await getDemoState())?.sessionId ?? null) : null;
+}
+
+/** `sessionId`: from `outboxSessionId()`; without it the request's session is resolved now. */
+export async function enqueueMusicOutbox(
+  message: MusicOutboxMessage,
+  sessionId?: string | null,
+): Promise<void> {
+  appendMusicOutbox(sessionId === undefined ? await outboxSessionId() : sessionId, {
     tenantId: message.tenantId,
     profileId: message.profileId,
     channel: message.channel,

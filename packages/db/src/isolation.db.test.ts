@@ -1108,6 +1108,42 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
       });
     });
 
+    it("rights research batch: claims songs up to the nightly limit of the church, never twice", async () => {
+      await asMusic(A, async (c) => {
+        const songIds: string[] = [];
+        for (const title of ["Kutatás egy", "Kutatás kettő"]) {
+          const song = (
+            await c.query<{ id: string }>("insert into songs (title) values ($1) returning id", [
+              title,
+            ])
+          ).rows[0]!.id;
+          await c.query(
+            "insert into arrangements (song_id, name, chordpro, is_default) values ($1, 'Alap', '{title: x}\nSzöveg sor', true)",
+            [song],
+          );
+          songIds.push(song);
+        }
+        const claimed = async (n: number) =>
+          (
+            await c.query(
+              "select song_id from claim_songs_for_rights_research($1, 'anthropic', 'm')",
+              [n],
+            )
+          ).rows.map((r) => r.song_id as string);
+        // No settings row: the nightly limit is 0.
+        await c.query("delete from song_rights_research_settings");
+        expect(await claimed(4)).toEqual([]);
+        await c.query(
+          "insert into song_rights_research_settings (enabled, provider, model, nightly_limit) values (true, 'anthropic', 'm', 1)",
+        );
+        const first = await claimed(4);
+        expect(first).toHaveLength(1);
+        expect(songIds).toContain(first[0]);
+        // The limit of the night is used up; the open proposal is not taken again.
+        expect(await claimed(4)).toEqual([]);
+      });
+    });
+
     it("notifications: due reminders per volunteer, once each, again after a new start time; other church sees none", async () => {
       const [profile] = await ownerQuery<{ id: string }>(
         "select id from profiles order by id limit 1",

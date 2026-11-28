@@ -958,3 +958,24 @@ become optional per-translation mappings. Hungarian only.
   the live module. `music.notifications.*` lost the template editor keys.
 - Tests: unit (`notifications.test.ts`: added, started event, due run, told-when-added), isolation (`list_due_notifications` windows, deliveries,
   reset on a new start time, volunteer cascade, other church), e2e (preferences saved and kept, axe). Not verified: real push delivery (no VAPID).
+
+## 31. Phase 8c: background jobs (pg-boss), nightly rights research
+- **New runtime dependency `pg-boss` 12.38.2** (apps/web; owner decision 2026-11-28): the SDD stack names it as the job runner and nothing
+  else in the repo can schedule per-church work; it replaces pg_cron, pg_net and `consume_cron_token`. Node 22.12+ (already required).
+- **Worker** `apps/web/server/jobs` (`pnpm worker`, runbook `docs/runbooks/jobs-worker.md`): `config.ts` (demo off with a notice,
+  `PGBOSS_DATABASE_URL` else `DATABASE_URL`), `handlers.ts` (each job for every church in turn, failures isolated and logged without data),
+  `steps.ts` (the work), `main.ts` (queues, schedules, graceful stop). The models run in a church's scope with `runWithMusicClient`
+  (an `AsyncLocalStorage` that `getMusicSupabase()` honours) and `createMusicJobClient(tenantId)` (a tenant token per request, since a
+  research run lasts minutes).
+- Jobs: due notifications (15 min), rights research (10 min, 00:00-04:59), hourly cleanup (stray files, unused sets/announcements, closed
+  projection controllers, expired verse cache), nightly cleanup (`purge_removed_courses`, `remove_unused_course_images`).
+- **Rights research**: migration `0023_music_rights_batch`: `claim_songs_for_rights_research` (nightly limit and advisory lock), and the
+  `enabled` check no longer needs a saved key (the platform key is used; `song_rights_research_settings.api_key_hint` stays unused). The
+  per-database key functions `set_song_rights_research_api_key` / `song_rights_research_api_key` are **not ported** (decision: platform
+  `ANTHROPIC_API_KEY` + per-tenant cap). `runScheduledResearch(limit)`: needs the setting on, the key, `musicResearchPerMonth > 0` and what
+  is left of the month. The song-rights page got the on/off switch and the songs per night (`saveResearchSettings`).
+- **Security (label `security-review`)**: the worker holds a database role that can read `tenants` and create the `pgboss` schema, and the
+  Supabase JWT secret (to mint tenant tokens with `sub` = a fixed job id); church data is reached only through tenant tokens and RLS;
+  no personal data in logs; the demo refuses the worker's URL. The AI key is an environment secret, never stored per church.
+- Tests: `config.test.ts`, `handlers.test.ts` (per-church isolation, caps), isolation test for the batch claim. e2e: adding a volunteer queues the
+  "added" mail in the outbox viewer (subject with the time, no title). Not verified: a real Supabase project, a real push, the Anthropic call.

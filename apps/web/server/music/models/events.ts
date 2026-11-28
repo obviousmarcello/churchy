@@ -778,7 +778,7 @@ export async function copyEvent(sourceId: string, input: CopyEventInput): Promis
       .select("user_id")
       .eq("event_id", id);
     if (volunteersError) throw databaseError("list copied volunteers", volunteersError);
-    queueEventAddedNotifications(
+    await queueEventAddedNotifications(
       id,
       z
         .array(z.object({ user_id: z.uuid() }))
@@ -844,7 +844,9 @@ export async function addEventVolunteer(eventId: string, userId: string): Promis
   );
   if (error?.code === "23503") return false;
   if (error) throw databaseError("add event volunteer", error);
-  if (data.length > 0 && userId !== current.id) queueEventAddedNotifications(eventId, [userId]);
+  if (data.length > 0 && userId !== current.id) {
+    await queueEventAddedNotifications(eventId, [userId]);
+  }
   return true;
 }
 

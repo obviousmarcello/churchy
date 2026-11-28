@@ -45,6 +45,32 @@ export function createMusicSupabaseClient(
   });
 }
 
+/** The user id of the background jobs in the token (`sub`): no real user; the music tables take none from it. */
+export const MUSIC_JOB_USER_ID = "00000000-0000-4000-8000-00000000000a";
+
+/**
+ * The client of a background job for one church (phase 8c): like `createMusicSupabaseClient`, but a
+ * fresh token for each request, because a job can run for minutes (the token lives for one request).
+ */
+export function createMusicJobClient(
+  tenantId: string,
+  env: MusicSupabaseEnv = process.env as MusicSupabaseEnv,
+): SupabaseClient {
+  const { SUPABASE_URL: url, SUPABASE_PUBLISHABLE_KEY: key, SUPABASE_JWT_SECRET: secret } = env;
+  if (!url || !key || !secret) throw new Error("music: Supabase is not configured");
+  return createClient(url, key, {
+    accessToken: async () =>
+      mintTenantToken({
+        userId: MUSIC_JOB_USER_ID,
+        tenantId,
+        role: MUSIC_DB_ROLE,
+        secret,
+        now: new Date(),
+      }),
+    global: { fetch: tenantStorageFetch(tenantId) },
+  });
+}
+
 /** The Postgres role of the music tables (migration 0007_music_rls). */
 export const MUSIC_DB_ROLE = "churchy_music";
 
