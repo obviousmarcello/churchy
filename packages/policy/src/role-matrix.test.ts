@@ -6,6 +6,7 @@ import {
   ACTIONS,
   HR_ACTIONS,
   ORG_ACTIONS,
+  PLATFORM_ACTIONS,
   WEBSITE_ACTIONS,
   WORKSPACE_ACTIONS,
   isHrAction,
@@ -195,7 +196,10 @@ function kitchenSink(tenantId: string, extra: Record<string, unknown> = {}): nev
 }
 
 const NON_HR_TENANT_ACTIONS = ACTIONS.filter(
-  (action) => !isHrAction(action) && !(ORG_ACTIONS as readonly Action[]).includes(action),
+  (action) =>
+    !isHrAction(action) &&
+    !(ORG_ACTIONS as readonly Action[]).includes(action) &&
+    !(PLATFORM_ACTIONS as readonly Action[]).includes(action),
 );
 
 /** HR actions of the tenant vocabulary that organization actors can never perform. */
@@ -368,9 +372,12 @@ describe("hard exclusion: platform and support access are denied every hr.* acti
       });
     });
 
-    it.each(ACTIONS)("%s is denied (no capability at all)", (action) => {
-      expect(can(platform, action, kitchenSink(TENANT))).toBe(false);
-    });
+    it.each(ACTIONS.filter((a) => !(PLATFORM_ACTIONS as readonly Action[]).includes(a)))(
+      "%s is denied (no capability at all)",
+      (action) => {
+        expect(can(platform, action, kitchenSink(TENANT))).toBe(false);
+      },
+    );
   });
 
   describe("support access (impersonating a tenant user holding every role and scope)", () => {
@@ -497,5 +504,26 @@ describe("MATRIX.md", () => {
     // `pnpm --filter @churchy/policy matrix` regenerates the file.
     if (process.env["UPDATE_MATRIX"] === "1") writeFileSync(file, rendered);
     expect(readFileSync(file, "utf8")).toBe(rendered);
+  });
+});
+
+describe("platform console actions", () => {
+  const resource = { kind: "platform" } as never;
+  it.each(PLATFORM_ACTIONS)("%s is for platform operators only", (action) => {
+    expect(can({ kind: "platform", userId: "u-operator" }, action, resource)).toBe(true);
+    expect(can({ kind: "anonymous" }, action, resource)).toBe(false);
+    expect(can(diocesanActor([...ORG_ROLES]), action, resource)).toBe(false);
+  });
+
+  it.each(PLATFORM_ACTIONS)("%s is denied to a church actor holding every role", (action) => {
+    const actor = tenantActor({
+      tenantId: TENANT,
+      userId: "u-owner",
+      personId: SELF,
+      websiteRoles: [...WEBSITE_ROLES],
+      workspaceRoles: [...WORKSPACE_ROLES],
+    });
+    expect(can(actor, action, resource)).toBe(false);
+    expect(can({ ...actor, impersonatedBy: "u-operator" }, action, resource)).toBe(false);
   });
 });

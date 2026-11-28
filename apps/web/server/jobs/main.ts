@@ -16,6 +16,7 @@ import {
   runRightsResearch,
   type JobDeps,
 } from "./handlers";
+import { purgeSiteDrafts } from "./site-builder-purge";
 import { cleanupSteps, research, sendDue } from "./steps";
 
 // The worker of the background jobs (phase 8c): `pnpm worker`. It is a process of its own, next to
@@ -25,6 +26,7 @@ import { cleanupSteps, research, sendDue } from "./steps";
 //   music-rights-research    every 10 minutes, 00:00-04:59 (Europe/Budapest)   AI research of the song rights
 //   music-cleanup-hourly     at minute 7 of each hour   stray files, unused sets, expired rows
 //   music-cleanup-nightly    03:17 (Europe/Budapest)    removed courses, unused course images
+//   site-builder-purge       at minute 23 of each hour   expired, not applied site builder drafts
 
 const TZ = "Europe/Budapest";
 const SCHEDULES = [
@@ -32,6 +34,7 @@ const SCHEDULES = [
   { queue: "music-rights-research", cron: "*/10 0-4 * * *" },
   { queue: "music-cleanup-hourly", cron: "7 * * * *" },
   { queue: "music-cleanup-nightly", cron: "17 3 * * *" },
+  { queue: "site-builder-purge", cron: "23 * * * *" },
 ] as const;
 
 async function main(): Promise<void> {
@@ -87,6 +90,17 @@ async function main(): Promise<void> {
     "music-cleanup-nightly",
     async () => void (await runNightlyCleanup(deps, cleanupSteps)),
   );
+  await boss.work("site-builder-purge", async () => {
+    try {
+      const purged = await purgeSiteDrafts();
+      if (purged > 0) console.info(`[jobs] site builder: ${purged} expired drafts removed`);
+    } catch (error) {
+      console.error(
+        "[jobs] site builder purge failed:",
+        error instanceof Error ? error.message : "error",
+      );
+    }
+  });
   console.info("[jobs] worker started");
 
   const stop = async () => {

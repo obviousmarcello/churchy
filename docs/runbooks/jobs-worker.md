@@ -13,6 +13,7 @@ the job runner of the stack, SDD §3; it is the only dependency added for the jo
 | `music-rights-research`   | every 10 minutes, 00:00-04:59  | AI research of the song rights: only for churches whose superadmins switched it on, with the plan's cap (`entitlements().musicResearchPerMonth`) and their nightly limit; the platform `ANTHROPIC_API_KEY` |
 | `music-cleanup-hourly`    | minute 7 of each hour          | stray files, unused image sets and announcements, projection controllers not seen for 23 h, scripture verses older than a day                                                                           |
 | `music-cleanup-nightly`   | 03:17                          | courses and lessons removed more than 90 days ago, course images that no course uses                                                                                                                    |
+| `site-builder-purge`      | minute 23 of each hour         | deletes expired, not applied site builder drafts (`site_drafts`); uses `DATABASE_URL_PLATFORM`, does nothing without it ([site-builder.md](site-builder.md))                                              |
 
 ## Starting it
 

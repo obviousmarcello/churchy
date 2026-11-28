@@ -1,7 +1,7 @@
 import "server-only";
 
 import { PlanSchema, type EntitlementSources, type OrgRole } from "@churchy/contracts";
-import { getPlatformDb, type PlatformQueryable } from "./client";
+import { getPlatformDb, type PlatformDb, type PlatformQueryable } from "./client";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (value: string): boolean => UUID.test(value);
@@ -148,4 +148,15 @@ export async function getEntitlementsRow(
     }
   }
   return { websitePlan, workspacePlan, deal };
+}
+
+/** Churches for the operator's target list (id and name only). */
+export async function listTenantOptions(
+  dbOverride?: Pick<PlatformDb, "query">,
+): Promise<{ id: string; name: string }[]> {
+  const db = dbOverride ?? (await getPlatformDb());
+  const res = await db.query<{ id: string; name: string }>(
+    "select id, name from tenants where status = 'active' order by name collate \"hu-HU-x-icu\" limit 500",
+  );
+  return res.rows;
 }

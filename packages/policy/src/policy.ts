@@ -1,14 +1,22 @@
 import type { Action, ResourceByAction, TenantResource } from "./actions";
-import { HR_ACTIONS, ORG_ACTIONS, WEBSITE_ACTIONS, WORKSPACE_ACTIONS, isHrAction } from "./actions";
+import {
+  HR_ACTIONS,
+  ORG_ACTIONS,
+  PLATFORM_ACTIONS,
+  WEBSITE_ACTIONS,
+  WORKSPACE_ACTIONS,
+  isHrAction,
+} from "./actions";
 import type { Actor, TenantActor } from "./actor";
 import type { Decision } from "./decision";
-import { deny } from "./decision";
+import { allow, deny } from "./decision";
 import { evaluateHrOrg, evaluateHrTenant } from "./hr";
 import { evaluateOrgAdmin } from "./org";
 import { evaluateWebsite } from "./website";
 import { evaluateWorkspace } from "./workspace";
 
 const ORG = new Set<string>(ORG_ACTIONS);
+const PLATFORM = new Set<string>(PLATFORM_ACTIONS);
 const WEBSITE = new Set<string>(WEBSITE_ACTIONS);
 const WORKSPACE = new Set<string>(WORKSPACE_ACTIONS);
 const HR = new Set<string>(HR_ACTIONS);
@@ -28,13 +36,25 @@ function evaluateTenant(actor: TenantActor, action: string, resource: unknown): 
 }
 
 function evaluate(actor: Actor, action: string, resource: unknown): Decision {
-  if (!WEBSITE.has(action) && !WORKSPACE.has(action) && !HR.has(action) && !ORG.has(action)) {
+  if (
+    !WEBSITE.has(action) &&
+    !WORKSPACE.has(action) &&
+    !HR.has(action) &&
+    !ORG.has(action) &&
+    !PLATFORM.has(action)
+  ) {
     return deny(`unknown action ${action}`);
   }
   if (actor.tenantId !== undefined && actor.orgId !== undefined) {
     return deny("an actor must not combine tenant and organization context");
   }
   if (resource === null || typeof resource !== "object") return deny("missing resource");
+
+  if (PLATFORM.has(action)) {
+    return actor.kind === "platform"
+      ? allow("platform operator")
+      : deny("platform actions are for platform operators");
+  }
 
   switch (actor.kind) {
     case "tenant":

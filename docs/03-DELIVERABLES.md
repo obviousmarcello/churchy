@@ -597,6 +597,7 @@ From W9 onward the dates are set by people, not agents: the pentest, the lawyer 
   2. Owner checklist with 9 steps and progress; sample content removable in 1 click; *„Hamarosan”* banner until go-live.
   3. In a timed trial, **3 of 3** test churches reach go-live in **≤ 2 hours** of active work without developer help.
 - **Verification:** timed trials (recorded).
+- **Site builder (operators only, ADR-21):** the real URL -> draft site agent behind the landing teaser: crawl, extract, plan with Claude, review, apply. Runbook `docs/runbooks/site-builder.md`. Not part of AC 1-3 (those stay on the mock importer in demo); security-review label.
 
 ### D-35 Performance gate
 - **Traces:** NFR-01, G6 · SDD §15 · **Priority:** P0 · **Est.:** 4 pd

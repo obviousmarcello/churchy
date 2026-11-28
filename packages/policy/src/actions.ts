@@ -9,6 +9,11 @@ export interface TenantResource {
   readonly tenantId: string;
 }
 
+/** Platform console resources (no tenant, no organization): only platform operators act on them. */
+export interface PlatformResource {
+  readonly kind: "platform";
+}
+
 /** Anything that belongs to one diocesan organization (portal administration). */
 export interface OrgResource {
   readonly orgId: string;
@@ -196,11 +201,19 @@ export const ORG_ACTIONS = [
 ] as const;
 export type OrgAction = (typeof ORG_ACTIONS)[number];
 
+/**
+ * Platform console actions (SDD ADR-21): granted to platform operators (`PlatformActor`) only, never
+ * to a church or diocese actor, whatever its roles (also not to an impersonating support actor).
+ */
+export const PLATFORM_ACTIONS = ["platform.siteBuilder.use"] as const;
+export type PlatformAction = (typeof PLATFORM_ACTIONS)[number];
+
 /** Maps every action to the resource it is checked against. */
 export type ResourceByAction = Record<ContentAction, TenantResource> &
   Record<GroupContentAction, GroupContentResource> &
   Record<WebsiteTenantAction | WorkspaceTenantAction | HrTenantAction, TenantResource> &
-  Record<OrgAction, OrgResource> & {
+  Record<OrgAction, OrgResource> &
+  Record<PlatformAction, PlatformResource> & {
     "site.users.manage": UserManagementResource;
     "music.song.manage": MusicAreaResource;
     "music.event.manage": MusicAreaResource;
@@ -280,6 +293,7 @@ const ALL_ACTIONS = [
   ...WORKSPACE_ACTIONS,
   ...HR_ACTIONS,
   ...ORG_ACTIONS,
+  ...PLATFORM_ACTIONS,
 ] as const;
 
 // Compile-time check: every key of `ResourceByAction` is listed in one of the families above.

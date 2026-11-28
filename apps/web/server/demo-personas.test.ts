@@ -99,6 +99,7 @@ describe("persona → actor (from the demo memberships)", () => {
  */
 const EXPECTED: Record<DemoPersonaKey, { visible: string[]; hidden: string[] }> = {
   latogato: { visible: [], hidden: ["workspace", "admin", "organization"] },
+  uzemelteto: { visible: [], hidden: ["workspace", "admin", "organization"] },
   tulajdonos: {
     visible: ["admin", "domain", "users", "workspace", "hr"],
     hidden: ["organization"],

@@ -9,6 +9,8 @@ export const PLATFORM_DB_ALLOW_LIST = [
   /^apps\/web\/server\/platform-db\//,
   /^apps\/web\/server\/(session|auth|plans)\.ts$/, // actor/identity lookups, sign-in, entitlement sources
   /^apps\/web\/server\/signup[a-z.-]*\.tsx?$/,
+  /^apps\/web\/server\/site-builder-[a-z.-]+\.tsx?$/,
+  /^apps\/web\/server\/jobs\/site-builder-purge\.ts$/, // worker: purge of expired drafts // operator site builder: drafts, audit, apply
   /^apps\/web\/(proxy|middleware)\.ts$/, // host resolution
   /^apps\/web\/lib\/host-resolution(\.[a-z-]+)*\.ts$/,
   /^apps\/web\/server\/host-resolution(\.[a-z-]+)*\.ts$/,

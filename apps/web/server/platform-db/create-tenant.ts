@@ -91,6 +91,7 @@ async function bootstrap(
   tx: PlatformQueryable,
   input: z.output<typeof CreateTenantInputSchema>,
   slug: string,
+  siteConfig?: Record<string, unknown>,
 ): Promise<CreateTenantResult> {
   const plan = await tx.query("select 1 from plans where key = $1::plan_key", [FREE_PLAN]);
   if (plan.rows.length === 0) return { ok: false, reason: "plan_missing" };
@@ -105,9 +106,9 @@ async function bootstrap(
   const nameParts = splitOwnerName(owner.name);
 
   await tx.query(
-    `insert into tenants (id, slug, name, denomination, plan_key, status, ws_tier)
-     values ($1, $2, $3, $4::denomination, $5::plan_key, 'active', 'none')`,
-    [tenantId, slug, input.name, input.denomination, FREE_PLAN],
+    `insert into tenants (id, slug, name, denomination, plan_key, status, ws_tier, site_config)
+     values ($1, $2, $3, $4::denomination, $5::plan_key, 'active', 'none', $6::jsonb)`,
+    [tenantId, slug, input.name, input.denomination, FREE_PLAN, JSON.stringify(siteConfig ?? {})],
   );
   const profile = await tx.query(
     `insert into profiles (id, email, name) values ($1, $2, $3)
@@ -170,6 +171,13 @@ export interface CreateTenantOptions {
    * `golgota`. Self-serve signup (`server/signup.ts`) never sets it and has no way to pass it on.
    */
   readonly allowReserved?: boolean;
+  /** The church's own config overrides, written with the tenant row (site builder draft apply). */
+  readonly siteConfig?: Record<string, unknown>;
+  /**
+   * Runs inside the same transaction right after the church exists (fresh-tenant INSERT-only seeding,
+   * 0027_site_builder). A throw rolls the whole church back.
+   */
+  readonly seed?: (tx: PlatformQueryable, tenantId: string) => Promise<void>;
 }
 
 export async function createTenant(
@@ -191,7 +199,11 @@ export async function createTenant(
   const source = options.db ?? (await getPlatformDb());
   let result: CreateTenantResult;
   try {
-    result = await source.transaction((tx) => bootstrap(tx, parsed.data, slug.slug));
+    result = await source.transaction(async (tx) => {
+      const created = await bootstrap(tx, parsed.data, slug.slug, options.siteConfig);
+      if (created.ok && options.seed) await options.seed(tx, created.tenantId);
+      return created;
+    });
   } catch (error) {
     const mapped = mapConstraintError(error);
     if (mapped === null) throw error;

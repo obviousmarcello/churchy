@@ -94,6 +94,36 @@ export const tenantId = () =>
     .notNull()
     .references(() => tenants.id, { onDelete: "cascade" });
 
+/**
+ * Drafts of the site builder (SDD ADR-21, D-34): an operator-owned review document built from a
+ * church's existing website. Platform scope (no tenant owner; `target_tenant_id` names the existing
+ * church the owner may apply it to). Only the platform role touches it; it is purged after
+ * `expires_at` unless applied. The JSON holds public site content only (personal data is stripped
+ * before storing).
+ */
+export const siteDrafts = pgTable(
+  "site_drafts",
+  {
+    id: idColumn(),
+    createdBy: uuid()
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    sourceUrl: text().notNull(),
+    status: text().notNull().default("ready"),
+    targetTenantId: uuid().references(() => tenants.id, { onDelete: "cascade" }),
+    appliedTenantId: uuid().references(() => tenants.id, { onDelete: "set null" }),
+    draft: jsonb().$type<Record<string, unknown>>().notNull(),
+    expiresAt: timestamptz().notNull(),
+    ...timestamps(),
+  },
+  (t) => [
+    index("site_drafts_created_by_idx").on(t.createdBy),
+    index("site_drafts_expires_at_idx").on(t.expiresAt),
+    index("site_drafts_target_tenant_id_idx").on(t.targetTenantId),
+    check("site_drafts_status_check", sql`${t.status} in ('ready', 'applied')`),
+  ],
+).enableRLS();
+
 export const domains = pgTable(
   "domains",
   {

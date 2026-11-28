@@ -476,6 +476,198 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
     await expect(assertPlatformRole(app)).rejects.toBeInstanceOf(UnsafePlatformRoleError);
   });
 
+  describe("site builder (0027_site_builder)", () => {
+    const SEED = [
+      "media",
+      "locations",
+      "schedule_periods",
+      "service_rules",
+      "announcements",
+      "posts",
+      "pages",
+    ];
+
+    /** The inserts of applying a draft to a fresh church, as the platform role. */
+    async function seedContent(c: pg.PoolClient, t: string) {
+      const period = randomUUID();
+      const location = randomUUID();
+      await c.query(
+        `insert into media (tenant_id, kind, filename, mime_type, storage_key, bytes) values ($1, 'image', 'a.jpg', 'image/jpeg', 'k', 10)`,
+        [t],
+      );
+      await c.query(
+        `insert into locations (id, tenant_id, name, slug, kind, accessibility) values ($1, $2, 'T', 't', 'templom', '{}')`,
+        [location, t],
+      );
+      await c.query(
+        `insert into schedule_periods (id, tenant_id, name) values ($1, $2, 'Normál')`,
+        [period, t],
+      );
+      await c.query(
+        `insert into service_rules (tenant_id, period_id, location_id, weekday, time, service_type) values ($1, $2, $3, 7, '10:00', 'szentmise')`,
+        [t, period, location],
+      );
+      await c.query(
+        `insert into announcements (tenant_id, week_sunday, body) values ($1, '2026-11-29', '{"type":"doc","content":[]}')`,
+        [t],
+      );
+      await c.query(
+        `insert into posts (tenant_id, slug, title, body) values ($1, 'p', 'P', '{"type":"doc","content":[]}')`,
+        [t],
+      );
+      await c.query(`insert into pages (tenant_id, slug, title) values ($1, 'rolunk', 'Rólunk')`, [
+        t,
+      ]);
+    }
+
+    it("seeds a fresh church with a drafted site, insert-only", async () => {
+      const userId = await newUser();
+      const c = await platform.connect();
+      let tenantId: string;
+      try {
+        await c.query("begin");
+        tenantId = await bootstrap(c, `draft-${userId.slice(0, 8)}`, userId);
+        await seedContent(c, tenantId);
+        await c.query("commit");
+      } catch (error) {
+        await c.query("rollback");
+        throw error;
+      } finally {
+        c.release();
+      }
+      created.push(tenantId);
+      for (const t of SEED) {
+        const [row] = await ownerRows<{ n: string }>(
+          `select count(*) as n from ${t} where tenant_id = $1`,
+          [tenantId],
+        );
+        expect(row?.n, t).toBe("1");
+      }
+      // it can neither read nor change nor delete what it wrote
+      for (const t of SEED) {
+        expect(await attempt(platform, `select 1 from ${t} limit 1`), t).toMatchObject(DENIED);
+        expect(await attempt(platform, `update ${t} set tenant_id = tenant_id`), t).toMatchObject(
+          DENIED,
+        );
+        expect(await attempt(platform, `delete from ${t}`), t).toMatchObject(DENIED);
+      }
+    });
+
+    it("cannot add content to an older, a launched or another church", async () => {
+      const userId = await newUser();
+      const old = await bootstrapAs(userId, "old");
+      await owner.query(
+        "update tenants set created_at = now() - interval '11 minutes' where id = $1",
+        [old],
+      );
+      const launched = await bootstrapAs(await newUser(), "launched");
+      await owner.query("update tenants set launched_at = now() where id = $1", [launched]);
+      for (const target of [old, launched, A]) {
+        for (const t of SEED) {
+          const c = await platform.connect();
+          try {
+            await c.query("begin");
+            await c.query("savepoint s");
+            let denied: unknown = null;
+            try {
+              await seedContentOne(c, t, target);
+            } catch (error) {
+              denied = { code: (error as { code?: string }).code };
+            }
+            expect(denied, `${t} -> ${target}`).toMatchObject(DENIED);
+          } finally {
+            await c.query("rollback").catch(() => undefined);
+            c.release();
+          }
+        }
+      }
+    });
+
+    it("site_drafts: the platform role has full access, nobody else any", async () => {
+      const userId = await newUser();
+      await owner.query("insert into profiles (id, email, name) values ($1, $2, 'Op')", [
+        userId,
+        `${userId}@example.test`,
+      ]);
+      const c = await platform.connect();
+      let id: string;
+      try {
+        const ins = await c.query<{ id: string }>(
+          `insert into site_drafts (created_by, source_url, draft, expires_at) values ($1, 'https://x.example.hu/', '{}', now() + interval '1 day') returning id`,
+          [userId],
+        );
+        id = ins.rows[0]!.id;
+        expect((await c.query("select 1 from site_drafts where id = $1", [id])).rowCount).toBe(1);
+        await c.query("update site_drafts set status = 'applied' where id = $1", [id]);
+        expect((await c.query("delete from site_drafts where id = $1", [id])).rowCount).toBe(1);
+      } finally {
+        c.release();
+      }
+      for (const [name, pool] of [
+        ["app", app],
+        ["music", music],
+      ] as const) {
+        expect(await attempt(pool, "select 1 from site_drafts"), name).toMatchObject(DENIED);
+        expect(await attempt(pool, "insert into site_drafts default values"), name).toMatchObject(
+          DENIED,
+        );
+      }
+      expect(
+        await attempt(
+          platform,
+          "insert into site_drafts (created_by, source_url, status, draft, expires_at) values ($1, 'u', 'bogus', '{}', now())",
+          [userId],
+        ),
+      ).toMatchObject({ code: "23514" });
+      await owner.query("delete from profiles where id = $1", [userId]);
+    });
+
+    async function bootstrapAs(userId: string, tag: string): Promise<string> {
+      const c = await platform.connect();
+      try {
+        await c.query("begin");
+        const id = await bootstrap(c, `${tag}-${userId.slice(0, 8)}`, userId);
+        await c.query("commit");
+        created.push(id);
+        return id;
+      } catch (error) {
+        await c.query("rollback");
+        throw error;
+      } finally {
+        c.release();
+      }
+    }
+
+    async function seedContentOne(c: pg.PoolClient, table: string, t: string) {
+      const stmts: Record<string, [string, unknown[]]> = {
+        media: [
+          `insert into media (tenant_id, kind, filename, mime_type, storage_key, bytes) values ($1, 'image', 'a.jpg', 'image/jpeg', 'k', 10)`,
+          [t],
+        ],
+        locations: [
+          `insert into locations (tenant_id, name, slug, kind, accessibility) values ($1, 'T', 'tx', 'templom', '{}')`,
+          [t],
+        ],
+        schedule_periods: [`insert into schedule_periods (tenant_id, name) values ($1, 'N')`, [t]],
+        service_rules: [
+          `insert into service_rules (tenant_id, period_id, location_id, weekday, time, service_type) values ($1, gen_random_uuid(), gen_random_uuid(), 7, '10:00', 's')`,
+          [t],
+        ],
+        announcements: [
+          `insert into announcements (tenant_id, week_sunday, body) values ($1, '2026-11-29', '{"type":"doc","content":[]}')`,
+          [t],
+        ],
+        posts: [
+          `insert into posts (tenant_id, slug, title, body) values ($1, 'p', 'P', '{"type":"doc","content":[]}')`,
+          [t],
+        ],
+        pages: [`insert into pages (tenant_id, slug, title) values ($1, 'x', 'X')`, [t]],
+      };
+      const [text, values] = stmts[table]!;
+      await c.query(text, values);
+    }
+  });
+
   it("seedPlans upserts the five plan rows idempotently (catalog seed, placeholder prices)", async () => {
     const db = createDb(owner);
     expect(await seedPlans(db)).toBe(5);

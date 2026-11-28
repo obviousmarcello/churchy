@@ -389,6 +389,7 @@ describe("createTenant", () => {
       "Szent István Plébánia",
       "rk",
       "ingyenes",
+      "{}", // no site config unless the site builder seeds one
     ]);
     const profile = calls.find((c) => /into profiles/.test(c.text))!;
     expect(profile.values).toEqual([U1, "anna@example.test", "dr. Nagy Anna"]); // email lower-cased

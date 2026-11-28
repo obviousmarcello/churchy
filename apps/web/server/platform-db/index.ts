@@ -9,8 +9,14 @@ export { getPlatformDb, platformDbEnabled } from "./client";
 export type { PlatformDb, PlatformQueryable } from "./client";
 export { invalidateHost, invalidateTenantHosts, resolveHost } from "./hosts";
 export type { HostResolution } from "./hosts";
-export { getEntitlementsRow, getProfileByAuthUser } from "./queries";
+export { getEntitlementsRow, getProfileByAuthUser, listTenantOptions } from "./queries";
 export type { PlatformProfile } from "./queries";
 export { createTenant } from "./create-tenant";
 export type { CreateTenantInput, CreateTenantOptions, CreateTenantResult } from "./create-tenant";
 export { RESERVED_SLUGS, checkSlug } from "./slug";
+export {
+  DbDraftStore,
+  getDraftForTenant,
+  listDraftsForTenant,
+  writeSiteBuilderAudit,
+} from "./site-drafts";

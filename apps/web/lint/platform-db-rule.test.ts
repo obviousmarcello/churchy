@@ -30,6 +30,10 @@ describe("only allow-listed files may import server/platform-db", () => {
     "apps/web/proxy.ts",
     "apps/web/lib/host-resolution.ts",
     "apps/web/app/(platform)/konzol/page.tsx",
+    "apps/web/app/(platform)/platform/webhely-epito/page.tsx",
+    "apps/web/server/site-builder-run.ts",
+    "apps/web/server/site-builder-admin.ts",
+    "apps/web/server/jobs/site-builder-purge.ts",
   ]) {
     it(`allows ${file}`, async () => {
       for (const code of IMPORTS) expect(await messages(code, file), code).toEqual([]);
@@ -37,6 +41,9 @@ describe("only allow-listed files may import server/platform-db", () => {
   }
 
   for (const file of [
+    "apps/web/server/site-builder/pipeline.ts",
+    "apps/web/components/platform/site-builder/draft-review.tsx",
+    "apps/web/server/jobs/main.ts",
     "apps/web/server/billing-admin.ts",
     "apps/web/server/repositories.ts",
     "apps/web/app/admin/page.tsx",

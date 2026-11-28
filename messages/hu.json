@@ -90,6 +90,7 @@
       "resetHint": "A bemutató minden módosítását visszavonja.",
       "personas": {
         "latogato": "Látogató",
+        "uzemelteto": "Üzemeltető (Churchy)",
         "tulajdonos": "Tulajdonos",
         "szerkeszto": "Szerkesztő",
         "iroda": "Iroda",
@@ -532,7 +533,7 @@
         "label": "Írja be a jelenlegi weboldalának címét",
         "placeholder": "Írja be a jelenlegi weboldalának címét",
         "start": "Beállítás indítása",
-        "note": "Csak a nyilvánosan látható tartalmat olvassuk be. Regisztráció nélkül kipróbálhatja."
+        "note": "Csak a nyilvánosan látható tartalmat olvassuk be. A valódi beolvasás egyelőre csak meghívással működik: a bemutatóban egy kitalált mintaoldalt dolgozunk fel, hálózati kérés nélkül."
       },
       "how": {
         "title": "Hogyan működik",
@@ -8203,6 +8204,172 @@
         "lessonRemoved": "Lecke eltávolítva",
         "lessonRemovedUnpublished": "Lecke eltávolítva. A képzésnek most nincs leckéje, ezért a közzététele visszavonódott.",
         "lessonRestored": "Lecke visszaállítva"
+      }
+    }
+  },
+  "platform": {
+    "siteBuilder": {
+      "metaTitle": "Weboldal-építő",
+      "title": "Weboldal-építő",
+      "lead": "Illessz be egy meglévő egyházi weboldal címét: a rendszer vázlatot készít belőle. A vázlat nem kerül nyilvánosan közzétételre, és te nézed át, mielőtt bármi megtörténik.",
+      "notice": {
+        "demoTitle": "Bemutató üzemmód",
+        "demoBody": "A bemutatóban nem érünk el valódi weboldalt, és nem hívjuk az AI-t: bármilyen címet írsz be, ugyanazt a kitalált mintaoldalt dolgozzuk fel.",
+        "offTitle": "A weboldal-építő nincs bekapcsolva",
+        "offBody": "Ehhez a platform adatbázis-kapcsolata és az AI-kulcs kell. A beállítás menetét a futtatási leírás tartalmazza."
+      },
+      "form": {
+        "urlLabel": "A jelenlegi weboldal címe",
+        "urlHint": "Csak nyilvánosan elérhető oldalakat olvasunk be, a robots.txt szabályait betartva.",
+        "urlPlaceholder": "pl. https://plebania.example.hu",
+        "consentLabel": "Az egyház kérte, hogy ebből a címből készítsük el a weboldalát.",
+        "consentHint": "A jelölést a vázlat adatai és a napló is rögzíti.",
+        "noteLabel": "Megjegyzés (ki kérte és mikor; személyes adatok nélkül)",
+        "targetLegend": "Hová készül a vázlat?",
+        "targetNew": "Új egyház (te hozod létre)",
+        "targetExisting": "Meglévő egyház (a tulajdonos alkalmazza)",
+        "tenantLabel": "Az egyház",
+        "tenantPlaceholder": "Válassz egyházat",
+        "submit": "Vázlat készítése",
+        "running": "A vázlat készül…",
+        "cancel": "Megszakítás"
+      },
+      "errors": {
+        "noConsent": "Jelöld be, hogy az egyház kérte a weboldal elkészítését.",
+        "invalidUrl": "Ez nem tűnik érvényes weboldal-címnek.",
+        "invalidRequest": "A kérés hibás. Ellenőrizd a megadott adatokat.",
+        "unavailable": "A weboldal-építő most nem érhető el.",
+        "busy": "Éppen két vázlat készül, próbáld újra pár perc múlva.",
+        "robotsBlocked": "A weboldal a robots.txt-ben kéri, hogy ne olvassuk be, ezért nem dolgozzuk fel.",
+        "unreachable": "A weboldal nem érhető el, vagy nem nyilvános.",
+        "costCap": "Az oldal túl nagy az egy futásra beállított költségkerethez. Próbáld kisebb webhellyel.",
+        "modelFailed": "Az AI most nem válaszolt. Próbáld újra később.",
+        "invalidPlan": "Az AI válasza nem volt használható. Próbáld újra.",
+        "aborted": "A készítést megszakították.",
+        "error": "Váratlan hiba történt.",
+        "forbidden": "Ehhez nincs jogosultságod."
+      },
+      "review": {
+        "metaTitle": "Vázlat áttekintése",
+        "title": "A vázlat áttekintése",
+        "lead": "Nézd át, mi kerül a weboldalra. A kikapcsolt elemeket nem alkalmazzuk. Minden szöveg vázlatként érkezik, a közzétételt a tulajdonos végzi.",
+        "expires": "A vázlat {when} után magától törlődik, ha nem alkalmazzátok.",
+        "source": "Forrás",
+        "sourceLink": "Megnyitás az eredeti oldalon",
+        "keep": "Kerüljön be",
+        "save": "Kiválasztás mentése",
+        "saved": "A kiválasztást elmentettük.",
+        "saveFailed": "A mentés nem sikerült. A vázlat lehet, hogy már lejárt.",
+        "discard": "Vázlat törlése",
+        "discarded": "A vázlatot törölted.",
+        "empty": "Nincs ilyen elem.",
+        "usage": "Beolvasva: {pages} oldal, {images} kép. Az AI költsége: {cost} USD.",
+        "consent": "Hozzájárulás rögzítve: az egyház kérte a weboldal elkészítését erről a címről.",
+        "sections": {
+          "church": "Az egyház adatai",
+          "locations": "Helyszínek",
+          "serviceTimes": "Alkalmak",
+          "pages": "Oldalak",
+          "posts": "Hírek",
+          "announcements": "Hirdetések",
+          "images": "Képek",
+          "warnings": "Figyelmeztetések"
+        },
+        "facts": {
+          "name": "Név",
+          "shortName": "Rövid név",
+          "tagline": "Jelmondat (általunk írt)",
+          "welcome": "Üdvözlő szöveg (általunk írt)",
+          "denomination": "Felekezet",
+          "email": "Hivatali e-mail-cím",
+          "phone": "Hivatali telefonszám",
+          "address": "Cím",
+          "color": "Javasolt főszín",
+          "none": "Nem találtuk meg",
+          "confidence": "Biztonság: {percent}%"
+        },
+        "denominations": {
+          "rk": "Római katolikus",
+          "gk": "Görögkatolikus",
+          "ref": "Református",
+          "ev": "Evangélikus",
+          "bapt": "Baptista",
+          "unit": "Unitárius",
+          "general": "Általános"
+        },
+        "weekdays": {
+          "1": "Hétfő",
+          "2": "Kedd",
+          "3": "Szerda",
+          "4": "Csütörtök",
+          "5": "Péntek",
+          "6": "Szombat",
+          "7": "Vasárnap"
+        },
+        "blocks": "{count} tartalmi elem",
+        "kinds": {
+          "page": "Oldal",
+          "rite": "Szertartás-oldal"
+        },
+        "imageRoles": {
+          "logo": "Logó",
+          "hero": "Nyitókép",
+          "content": "Tartalmi kép"
+        },
+        "imageOffsite": "Más weboldalról származik, nem töltjük le.",
+        "imagePeople": "Embereket ábrázolhat: közzététel előtt a hozzájárulásukat meg kell erősíteni.",
+        "imagesNote": "A képeket csak az alkalmazáskor töltjük le, újrakódoljuk és eltávolítjuk a metaadataikat.",
+        "warnings": {
+          "robots_blocked": "A robots.txt miatt kihagytuk: {url}",
+          "page_failed": "Nem sikerült beolvasni: {url}",
+          "page_budget": "Elértük az oldalak számának korlátját, a weboldal többi része kimaradt.",
+          "image_budget": "Elértük a képek számának korlátját.",
+          "offsite_image": "{count} kép más weboldalról származik, ezeket kihagytuk.",
+          "personal_data_removed": "{count} helyen személyes adatot vagy érzékeny szöveget töröltünk.",
+          "unverified_service_time": "Egy alkalmat nem tudtunk igazolni az oldal szövegéből, ezért kihagytuk.",
+          "unverified_address": "Egy címet nem tudtunk igazolni, ezért üresen hagytuk.",
+          "low_confidence": "Bizonytalan elem: {url}",
+          "dropped_unknown_url": "{count} elemet eldobtunk, mert nem a beolvasott oldalakra hivatkozott.",
+          "cost_cap": "A futás elérte a költségkeretet.",
+          "denomination_disagrees": "A szövegek alapján a felekezet más lehet, mint amit az AI javasolt. Ellenőrizd.",
+          "no_logo": "Nem találtunk logót.",
+          "people_images": "{count} kép embereket ábrázolhat."
+        }
+      },
+      "apply": {
+        "title": "Alkalmazás",
+        "newTitle": "Új egyház létrehozása a vázlatból",
+        "newLead": "Az egyház a vázlat tartalmával jön létre, de semmi nem kerül élesbe: a tulajdonos közzéteszi, amit jónak lát.",
+        "name": "Az egyház neve",
+        "slug": "Webcím-azonosító",
+        "ownerId": "A tulajdonos felhasználói azonosítója",
+        "ownerIdHelp": "A már regisztrált felhasználó azonosítója (UUID).",
+        "ownerEmail": "A tulajdonos e-mail-címe",
+        "ownerName": "A tulajdonos neve",
+        "submit": "Egyház létrehozása",
+        "existingTitle": "Meglévő egyház",
+        "existingBody": "Ezt a vázlatot a tulajdonos alkalmazza a saját fiókjából, a Beállítás oldalon. Nálad nincs további teendő.",
+        "done": "Elkészült: {slug}. Alkalmazva: {pages} oldal, {posts} hír, {announcements} hirdetés, {locations} helyszín, {serviceRules} alkalom.",
+        "imagesNotApplied": "{count} kép még nem került át: a képtároló később kapcsolódik.",
+        "errors": {
+          "invalid": "Hiányzó vagy hibás adat.",
+          "not_found": "A vázlat nem található, lejárt vagy már alkalmazták.",
+          "slug_invalid": "A webcím-azonosító nem használható.",
+          "slug_reserved": "Ez a webcím-azonosító le van foglalva.",
+          "slug_taken": "Ez a webcím-azonosító már foglalt.",
+          "email_taken": "Ez az e-mail-cím már foglalt.",
+          "plan_missing": "Hiányzik az ingyenes csomag a rendszerből."
+        }
+      },
+      "owner": {
+        "title": "Vázlat a jelenlegi weboldalból",
+        "lead": "Az üzemeltető weboldal-vázlatot készített a jelenlegi webhelyetekből. Az alkalmazás csak hozzáad: semmit nem módosít vagy töröl, és minden új tartalom vázlatként marad, amíg te közzé nem teszed.",
+        "source": "Forrás: {url}",
+        "expires": "Lejár: {when}",
+        "apply": "Vázlat alkalmazása",
+        "done": "Alkalmaztuk: {pages} oldal, {posts} hír, {announcements} hirdetés, {locations} helyszín, {serviceRules} alkalom.",
+        "failed": "Nem sikerült: a vázlat nem található vagy lejárt.",
+        "forbidden": "Ehhez nincs jogosultságod."
       }
     }
   },

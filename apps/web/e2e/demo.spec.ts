@@ -64,6 +64,7 @@ const SECTION_AREA: Record<string, Area> = {
 const EXPECTED: Record<PersonaKey, { visible: string[]; hidden: string[] }> = {
   // can() denies every action to an anonymous visitor: only the public page is visible.
   latogato: { visible: [], hidden: ["workspace", "admin", "organization"] },
+  uzemelteto: { visible: [], hidden: ["workspace", "admin", "organization"] },
   tulajdonos: {
     visible: ["workspace", "admin", "domain", "users"],
     hidden: ["organization"],
