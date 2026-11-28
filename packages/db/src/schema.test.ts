@@ -4,7 +4,13 @@ import { describe, expect, it } from "vitest";
 import { MIGRATIONS_FOLDER, readDownMigration, readJournal, splitStatements } from "./migrate";
 import * as schema from "./schema";
 import { HU_COLLATION } from "./schema/columns";
-import { HR_TABLES, MUSIC_TABLES, TABLE_SCOPES, tablesWithScope } from "./table-scopes";
+import {
+  HR_TABLES,
+  MUSIC_TABLES,
+  PLATFORM_ROLE_ACCESS,
+  TABLE_SCOPES,
+  tablesWithScope,
+} from "./table-scopes";
 
 const tables = (Object.values(schema) as unknown[])
   .filter((v): v is PgTable => v instanceof PgTable)
@@ -190,6 +196,8 @@ describe("migrations", () => {
       "0022_music_notifications",
       "0023_music_rights_batch",
       "0024_revoke_definer_exec",
+      "0025_platform_role",
+      "0026_platform_role_narrow",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);
@@ -289,8 +297,43 @@ describe("migrations", () => {
     it("never grants a platform table to the app role", () => {
       for (const t of tablesWithScope("platform")) {
         expect(all, t).not.toMatch(new RegExp(`ON TABLE "${t}" TO churchy_app`));
-        expect(all, t).not.toMatch(new RegExp(`CREATE POLICY [^\\n]* ON "${t}"`));
+        // Only the platform role (0025_platform_role) has policies on platform tables.
+        for (const m of all.matchAll(new RegExp(`CREATE POLICY [^\\n]* ON "${t}" [^;]*;`, "g"))) {
+          expect(m[0], t).toMatch(/TO churchy_platform\b/);
+        }
       }
+    });
+
+    it("0025 grants the platform role exactly PLATFORM_ROLE_ACCESS and nothing to tenant data", () => {
+      const sql = readFileSync(`${MIGRATIONS_FOLDER}/0025_platform_role.sql`, "utf8").replace(
+        /--[^\n]*/g,
+        "",
+      );
+      expect(sql).toMatch(
+        /CREATE ROLE churchy_platform NOLOGIN NOSUPERUSER[^;]* NOINHERIT[^;]* NOBYPASSRLS;/,
+      );
+      expect(sql).not.toMatch(/SECURITY DEFINER/i);
+      expect(sql).not.toMatch(/GRANT (ALL|UPDATE|DELETE|TRUNCATE)/i);
+      const grants = [
+        ...sql.matchAll(
+          /GRANT (SELECT|INSERT)(?: \(([^)]*)\))? ON TABLE "(\w+)" TO churchy_platform;/g,
+        ),
+      ];
+      const declared = Object.entries(PLATFORM_ROLE_ACCESS).flatMap(([t, a]) => [
+        ...(a.select === true ? [`SELECT ${t}`] : []),
+        ...(Array.isArray(a.select) ? [`SELECT(${a.select.join(",")}) ${t}`] : []),
+        ...(a.insert ? [`INSERT ${t}`] : []),
+      ]);
+      const actual = grants.map((m) =>
+        m[2] ? `${m[1]}(${m[2].replace(/[" ]/g, "")}) ${m[3]}` : `${m[1]} ${m[3]}`,
+      );
+      // 0026_platform_role_narrow takes billing_accounts and subscriptions away again.
+      const narrow = readFileSync(`${MIGRATIONS_FOLDER}/0026_platform_role_narrow.sql`, "utf8");
+      expect(narrow).toContain(
+        'REVOKE ALL ON TABLE "subscriptions", "billing_accounts" FROM churchy_platform;',
+      );
+      const remaining = actual.filter((g) => !/ (subscriptions|billing_accounts)$/.test(g));
+      expect(remaining.sort()).toEqual(declared.sort());
     });
 
     it("creates the app role without BYPASSRLS and revokes the Supabase PostgREST grants", () => {

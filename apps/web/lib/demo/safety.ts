@@ -38,6 +38,8 @@ export const FORBIDDEN_DEMO_CREDENTIALS: Readonly<
     names: [
       "DATABASE_URL",
       "DATABASE_URL_UNPOOLED",
+      // The platform role's connection (server/platform-db): never in a demo deployment.
+      "DATABASE_URL_PLATFORM",
       "PGBOSS_DATABASE_URL",
       "DIRECT_URL",
       "POSTGRES_URL",

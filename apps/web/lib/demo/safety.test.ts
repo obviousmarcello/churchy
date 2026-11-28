@@ -72,6 +72,15 @@ describe("demo-mode startup check", () => {
     }
   }
 
+  it("refuses the platform database connection (S1: DATABASE_URL_PLATFORM)", () => {
+    const env = { ...DEMO, DATABASE_URL_PLATFORM: "postgres://platform:hunter2@db" };
+    expect(demoSafetyProblems(env)).toEqual([
+      { kind: "credential", category: "database", variable: "DATABASE_URL_PLATFORM" },
+    ]);
+    expect(() => assertDemoModeSafe(env)).toThrow(/DATABASE_URL_PLATFORM/);
+    expect(demoSafetyProblems({ DATABASE_URL_PLATFORM: "postgres://x" })).toEqual([]); // demo off
+  });
+
   it("treats an empty or blank value as not configured", () => {
     expect(demoSafetyProblems({ ...DEMO, DATABASE_URL: "", SMTP_HOST: "  " })).toEqual([]);
   });

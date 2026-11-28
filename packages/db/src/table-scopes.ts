@@ -245,3 +245,32 @@ export const MUSIC_TABLES: readonly TableName[] = [
 export function tablesWithScope(scope: TableScope): TableName[] {
   return (Object.keys(TABLE_SCOPES) as TableName[]).filter((t) => TABLE_SCOPES[t] === scope);
 }
+
+/**
+ * What the platform role `churchy_platform` (0025/0026_platform_role, SDD §4.2) may do. It serves
+ * everything that has no tenant context yet (host resolution, profile bootstrap, plan lookups) and
+ * the INSERTs that create a church. Every table not listed here is denied to it entirely; tenant
+ * tables are never readable (the one exception: the host-lookup columns of `domains`) and never
+ * updatable or deletable. `src/rls.ts` checks the live grants and policies against this record.
+ *
+ * - `select`: `true` = whole table (policy `platform_read`); a column list = column-level grant
+ *   (policy `platform_host_lookup`).
+ * - `insert`: INSERT only (policy `platform_insert`); tenant-scoped tables admit a FRESH tenant only.
+ */
+export interface PlatformAccess {
+  readonly select?: true | readonly string[];
+  readonly insert?: true;
+}
+
+export const PLATFORM_ROLE_ACCESS: Readonly<Partial<Record<TableName, PlatformAccess>>> = {
+  plans: { select: true },
+  organizations: { select: true },
+  org_memberships: { select: true },
+  deals: { select: true },
+  tenants: { select: true, insert: true },
+  profiles: { select: true, insert: true },
+  audit_log: { insert: true },
+  memberships: { insert: true },
+  people: { insert: true },
+  domains: { select: ["tenant_id", "hostname", "is_primary", "verified_at", "tls_status"] },
+};

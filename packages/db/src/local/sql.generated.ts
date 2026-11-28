@@ -1709,5 +1709,51 @@ export const MIGRATION_SQL: readonly { tag: string; statements: readonly string[
   "statements": [
    "-- Supabase grants EXECUTE on new public functions to anon/authenticated/service_role through default\n-- privileges (REVOKE ... FROM PUBLIC does not remove those). Churchy uses no PostgREST for these:\n-- share_song_rights() is a trigger function, notify_event() is called by churchy_app / churchy_music.\n-- No-op on plain Postgres (the roles may not exist there).\nDO $$\nDECLARE r text;\nBEGIN\n  FOREACH r IN ARRAY ARRAY['anon', 'authenticated'] LOOP\n    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = r) THEN\n      EXECUTE format('REVOKE ALL ON FUNCTION public.share_song_rights() FROM %I', r);\n      EXECUTE format('REVOKE ALL ON FUNCTION public.notify_event(uuid, text) FROM %I', r);\n    END IF;\n  END LOOP;\nEND $$;"
   ]
+ },
+ {
+  "tag": "0025_platform_role",
+  "statements": [
+   "-- S1 platform role (SDD §4.2 \"Platform-console queries use a separate role and are audit-logged\").\n-- Hand-written (`drizzle-kit generate --custom`); the down migration is migrations/down/0025_platform_role.sql.\n--   * churchy_platform: NOLOGIN, NOINHERIT, no SUPERUSER/BYPASSRLS. For everything that has no\n--     tenant context yet: host -> tenant resolution, profile bootstrap, plan/entitlement lookups\n--     and the writes that create a church (apps/web/server/platform-db). The owner creates the\n--     login role separately: CREATE ROLE churchy_platform_login LOGIN INHERIT PASSWORD '...';\n--     GRANT churchy_platform TO churchy_platform_login;  (password never in git)\n--   * It reads platform tables (policy \"platform_read\") and, of the tenant tables, ONLY the\n--     columns tenant_id/hostname/is_primary/verified_at/tls_status of `domains`.\n--   * It writes by INSERT only: tenants (free plan), profiles, billing_accounts, subscriptions,\n--     memberships (role owner), people, audit_log. The tenant-scoped inserts are admitted only for\n--     a FRESH tenant (no launched_at, created within 10 minutes), so the role can seed a new church\n--     but cannot add rows to an existing one. No SELECT/UPDATE/DELETE on any tenant table, no\n--     SECURITY DEFINER function.\nDO $$\nBEGIN\n  IF NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'churchy_platform') THEN\n    CREATE ROLE churchy_platform NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;\n  ELSE\n    ALTER ROLE churchy_platform NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;\n  END IF;\nEND\n$$;",
+   "GRANT USAGE ON SCHEMA public TO churchy_platform;",
+   "GRANT SELECT ON TABLE \"plans\" TO churchy_platform;",
+   "CREATE POLICY \"platform_read\" ON \"plans\" AS PERMISSIVE FOR SELECT TO churchy_platform\n  USING (true);",
+   "GRANT SELECT ON TABLE \"organizations\" TO churchy_platform;",
+   "CREATE POLICY \"platform_read\" ON \"organizations\" AS PERMISSIVE FOR SELECT TO churchy_platform\n  USING (true);",
+   "GRANT SELECT ON TABLE \"tenants\" TO churchy_platform;",
+   "CREATE POLICY \"platform_read\" ON \"tenants\" AS PERMISSIVE FOR SELECT TO churchy_platform\n  USING (true);",
+   "GRANT SELECT ON TABLE \"profiles\" TO churchy_platform;",
+   "CREATE POLICY \"platform_read\" ON \"profiles\" AS PERMISSIVE FOR SELECT TO churchy_platform\n  USING (true);",
+   "GRANT SELECT ON TABLE \"org_memberships\" TO churchy_platform;",
+   "CREATE POLICY \"platform_read\" ON \"org_memberships\" AS PERMISSIVE FOR SELECT TO churchy_platform\n  USING (true);",
+   "GRANT SELECT ON TABLE \"subscriptions\" TO churchy_platform;",
+   "CREATE POLICY \"platform_read\" ON \"subscriptions\" AS PERMISSIVE FOR SELECT TO churchy_platform\n  USING (true);",
+   "GRANT SELECT ON TABLE \"deals\" TO churchy_platform;",
+   "CREATE POLICY \"platform_read\" ON \"deals\" AS PERMISSIVE FOR SELECT TO churchy_platform\n  USING (true);",
+   "-- Host lookup: `domains` is tenant-scoped, so the role gets a column-level grant (no `id`) and a\n-- SELECT policy on this one table; no other tenant table is readable.\nGRANT SELECT (\"tenant_id\", \"hostname\", \"is_primary\", \"verified_at\", \"tls_status\") ON TABLE \"domains\" TO churchy_platform;",
+   "CREATE POLICY \"platform_host_lookup\" ON \"domains\" AS PERMISSIVE FOR SELECT TO churchy_platform\n  USING (true);",
+   "GRANT INSERT ON TABLE \"tenants\" TO churchy_platform;",
+   "CREATE POLICY \"platform_insert\" ON \"tenants\" AS PERMISSIVE FOR INSERT TO churchy_platform\n  WITH CHECK (plan_key = 'ingyenes' AND status = 'active' AND ws_tier = 'none' AND organization_id IS NULL AND launched_at IS NULL);",
+   "GRANT INSERT ON TABLE \"profiles\" TO churchy_platform;",
+   "CREATE POLICY \"platform_insert\" ON \"profiles\" AS PERMISSIVE FOR INSERT TO churchy_platform\n  WITH CHECK (true);",
+   "GRANT INSERT ON TABLE \"billing_accounts\" TO churchy_platform;",
+   "CREATE POLICY \"platform_insert\" ON \"billing_accounts\" AS PERMISSIVE FOR INSERT TO churchy_platform\n  WITH CHECK (owner_type = 'tenant' AND EXISTS (SELECT 1 FROM public.tenants t WHERE t.id = owner_id AND t.launched_at IS NULL AND t.created_at >= now() - interval '10 minutes'));",
+   "GRANT INSERT ON TABLE \"subscriptions\" TO churchy_platform;",
+   "CREATE POLICY \"platform_insert\" ON \"subscriptions\" AS PERMISSIVE FOR INSERT TO churchy_platform\n  WITH CHECK (plan_key = 'ingyenes' AND deal_id IS NULL AND EXISTS (SELECT 1 FROM public.tenants t WHERE t.id = tenant_id AND t.launched_at IS NULL AND t.created_at >= now() - interval '10 minutes'));",
+   "GRANT INSERT ON TABLE \"memberships\" TO churchy_platform;",
+   "CREATE POLICY \"platform_insert\" ON \"memberships\" AS PERMISSIVE FOR INSERT TO churchy_platform\n  WITH CHECK (role = 'owner' AND EXISTS (SELECT 1 FROM public.tenants t WHERE t.id = tenant_id AND t.launched_at IS NULL AND t.created_at >= now() - interval '10 minutes'));",
+   "GRANT INSERT ON TABLE \"people\" TO churchy_platform;",
+   "CREATE POLICY \"platform_insert\" ON \"people\" AS PERMISSIVE FOR INSERT TO churchy_platform\n  WITH CHECK (user_id IS NOT NULL AND EXISTS (SELECT 1 FROM public.tenants t WHERE t.id = tenant_id AND t.launched_at IS NULL AND t.created_at >= now() - interval '10 minutes'));",
+   "GRANT INSERT ON TABLE \"audit_log\" TO churchy_platform;",
+   "CREATE POLICY \"platform_insert\" ON \"audit_log\" AS PERMISSIVE FOR INSERT TO churchy_platform\n  WITH CHECK (true);"
+  ]
+ },
+ {
+  "tag": "0026_platform_role_narrow",
+  "statements": [
+   "-- S1 platform role, narrowed (forward migration after 0025, already applied live): church signup no\n-- longer creates a billing account or subscription (the plan lives in tenants.plan_key; billing rows\n-- come with D-88 when a paid plan is chosen). Removes the INSERT grants/policies on billing_accounts\n-- and subscriptions, and the then-unused SELECT on subscriptions.\nDROP POLICY IF EXISTS \"platform_insert\" ON \"subscriptions\";",
+   "DROP POLICY IF EXISTS \"platform_read\" ON \"subscriptions\";",
+   "DROP POLICY IF EXISTS \"platform_insert\" ON \"billing_accounts\";",
+   "REVOKE ALL ON TABLE \"subscriptions\", \"billing_accounts\" FROM churchy_platform;"
+  ]
  }
 ];

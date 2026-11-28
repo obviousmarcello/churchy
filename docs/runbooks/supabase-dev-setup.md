@@ -165,6 +165,8 @@ Never committed, never in the demo (demo mode refuses to start when any of them 
 | `SUPABASE_PUBLISHABLE_KEY` | no (public) but not committed | Client key for supabase-js (music module) |
 | `SUPABASE_JWT_SECRET` | **yes, server only** | Signs the per-request `churchy` tenant tokens (ADR-20); only if the project verifies HS256, see owner steps |
 | `DATABASE_URL` | **yes** | App DB connection as `churchy_app_login` (below) |
+| `DATABASE_URL_PLATFORM` | **yes** | Platform DB connection as `churchy_platform_login` (below): host resolution, profiles, plans, church creation. Never the same as `DATABASE_URL`; demo mode refuses to start with it set |
+| `APP_BASE_DOMAIN` / `PUBLIC_BASE_DOMAIN` | no | `churchy.hu` (default) and the neutral public domain (SDD §4.1) used by host resolution |
 | `PGBOSS_DATABASE_URL` | **yes** | pg-boss worker connection (session mode/direct; the worker needs LISTEN and advisory locks, not the transaction pooler) |
 | `VAPID_PUBLIC_KEY` | no (public) | Web push |
 | `VAPID_PRIVATE_KEY` | **yes** | Web push |
@@ -183,6 +185,17 @@ GRANT churchy_app TO churchy_app_login;
 
 The login role is created with `INHERIT`, so it holds the privileges of `churchy_app` directly (`churchy_app` itself is NOINHERIT and gets nothing from other roles). Verify with `select current_user, has_table_privilege(current_user,'public.people','SELECT')` that the login role is subject to RLS (it has no BYPASSRLS and owns no table). `DATABASE_URL` points at this login role through the session-mode pooler or the direct connection (`...pooler.supabase.com:5432`); `withContext` uses transaction-local `set_config`, so the transaction pooler (6543) is also acceptable for the web app, but not for the pg-boss worker.
 
+### Platform role connection (migration 0025)
+
+`churchy_platform` is a NOLOGIN, NOINHERIT, NOBYPASSRLS role (migration `0025_platform_role`). It serves everything without a tenant context (host → tenant resolution, profile bootstrap, plan lookups, creating a church) and is the only way into `apps/web/server/platform-db`. Owner step, once, in the SQL editor (the password never enters git, a migration or a log):
+
+```sql
+CREATE ROLE churchy_platform_login LOGIN PASSWORD '<generated in the SQL editor>' INHERIT NOBYPASSRLS;
+GRANT churchy_platform TO churchy_platform_login;
+```
+
+Use the **direct or session-mode** connection (`...pooler.supabase.com:5432`), not the transaction pooler: the church bootstrap is one multi-statement transaction. Put the URL into `DATABASE_URL_PLATFORM` (Vercel, Sensitive, per environment) and set `APP_ENV`. The app verifies on first use that the connection is not a superuser/BYPASSRLS role, is a member of `churchy_platform` and of neither `churchy_app` nor `churchy_music`. Check: `select has_table_privilege(current_user,'public.people','SELECT')` must be `false`, `has_table_privilege(current_user,'public.tenants','INSERT')` `true`. The five `plans` rows must exist before the first sign-up. They are catalog data, not migrated: run `DATABASE_URL=<owner url> pnpm --filter @churchy/db db seed-plans` (idempotent upsert; the prices are PLACEHOLDERS for dev/staging, to be priced before launch). Reserved slugs (e.g. `golgota`, `golgotabudapest`) can only be created by the operator path (`createTenant(..., { allowReserved: true })`), never by self-serve signup.
+
 ## Owner steps still needed
 
 Not done by Claude; listed for the owner.
@@ -196,5 +209,5 @@ Not done by Claude; listed for the owner.
    - Password minimum length (set per D-04) and leaked-password protection.
    - TOTP MFA enabled.
    - Disable new signups if only invited users should exist.
-4. **Vercel env vars** from the table above; create the `churchy_app_login` role.
+4. **Vercel env vars** from the table above; create the `churchy_app_login` and (for sign-up/host resolution) `churchy_platform_login` roles.
 5. Raise the storage upload limits if files above 50 MB are expected.

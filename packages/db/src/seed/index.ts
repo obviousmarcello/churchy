@@ -12,3 +12,4 @@ export {
   type SeedReport,
 } from "./demo";
 export { COLLECTION_SCHEMAS, validateDataset, type ValidationIssue } from "./validate";
+export { seedPlans } from "./plans";
