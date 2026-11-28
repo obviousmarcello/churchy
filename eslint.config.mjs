@@ -4,6 +4,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 import globals from "globals";
 import { permissionRulesConfig } from "./eslint.permissions.mjs";
+import { platformRulesConfig } from "./eslint.platform.mjs";
 import { policyRulesConfig } from "./eslint.policy.mjs";
 import i18nPlugin from "./packages/eslint-plugin-i18n/src/index.mjs";
 
@@ -53,7 +54,13 @@ export default tseslint.config(
     // Adapters register themselves with the contracts registry; the single composition root
     // `apps/web/server/data-adapters.ts` is the only app file allowed to import them.
     files: ["apps/web/**/*.{ts,tsx,js,jsx,mjs,cjs}", "packages/ui/**/*.{ts,tsx,js,jsx,mjs,cjs}"],
-    ignores: ["apps/web/server/data-adapters.ts"],
+    // `server/platform-db/client.ts` is the one file that may create the platform role's pool
+    // (its DB integration test also needs a pool for the fixtures).
+    ignores: [
+      "apps/web/server/data-adapters.ts",
+      "apps/web/server/platform-db/client.ts",
+      "apps/web/server/platform-db/*.db.test.ts",
+    ],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -80,6 +87,8 @@ export default tseslint.config(
   },
   // D-05: no ad-hoc role checks in UI code (see eslint.permissions.mjs).
   ...permissionRulesConfig,
+  // S1: only allow-listed files may import server/platform-db (see eslint.platform.mjs).
+  ...platformRulesConfig,
   // D-05 [BE]: every server action / mutating route handler goes through the policy wrapper.
   ...policyRulesConfig,
   // --- D-06 [UI]: no hard-coded user-visible text (PRD L-01) ---------------------------------

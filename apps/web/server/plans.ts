@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Ctx, ModuleKey } from "@churchy/contracts";
 import { entitlements, includesModule, type Entitlements } from "@/lib/plans/entitlements";
 import { getPublicSite } from "@/server/public-seo";
+import { getEntitlementsRow, platformDbEnabled } from "@/server/platform-db";
 import { getRequestRepositories } from "@/server/repositories";
 
 /**
@@ -13,6 +14,13 @@ import { getRequestRepositories } from "@/server/repositories";
 
 /** The entitlements of the church `ctx` names. */
 export async function entitlementsFor(ctx: Ctx): Promise<Entitlements> {
+  // Plans and subscriptions are platform tables the tenant role cannot read: with a platform
+  // database configured they come through the platform role (SDD §4.2); demo and Phase A use the
+  // repository (mock billing).
+  if (ctx.tenantId !== undefined && platformDbEnabled()) {
+    const sources = await getEntitlementsRow(ctx.tenantId);
+    if (sources !== null) return entitlements(sources);
+  }
   const repos = await getRequestRepositories();
   return entitlements(await repos.billing.getEntitlementSources(ctx));
 }
