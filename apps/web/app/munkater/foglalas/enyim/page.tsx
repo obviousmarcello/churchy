@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Booking } from "@churchy/contracts";
 import { addDays } from "@churchy/hu";
-import { Alert, Badge, ButtonLink, FormattedDate, FormattedTime } from "@churchy/ui";
+import { Alert, Badge, ButtonLink, FormattedDate, FormattedTime, Stagger } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { getMemberEnv } from "@/server/workspace";
 
@@ -85,11 +85,11 @@ export default async function MyBookingsPage({
       {cards.length === 0 ? (
         <p>{t("empty")}</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <Stagger as="ul" className="flex flex-col gap-3">
           {cards.map(({ first, count }) => (
             <li
               key={first.id}
-              className="flex flex-col gap-1 rounded-md border border-border bg-surface-raised p-4"
+              className="flex flex-col gap-1 rounded-card border border-hairline bg-surface-raised shadow-xs p-4"
               data-testid="my-booking"
             >
               <div className="flex flex-wrap items-center gap-2">
@@ -109,7 +109,7 @@ export default async function MyBookingsPage({
               </p>
             </li>
           ))}
-        </ul>
+        </Stagger>
       )}
       <ButtonLink href="/munkater/foglalas/uj" className="self-start">
         {t("new")}
