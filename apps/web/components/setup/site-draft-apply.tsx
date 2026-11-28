@@ -26,10 +26,16 @@ export function SiteDraftApply({ draftId }: { draftId: string }) {
                 setResult({
                   tone: "success",
                   text:
-                    t("done", { ...res.value.summary }) +
+                    t(
+                      "done",
+                      Object.fromEntries(
+                        Object.entries(res.value.summary).filter(([, v]) => typeof v === "number"),
+                      ),
+                    ) +
                     (res.value.imagesNotApplied > 0
                       ? ` ${t("imagesNotApplied", { count: res.value.imagesNotApplied })}`
-                      : ""),
+                      : "") +
+                    (res.value.logoMissing ? ` ${t("logoMissing")}` : ""),
                 });
             })
           }

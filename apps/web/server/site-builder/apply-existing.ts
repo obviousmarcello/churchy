@@ -2,7 +2,7 @@ import type { Ctx, PageBlock, Repositories } from "@churchy/contracts";
 import type { DraftBlock, SiteDraft } from "./draft-schema";
 import { serviceTypeKey, type ApplySummary } from "./apply-new";
 import { uniqueSlug } from "./map";
-import { prepareImages, storeImages, type ImageFetcher } from "./media-carry";
+import { keptLogo, prepareImages, storeImages, type ImageFetcher } from "./media-carry";
 import type { MediaSink } from "./media-sink";
 
 /**
@@ -45,6 +45,7 @@ export async function applyDraftWithRepositories(
 ): Promise<ApplySummary> {
   // Images first (their media ids go into the page blocks). If anything after this throws, the
   // uploaded objects and media rows are removed again (best effort; there is no transaction here).
+  const logo = keptLogo(draft);
   const mediaIds = new Map<string, string>();
   const created: string[] = [];
   let uploaded: string[] = [];
@@ -77,7 +78,20 @@ export async function applyDraftWithRepositories(
         }
       }
     }
-    return await applyContent(ctx, repos, draft, mediaIds, mediaFailed);
+    const summary = await applyContent(ctx, repos, draft, mediaIds, mediaFailed);
+    // Additive: the logo is set only when the church has none yet; identity otherwise stays.
+    const logoMediaId = logo ? mediaIds.get(logo.id) : undefined;
+    const logoSet = logoMediaId !== undefined; // carried over (becomes the logo only if none is set)
+    if (logoMediaId) {
+      const tenant = await repos.tenants.current(ctx);
+      if (tenant && !tenant.siteConfig.identity?.logoMediaId) {
+        await repos.tenants.updateSiteConfig(ctx, {
+          ...tenant.siteConfig,
+          identity: { ...tenant.siteConfig.identity, logoMediaId },
+        } as never);
+      }
+    }
+    return { ...summary, logoSet };
   } catch (error) {
     if (media) {
       for (const id of created) await repos.media.delete(ctx, id).catch(() => undefined);
@@ -181,6 +195,7 @@ async function applyContent(
     serviceRules,
     media: mediaIds.size,
     mediaFailed,
+    logoSet: false,
     skippedServiceTimes,
   };
 }

@@ -110,10 +110,14 @@ export function DraftReview({
         return;
       }
       setApplied(
-        a("done", { slug: r.slug, ...r.summary }) +
+        a("done", {
+          slug: r.slug,
+          ...Object.fromEntries(Object.entries(r.summary).filter(([, v]) => typeof v === "number")),
+        }) +
           (r.imagesNotApplied > 0
             ? ` ${a("imagesNotApplied", { count: r.imagesNotApplied })}`
-            : ""),
+            : "") +
+          (r.logoMissing ? ` ${a("logoMissing")}` : ""),
       );
     });
 

@@ -81,8 +81,11 @@ demo persona *Üzemeltető* does); until then the console is reachable in demo m
   - A failing image (fetch, decode, size, upload) is only counted (`summary.mediaFailed`); the apply goes on. The
     result shows *N kép* and how many images did not make it. Not logged: bytes, URLs of images, upstream error bodies.
   - Without Supabase env the sink is absent and images stay listed candidates (the apply reports the count). Demo mode
-    uses the fixture site and an in-memory sink (no network). The church logo image is carried over as a media item but
-    not yet wired into `identity.logoMediaId` (the tenant row is written before its media exist).
+    uses the fixture site and an in-memory sink (no network). The church logo: new church: the tenant id is chosen
+    before `createTenant`, the logo is uploaded first and its media id is written into the drafted `site_config.identity.logoMediaId`
+    at the tenant INSERT (the platform role stays INSERT-only on `tenants`), the media row with that id is inserted in the seed; if the logo
+    fails, `logoMediaId` stays unset and the result says so (`logoMissing`). Existing church: `identity.logoMediaId` is set through the
+    tenant repository only when the church has no logo yet.
   - **Who writes to Storage:** a server-minted, 60-second tenant JWT (`mintTenantToken`, role claim `churchy_site_media`,
     `tenant_id` of the church) through the Storage REST API (supabase-js). No service-role key. Migration
     `0028_site_media` creates the NOLOGIN role (no table grants; granted to `authenticator`) and, where the `storage`

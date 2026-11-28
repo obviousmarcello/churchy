@@ -2,7 +2,7 @@ import sharp from "sharp";
 import { slugify } from "@churchy/hu";
 import type { Ctx } from "@churchy/contracts";
 import type { StoredImage } from "./apply-new";
-import type { SiteDraft } from "./draft-schema";
+import type { DraftImage, SiteDraft } from "./draft-schema";
 import { newMediaId, type MediaSink } from "./media-sink";
 import type { SiteFetchResult } from "./site-fetcher";
 
@@ -165,4 +165,9 @@ export async function storeImages(
     });
   }
   return { stored, failed, keys };
+}
+
+/** The kept on-site logo image of a draft, if any. */
+export function keptLogo(draft: SiteDraft): DraftImage | null {
+  return draft.images.find((i) => i.role === "logo" && i.include && !i.offsite) ?? null;
 }
