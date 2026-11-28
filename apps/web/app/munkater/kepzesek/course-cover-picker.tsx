@@ -140,7 +140,7 @@ export function CourseCoverPicker({
         </div>
       </div>
       {error ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-danger">
           {error}
         </p>
       ) : (
@@ -246,7 +246,7 @@ function IconDialog({
                         aria-pressed={selected}
                         title={m.courses.icons[icon]}
                         className={cn(
-                          "flex aspect-square w-full items-center justify-center rounded-lg border outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
+                          "flex aspect-square w-full items-center justify-center rounded-card border outline-none transition-colors hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50",
                           selected && "border-primary bg-primary/10 text-primary",
                         )}
                       >

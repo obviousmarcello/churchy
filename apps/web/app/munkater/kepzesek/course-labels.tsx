@@ -49,9 +49,8 @@ function Label({ tone, children }: { tone?: "warning" | "info"; children: React.
   return (
     <span
       className={cn(
-        "rounded-md border px-1.5 py-0.5 text-xs text-muted",
-        tone === "warning" &&
-          "border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300",
+        "rounded-control border px-1.5 py-0.5 text-xs text-muted",
+        tone === "warning" && "border-warning/40 bg-warning-soft text-warning",
         tone === "info" && "border-primary/30 bg-primary/10 text-primary",
       )}
     >

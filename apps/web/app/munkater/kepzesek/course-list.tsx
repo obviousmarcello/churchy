@@ -160,7 +160,8 @@ function CoursePane({
                 key={course.id}
                 className={cn(
                   "flex items-center gap-1",
-                  drag.dragKey === course.id && "relative z-10 rounded-xl bg-card shadow-md",
+                  drag.dragKey === course.id &&
+                    "relative z-10 rounded-card bg-surface-raised shadow-md",
                 )}
               >
                 {canOrder && (
@@ -180,7 +181,7 @@ function CoursePane({
                       : `/munkater/kepzesek/${course.id}`
                   }
                   aria-current={course.id === openId ? "page" : undefined}
-                  className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-2 transition-colors outline-none select-none hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 pointer-coarse:active:bg-muted lg:aria-[current=page]:bg-secondary lg:aria-[current=page]:text-secondary-foreground"
+                  className="flex min-w-0 flex-1 items-center gap-3 rounded-card p-2 transition-colors outline-none select-none hover:bg-surface-sunken/60 focus-visible:ring-3 focus-visible:ring-focus/50 pointer-coarse:active:bg-surface-sunken lg:aria-[current=page]:bg-surface-sunken lg:aria-[current=page]:text-text"
                 >
                   <CourseCoverView cover={course} className="size-11" />
                   <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -239,14 +240,17 @@ function RemovedCourses({ removed }: { removed: RemovedCourseDTO[] }) {
         {t.coursesTitle}
       </h2>
       {removed.length === 0 ? (
-        <p className="flex items-center gap-2 rounded-xl border border-dashed px-3 py-3 text-sm text-muted">
+        <p className="flex items-center gap-2 rounded-card border border-dashed px-3 py-3 text-sm text-muted">
           <Trash2Icon aria-hidden className="size-4 shrink-0" />
           {t.emptyCoursesTitle}
         </p>
       ) : (
         <ul className="flex flex-col gap-1">
           {removed.map((course) => (
-            <li key={course.id} className="flex flex-wrap items-center gap-3 rounded-xl px-2 py-2">
+            <li
+              key={course.id}
+              className="flex flex-wrap items-center gap-3 rounded-card px-2 py-2"
+            >
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate text-sm font-medium">{course.title}</span>
                 <span className="text-xs text-muted">

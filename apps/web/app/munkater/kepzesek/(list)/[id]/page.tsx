@@ -88,7 +88,7 @@ async function Course({ params }: { params: Promise<{ id: string }> }) {
       <PageHeader title={course.title} actions={editLink} />
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6">
         {!course.isPublished && (
-          <p className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200">
+          <p className="flex items-start gap-2 rounded-card border border-warning/40 bg-warning-soft px-3 py-2 text-sm text-warning">
             <EyeOffIcon className="mt-0.5 size-4 shrink-0" />
             {t.hiddenNotice}
           </p>
@@ -122,12 +122,12 @@ async function Course({ params }: { params: Promise<{ id: string }> }) {
               >
                 {plural(t.lessons, course.lessons.length)}
               </h2>
-              <ol className="divide-y rounded-xl border">
+              <ol className="divide-y rounded-card border">
                 {course.lessons.map((lesson, index) => (
                   <li key={lesson.id}>
                     <Link
                       href={`/munkater/kepzesek/${id}/lessons/${lesson.id}`}
-                      className="flex items-center gap-3 px-4 py-3 transition-colors outline-none hover:bg-muted/60 focus-visible:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+                      className="flex items-center gap-3 px-4 py-3 transition-colors outline-none hover:bg-surface-sunken/60 focus-visible:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:ring-inset"
                     >
                       <span className="w-6 shrink-0 text-right text-sm text-muted tabular-nums">
                         {index + 1}.

@@ -352,7 +352,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
 
       <div className="mx-auto flex w-full max-w-6xl flex-col px-4 py-6 sm:px-6">
         {/* One card: the state and the actions of the course on top, the editor below. */}
-        <div className="flex flex-col rounded-xl border bg-card">
+        <div className="flex flex-col rounded-card border bg-surface-raised">
           <div className="flex flex-col gap-3 border-b p-4 sm:px-6">
             <p className="text-sm">
               <span className="font-medium">{state}</span>
@@ -414,7 +414,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
               <Button
                 type="button"
                 variant="ghost"
-                className="text-destructive"
+                className="text-danger"
                 disabled={pending}
                 onClick={() => setDialog({ kind: "removeCourse" })}
               >
@@ -431,7 +431,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
             {course.areasLost && doc.areaIds.length === 0 && (
               <p
                 role="status"
-                className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200"
+                className="flex items-start gap-2 rounded-card border border-warning/40 bg-warning-soft px-3 py-2 text-sm text-warning"
               >
                 <AlertTriangleIcon className="mt-0.5 size-4 shrink-0" />
                 {t.areasLost}
@@ -532,7 +532,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
                     </div>
                     {areaOptions.length === 0 && <p className="text-sm text-muted">{t.noAreas}</p>}
                     {errors("areaIds") && (
-                      <p className="text-sm text-destructive">{errors("areaIds")!.join(" ")}</p>
+                      <p className="text-sm text-danger">{errors("areaIds")!.join(" ")}</p>
                     )}
                   </fieldset>
                 </section>
@@ -543,7 +543,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
                     description={plural(t.lessonCount, doc.lessons.length)}
                   />
                   {errors("lessons") && (
-                    <p className="text-sm text-destructive">{errors("lessons")!.join(" ")}</p>
+                    <p className="text-sm text-danger">{errors("lessons")!.join(" ")}</p>
                   )}
                   {doc.lessons.length === 0 || !selected ? (
                     <Empty className="border">
@@ -567,7 +567,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
                         <ol
                           ref={lessonList}
                           className={cn(
-                            "divide-y rounded-xl border",
+                            "divide-y rounded-card border",
                             drag.dragKey !== null && "cursor-grabbing select-none",
                           )}
                           aria-label={t.lessonsSection}
@@ -577,9 +577,9 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
                               key={lesson.id}
                               className={cn(
                                 "flex items-center gap-1 pl-1",
-                                lesson.id === selected.id && "bg-muted",
+                                lesson.id === selected.id && "bg-surface-sunken",
                                 drag.dragKey === lesson.id &&
-                                  "relative z-10 rounded-lg bg-background shadow-md",
+                                  "relative z-10 rounded-card bg-surface shadow-md",
                               )}
                             >
                               <DragHandle
@@ -595,7 +595,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
                                 type="button"
                                 onClick={() => setSelectedId(lesson.id)}
                                 aria-current={lesson.id === selected.id ? "true" : undefined}
-                                className="flex min-w-0 flex-1 items-baseline gap-2 px-3 py-2 text-left text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+                                className="flex min-w-0 flex-1 items-baseline gap-2 px-3 py-2 text-left text-sm outline-none focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:ring-inset"
                               >
                                 <span className="w-5 shrink-0 text-right text-xs text-muted tabular-nums">
                                   {index + 1}.
@@ -610,7 +610,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
                                 </span>
                                 {lessonHasErrors(doc.lessons.indexOf(lesson)) && (
                                   <AlertTriangleIcon
-                                    className="size-4 shrink-0 text-destructive"
+                                    className="size-4 shrink-0 text-danger"
                                     aria-label={t.lessonHasErrors}
                                   />
                                 )}
@@ -633,7 +633,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
                         </Button>
                       </div>
 
-                      <div className="min-w-0 flex-1 rounded-xl border p-4">
+                      <div className="min-w-0 flex-1 rounded-card border p-4">
                         <LessonEditor
                           key={selected.id}
                           lesson={selected}
@@ -709,7 +709,7 @@ function EditorDialog({
           {dialog.last && (
             <>
               {" "}
-              <strong className="font-medium text-foreground">{t.removeLesson.last}</strong>
+              <strong className="font-medium text-text">{t.removeLesson.last}</strong>
             </>
           )}
         </>
@@ -781,7 +781,7 @@ function RemovedLessons({
           </EmptyHeader>
         </Empty>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="divide-y rounded-card border">
           {lessons.map((lesson) => (
             <li key={lesson.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -835,7 +835,7 @@ function Preview({
 
   return (
     <section className="flex flex-col gap-6" aria-label={t.preview} lang={doc.language}>
-      <p className="rounded-lg border border-dashed px-3 py-2 text-sm text-muted">
+      <p className="rounded-card border border-dashed px-3 py-2 text-sm text-muted">
         {t.previewNotice}
       </p>
       <div className="flex flex-col gap-3">
@@ -864,7 +864,7 @@ function Preview({
             </h3>
             <LessonContent lesson={lesson} />
           </article>
-          <ol className="w-full shrink-0 divide-y rounded-xl border lg:w-72">
+          <ol className="w-full shrink-0 divide-y rounded-card border lg:w-72">
             {doc.lessons.map((item, index) => (
               <li key={item.id}>
                 <button
@@ -872,8 +872,8 @@ function Preview({
                   onClick={() => onSelect(item.id)}
                   aria-current={item.id === lesson.id ? "true" : undefined}
                   className={cn(
-                    "flex w-full items-baseline gap-2 px-3 py-2 text-left text-sm outline-none hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
-                    item.id === lesson.id && "bg-muted font-medium",
+                    "flex w-full items-baseline gap-2 px-3 py-2 text-left text-sm outline-none hover:bg-surface-sunken/60 focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:ring-inset",
+                    item.id === lesson.id && "bg-surface-sunken font-medium",
                   )}
                 >
                   <span className="w-5 shrink-0 text-right text-xs text-muted tabular-nums">

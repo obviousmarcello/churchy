@@ -108,7 +108,7 @@ export function LessonEditor({
           invalid={errors("body") !== undefined}
         />
         {errors("body") && (
-          <p id={`${id}-text-errors`} className="text-sm text-destructive">
+          <p id={`${id}-text-errors`} className="text-sm text-danger">
             {errors("body")!.join(" ")}
           </p>
         )}
@@ -126,7 +126,7 @@ export function LessonEditor({
               return (
                 <li
                   key={index}
-                  className="flex flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-start"
+                  className="flex flex-col gap-2 rounded-card border p-3 sm:flex-row sm:items-start"
                 >
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <label htmlFor={`${id}-link-${index}-url`} className="sr-only">
@@ -141,7 +141,7 @@ export function LessonEditor({
                       onChange={(event) => setLink(index, { url: event.target.value })}
                       aria-invalid={urlErrors !== undefined || undefined}
                     />
-                    {urlErrors && <p className="text-sm text-destructive">{urlErrors.join(" ")}</p>}
+                    {urlErrors && <p className="text-sm text-danger">{urlErrors.join(" ")}</p>}
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <label htmlFor={`${id}-link-${index}-label`} className="sr-only">
@@ -159,9 +159,7 @@ export function LessonEditor({
                       }
                       aria-invalid={labelErrors !== undefined || undefined}
                     />
-                    {labelErrors && (
-                      <p className="text-sm text-destructive">{labelErrors.join(" ")}</p>
-                    )}
+                    {labelErrors && <p className="text-sm text-danger">{labelErrors.join(" ")}</p>}
                   </div>
                   <Button
                     type="button"
@@ -193,16 +191,14 @@ export function LessonEditor({
           <PlusIcon />
           {t.addLink}
         </Button>
-        {errors("links") && (
-          <p className="text-sm text-destructive">{errors("links")!.join(" ")}</p>
-        )}
+        {errors("links") && <p className="text-sm text-danger">{errors("links")!.join(" ")}</p>}
       </fieldset>
 
       <div className="border-t pt-4">
         <Button
           type="button"
           variant="ghost"
-          className="text-destructive"
+          className="text-danger"
           onClick={onRemove}
           disabled={disabled}
         >
