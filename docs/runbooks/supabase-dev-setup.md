@@ -151,6 +151,10 @@ The music app's original limits are not in this repository, so these are conserv
 
 Verified read-only: 10 buckets all private with the limits above; policies on `storage.objects`: `music_tenant_objects` (ALL, churchy_music); on `storage.buckets`: `music_buckets_read` (SELECT, churchy_music). The expression requires `(storage.foldername(name))[1] = 't'` and `[2] = app.current_tenant_id()::text`, so a tenant's token only matches its own `t/<tenant_id>/...` keys. A functional cross-tenant write test was not run on the live project (it needs a signed claim and would write to `storage.objects`); run the check in `SUPABASE-SETUP.md` once from the SQL editor.
 
+### Bucket `site-media` (site builder, migration 0028)
+
+Created by migration `0028_site_media` (only where the `storage` schema exists), not by the operator step above: private, 10 MB, `image/webp` only. Writes use a tenant JWT with role `churchy_site_media` (policies `site_media_*`, key `t/<tenant_id>/media/<uuid>.webp`); see `docs/runbooks/site-builder.md`.
+
 ## Schema verification (read-only)
 
 One query compared `TABLE_SCOPES`/`MUSIC_TABLES` (generated from `packages/db/src/table-scopes.ts`, 124 entries) with the live catalog. Result: 124 live = 124 classified, none missing either way; RLS enabled and forced on all; every tenant/catalog table has a `tenant_isolation` policy and SELECT for `churchy_app`; every `MUSIC_TABLES` table has SELECT for `churchy_music` and its policy names that role; no non-music table is readable by `churchy_music`; the 13 platform tables have no policy and neither role can SELECT them (`has_table_privilege` false). **No mismatches.**

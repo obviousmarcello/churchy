@@ -7,6 +7,7 @@
     ".": "./src/index.ts",
     "./register": "./src/register.ts",
     "./platform": "./src/platform.ts",
+    "./storage-keys": "./src/storage-keys.ts",
     "./schema": "./src/schema/index.ts",
     "./seed": "./src/seed/index.ts",
     "./local": "./src/local/index.ts"

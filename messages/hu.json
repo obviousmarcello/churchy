@@ -8318,7 +8318,7 @@
         },
         "imageOffsite": "Más weboldalról származik, nem töltjük le.",
         "imagePeople": "Embereket ábrázolhat: közzététel előtt a hozzájárulásukat meg kell erősíteni.",
-        "imagesNote": "A képeket csak az alkalmazáskor töltjük le, újrakódoljuk és eltávolítjuk a metaadataikat.",
+        "imagesNote": "A képeket csak az alkalmazáskor töltjük le, újrakódoljuk (webp, legfeljebb 2400 képpont) és eltávolítjuk a metaadataikat. Az embereket ábrázolható képek csak akkor kerülnek át, ha bent hagytad őket.",
         "warnings": {
           "robots_blocked": "A robots.txt miatt kihagytuk: {url}",
           "page_failed": "Nem sikerült beolvasni: {url}",
@@ -8349,8 +8349,8 @@
         "submit": "Egyház létrehozása",
         "existingTitle": "Meglévő egyház",
         "existingBody": "Ezt a vázlatot a tulajdonos alkalmazza a saját fiókjából, a Beállítás oldalon. Nálad nincs további teendő.",
-        "done": "Elkészült: {slug}. Alkalmazva: {pages} oldal, {posts} hír, {announcements} hirdetés, {locations} helyszín, {serviceRules} alkalom.",
-        "imagesNotApplied": "{count} kép még nem került át: a képtároló később kapcsolódik.",
+        "done": "Elkészült: {slug}. Alkalmazva: {pages} oldal, {posts} hír, {announcements} hirdetés, {locations} helyszín, {serviceRules} alkalom, {media} kép.",
+        "imagesNotApplied": "{count} kép nem került át: nem sikerült letölteni vagy feldolgozni őket, vagy a képtároló nincs beállítva.",
         "errors": {
           "invalid": "Hiányzó vagy hibás adat.",
           "not_found": "A vázlat nem található, lejárt vagy már alkalmazták.",
@@ -8367,7 +8367,8 @@
         "source": "Forrás: {url}",
         "expires": "Lejár: {when}",
         "apply": "Vázlat alkalmazása",
-        "done": "Alkalmaztuk: {pages} oldal, {posts} hír, {announcements} hirdetés, {locations} helyszín, {serviceRules} alkalom.",
+        "done": "Alkalmaztuk: {pages} oldal, {posts} hír, {announcements} hirdetés, {locations} helyszín, {serviceRules} alkalom, {media} kép.",
+        "imagesNotApplied": "{count} kép nem került át: nem sikerült letölteni vagy feldolgozni őket, vagy a képtároló nincs beállítva.",
         "failed": "Nem sikerült: a vázlat nem található vagy lejárt.",
         "forbidden": "Ehhez nincs jogosultságod."
       }

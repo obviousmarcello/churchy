@@ -67,9 +67,30 @@ demo persona *Üzemeltető* does); until then the console is reachable in demo m
   get a suffix, an existing announcement week is skipped, the schedule is only filled when empty, identity and theme stay),
   unpublished. The draft is read through the platform role filtered by `target_tenant_id` (no tenant-role grant on drafts).
   No impersonation anywhere.
-- **Images** are downloaded (size/type limits, sharp re-encode, EXIF stripped) only when a church applies the draft, and only
-  when a media storage sink exists. **There is no website media storage backend yet (S2)**, so today images stay as listed
-  candidates and the apply reports how many were not carried over.
+- **Images** are carried over only when the draft is applied, and only the ones the operator kept (images from other
+  domains are never downloaded; photos flagged *may show people* travel only if the operator left them on, and
+  arrive with `people_consent = false`). Flow (`media-carry.ts`, `media-sink.ts`): download through the SSRF-safe
+  `SiteFetcher` (robots, scope, budgets, jpeg/png/webp/gif/avif <= 8 MiB, no SVG) -> sharp re-encode to webp (EXIF/ICC
+  stripped, longest side <= 2400 px, decoder pixel cap, content sniffed so a lying content type fails) -> upload to the
+  private Storage bucket `site-media` as `t/<tenant_id>/media/<uuid>.webp` -> `media` row (alt from the draft, else
+  marked decorative) -> image blocks point at the new media ids; blocks of failed images are dropped.
+  - New church: download and encode run before the platform transaction; the upload and the `media` INSERTs run inside the
+    seed of the same transaction. Storage is not transactional, so if the transaction rolls back the uploaded objects are
+    removed again (best effort).
+  - Existing church: through `repos.media.create`; if the apply fails afterwards the objects and rows are removed again.
+  - A failing image (fetch, decode, size, upload) is only counted (`summary.mediaFailed`); the apply goes on. The
+    result shows *N kép* and how many images did not make it. Not logged: bytes, URLs of images, upstream error bodies.
+  - Without Supabase env the sink is absent and images stay listed candidates (the apply reports the count). Demo mode
+    uses the fixture site and an in-memory sink (no network). The church logo image is carried over as a media item but
+    not yet wired into `identity.logoMediaId` (the tenant row is written before its media exist).
+  - **Who writes to Storage:** a server-minted, 60-second tenant JWT (`mintTenantToken`, role claim `churchy_site_media`,
+    `tenant_id` of the church) through the Storage REST API (supabase-js). No service-role key. Migration
+    `0028_site_media` creates the NOLOGIN role (no table grants; granted to `authenticator`) and, where the `storage`
+    schema exists, the bucket (private, 10 MB, `image/webp`) and policies on `storage.objects` (SELECT, INSERT, DELETE; no
+    UPDATE, so no overwrite) limited to bucket `site-media` and `t/<claim tenant>/media/<uuid>.webp`. The platform apply
+    uses the same token for the freshly created tenant; the policy cannot additionally require "fresh tenant" (the role
+    has no read access to `tenants`, and a SECURITY DEFINER helper was judged more surface than value): the token is only
+    minted by these two server paths. Serving the media publicly is a later media route (not part of this).
 
 ## Why a route handler, not a pg-boss job
 
@@ -83,6 +104,7 @@ pipeline has no request dependencies (progress callback and abort signal only).
 | Variable | Needed for |
 | --- | --- |
 | `DATABASE_URL_PLATFORM` | drafts, church creation (live mode) |
+| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_JWT_SECRET` | image carry-over to Storage (same variables as the music module) |
 | `ANTHROPIC_API_KEY` | the plan call (the platform key, like the music research) |
 | `SITE_BUILDER_MAX_COST_USD`, `SITE_BUILDER_MAX_INPUT_TOKENS`, `SITE_BUILDER_DRAFT_TTL_HOURS` | optional limits |
 
@@ -101,3 +123,11 @@ missing. Tests and e2e use the in-memory transport and the fake planner; loopbac
 Forward migration, applied to the dev/staging project `churchy` through the Supabase MCP (verbatim SQL minus comments); the platform
 login role needs no change (`churchy_platform` gains the grants). Verify: `site_drafts` RLS enabled and forced, no grant to `anon`,
 `authenticated`, `churchy_app`, `churchy_music`; `churchy_platform` has INSERT only on the seven content tables.
+
+## Deploying migration 0028 (site media)
+
+Applied to the dev/staging project `churchy` with `apply_migration` (`0028_site_media`, verbatim SQL minus comments). It creates the
+role `churchy_site_media`, the bucket `site-media` and the four storage policies (`site_media_select/insert/delete`,
+`site_media_buckets_read`). Verified live (a DO block that ends in a deliberate exception, so nothing persists): own-tenant
+insert allowed; another tenant's prefix, another bucket, a non-uuid/`.png` name and `public.media` denied. Down:
+`migrations/down/0028_site_media.sql` (the bucket and its objects are kept). A real upload needs the server env above.
