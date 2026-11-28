@@ -42,11 +42,11 @@ export function WorkspaceFrame({
       <nav
         aria-label={label}
         data-testid="workspace-nav"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface-raised md:sticky md:top-4 md:z-auto md:my-8 md:h-fit md:w-56 md:shrink-0 md:rounded-md md:border"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-surface-raised/95 shadow-overlay backdrop-blur md:sticky md:top-4 md:z-auto md:my-8 md:h-fit md:w-56 md:shrink-0 md:rounded-card md:border md:bg-surface-raised md:shadow-card md:backdrop-blur-none"
       >
         <ul
           data-testid="area-sections"
-          className="flex overflow-x-auto md:flex-col md:gap-1 md:overflow-visible md:p-2"
+          className="flex gap-1 overflow-x-auto p-1.5 md:flex-col md:overflow-visible md:p-2"
         >
           {items.map((item) => {
             const current = isCurrent(pathname, item.href, homeHref);
@@ -56,7 +56,7 @@ export function WorkspaceFrame({
                   href={item.href}
                   transitionTypes={pageTransitionTypes}
                   aria-current={current ? "page" : undefined}
-                  className="flex min-h-14 min-w-20 items-center justify-center rounded-md px-3 py-2 text-center text-fs-2 leading-tight font-semibold text-text no-underline hover:bg-primary-soft aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast md:min-h-11 md:justify-start md:text-left md:text-fs-3"
+                  className="flex min-h-14 min-w-20 items-center justify-center rounded-[14px] px-3 py-2 text-center text-fs-2 leading-tight font-semibold text-muted no-underline transition-[background-color,color,scale] duration-(--dur-2) ease-spring hover:bg-hover hover:text-text active:scale-(--motion-press) aria-[current=page]:bg-primary-soft aria-[current=page]:text-primary md:min-h-11 md:justify-start md:text-left md:text-fs-3"
                 >
                   {item.label}
                 </Link>
