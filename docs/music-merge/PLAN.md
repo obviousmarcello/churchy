@@ -979,3 +979,56 @@ become optional per-translation mappings. Hungarian only.
   no personal data in logs; the demo refuses the worker's URL. The AI key is an environment secret, never stored per church.
 - Tests: `config.test.ts`, `handlers.test.ts` (per-church isolation, caps), isolation test for the batch claim. e2e: adding a volunteer queues the
   "added" mail in the outbox viewer (subject with the time, no title). Not verified: a real Supabase project, a real push, the Anthropic call.
+
+## 32. Phase 9a: permission mapping audit (PROPOSAL, nothing changed; owner decision needed)
+
+Matrix columns: L leader, E employee, V volunteer, TL teamLeader, ML musicLeader, RM, HR, CH (`packages/policy/MATRIX.md`, "Music:" rows). Churchy has no
+role named after the source's five; today every tenant-wide music "manage" action is `{ leader, musicLeader }`, plus area roles (`service_area_roles`).
+
+### 32.1 The source's five roles (`music-sheet-db-main/src/lib/roles.ts`) and what Churchy does now
+| Source role | Source could | Today in Churchy (tenant-wide) | Today via area role (`musicAreaGrants`, only in that area) |
+|---|---|---|---|
+| (member, no role) | see songs, events of own groups, own notes | `*.view`, `sheet.personalize`, `projection.use`, `scripture.use`, `mixer.use`, `live.join/lead`, `course.view/edit`: every workspace role | -- |
+| `song_admin` | add/change/delete songs | `music.song.manage`: L, ML | `song_admin`, `music_leader` area role |
+| `event_admin` | events, items, volunteers, setlists; mixer setup | `music.event.manage`, `music.group.manage`, projection themes manage/setDefault, mixer.setup, translations.manage: L, ML | `event_admin`, `music_leader` area role (event.manage only) |
+| `music_leader` | join/lead every live session; mixer setup | ML column = same as L for all music actions (it is ALSO the source's event_admin + song_admin + superadmin-lite, see 32.3) | `music_leader` area role = event.manage + song.manage |
+| `course_admin` | manage all courses | `music.course.manage`: L only | `course_admin` area role of any group |
+| `superadmin` | all roles + users, email templates, Bible translations, song rights/research, sees all events, edits area roles | `music.songRights.manage`: L, ML (used as `isSuperadmin`) | any area role (matrix row "any area role" for songRights) |
+
+Source roles are not stored in Churchy: the two systems meet only through workspace roles (L, ML) and the area roles (song_admin, event_admin, music_leader, course_admin) of `service_area_roles`, which the source also had ("groups"). So the 5 roles map as: song_admin, event_admin, music_leader, course_admin -> area roles (same names, scoped to a group and its descendants, as in the source); superadmin -> L (and ML, see Q1).
+
+### 32.2 Places that decide by something other than `can()` (all in `apps/web`)
+| # | Where | Mechanism | Derived from |
+|---|---|---|---|
+| 1 | `server/music/auth.ts` `CurrentUser.isSuperadmin` | alias of `can(music.songRights.manage)` | used for: group-area role editing + emails of people (`models/groups.ts`, `event-teams.ts`, `events.ts` reply names), `unnamedHidden`, announcements admin page + calendars (`announcements`, `announcement-calendars.ts`), song-rights page, projection theme default (`projection-themes.ts`, `vetitesi-temak/page.tsx` `canSetDefault`), `esemenyek/page.tsx` links |
+| 2 | `CurrentUser.canEditSongs` / `canEditEvents` | `can(song.manage / event.manage)`, tenant-wide only | `requireSongAdmin`, `requireEventAdmin`, and ~15 model checks (`canEditEvents` also feeds the SQL `p_is_admin` / `p_any_user` of `can_see_event`, `can_project_event`, visible events, live sessions) |
+| 3 | `CurrentUser.leadsGroups` (`led_area_ids`, is_leader of `service_area_members`) | membership flag, not a can() action | `requireGroupManager` (groups page, teams of own areas), `esemenyek/page.tsx`, `csoportok/page.tsx`, `event-teams.ts`, `groups.ts` `canManageGroup(rights, id)` (`lib/music/groups.ts`) |
+| 4 | `CurrentUser.leadsCourseGroups` + `courses.ts` `can_edit_course` / `visible_course_ids` | group leader flag (+ SQL) | course create/edit/list gating (`kepzesek/*`). Policy has `music.course.edit` = every role, model decides |
+| 5 | `CurrentUser.canEditCourses` | `can(course.manage)` incl. area roles | OK (can()), but passed as `p_is_admin` to SQL |
+| 6 | `canProjectEvent`, `canSeeEvent`, `can_see_event`, `can_project_event`, `can_edit_event` (SQL) | volunteer-of-event, event creator (`created_by`), `is_private`, group membership | event visibility and projection/live/scripture access; `music.projection.use`, `live.join/lead`, `scripture.use` are `every role` in the matrix and the model really decides |
+| 7 | `event-access.ts` `createdBy === user.id` | creator may see/edit own private event | -- |
+| 8 | Live sessions: `row.leader_id === user.id` | session leader | only the session leader sends |
+| 9 | Module flags (`isWorkspaceModuleOn`) | entitlements, intended | -- |
+| 10 | `requirePrivateFileAccess` | any music user | per-tenant Storage RLS |
+| 11 | `music.projection.themes.setDefault` | action exists and the server action uses it, but the page/model use `isSuperadmin` (`songRights.manage`) | inconsistency, same L/ML today |
+| 12 | `notifications`, `mixer-settings` (`mixer.setup`), translations manage | callers check can() | OK |
+
+No role string, `workspaceRoles`, or `websiteRoles` access exists in the music code (lint-enforced). All items above are can()-derived flags or membership/ownership data (areas, leaders, volunteers, creator), which is data-scoped authorisation that cannot be a plain role matrix.
+
+### 32.3 Findings that widen or narrow access vs. the source (DECISIONS NEEDED, not implemented)
+- Q1 **ML = superadmin for rights.** In the source, `music_leader` could only lead live sessions (+ mixer). Churchy gives musicLeader song/event/group/projection-theme/translation/mixer manage and (via `songRights.manage`) the superadmin-only features: song-rights research, emails of people, area-role editing, announcements, theme default. Options: (a) keep (documented owner decision 2026-11-24 mapped superadmin to L+ML); (b) `songRights.manage`, `group roles`, `announcements`, `themes.setDefault`, emails: L only (narrows ML); (c) split new actions (`music.group.roles.manage`, `music.announcement.manage`, `music.people.emails.view`) so each can be set separately (no behaviour change until matrix edited).
+- Q2 **Any area role grants `songRights.manage`** (matrix row "any area role"): a song_admin of one small group can run rights research and set the research quota for the whole church. The source needed superadmin. Options: keep / L+ML only.
+- Q3 **Area role `music_leader` = event + song manage in its area**; in the source a music_leader could not edit songs or events. Keep (documented in 4b-2a) or reduce to `music.live.lead` only (no can() action for live is area-scoped today).
+- Q4 **Leader flag of a group (`leadsGroups`)** grants managing the teams of own areas and (leadsCourseGroups) courses of own groups. Same as source. Proposal: keep as data-scoped rule, but expose it as can() actions: `music.group.manage` with `areaIds` resource and `music.course.edit` with `areaIds` (add `ledAreaIds` to the actor enricher), so UI and withPolicy ask one place. Not access-changing if done exactly; needs the enricher touched. Ask before.
+- Q5 **`mixer.setup`, `translations.manage`, `themes.manage`** are L+ML; the source gave mixer to event_admin + music_leader, translations to superadmin only. Translations: ML now wider than source.
+- Q6 **`music.course.manage`**: L only + area `course_admin`; source: course_admin + superadmin. ML cannot. Consistent; confirm.
+- Q7 **teamLeader / employee / volunteer** have no music manage rights (only the member read actions), as intended for "member". Confirm that every workspace role is a "member" of the music module (EVERY_ROLE view actions; RM, HR, CH too).
+- Q8 **Owner/admin (website roles)** with no workspace role: confirm they get `leader` workspace role in prod (outside music scope).
+
+Proposed mapping to ratify: member -> EVERY_ROLE read actions; song_admin/event_admin/course_admin -> area roles (no tenant-wide role); music_leader -> workspace `musicLeader` (tenant-wide) AND area role; superadmin -> `leader`; Q1(c) to decouple the rights without changing today's grants. MATRIX review: section "Music" and "Music area roles" regenerated from `role-matrix.fixtures.ts`; nothing changed in 9a, `pnpm --filter @churchy/policy matrix` yields no diff.
+
+### 32.4 Owner decisions (2026-11-28) and 9a-2 implementation  [security-review]
+- Q1 = (c): new tenant-wide actions `music.group.roles.manage` (area-role editing), `music.announcement.manage` (announcement sources and calendars), `music.people.emails.view` (emails of people, unnamed-hidden), and the existing `music.projection.themes.setDefault` now used consistently (page and model; before they used `isSuperadmin`). `music.songRights.manage` stays for song-rights research only (`isSuperadmin` = that action), `music.scripture.translations.manage` unchanged. Leader and musicLeader keep all of them: no behaviour change. `CurrentUser` has `canManageGroupRoles`, `canManageAnnouncements`, `canViewPeopleEmails`, `canSetDefaultTheme`; `requireGroupRoleAdmin`, `requireAnnouncementAdmin`, `requireThemeDefaultAdmin`.
+- Q2 = narrow: area roles never grant `music.songRights.manage`. Correction to 32.3: this was already the case (`AREA_ROLE_ACTIONS` lists only song/event/course manage; the matrix row "any area role" expects false). The audit text was wrong; a policy test now also covers `music.group.roles.manage` for area roles.
+- Q3 = keep. Q5-Q8 confirmed (mixer.setup, translations, themes: L+ML; course.manage: leader + `course_admin`; RM/HR/CH are music members; owner/admin = workspace leader in production).
+- Q4: `TenantActor.musicLedAreaIds` (filled by the music actor enricher from `led_area_ids`) and the led-area actions `music.group.manageLed` and `music.course.editLed`, granted only with an area context that contains a led area (no tenant-wide role). `leadsGroups` / `leadsCourseGroups` are now `can()` results. Per-group rights (`canManageGroup` over the led-id set, `can_edit_course` in SQL) stay data-scoped. No SQL changed: no DB or isolation run needed. MATRIX regenerated.

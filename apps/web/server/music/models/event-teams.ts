@@ -152,8 +152,10 @@ export async function getTeamEditor(): Promise<TeamEditorDTO | null> {
     areas,
     groupMembers,
     users,
-    people: await listPeople(Object.values(groupMembers).flat(), { emails: user.isSuperadmin }),
-    unnamedHidden: !user.isSuperadmin,
+    people: await listPeople(Object.values(groupMembers).flat(), {
+      emails: user.canViewPeopleEmails,
+    }),
+    unnamedHidden: !user.canViewPeopleEmails,
   };
 }
 
@@ -568,7 +570,7 @@ export async function getTeamGrid(range: DayRange): Promise<TeamGridDTO> {
     cells,
     notes,
     eventNotes,
-    people: await listPeople(userIds, { emails: user.isSuperadmin }),
+    people: await listPeople(userIds, { emails: user.canViewPeopleEmails }),
   };
 }
 

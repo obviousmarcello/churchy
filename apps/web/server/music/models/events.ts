@@ -823,7 +823,7 @@ export async function listEventVolunteers(eventId: string): Promise<VolunteerDTO
     .array(z.object({ user_id: z.uuid(), reply: z.enum(VOLUNTEER_REPLIES).nullable() }))
     .parse(data);
   const replies = new Map(rows.map((row) => [row.user_id, row.reply]));
-  const people = await listPeople([...replies.keys()], { emails: user.isSuperadmin });
+  const people = await listPeople([...replies.keys()], { emails: user.canViewPeopleEmails });
   return people.map((person) => ({ ...person, reply: replies.get(person.id) ?? null }));
 }
 

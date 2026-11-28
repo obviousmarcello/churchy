@@ -61,5 +61,5 @@ async function Themes() {
   }
 
   const themes = await listProjectionThemes();
-  return <ThemeBrowser themes={themes} canSetDefault={user.isSuperadmin} />;
+  return <ThemeBrowser themes={themes} canSetDefault={user.canSetDefaultTheme} />;
 }

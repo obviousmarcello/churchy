@@ -38,6 +38,12 @@ export interface TenantActor {
    * (`MusicAreaResource.areaIds`); the server fills the list in `getActor()`.
    */
   readonly musicAreaGrants?: readonly MusicAreaGrant[];
+  /**
+   * The music areas the actor leads (`service_area_members.is_leader`, with the areas below them).
+   * They apply only to the led-area actions (`music.group.manageLed`, `music.course.editLed`)
+   * checked with an area context; the server fills the list from the resolver.
+   */
+  readonly musicLedAreaIds?: readonly string[];
   /** `groupLeader` scope: groups (Közösségek) whose events and group page the actor manages. */
   readonly groupIds?: readonly string[];
   /** `teamLeader` scope: teams the actor leads (`team_members.is_leader`). */

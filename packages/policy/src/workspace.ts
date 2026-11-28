@@ -220,6 +220,31 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: { leader: "all", musicLeader: "all" },
   },
   {
+    capability: "Music: edit the roles that the music areas give (the source's superadmin)",
+    actions: ["music.group.roles.manage"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
+    capability: "Music: manage the announcement sources and calendars (the source's superadmin)",
+    actions: ["music.announcement.manage"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
+    capability: "Music: see the email addresses of people (the source's superadmin)",
+    actions: ["music.people.emails.view"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
+    capability: "Music: manage the teams of the areas one leads (area context only)",
+    actions: ["music.group.manageLed"],
+    grants: {},
+  },
+  {
+    capability: "Music: make the courses of the groups one leads (area context only)",
+    actions: ["music.course.editLed"],
+    grants: {},
+  },
+  {
     capability: "Music: shared song rights and research",
     actions: ["music.songRights.manage"],
     grants: { leader: "all", musicLeader: "all" },
@@ -337,11 +362,22 @@ const AREA_ROLE_ACTIONS: Readonly<Record<string, readonly MusicAreaRole[]>> = {
   "music.course.manage": ["course_admin"],
 };
 
+/** Music actions that leading an area grants, within the areas of the resource. */
+const LED_AREA_ACTIONS: ReadonlySet<string> = new Set([
+  "music.group.manageLed",
+  "music.course.editLed",
+]);
+
 function evaluateMusicAreaRoles(
   actor: TenantActor,
   action: string,
   resource: MusicAreaResource,
 ): Decision | null {
+  if (LED_AREA_ACTIONS.has(action)) {
+    return resource.areaIds?.some((id) => actor.musicLedAreaIds?.includes(id))
+      ? allow(`the actor leads a music area of the resource (${action})`)
+      : null;
+  }
   const roles = AREA_ROLE_ACTIONS[action];
   if (roles === undefined || resource.areaIds === undefined) return null;
   const grant = actor.musicAreaGrants?.find(

@@ -24,7 +24,7 @@ import type { ServiceAreaDTO } from "@/lib/music/volunteer-templates";
 import {
   getLedGroupIds,
   requireGroupManager,
-  requireSuperadmin,
+  requireGroupRoleAdmin,
   type CurrentUser,
 } from "@/server/music/auth";
 import { ConflictError, ForbiddenError, ValidationError } from "@/server/music/errors";
@@ -250,7 +250,7 @@ export async function getGroupsPage(): Promise<GroupsPageDTO> {
 
   const people = await listPeople(
     [...membersByGroup.values()].flat().map((member) => member.userId),
-    { emails: user.isSuperadmin },
+    { emails: user.canViewPeopleEmails },
   );
   return {
     groups: visible.map((group) => ({
@@ -267,7 +267,7 @@ export async function getGroupsPage(): Promise<GroupsPageDTO> {
     rights: rights === "all" ? "all" : [...rights],
     ledGroupIds: [...led],
     people,
-    canEditRoles: user.isSuperadmin,
+    canEditRoles: user.canManageGroupRoles,
   };
 }
 
@@ -349,7 +349,7 @@ export async function placeGroup(id: string, parentId: unknown, ids: unknown): P
     p_id: id,
     p_parent_id: parent,
     p_ids: order,
-    p_grant_roles: user.isSuperadmin,
+    p_grant_roles: user.canManageGroupRoles,
     p_actor_id: user.id,
   });
   if (error) throw databaseError("place group", error, GROUP_ERRORS);
@@ -368,7 +368,7 @@ export async function deleteGroup(id: string): Promise<boolean> {
     await getMusicSupabase()
   ).rpc("delete_service_area", {
     p_id: id,
-    p_grant_roles: user.isSuperadmin,
+    p_grant_roles: user.canManageGroupRoles,
     p_actor_id: user.id,
   });
   if (error) throw databaseError("delete group", error, DELETE_ERRORS);
@@ -429,7 +429,7 @@ export async function setGroupMembers(id: string, input: unknown): Promise<boole
   ).rpc("set_service_area_members", {
     p_area_id: id,
     p_members: members.map((member) => ({ user_id: member.userId, is_leader: member.isLeader })),
-    p_grant_roles: user.isSuperadmin,
+    p_grant_roles: user.canManageGroupRoles,
     p_actor_id: user.id,
   });
   if (error) {
@@ -446,7 +446,7 @@ export async function setGroupMembers(id: string, input: unknown): Promise<boole
 
 /** Replaces the roles of the group: all members of the group and of the groups below it have them. Superadmins only. */
 export async function setGroupRoles(id: string, input: unknown): Promise<boolean> {
-  await requireSuperadmin();
+  await requireGroupRoleAdmin();
   if (!isId(id)) return false;
   const roles = parseInput(rolesInputSchema, input);
 
@@ -463,7 +463,7 @@ export async function setGroupRoles(id: string, input: unknown): Promise<boolean
  * Superadmins only.
  */
 export async function listGroupOptions(): Promise<GroupOptionDTO[]> {
-  await requireSuperadmin();
+  await requireGroupRoleAdmin();
   const [groups, roles] = await Promise.all([
     listGroups(),
     // At most `GROUPS_MAX` × the group roles: below the row limit of the API.
@@ -516,7 +516,7 @@ function inheritedRoles(
 export async function listGroupRolesOf(
   userId: string,
 ): Promise<{ role: GroupRole; groups: string[] }[]> {
-  await requireSuperadmin();
+  await requireGroupRoleAdmin();
   if (!isId(userId)) return [];
   const supabase = await getMusicSupabase();
   const [groups, memberAreas, roles] = await Promise.all([

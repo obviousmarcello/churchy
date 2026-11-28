@@ -383,6 +383,31 @@ export const README_ROWS: readonly MatrixRow[] = [
     variants: [v("edit songs and arrangements", "music.song.manage", tenant, "YNNNYNNN")],
   },
   {
+    capability: "Music: edit the roles of the music areas (music merge, was superadmin)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("edit area roles", "music.group.roles.manage", tenant, "YNNNYNNN")],
+  },
+  {
+    capability: "Music: announcement sources and calendars (music merge, was superadmin)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("manage announcement sources", "music.announcement.manage", tenant, "YNNNYNNN")],
+  },
+  {
+    capability: "Music: email addresses of people (music merge, was superadmin)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("see emails of people", "music.people.emails.view", tenant, "YNNNYNNN")],
+  },
+  {
+    capability: "Music: teams of led areas (music merge; area context only)",
+    sdd: ["", "", "", "", "", "", "", ""],
+    variants: [v("tenant-wide, no area context", "music.group.manageLed", tenant, "NNNNNNNN")],
+  },
+  {
+    capability: "Music: courses of led groups (music merge; area context only)",
+    sdd: ["", "", "", "", "", "", "", ""],
+    variants: [v("tenant-wide, no area context", "music.course.editLed", tenant, "NNNNNNNN")],
+  },
+  {
     capability: "Music: shared song rights and research (music merge)",
     sdd: ["✔", "", "", "", "✔", "", "", ""],
     variants: [v("song rights and research", "music.songRights.manage", tenant, "YNNNYNNN")],
@@ -496,6 +521,8 @@ function categoryCases(
   ];
 }
 
+const asLeaderOf = (areaId: string) => workspaceActor("volunteer", { musicLedAreaIds: [areaId] });
+
 const asVolunteerIn = (areaId: string, ...roles: MusicAreaRole[]) =>
   workspaceActor("volunteer", { musicAreaGrants: [{ areaId, roles }] });
 
@@ -572,6 +599,41 @@ export const WORKSPACE_SCOPE_GROUPS: readonly ScopeGroup<TenantActor>[] = [
         asVolunteerIn("a1", "event_admin"),
         "music.song.manage",
         { tenantId: TENANT, areaIds: ["a1"] },
+        false,
+      ),
+      c(
+        "music.group.manageLed, leader of the area",
+        asLeaderOf("a1"),
+        "music.group.manageLed",
+        { tenantId: TENANT, areaIds: ["a1"] },
+        true,
+      ),
+      c(
+        "music.group.manageLed, leader of another area",
+        asLeaderOf("a9"),
+        "music.group.manageLed",
+        { tenantId: TENANT, areaIds: ["a1"] },
+        false,
+      ),
+      c(
+        "music.course.editLed, leader of the group",
+        asLeaderOf("a1"),
+        "music.course.editLed",
+        { tenantId: TENANT, areaIds: ["a1", "a2"] },
+        true,
+      ),
+      c(
+        "music.course.editLed, no area context",
+        asLeaderOf("a1"),
+        "music.course.editLed",
+        { tenantId: TENANT },
+        false,
+      ),
+      c(
+        "music.group.roles.manage, any area role",
+        asVolunteerIn("a1", "song_admin", "music_leader"),
+        "music.group.roles.manage",
+        { tenantId: TENANT, areaIds: ["a1"] } as never,
         false,
       ),
       c(

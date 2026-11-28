@@ -171,6 +171,11 @@ export const WORKSPACE_TENANT_ACTIONS = [
   "music.course.manage",
   "music.live.join",
   "music.live.lead",
+  "music.group.roles.manage",
+  "music.announcement.manage",
+  "music.people.emails.view",
+  "music.group.manageLed",
+  "music.course.editLed",
 ] as const;
 export type WorkspaceTenantAction = (typeof WORKSPACE_TENANT_ACTIONS)[number];
 
@@ -200,6 +205,8 @@ export type ResourceByAction = Record<ContentAction, TenantResource> &
     "music.song.manage": MusicAreaResource;
     "music.event.manage": MusicAreaResource;
     "music.course.manage": MusicAreaResource;
+    "music.group.manageLed": MusicAreaResource;
+    "music.course.editLed": MusicAreaResource;
     "directory.viewPerson": DirectoryPersonResource;
     "calendarEvent.create": CalendarEventResource;
     "room.book": RoomResource;
