@@ -15,9 +15,9 @@ import { updateSheetSettings } from "../kotta/sheet-settings";
 
 const LIGHT_CLASS = {
   off: "bg-surface-sunken-foreground/40",
-  ok: "bg-green-500",
-  waiting: "bg-amber-500 animate-pulse",
-  error: "bg-destructive",
+  ok: "bg-success",
+  waiting: "bg-warning animate-pulse",
+  error: "bg-danger",
 } as const;
 
 /**
@@ -76,7 +76,7 @@ export function MixerSyncButton({
             <span
               aria-hidden
               className={cn(
-                "absolute -top-1 -right-1 size-2.5 rounded-full ring-2 ring-background",
+                "absolute -top-1 -right-1 size-2.5 rounded-full ring-2 ring-surface",
                 LIGHT_CLASS[health],
               )}
             />
@@ -105,7 +105,7 @@ export function MixerSyncButton({
       </div>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8} align="end" collisionPadding={8} className="z-50">
-          <Popover.Popup className="flex max-h-[var(--available-height)] w-80 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto rounded-lg border bg-popover p-4 text-popover-foreground shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Popover.Popup className="flex max-h-[var(--available-height)] w-80 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto rounded-card border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             <Popover.Title className="text-sm font-semibold">{t.title}</Popover.Title>
             <MixerSyncField sync={sync} />
           </Popover.Popup>

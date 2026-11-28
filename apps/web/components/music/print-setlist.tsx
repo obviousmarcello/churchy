@@ -160,15 +160,13 @@ function PrintSheet({
         </thead>
         <tbody>
           {items.map((item, index) => (
-            <tr key={index} className="break-inside-avoid border-b border-neutral-300 align-top">
+            <tr key={index} className="break-inside-avoid border-b border-border-strong align-top">
               <td className="py-2 pr-2 text-right tabular-nums">{index + 1}.</td>
               {item.kind === "song" ? (
                 <>
                   <td className="py-2 pr-4">
                     <div className="font-semibold break-words">{item.title}</div>
-                    {item.details && (
-                      <div className="break-words text-neutral-600">{item.details}</div>
-                    )}
+                    {item.details && <div className="break-words text-muted">{item.details}</div>}
                   </td>
                   <td className="py-2 pr-4 font-mono">
                     {item.key && fromEnglish(item.key, noteNames)}
@@ -186,7 +184,7 @@ function PrintSheet({
                       format(m.components.setlistRows.untitledItem, { number: index + 1 })}
                   </div>
                   {item.scripture && (
-                    <div className="text-neutral-600">
+                    <div className="text-muted">
                       {t.scripture}
                       {m.common.separator}
                       {
@@ -206,9 +204,7 @@ function PrintSheet({
                     </div>
                   )}
                   {item.notes && (
-                    <div className="break-words whitespace-pre-line text-neutral-600">
-                      {item.notes}
-                    </div>
+                    <div className="break-words whitespace-pre-line text-muted">{item.notes}</div>
                   )}
                 </td>
               )}

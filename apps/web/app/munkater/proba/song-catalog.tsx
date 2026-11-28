@@ -123,7 +123,7 @@ export function SongCatalog({
                   onDragEnd={() => onDragChange(false)}
                   style={{ height: ROW_PX }}
                   className={cn(
-                    "group/song flex items-center gap-2 rounded-xl pr-1.5 pl-1 transition-colors hover:bg-surface-sunken/60",
+                    "group/song flex items-center gap-2 rounded-card pr-1.5 pl-1 transition-colors hover:bg-surface-sunken/60",
                     !full && "cursor-grab active:cursor-grabbing",
                   )}
                 >
@@ -133,7 +133,7 @@ export function SongCatalog({
                   />
                   {/* Filled: the setlist has the song. It can go in again, e.g. at the end too. */}
                   <span
-                    className={cn(ITEM_ICON_CLASS, added && "bg-primary text-primary-foreground")}
+                    className={cn(ITEM_ICON_CLASS, added && "bg-primary text-primary-contrast")}
                     title={added ? t.inSetlist : undefined}
                   >
                     <MusicIcon aria-hidden />

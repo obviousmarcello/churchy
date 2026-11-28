@@ -562,7 +562,7 @@ export function SongForm({
                 </ModuleGate>
               </div>
             </div>
-            <div className="overflow-hidden rounded-lg border bg-surface-raised has-[textarea:focus-visible]:ring-3 has-[textarea:focus-visible]:ring-focus/50">
+            <div className="overflow-hidden rounded-card border bg-surface-raised has-[textarea:focus-visible]:ring-3 has-[textarea:focus-visible]:ring-focus/50">
               <Textarea
                 {...fieldProps("chordpro")}
                 ref={chordproRef}
@@ -602,7 +602,7 @@ export function SongForm({
                           <li
                             key={`${index}-${label}`}
                             className={cn(
-                              "inline-flex h-7 items-center gap-1 rounded-md bg-surface-sunken pr-1 pl-2.5 text-[0.8rem] text-text",
+                              "inline-flex h-7 items-center gap-1 rounded-control bg-surface-sunken pr-1 pl-2.5 text-[0.8rem] text-text",
                               missing && "bg-danger/10 text-danger",
                             )}
                             title={missing ? t.missingSection : undefined}
@@ -788,7 +788,7 @@ export function SongForm({
           <section
             id="rights"
             aria-labelledby="rights-heading"
-            className="scroll-mt-32 rounded-lg border"
+            className="scroll-mt-32 rounded-card border"
           >
             <h2 id="rights-heading" className="font-heading text-base font-semibold tracking-tight">
               <button
@@ -796,7 +796,7 @@ export function SongForm({
                 aria-expanded={rightsOpen}
                 aria-controls="rights-fields"
                 onClick={() => setRightsOpen((open) => !open)}
-                className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-4 py-3 text-left outline-none focus-visible:ring-3 focus-visible:ring-focus/50"
+                className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-card px-4 py-3 text-left outline-none focus-visible:ring-3 focus-visible:ring-focus/50"
               >
                 {t.rights}
                 <ChevronDownIcon
@@ -1013,7 +1013,7 @@ function SharedRightsBox({
 
   return (
     <div
-      className="flex flex-col gap-2 rounded-lg border bg-surface-sunken p-3"
+      className="flex flex-col gap-2 rounded-card border bg-surface-sunken p-3"
       data-testid="shared-rights"
     >
       <p className="text-sm font-medium">{t.title}</p>

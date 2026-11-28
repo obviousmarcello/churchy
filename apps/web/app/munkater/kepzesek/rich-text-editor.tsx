@@ -85,8 +85,8 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-lg border border-input bg-input-background focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50",
-        invalid && "border-destructive ring-3 ring-destructive/20",
+        "flex flex-col rounded-card border border-border-strong bg-surface-raised focus-within:border-focus focus-within:ring-3 focus-within:ring-focus/50",
+        invalid && "border-danger ring-3 ring-danger/20",
       )}
     >
       {editor ? <Toolbar editor={editor} /> : <div className="h-10 border-b" />}
@@ -152,7 +152,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       title={label}
       aria-pressed={active}
       disabled={disabled}
-      className={cn(active && "bg-muted text-foreground")}
+      className={cn(active && "bg-surface-sunken text-text")}
       // The editor keeps its selection: the button does not take the focus.
       onMouseDown={(event) => event.preventDefault()}
       onClick={run}
@@ -236,7 +236,7 @@ function Toolbar({ editor }: { editor: Editor }) {
           </div>
           <p
             id={`${linkId}-description`}
-            className={cn("text-xs", linkError ? "text-destructive" : "text-muted")}
+            className={cn("text-xs", linkError ? "text-danger" : "text-muted")}
           >
             {linkError ? m.server.courses.linkUrl : t.linkHint}
           </p>

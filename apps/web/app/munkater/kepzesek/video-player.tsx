@@ -38,7 +38,7 @@ export function VideoPlayer({ url, title }: { url: string; title: string }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-neutral-950">
+      <div className="relative aspect-video w-full overflow-hidden rounded-card bg-black">
         {playing ? (
           <iframe
             src={youtubeEmbedUrl(video)}
@@ -52,11 +52,11 @@ export function VideoPlayer({ url, title }: { url: string; title: string }) {
           <button
             type="button"
             onClick={() => setPlaying(true)}
-            className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-neutral-100 outline-none hover:bg-neutral-900 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset"
+            className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4 text-center text-white outline-none hover:bg-white/10 focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:ring-inset"
           >
             <CirclePlayIcon className="size-14" aria-hidden />
             <span className="max-w-md text-base font-medium">{title}</span>
-            <span className="max-w-md text-xs text-neutral-400">{t.consent}</span>
+            <span className="max-w-md text-xs text-white/70">{t.consent}</span>
           </button>
         )}
       </div>
@@ -64,7 +64,7 @@ export function VideoPlayer({ url, title }: { url: string; title: string }) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 self-start text-sm text-muted hover:text-foreground"
+        className="inline-flex items-center gap-1 self-start text-sm text-muted hover:text-text"
       >
         <ExternalLinkIcon className="size-4" />
         {t.openOnYoutube}

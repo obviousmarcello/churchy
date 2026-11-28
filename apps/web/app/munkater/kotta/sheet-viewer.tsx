@@ -1915,7 +1915,7 @@ export function SheetViewer({
               <div className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex flex-col items-center gap-2 px-2 text-base">
                 {marks.error && <MarkError message={marks.error} onDismiss={marks.dismissError} />}
                 {marking && marks.isEmpty && !marks.error && (
-                  <p className="max-w-md rounded-lg bg-surface/90 px-3 py-1.5 text-center text-xs text-muted shadow">
+                  <p className="max-w-md rounded-card bg-surface/90 px-3 py-1.5 text-center text-xs text-muted shadow">
                     {m.sheet.marks.empty}
                   </p>
                 )}
@@ -2303,7 +2303,7 @@ function ContentsPanel({
                   aria-current={index === currentIndex ? "true" : undefined}
                   onClick={() => onSelect(index)}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm text-text/80 transition-colors outline-none hover:bg-surface-sunken hover:text-text focus-visible:ring-3 focus-visible:ring-focus/50",
+                    "flex w-full items-center gap-2 rounded-card px-2 py-1.5 text-left text-sm text-text/80 transition-colors outline-none hover:bg-surface-sunken hover:text-text focus-visible:ring-3 focus-visible:ring-focus/50",
                     // Room for the key button. A button cannot hold a button, so it is next to this one.
                     songKeys && "pr-14",
                     index === currentIndex && "bg-surface-sunken font-medium text-text",
@@ -2317,14 +2317,14 @@ function ContentsPanel({
                   </span>
                   {index === leaderIndex && (
                     <>
-                      <CrownIcon aria-hidden className="size-3.5 shrink-0 text-amber-500" />
+                      <CrownIcon aria-hidden className="size-3.5 shrink-0 text-warning" />
                       <span className="sr-only">{m.sheet.live.leaderHere}</span>
                     </>
                   )}
                   {!songKeys && song.key && (
                     // A key that the sheet cannot move, e.g. "G major". A border, not a background: the row of the
                     // current song has the accent background.
-                    <span className="shrink-0 rounded-md border border-border px-1.5 py-0.5 font-mono text-xs font-normal">
+                    <span className="shrink-0 rounded-control border border-border px-1.5 py-0.5 font-mono text-xs font-normal">
                       {rich(
                         format(m.sheet.contents.key, { key: fromEnglish(song.key, notation) }),
                         {
@@ -2448,7 +2448,7 @@ function SettingsPopover({
           collisionPadding={8}
           className="z-50 max-sm:inset-0! max-sm:fixed! max-sm:transform-none!"
         >
-          <Popover.Popup className="flex max-h-[var(--available-height)] w-72 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col overflow-hidden rounded-lg border bg-surface-raised text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-screen max-sm:max-w-none max-sm:rounded-none max-sm:border-0 max-sm:pt-[env(safe-area-inset-top)] max-sm:pr-[env(safe-area-inset-right)] max-sm:pl-[env(safe-area-inset-left)] max-sm:shadow-none">
+          <Popover.Popup className="flex max-h-[var(--available-height)] w-72 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col overflow-hidden rounded-card border bg-surface-raised text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-screen max-sm:max-w-none max-sm:rounded-none max-sm:border-0 max-sm:pt-[env(safe-area-inset-top)] max-sm:pr-[env(safe-area-inset-right)] max-sm:pl-[env(safe-area-inset-left)] max-sm:shadow-none">
             <div className="flex shrink-0 items-center gap-2 px-4 pt-4 max-sm:h-12 max-sm:border-b max-sm:py-0 max-sm:pr-2">
               <Popover.Title className="flex-1 truncate text-sm font-semibold">
                 {m.sheet.settings.title}

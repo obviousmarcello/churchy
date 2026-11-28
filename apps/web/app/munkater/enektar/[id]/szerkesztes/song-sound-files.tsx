@@ -67,13 +67,13 @@ export function SongSoundFiles({
     <PreviewLayout>
       <FormSection title={t.title} description={t.description}>
         {soundFiles.length === 0 ? (
-          <div className="flex flex-col items-center gap-1 rounded-lg border border-dashed px-4 py-6 text-center">
+          <div className="flex flex-col items-center gap-1 rounded-card border border-dashed px-4 py-6 text-center">
             <AudioLinesIcon aria-hidden className="mb-1 size-5 text-muted" />
             <p className="text-sm font-medium">{t.emptyTitle}</p>
             <p className="text-sm text-muted">{t.emptyDescription}</p>
           </div>
         ) : (
-          <ul aria-label={t.list} className="flex flex-col divide-y rounded-lg border">
+          <ul aria-label={t.list} className="flex flex-col divide-y rounded-card border">
             {soundFiles.map((soundFile) => (
               <SoundFileRow
                 key={soundFile.id}
@@ -287,7 +287,7 @@ function EditSoundFileForm({
     <form
       ref={formRef}
       onSubmit={onSubmit}
-      className="flex flex-col gap-4 rounded-lg bg-surface-sunken/50 p-3"
+      className="flex flex-col gap-4 rounded-card bg-surface-sunken/50 p-3"
     >
       <input type="hidden" name="id" value={soundFile.id} />
       <SoundFileFields

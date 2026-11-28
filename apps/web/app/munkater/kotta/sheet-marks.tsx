@@ -839,7 +839,7 @@ export function MarkingLayer({
           role="status"
           className="pointer-events-none absolute inset-x-0 top-3 flex justify-center px-2"
         >
-          <p className="max-w-md rounded-lg bg-surface/90 px-3 py-1.5 text-center text-xs text-muted shadow">
+          <p className="max-w-md rounded-card bg-surface/90 px-3 py-1.5 text-center text-xs text-muted shadow">
             {m.sheet.marks.noScoreMarks}
           </p>
         </div>
@@ -959,7 +959,7 @@ export function MarkToolbar({
       role="toolbar"
       aria-label={m.sheet.marks.toolbar}
       // On a narrow phone with large touch buttons the tools take two rows.
-      className="pointer-events-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 rounded-xl border bg-surface p-1 text-text shadow-lg"
+      className="pointer-events-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 rounded-card border bg-surface p-1 text-text shadow-lg"
     >
       {tools.map(({ tool, label, icon }) => (
         <Button
@@ -1057,7 +1057,7 @@ function MarkOptions({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="top" sideOffset={8} collisionPadding={8} className="z-50">
-          <Popover.Popup className="flex max-h-[var(--available-height)] w-64 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-4 overflow-y-auto rounded-lg border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Popover.Popup className="flex max-h-[var(--available-height)] w-64 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-4 overflow-y-auto rounded-card border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             <Popover.Title className="text-sm font-semibold">{m.sheet.marks.options}</Popover.Title>
             <ColorChoice colors={colors} value={color} onChange={setColor} />
             {tool === "pen" && (
@@ -1136,7 +1136,7 @@ export function MarkError({ message, onDismiss }: { message: string; onDismiss: 
   return (
     <div
       role="alert"
-      className="pointer-events-auto flex max-w-md items-center gap-2 rounded-lg border border-danger/30 bg-surface py-1 pr-1 pl-3 text-sm text-danger shadow-lg"
+      className="pointer-events-auto flex max-w-md items-center gap-2 rounded-card border border-danger/30 bg-surface py-1 pr-1 pl-3 text-sm text-danger shadow-lg"
     >
       <p className="flex-1">{message}</p>
       <Button variant="ghost" size="icon-sm" aria-label={m.sheet.marks.dismiss} onClick={onDismiss}>

@@ -495,7 +495,7 @@ export function ItemsForm({
           )}
         </>
       ) : (
-        <Empty className="rounded-lg border p-6 md:p-8">
+        <Empty className="rounded-card border p-6 md:p-8">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <ListMusicIcon />
@@ -777,7 +777,7 @@ function SelectionBar({
   const t = m.components.eventBlocks;
 
   return (
-    <div className="w-max max-w-full rounded-xl border bg-surface-raised px-3 py-2 text-text shadow-lg">
+    <div className="w-max max-w-full rounded-card border bg-surface-raised px-3 py-2 text-text shadow-lg">
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {/* The rows show the selection: the count is only for screen readers. */}

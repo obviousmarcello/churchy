@@ -106,7 +106,7 @@ export function PeoplePicker({
       <Combobox.Item
         key={TEXT_ITEM_ID}
         value={person}
-        className="flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken"
+        className="flex cursor-default items-center gap-2 rounded-control px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken"
       >
         <TextIcon className="size-4 shrink-0 text-muted" />
         <span className="min-w-0 flex-1 break-words">
@@ -118,7 +118,7 @@ export function PeoplePicker({
         key={person.id}
         value={person}
         disabled={full && !value.includes(person.id)}
-        className="flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-surface-sunken"
+        className="flex cursor-default items-center gap-2 rounded-control px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-surface-sunken"
       >
         <UserAvatar person={person} size="sm" />
         <span className="flex min-w-0 flex-1 flex-col">
@@ -150,7 +150,7 @@ export function PeoplePicker({
     >
       <Combobox.Chips
         ref={chips}
-        className="flex min-h-9 w-full flex-wrap items-center gap-1 rounded-lg border border-input bg-input-background p-1 transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50"
+        className="flex min-h-9 w-full flex-wrap items-center gap-1 rounded-card border border-border-strong bg-surface-raised p-1 transition-colors focus-within:border-focus focus-within:ring-3 focus-within:ring-focus/50"
       >
         <Combobox.Value>
           {(people: AvatarPerson[]) => (
@@ -174,7 +174,7 @@ export function PeoplePicker({
                   key={person.id}
                   aria-label={text(person)}
                   title={person.displayName && person.email ? person.email : undefined}
-                  className="flex max-w-56 items-center gap-1.5 rounded-full border bg-surface py-0.5 pr-0.5 pl-0.5 text-sm outline-none data-highlighted:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="flex max-w-56 items-center gap-1.5 rounded-full border bg-surface py-0.5 pr-0.5 pl-0.5 text-sm outline-none data-highlighted:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50"
                 >
                   <UserAvatar person={person} size="sm" />
                   <span className="truncate">{text(person)}</span>
@@ -208,7 +208,7 @@ export function PeoplePicker({
         >
           <Combobox.Popup
             aria-label={label}
-            className="w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin) rounded-lg border bg-surface-raised p-1 text-text shadow-md transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
+            className="w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin) rounded-card border bg-surface-raised p-1 text-text shadow-md transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
           >
             <Combobox.Empty>
               <p className="px-2 py-1.5 text-sm text-muted">

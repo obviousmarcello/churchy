@@ -130,13 +130,13 @@ export function SongImages({
     >
       <FormSection title={t.title} description={t.description}>
         {images.length === 0 ? (
-          <div className="flex flex-col items-center gap-1 rounded-lg border border-dashed px-4 py-6 text-center">
+          <div className="flex flex-col items-center gap-1 rounded-card border border-dashed px-4 py-6 text-center">
             <ImageIcon aria-hidden className="mb-1 size-5 text-muted" />
             <p className="text-sm font-medium">{t.emptyTitle}</p>
             <p className="text-sm text-muted">{t.emptyDescription}</p>
           </div>
         ) : (
-          <ul aria-label={t.list} className="flex flex-col divide-y rounded-lg border">
+          <ul aria-label={t.list} className="flex flex-col divide-y rounded-card border">
             {images.map((image) => (
               <ImageRow
                 key={image.id}
@@ -274,7 +274,7 @@ function ImageRow({
         panel={panel}
         open={editing}
         onOpen={() => onEdit(true)}
-        className="flex flex-col gap-6 rounded-lg bg-surface-sunken/50 p-3"
+        className="flex flex-col gap-6 rounded-card bg-surface-sunken/50 p-3"
       >
         <EditImageForm
           image={image}
@@ -572,7 +572,7 @@ function ImagePages({ image, limits }: { image: SongImageDTO; limits: Limits }) 
                       label={label}
                     />
                     {isRemoved && (
-                      <span className="absolute inset-x-0 bottom-0 rounded-b-md bg-surface/90 px-1.5 py-1 text-xs">
+                      <span className="absolute inset-x-0 bottom-0 rounded-b-control bg-surface/90 px-1.5 py-1 text-xs">
                         {t.pageRemoved}
                       </span>
                     )}
@@ -900,7 +900,7 @@ function PagePicker({
         <ol
           className={cn(
             PAGE_GRID,
-            highlight && "rounded-lg outline-2 outline-offset-4 outline-focus",
+            highlight && "rounded-card outline-2 outline-offset-4 outline-focus",
           )}
         >
           {pages.map((page, index) => (
@@ -973,7 +973,7 @@ function PageThumbnail({
     { waiting: t.waiting, uploading: t.uploading, done: t.uploaded, failed: t.failed }[status];
 
   return (
-    <div className="relative aspect-[3/4] overflow-hidden rounded-md border bg-surface-sunken">
+    <div className="relative aspect-[3/4] overflow-hidden rounded-control border bg-surface-sunken">
       {/* eslint-disable-next-line @next/next/no-img-element -- a private file or a file on this device. */}
       <img src={url} alt={label} loading="lazy" className="size-full object-cover" />
       {number !== undefined && (

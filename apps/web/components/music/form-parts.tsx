@@ -299,7 +299,7 @@ export function AutoSaveStatus({
       {failedCount > 0 && (
         <div
           role="alert"
-          className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-danger/30 px-3 py-2 text-sm text-danger"
+          className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-card border border-danger/30 px-3 py-2 text-sm text-danger"
         >
           <p className="min-w-0 flex-1">
             {plural(t.failed, failedCount)}
@@ -418,11 +418,6 @@ function addLeaveGuard(guard: LeaveGuard): () => void {
     if (index >= 0) leaveGuards.splice(index, 1);
     if (leaveGuards.length === 0) document.removeEventListener("click", onLinkClick, true);
   };
-}
-
-/** A form of the page has unsaved changes: `navigateWithGuard()` asks first. */
-export function hasUnsavedChanges(): boolean {
-  return leaveGuards.length > 0;
 }
 
 /**
@@ -630,25 +625,6 @@ function useAutoSaveLeaveGuard({
   }
 
   return { asking, leavesPage, stay, save, discard };
-}
-
-/**
- * After a change of `value`, e.g. a block that puts "Unblock user" in place of
- * "Block user", the focused button can go away, and the focus with it. Then
- * the focus goes to the first button in `ref`, or to `ref` itself.
- */
-export function useFocusAfterChange(ref: React.RefObject<HTMLElement | null>, value: unknown) {
-  const previous = useRef(value);
-  useEffect(() => {
-    if (Object.is(previous.current, value)) return;
-    previous.current = value;
-    const container = ref.current;
-    const active = document.activeElement;
-    if (!container || (active && active !== document.body)) return;
-    const target = container.querySelector<HTMLElement>("button:not(:disabled)") ?? container;
-    if (target === container && !container.hasAttribute("tabindex")) container.tabIndex = -1;
-    target.focus();
-  }, [ref, value]);
 }
 
 // Submits without the automatic form reset, so the fields keep their values

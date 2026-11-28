@@ -355,7 +355,7 @@ function DragPreview({
   return (
     <div
       className={cn(
-        "relative w-full cursor-move touch-none overflow-hidden rounded-md border select-none",
+        "relative w-full cursor-move touch-none overflow-hidden rounded-control border select-none",
         projectionFontVariables,
       )}
       style={{ aspectRatio }}

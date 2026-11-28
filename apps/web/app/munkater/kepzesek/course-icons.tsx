@@ -147,7 +147,7 @@ export function CourseCoverView({ cover, className }: { cover: CourseCover; clas
       <img
         src={courseImageUrl(cover.imagePath)}
         alt=""
-        className={cn("shrink-0 rounded-lg border bg-muted object-cover", className)}
+        className={cn("shrink-0 rounded-card border bg-surface-sunken object-cover", className)}
       />
     );
   }
@@ -155,7 +155,7 @@ export function CourseCoverView({ cover, className }: { cover: CourseCover; clas
   return (
     <span
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-lg border bg-primary/10 text-primary",
+        "flex shrink-0 items-center justify-center rounded-card border bg-primary/10 text-primary",
         className,
       )}
       aria-hidden

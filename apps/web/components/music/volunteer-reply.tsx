@@ -22,8 +22,8 @@ const ICONS = {
 };
 
 const COLORS = {
-  yes: "text-emerald-600 dark:text-emerald-400",
-  maybe: "text-amber-600 dark:text-amber-400",
+  yes: "text-success",
+  maybe: "text-warning",
   no: "text-danger",
   none: "text-muted",
 };

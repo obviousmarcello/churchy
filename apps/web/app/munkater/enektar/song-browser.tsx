@@ -585,7 +585,7 @@ function RowTags({ tags }: { tags: string[] }) {
       {tags.slice(0, ROW_TAGS_MAX).map((tag) => (
         <span
           key={tag}
-          className="truncate rounded-md bg-surface-sunken px-1.5 py-0.5 text-xs text-text"
+          className="truncate rounded-control bg-surface-sunken px-1.5 py-0.5 text-xs text-text"
         >
           {tag}
         </span>
@@ -614,10 +614,7 @@ function Snippet({ snippet }: { snippet: SongSnippetDTO }) {
       )}
       {snippet.parts.map((part, index) =>
         part.match ? (
-          <mark
-            key={index}
-            className="rounded-sm bg-yellow-200/80 px-0.5 text-text dark:bg-yellow-400/30"
-          >
+          <mark key={index} className="rounded-sm bg-warning-soft px-0.5 text-text">
             {part.text}
           </mark>
         ) : (
@@ -710,7 +707,7 @@ function SongDetails({
                 <Link
                   href={tagHref(tag)}
                   title={format(m.songs.browser.details.filterByTag, { tag })}
-                  className="inline-flex h-7 items-center rounded-md bg-surface-sunken px-2.5 text-[0.8rem] text-text transition-colors hover:bg-surface-sunken/70"
+                  className="inline-flex h-7 items-center rounded-control bg-surface-sunken px-2.5 text-[0.8rem] text-text transition-colors hover:bg-surface-sunken/70"
                 >
                   {tag}
                 </Link>
@@ -774,7 +771,7 @@ function SongDetails({
       <section className="flex flex-col gap-2">
         <h3 className="text-sm font-medium">{m.songs.browser.details.arrangements}</h3>
         {song.arrangements.length > 0 ? (
-          <ul className="flex flex-col divide-y rounded-lg border">
+          <ul className="flex flex-col divide-y rounded-card border">
             {song.arrangements.map((arrangement) => {
               const details = arrangementDetails(arrangement, noteNames);
               // After the key.
@@ -790,7 +787,7 @@ function SongDetails({
                     <p className="flex items-center gap-2 text-sm font-medium">
                       {arrangement.name}
                       {arrangement.isDefault && (
-                        <span className="rounded-md bg-surface-sunken px-1.5 py-0.5 text-xs font-normal text-text">
+                        <span className="rounded-control bg-surface-sunken px-1.5 py-0.5 text-xs font-normal text-text">
                           {m.songs.browser.details.default}
                         </span>
                       )}
@@ -867,7 +864,7 @@ function SongDetails({
             // The sheet of an arrangement shows them.
             <ul className="flex flex-wrap gap-1.5">
               {song.scores.map((score) => (
-                <li key={score.id} className="rounded-md border px-2 py-0.5 text-sm">
+                <li key={score.id} className="rounded-control border px-2 py-0.5 text-sm">
                   {score.name}
                 </li>
               ))}
@@ -882,7 +879,7 @@ function SongDetails({
         <section className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">{m.songs.browser.details.pdfs}</h3>
           {song.pdfs.length > 0 ? (
-            <ul className="flex flex-col divide-y rounded-lg border">
+            <ul className="flex flex-col divide-y rounded-card border">
               {song.pdfs.map((pdf) => (
                 <li key={pdf.id}>
                   <Link
@@ -911,7 +908,7 @@ function SongDetails({
         <section className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">{m.songs.browser.details.images}</h3>
           {images.length > 0 ? (
-            <ul className="flex flex-col divide-y rounded-lg border">
+            <ul className="flex flex-col divide-y rounded-card border">
               {images.map((image) => (
                 <li key={image.id}>
                   <Link
@@ -942,7 +939,7 @@ function SongDetails({
         <section className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">{m.songs.browser.details.soundFiles}</h3>
           {song.soundFiles.length > 0 ? (
-            <ul className="flex flex-col divide-y rounded-lg border">
+            <ul className="flex flex-col divide-y rounded-card border">
               {song.soundFiles.map((soundFile) => (
                 <li key={soundFile.id} className="px-3 py-2">
                   <SoundFilePlayer
@@ -962,7 +959,7 @@ function SongDetails({
         <section className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">{m.songs.browser.details.links}</h3>
           {song.links.length > 0 ? (
-            <ul className="flex flex-col divide-y rounded-lg border">
+            <ul className="flex flex-col divide-y rounded-card border">
               {song.links.map((link) => (
                 <li key={link.id}>
                   <SongLinkAnchor

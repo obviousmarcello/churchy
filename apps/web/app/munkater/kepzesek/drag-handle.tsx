@@ -49,7 +49,7 @@ export function DragHandle({
         onMove(offset);
       }}
       className={cn(
-        "flex h-8 w-6 shrink-0 touch-none items-center justify-center rounded-sm text-muted outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50",
+        "flex h-8 w-6 shrink-0 touch-none items-center justify-center rounded-sm text-muted outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-focus/50 disabled:opacity-50",
         dragging ? "cursor-grabbing" : "cursor-grab",
       )}
     >

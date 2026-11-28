@@ -25,7 +25,7 @@ export function GroupOption({
   return (
     <label
       className={cn(
-        "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm has-focus-visible:ring-3 has-focus-visible:ring-ring/50",
+        "flex items-center gap-2 rounded-card border px-3 py-1.5 text-sm has-focus-visible:ring-3 has-focus-visible:ring-focus/50",
         locked ? "text-muted" : "cursor-pointer",
         checked && "border-primary bg-primary/10",
       )}

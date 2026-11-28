@@ -189,7 +189,7 @@ function SongMedia({ songs, showTitles }: { songs: RehearsalSong[]; showTitles: 
   const withMedia = songs.filter((song) => song.soundFiles.length > 0 || song.links.length > 0);
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-border p-3">
+    <section className="flex flex-col gap-3 rounded-card border border-border p-3">
       <h3 className="text-xs font-medium text-text/60">{m.sheet.rehearsal.media}</h3>
       {withMedia.map((song) => (
         <div key={song.id} className="flex flex-col gap-3">
@@ -201,7 +201,7 @@ function SongMedia({ songs, showTitles }: { songs: RehearsalSong[]; showTitles: 
             <ul className="-mx-1 flex flex-col">
               {song.links.map((link) => (
                 <li key={link.id}>
-                  <SongLinkAnchor link={link} className="rounded-md px-1 py-1.5" />
+                  <SongLinkAnchor link={link} className="rounded-control px-1 py-1.5" />
                 </li>
               ))}
             </ul>
@@ -226,7 +226,7 @@ function ScorePlayer({
   const withScore = songs.filter((song) => song.score);
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-border p-3">
+    <section className="flex flex-col gap-3 rounded-card border border-border p-3">
       <h3 className="text-xs font-medium text-text/60">{m.sheet.play.title}</h3>
       {withScore.length === 0 ? (
         <p className="text-xs text-text/70">{m.sheet.play.chooseScore}</p>
@@ -411,7 +411,7 @@ function ChordCard({
   const shown = Math.min(index, Math.max(count - 1, 0));
 
   return (
-    <div className="flex h-full flex-col items-center gap-1 rounded-lg border border-border bg-surface/40 p-2">
+    <div className="flex h-full flex-col items-center gap-1 rounded-card border border-border bg-surface/40 p-2">
       <p className="text-center">
         <span className="font-bold text-primary">{label}</span>
         {name !== symbol && (

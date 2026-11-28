@@ -160,7 +160,7 @@ function ProposalCard({ proposal }: { proposal: RightsProposalDTO }) {
         </div>
       </div>
 
-      <details open className="rounded-lg border bg-surface-sunken/40 p-3 text-sm">
+      <details open className="rounded-card border bg-surface-sunken/40 p-3 text-sm">
         <summary className="cursor-pointer font-medium">{t.lyrics}</summary>
         <p className="mt-2 max-h-72 overflow-auto whitespace-pre-line">
           {song.lyrics || t.noLyrics}

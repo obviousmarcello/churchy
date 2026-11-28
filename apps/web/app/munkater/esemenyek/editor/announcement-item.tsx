@@ -228,7 +228,7 @@ export function AnnouncementItem({
           {view.own.map((entry) => (
             <li
               key={entry.key}
-              className="flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs"
+              className="flex items-center gap-1 rounded-control border px-2 py-0.5 text-xs"
             >
               <StarIcon aria-hidden className="size-3 fill-current text-primary" />
               {entry.title}
@@ -447,7 +447,7 @@ function AnnouncementEditor({
       />
 
       {empty && (
-        <Empty className="rounded-lg border p-6">
+        <Empty className="rounded-card border p-6">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <CalendarIcon />
@@ -484,7 +484,7 @@ function AnnouncementEditor({
                       {formatDays(locale, group.from, group.to)}
                     </span>
                   </h4>
-                  <ul className="divide-y rounded-lg border">
+                  <ul className="divide-y rounded-card border">
                     {group.entries.map((entry) => (
                       <EntryRow key={entry.key} entry={entry} {...entryProps} />
                     ))}
@@ -492,7 +492,7 @@ function AnnouncementEditor({
                 </div>
               ))
             ) : (
-              <ul className="divide-y rounded-lg border">
+              <ul className="divide-y rounded-card border">
                 {section.entries.map((entry) => (
                   <EntryRow key={entry.key} entry={entry} {...entryProps} />
                 ))}
@@ -505,7 +505,7 @@ function AnnouncementEditor({
         <section aria-label={t.undated} className="flex flex-col gap-2">
           <h3 className="font-medium">{t.undated}</h3>
           <p className="text-sm text-muted">{t.undatedHint}</p>
-          <ul className="divide-y rounded-lg border">
+          <ul className="divide-y rounded-card border">
             {view.undated.map((entry) => (
               <EntryRow key={entry.key} entry={entry} {...entryProps} />
             ))}
@@ -529,7 +529,7 @@ function AnnouncementEditor({
             />
             {format(t.excluded, { count: view.excluded.length })}
           </summary>
-          <ul className="mt-2 divide-y rounded-lg border">
+          <ul className="mt-2 divide-y rounded-card border">
             {view.excluded.map((entry) => (
               <EntryRow key={entry.key} entry={entry} {...entryProps} />
             ))}
@@ -597,7 +597,7 @@ function Settings({
   });
 
   return (
-    <section aria-label={t.settingsHeading} className="flex flex-col gap-5 rounded-lg border p-4">
+    <section aria-label={t.settingsHeading} className="flex flex-col gap-5 rounded-card border p-4">
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-2 text-sm font-medium">{t.calendars}</legend>
         {calendars.length === 0 ? (
@@ -881,7 +881,10 @@ function EntryRow({
       </div>
 
       {open && (
-        <div id={`${id}-settings`} className="flex flex-col gap-4 rounded-md bg-surface-sunken p-3">
+        <div
+          id={`${id}-settings`}
+          className="flex flex-col gap-4 rounded-control bg-surface-sunken p-3"
+        >
           <div className="grid gap-3 sm:grid-cols-3">
             {(
               [
@@ -1123,7 +1126,7 @@ function ManualEntryForm({
   return (
     <form
       onSubmit={save}
-      className="flex flex-col gap-3 rounded-lg border p-3"
+      className="flex flex-col gap-3 rounded-card border p-3"
       aria-label={entry ? t.editEntry : t.addEntry}
     >
       <div className="flex flex-col gap-1">

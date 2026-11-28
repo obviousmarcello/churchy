@@ -176,7 +176,7 @@ export function SetlistFieldsMenu({
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={6} align="end" collisionPadding={8} className="z-50">
-          <Menu.Popup className="min-w-48 origin-[var(--transform-origin)] rounded-lg border bg-surface-raised p-1 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Menu.Popup className="min-w-48 origin-[var(--transform-origin)] rounded-card border bg-surface-raised p-1 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             <Menu.Group>
               <Menu.GroupLabel className="px-2 py-1.5 text-xs font-medium text-muted">
                 {t.setlistFields}
@@ -192,7 +192,7 @@ export function SetlistFieldsMenu({
                         : fields.filter((candidate) => candidate !== field),
                     )
                   }
-                  className="flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken"
+                  className="flex cursor-default items-center gap-2 rounded-control px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken"
                 >
                   <span className="flex size-4 shrink-0 items-center justify-center">
                     <Menu.CheckboxItemIndicator>

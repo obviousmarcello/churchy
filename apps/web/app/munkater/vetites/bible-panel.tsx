@@ -182,7 +182,7 @@ export function BiblePanel({ layout, ...props }: BibleBrowserProps & { layout: B
           {/* The keys of the slides also work here, as in the docked panel. */}
           <Dialog.Popup
             data-projection-keys=""
-            className="fixed inset-y-0 right-0 flex w-[min(28rem,100vw)] flex-col border-l bg-popover pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-popover-foreground shadow-lg transition-transform duration-200 ease-out outline-none data-ending-style:translate-x-full data-starting-style:translate-x-full"
+            className="fixed inset-y-0 right-0 flex w-[min(28rem,100vw)] flex-col border-l bg-surface-raised pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-text shadow-lg transition-transform duration-200 ease-out outline-none data-ending-style:translate-x-full data-starting-style:translate-x-full"
           >
             <div className="flex items-center gap-2 border-b px-3 py-2">
               <Dialog.Title className="min-w-0 flex-1 font-heading text-base font-semibold">
@@ -213,7 +213,7 @@ export function BiblePanel({ layout, ...props }: BibleBrowserProps & { layout: B
     return (
       <aside
         aria-label={t.title}
-        className="flex w-11 shrink-0 flex-col items-center border-l bg-sidebar py-2"
+        className="flex w-11 shrink-0 flex-col items-center border-l bg-surface-sunken py-2"
       >
         <button
           type="button"
@@ -221,7 +221,7 @@ export function BiblePanel({ layout, ...props }: BibleBrowserProps & { layout: B
           aria-label={t.open}
           title={t.open}
           onClick={() => layout.setOpen(true)}
-          className="flex flex-col items-center gap-2 rounded-md px-1.5 py-2 text-sm font-medium text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="flex flex-col items-center gap-2 rounded-control px-1.5 py-2 text-sm font-medium text-muted transition-colors outline-none hover:bg-surface-sunken hover:text-text focus-visible:ring-3 focus-visible:ring-focus/50"
         >
           <BookOpenIcon aria-hidden className="size-4" />
           <span className="[writing-mode:vertical-rl]">{t.title}</span>
@@ -246,7 +246,7 @@ function DockedPanel({ layout, ...props }: BibleBrowserProps & { layout: BiblePa
       ref={asideRef}
       aria-label={t.title}
       style={{ width: dragWidth ?? layout.width }}
-      className="relative flex min-h-0 max-w-[60vw] min-w-72 shrink-0 flex-col border-l bg-sidebar"
+      className="relative flex min-h-0 max-w-[60vw] min-w-72 shrink-0 flex-col border-l bg-surface-sunken"
     >
       <ResizeHandle
         panelRef={asideRef}
@@ -442,7 +442,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
     <div className="flex flex-col gap-3">
       {groups.map((group) => (
         <section key={group.label} className="flex flex-col gap-1.5">
-          <h3 className="text-xs font-medium text-muted-foreground">{group.label}</h3>
+          <h3 className="text-xs font-medium text-muted">{group.label}</h3>
           <ul className="grid grid-cols-[repeat(auto-fill,minmax(3.75rem,1fr))] gap-1">
             {group.books.map((book) => (
               <li key={book}>
@@ -456,7 +456,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
                     open(book);
                   }}
                   className={cn(
-                    "w-full truncate rounded-md border px-1 py-1.5 text-sm transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
+                    "w-full truncate rounded-control border px-1 py-1.5 text-sm transition-colors outline-none hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50",
                     book === place.book && "border-primary bg-primary/10",
                   )}
                 >
@@ -482,7 +482,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
         <div className="relative">
           <SearchIcon
             aria-hidden
-            className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-muted"
           />
           <Input
             type="search"
@@ -496,7 +496,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
             className="pl-8"
           />
         </div>
-        {!trimmed && <p className="text-xs text-muted-foreground">{t.searchHint}</p>}
+        {!trimmed && <p className="text-xs text-muted">{t.searchHint}</p>}
         {reference && (
           <ReferenceAction
             reference={reference}
@@ -518,16 +518,14 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
               </section>
             ) : (
               !words && (
-                <p className="text-sm text-muted-foreground">
-                  {format(t.noBooks, { query: trimmed })}
-                </p>
+                <p className="text-sm text-muted">{format(t.noBooks, { query: trimmed })}</p>
               )
             )}
             {words && (
               <section className="flex flex-col gap-2">
                 <h3 className="text-sm font-medium">{t.inText}</h3>
                 {!longEnough ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted">
                     {format(t.searchTextShort, { count: MIN_TEXT_QUERY })}
                   </p>
                 ) : searchStatus.status === "idle" ? (
@@ -541,7 +539,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
                       <SearchIcon />
                       <span className="truncate">{format(t.searchText, { query: trimmed })}</span>
                     </Button>
-                    <p className="text-xs text-muted-foreground">{t.searchTextHint}</p>
+                    <p className="text-xs text-muted">{t.searchTextHint}</p>
                   </div>
                 ) : searchStatus.status === "loading" ? (
                   <Note loading>
@@ -557,10 +555,10 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
                       : format(t.searchNotInstalled, { translation: translation.shortName })}
                   </Note>
                 ) : !results ? null : results.total === 0 ? (
-                  <p className="text-sm text-muted-foreground">{t.noResults}</p>
+                  <p className="text-sm text-muted">{t.noResults}</p>
                 ) : (
                   <>
-                    <p role="status" className="text-xs text-muted-foreground">
+                    <p role="status" className="text-xs text-muted">
                       {results.total > results.verses.length
                         ? format(t.moreResults, {
                             shown: results.verses.length,
@@ -581,11 +579,11 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
                               aria-pressed={isLive}
                               onClick={() => void showResult(verse)}
                               className={cn(
-                                "flex w-full flex-col gap-0.5 rounded-md border px-2 py-1.5 text-left text-sm transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
+                                "flex w-full flex-col gap-0.5 rounded-control border px-2 py-1.5 text-left text-sm transition-colors outline-none hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50",
                                 isLive && "border-primary bg-primary/10",
                               )}
                             >
-                              <span className="text-xs font-medium text-muted-foreground">
+                              <span className="text-xs font-medium text-muted">
                                 {bookAbbreviation(verse.book, english)} {verse.chapter}
                                 {english ? ":" : ","}
                                 {verse.verse}
@@ -595,7 +593,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
                                   segment.match ? (
                                     <mark
                                       key={index}
-                                      className="rounded-sm bg-primary/20 text-foreground"
+                                      className="rounded-sm bg-primary/20 text-text"
                                     >
                                       {segment.text}
                                     </mark>
@@ -622,10 +620,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
               </BreadcrumbButton>
               {place.book && (
                 <>
-                  <ChevronRightIcon
-                    aria-hidden
-                    className="size-3.5 shrink-0 text-muted-foreground"
-                  />
+                  <ChevronRightIcon aria-hidden className="size-3.5 shrink-0 text-muted" />
                   <BreadcrumbButton
                     current={place.chapter === null}
                     onClick={() => open(place.book)}
@@ -636,10 +631,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
               )}
               {place.book && place.chapter !== null && (
                 <>
-                  <ChevronRightIcon
-                    aria-hidden
-                    className="size-3.5 shrink-0 text-muted-foreground"
-                  />
+                  <ChevronRightIcon aria-hidden className="size-3.5 shrink-0 text-muted" />
                   <BreadcrumbButton current>
                     {format(t.chapter, { chapter: place.chapter })}
                   </BreadcrumbButton>
@@ -653,7 +645,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
               <BookStatusNote bible={bible} />
             ) : place.chapter === null ? (
               <section className="flex flex-col gap-1.5">
-                <h3 className="text-xs font-medium text-muted-foreground">{t.chapters}</h3>
+                <h3 className="text-xs font-medium text-muted">{t.chapters}</h3>
                 <ul className="grid grid-cols-[repeat(auto-fill,minmax(2.75rem,1fr))] gap-1">
                   {openBook.chapters.map((_, index) => (
                     <li key={index}>
@@ -662,7 +654,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
                         aria-label={format(t.chapter, { chapter: index + 1 })}
                         onClick={() => open(place.book, index + 1)}
                         className={cn(
-                          "w-full rounded-md border py-1.5 text-sm tabular-nums transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
+                          "w-full rounded-control border py-1.5 text-sm tabular-nums transition-colors outline-none hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50",
                           liveChapters.has(index + 1) && "border-primary bg-primary/10",
                         )}
                       >
@@ -689,7 +681,7 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
                   </Button>
                 </div>
                 {chapterTiles.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">{t.noVerses}</p>
+                  <p className="text-sm text-muted">{t.noVerses}</p>
                 ) : (
                   <ol ref={listRef} className="flex flex-col gap-0.5">
                     {chapterTiles.map((tile) => {
@@ -709,11 +701,11 @@ function BibleBrowser({ bible, live, onClickVerse, onShowVerses, onAdd }: BibleB
                               })
                             }
                             className={cn(
-                              "flex w-full gap-2 rounded-md px-1.5 py-1 text-left text-sm transition-colors outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
+                              "flex w-full gap-2 rounded-control px-1.5 py-1 text-left text-sm transition-colors outline-none hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50",
                               isLive && "bg-primary/10 ring-2 ring-primary",
                             )}
                           >
-                            <span className="w-6 shrink-0 pt-0.5 text-right text-xs font-medium text-muted-foreground tabular-nums">
+                            <span className="w-6 shrink-0 pt-0.5 text-right text-xs font-medium text-muted tabular-nums">
                               {tile.verse?.verse}
                             </span>
                             <span className="min-w-0 flex-1">{tile.verse?.text}</span>
@@ -754,11 +746,7 @@ function ReferenceAction({
   const { m, format } = useI18n();
   const t = m.project.biblePanel;
   if (!available)
-    return (
-      <p className="text-xs text-muted-foreground">
-        {format(t.referenceUnavailable, { translation })}
-      </p>
-    );
+    return <p className="text-xs text-muted">{format(t.referenceUnavailable, { translation })}</p>;
   const chaptersOnly = reference.ranges.every(
     ({ from, to }) => from.verse === null && to.verse === null,
   );
@@ -798,7 +786,7 @@ function BreadcrumbButton({
     <button
       type="button"
       onClick={onClick}
-      className="min-w-0 truncate rounded-sm px-1 text-muted-foreground underline-offset-2 outline-none hover:text-foreground hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="min-w-0 truncate rounded-sm px-1 text-muted underline-offset-2 outline-none hover:text-text hover:underline focus-visible:ring-3 focus-visible:ring-focus/50"
     >
       {children}
     </button>
@@ -860,7 +848,7 @@ function Note({
   children: React.ReactNode;
 }) {
   return (
-    <p role="status" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+    <p role="status" className="flex flex-wrap items-center gap-2 text-sm text-muted">
       {loading ? (
         <LoaderCircleIcon aria-hidden className="size-4 shrink-0 animate-spin" />
       ) : (

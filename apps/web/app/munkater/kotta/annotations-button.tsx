@@ -69,14 +69,17 @@ export function AnnotationsButton({ song }: { song: SheetSong }) {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8} align="end" collisionPadding={8} className="z-50">
-          <Popover.Popup className="flex max-h-[var(--available-height)] w-80 max-w-[calc(100vw-1rem)] flex-col gap-3 overflow-y-auto rounded-lg border bg-surface-raised p-4 text-text shadow-lg outline-none">
+          <Popover.Popup className="flex max-h-[var(--available-height)] w-80 max-w-[calc(100vw-1rem)] flex-col gap-3 overflow-y-auto rounded-card border bg-surface-raised p-4 text-text shadow-lg outline-none">
             <Popover.Title className="text-sm font-semibold">{t.title}</Popover.Title>
             {song.annotations.length === 0 ? (
               <p className="text-sm text-muted">{t.empty}</p>
             ) : (
               <ul className="flex flex-col gap-2">
                 {song.annotations.map((note: SheetAnnotation) => (
-                  <li key={note.id} className="flex flex-col gap-1 rounded-md border p-2 text-sm">
+                  <li
+                    key={note.id}
+                    className="flex flex-col gap-1 rounded-control border p-2 text-sm"
+                  >
                     <span className="text-xs text-muted">
                       {note.sectionLabel ?? t.wholeSong}
                       {note.setlistItemId !== null && ` · ${t.thisSlotOnly}`}

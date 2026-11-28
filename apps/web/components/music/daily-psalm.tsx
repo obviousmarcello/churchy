@@ -88,7 +88,7 @@ export function DailyPsalm() {
     <section
       aria-labelledby="daily-psalm-title"
       data-testid="daily-psalm"
-      className="rounded-md border border-border bg-surface-raised p-4"
+      className="rounded-control border border-border bg-surface-raised p-4"
     >
       <h2 id="daily-psalm-title" className="font-heading text-fs-5 font-bold">
         <button

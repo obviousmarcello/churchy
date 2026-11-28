@@ -172,7 +172,7 @@ export function AddItemBox({
           {/* As wide as the field, and at least 32rem in the narrow quick add of the projection, for the long suggestions.
               A fixed width: the popup does not jump when the suggestions change. */}
           <Autocomplete.Positioner className="z-50 outline-none" sideOffset={4} align="start">
-            <Autocomplete.Popup className="w-[max(var(--anchor-width),min(32rem,var(--available-width)))] max-w-(--available-width) rounded-lg border bg-surface-raised text-text shadow-md">
+            <Autocomplete.Popup className="w-[max(var(--anchor-width),min(32rem,var(--available-width)))] max-w-(--available-width) rounded-card border bg-surface-raised text-text shadow-md">
               <Autocomplete.Empty>
                 <p className="px-3 py-2 text-sm text-muted">{t.noMatches}</p>
               </Autocomplete.Empty>
@@ -190,7 +190,7 @@ export function AddItemBox({
                     }
                     value={option}
                     onClick={() => add(option)}
-                    className="flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted"
+                    className="flex cursor-default items-center gap-2 rounded-control px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted"
                   >
                     {option.kind === "song" ? (
                       <>
@@ -209,7 +209,7 @@ export function AddItemBox({
                           )}
                         </span>
                         {inList.has(option.song.id) && (
-                          <span className="ml-auto shrink-0 rounded-md bg-surface-sunken px-1.5 py-0.5 text-xs text-muted">
+                          <span className="ml-auto shrink-0 rounded-control bg-surface-sunken px-1.5 py-0.5 text-xs text-muted">
                             {t.inList}
                           </span>
                         )}

@@ -41,9 +41,7 @@ export function ScriptureTranslationSelect({
   const translations = pasted ? enabled : fullTextTranslations(enabled);
   const current = resolveTranslation(value, translations);
   if (!current)
-    return offNote ? (
-      <p className={cn("text-xs text-muted-foreground", className)}>{t.allOff}</p>
-    ) : null;
+    return offNote ? <p className={cn("text-xs text-muted", className)}>{t.allOff}</p> : null;
   const languageNames = new Intl.DisplayNames([locale], { type: "language" });
   const languages = scriptureLanguages(translations);
 

@@ -110,7 +110,7 @@ function Option({
 }) {
   const [on, setOn] = useState(checked);
   return (
-    <div className="flex flex-col gap-3 rounded-lg border p-3 text-sm has-[input[type=checkbox]:checked]:border-primary has-[input[type=checkbox]:checked]:bg-primary/5">
+    <div className="flex flex-col gap-3 rounded-card border p-3 text-sm has-[input[type=checkbox]:checked]:border-primary has-[input[type=checkbox]:checked]:bg-primary/5">
       <label className="flex items-start gap-3">
         <input
           type="checkbox"

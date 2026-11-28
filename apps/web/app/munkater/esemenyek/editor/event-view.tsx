@@ -335,7 +335,7 @@ function EventDetails({ result }: { result: EventPageResult }) {
                 <PresentationIcon />
                 {m.events.detail.project}
                 {projection.running && (
-                  <span className="size-2 rounded-full bg-red-600" aria-hidden />
+                  <span className="size-2 rounded-full bg-danger" aria-hidden />
                 )}
               </Link>
             )}
@@ -349,7 +349,7 @@ function EventDetails({ result }: { result: EventPageResult }) {
           >
             {projection.running && (
               <span className="flex items-center gap-1.5">
-                <RadioIcon aria-hidden className="size-4 text-red-600" />
+                <RadioIcon aria-hidden className="size-4 text-danger" />
                 {m.events.detail.projectionRunning}
               </span>
             )}
@@ -565,7 +565,7 @@ function EventSummary({
       </div>
       {/* A copy in the browser from an older version has no `isPrivate`: a public event then. */}
       {event.isPrivate && (
-        <p className="flex items-start gap-2 rounded-lg bg-surface-sunken p-3 text-sm text-muted">
+        <p className="flex items-start gap-2 rounded-card bg-surface-sunken p-3 text-sm text-muted">
           <LockIcon className="mt-0.5 size-4 shrink-0" />
           {m.events.detail.private}
         </p>
@@ -654,13 +654,13 @@ function Volunteers({
       </div>
       {/* Until the volunteer replies. Then their chip has the reply, unless an older copy has no user id to find the chip. */}
       {myReply && (myReply.reply === null || !myReply.userId) && (
-        <div className="rounded-lg border bg-surface-sunken px-3 py-2">
+        <div className="rounded-card border bg-surface-sunken px-3 py-2">
           <ReplyForm eventId={event.id} reply={myReply.reply} />
         </div>
       )}
       {/* The note on the teams, from the team planner. */}
       {teams.note && (
-        <div className="rounded-lg border bg-surface-sunken px-3 py-2 text-sm">
+        <div className="rounded-card border bg-surface-sunken px-3 py-2 text-sm">
           <span className="font-medium">{m.events.teams.note}: </span>
           <span className="break-words whitespace-pre-wrap">{teams.note}</span>
         </div>
@@ -698,7 +698,7 @@ function ReplySummary({ volunteers }: { volunteers: VolunteerDTO[] }) {
     .map((reply) => plural(m.events.replies.counts[reply], counts[reply]));
 
   return (
-    <p className="flex items-center gap-2 rounded-lg bg-surface-sunken px-3 py-2 text-sm text-muted">
+    <p className="flex items-center gap-2 rounded-card bg-surface-sunken px-3 py-2 text-sm text-muted">
       <ReplyIcon
         reply={counts.none > 0 ? null : counts.no > 0 ? "no" : counts.maybe > 0 ? "maybe" : "yes"}
       />
@@ -733,7 +733,7 @@ function DeclinedVolunteers({
   return (
     <div
       role="note"
-      className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200"
+      className="flex items-start gap-2 rounded-card border border-warning/40 bg-warning-soft p-3 text-sm text-warning"
     >
       <TriangleAlertIcon aria-hidden className="mt-0.5 size-4 shrink-0" />
       <div className="flex min-w-0 flex-col gap-1">

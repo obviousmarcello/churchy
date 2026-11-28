@@ -574,7 +574,7 @@ export function SetlistRows<Row extends SetlistRow | ItemRow>({
           <li
             data-block-header={block.key}
             // The top of the card of the block: its items join it below.
-            className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-t-xl border-l-4 border-l-primary/40 bg-surface-sunken px-3 py-2"
+            className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-t-card border-l-4 border-l-primary/40 bg-surface-sunken px-3 py-2"
           >
             {blocks.header(block, run)}
           </li>
@@ -598,7 +598,7 @@ export function SetlistRows<Row extends SetlistRow | ItemRow>({
             aria-keyshortcuts="ArrowUp ArrowDown"
             title={t.dragToReorder}
             className={cn(
-              "-ml-1 flex shrink-0 touch-none items-center rounded-sm pointer-coarse:-my-2 pointer-coarse:-ml-3 pointer-coarse:p-2 text-muted outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-ring/50",
+              "-ml-1 flex shrink-0 touch-none items-center rounded-sm pointer-coarse:-my-2 pointer-coarse:-ml-3 pointer-coarse:p-2 text-muted outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-focus/50",
               drag ? "cursor-grabbing" : "cursor-grab",
             )}
             onKeyDown={(event) => {
@@ -625,7 +625,7 @@ export function SetlistRows<Row extends SetlistRow | ItemRow>({
         const numberOf = (title: string) => (
           <span className="flex shrink-0 items-center gap-1">
             {live && (
-              <span className="flex items-center gap-1 rounded-full bg-red-600 px-1.5 py-0.5 text-xs font-medium text-white">
+              <span className="flex items-center gap-1 rounded-full bg-danger px-1.5 py-0.5 text-xs font-medium text-white">
                 <RadioIcon aria-hidden className="size-3" />
                 {t.live}
               </span>
@@ -640,7 +640,7 @@ export function SetlistRows<Row extends SetlistRow | ItemRow>({
                 title={m.components.eventBlocks.selectHint}
                 onClick={(event) => selection.onSelect(rowKey, event.shiftKey)}
                 className={cn(
-                  "w-6 rounded-sm text-right text-sm tabular-nums outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                  "w-6 rounded-sm text-right text-sm tabular-nums outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-focus/50",
                   selected ? "font-semibold text-primary" : "text-muted",
                 )}
               >
@@ -819,10 +819,10 @@ export function SetlistRows<Row extends SetlistRow | ItemRow>({
         const rowClassName = cn(
           // Each item is a card of its own.
           // The left border on each row, so the marks of all rows stay in one column.
-          "flex flex-wrap gap-2 rounded-xl border-l-4 border-l-transparent bg-surface-sunken px-3 py-2.5 @2xl:flex-nowrap",
+          "flex flex-wrap gap-2 rounded-card border-l-4 border-l-transparent bg-surface-sunken px-3 py-2.5 @2xl:flex-nowrap",
           // The items of a block are one card with its header, with lines between them.
           inBlock(index) && "-mt-2 rounded-none border-t border-l-primary/40 border-t-border",
-          lastInBlock(index) && "rounded-b-xl",
+          lastInBlock(index) && "rounded-b-card",
           selected && "border-l-primary bg-primary/15 ring-1 ring-primary/50",
           index === firstSelected && selection?.bar ? "relative" : false,
           drag?.index === index && "relative z-10 bg-surface-sunken shadow-md",
@@ -1208,7 +1208,7 @@ export function SetlistRows<Row extends SetlistRow | ItemRow>({
 
 /** The round mark of the kind of an item, before its title (also the button of `TextKindMenu`). */
 export const ITEM_ICON_CLASS =
-  "flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground [&_svg]:size-4";
+  "flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-sunken text-text [&_svg]:size-4";
 
 /** The width of the `@2xl` container size, in rem: a narrower list wraps its rows (see `controlsClassName`). */
 const WIDE_LIST_REM = 42;
@@ -1321,7 +1321,7 @@ function KeyAvatar({ name, chart, size }: { name: string; chart: boolean; size: 
         "inline-flex shrink-0 items-center justify-center rounded-full font-medium tabular-nums",
         size === "md" ? "size-8 text-xs" : "size-6 text-[0.625rem]",
         chart
-          ? "border border-dashed border-muted-foreground/50 text-muted"
+          ? "border border-dashed border-border-strong/50 text-muted"
           : "bg-surface-sunken text-text",
       )}
     >

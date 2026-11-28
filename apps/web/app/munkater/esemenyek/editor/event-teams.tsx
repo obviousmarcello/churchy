@@ -71,7 +71,7 @@ export function VolunteerTeams({
   return (
     <ul className="@container grid gap-3 @2xl:grid-cols-2">
       {rows.map((row) => (
-        <li key={row.key} className="flex flex-col gap-2 rounded-xl border p-4">
+        <li key={row.key} className="flex flex-col gap-2 rounded-card border p-4">
           <h3 className="min-w-0 text-sm font-semibold break-words">{row.name}</h3>
           {row.note && row.people.length === 0 && (
             <p className="text-sm break-words whitespace-pre-wrap">{row.note}</p>
@@ -266,11 +266,11 @@ function TeamsForm({
           )}
 
           {areas.length === 0 ? (
-            <p className="rounded-lg border border-dashed px-3 py-6 text-center text-sm text-muted">
+            <p className="rounded-card border border-dashed px-3 py-6 text-center text-sm text-muted">
               {t.templateEmpty}
             </p>
           ) : (
-            <ul className="divide-y rounded-lg border">
+            <ul className="divide-y rounded-card border">
               {areas.map((area) => {
                 const groupMembers = editor.groupMembers[area.id] ?? [];
                 // A leader adds only the members of the group; the people of the saved team stay (the database checks it too).

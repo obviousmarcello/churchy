@@ -229,9 +229,9 @@ function ImageGrid({
         )}
       >
         {images.map((image, index) => (
-          <li key={image.id} className="flex min-w-0 flex-col gap-2 rounded-lg border p-2">
+          <li key={image.id} className="flex min-w-0 flex-col gap-2 rounded-card border p-2">
             <div
-              className="relative w-full overflow-hidden rounded-md bg-black"
+              className="relative w-full overflow-hidden rounded-control bg-black"
               style={{ aspectRatio: PREVIEW_ASPECT_RATIO }}
             >
               <SlideView slide={imageSlide(image)} look={look} />

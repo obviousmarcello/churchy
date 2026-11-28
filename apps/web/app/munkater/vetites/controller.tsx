@@ -1283,7 +1283,7 @@ export function ProjectionController({
                         return (
                           <Fragment key={item.key}>
                             {blockHeader && schedule && (
-                              <li className="flex w-44 shrink-0 flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border-l-4 border-l-primary/40 bg-surface-sunken px-2.5 py-1.5 lg:mt-1 lg:w-auto lg:shrink">
+                              <li className="flex w-44 shrink-0 flex-wrap items-center gap-x-2 gap-y-1 rounded-card border-l-4 border-l-primary/40 bg-surface-sunken px-2.5 py-1.5 lg:mt-1 lg:w-auto lg:shrink">
                                 <BlockHeader
                                   block={blockHeader}
                                   status={
@@ -1342,7 +1342,8 @@ export function ProjectionController({
                               className={cn(
                                 "relative shrink-0 lg:shrink",
                                 inBlock && "lg:border-l-4 lg:border-l-primary/40 lg:pl-1",
-                                drag.dragKey === item.key && "z-10 rounded-lg bg-surface shadow-md",
+                                drag.dragKey === item.key &&
+                                  "z-10 rounded-card bg-surface shadow-md",
                               )}
                             >
                               {movable && (
@@ -1367,7 +1368,7 @@ export function ProjectionController({
                                     drag.move(item.key, offset);
                                   }}
                                   className={cn(
-                                    "absolute top-1/2 left-0.5 flex h-8 w-6 -translate-y-1/2 touch-none items-center justify-center rounded-sm text-muted outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50",
+                                    "absolute top-1/2 left-0.5 flex h-8 w-6 -translate-y-1/2 touch-none items-center justify-center rounded-sm text-muted outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-focus/50 disabled:opacity-50",
                                     drag.dragKey !== null ? "cursor-grabbing" : "cursor-grab",
                                   )}
                                 >
@@ -1385,7 +1386,7 @@ export function ProjectionController({
                                 onClick={() => setSelectedKey(item.key)}
                                 className={cn(
                                   // Narrow: the same height in the row, also with the details of a song under its title.
-                                  "flex h-full w-44 items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-sm transition-colors hover:bg-surface-sunken lg:h-auto lg:w-full",
+                                  "flex h-full w-44 items-center gap-2 rounded-card border px-2.5 py-2 text-left text-sm transition-colors hover:bg-surface-sunken lg:h-auto lg:w-full",
                                   movable && "pl-7",
                                   quick && "border-dashed",
                                   removable && "pr-9",
@@ -1672,7 +1673,7 @@ function Tiles({
                 }
                 className={cn(
                   TILE_BUTTON,
-                  "flex h-full min-h-24 flex-col gap-1 rounded-lg p-2.5",
+                  "flex h-full min-h-24 flex-col gap-1 rounded-card p-2.5",
                   live && LIVE_TILE,
                 )}
               >
@@ -1717,7 +1718,7 @@ function Tiles({
               type="button"
               disabled={more.status === "loading"}
               onClick={more.status === "failed" ? onRetry : onLoadMore}
-              className="flex h-full min-h-24 w-full flex-col items-center justify-center gap-1 rounded-lg border border-dashed p-2.5 text-center text-sm transition-colors hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-60"
+              className="flex h-full min-h-24 w-full flex-col items-center justify-center gap-1 rounded-card border border-dashed p-2.5 text-center text-sm transition-colors hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:outline-none disabled:opacity-60"
             >
               {more.status === "loading" ? (
                 <LoaderCircleIcon aria-hidden className="size-4 animate-spin" />
@@ -1791,14 +1792,14 @@ function PartedTile({
   const t = m.project.controller;
 
   return (
-    <div className={cn("flex flex-col gap-2 rounded-lg border p-2", live && "border-primary")}>
+    <div className={cn("flex flex-col gap-2 rounded-card border p-2", live && "border-primary")}>
       <button
         type="button"
         aria-pressed={live && livePart < 0}
         onClick={onShow}
         className={cn(
           TILE_BUTTON,
-          "flex flex-col gap-1 rounded-md p-2.5",
+          "flex flex-col gap-1 rounded-control p-2.5",
           live && livePart < 0 && LIVE_TILE,
         )}
       >
@@ -1822,7 +1823,7 @@ function PartedTile({
           onClick={() => onShowPart(index)}
           className={cn(
             TILE_BUTTON,
-            "ml-3 w-[calc(100%-0.75rem)] rounded-md px-2.5 py-2 text-sm",
+            "ml-3 w-[calc(100%-0.75rem)] rounded-control px-2.5 py-2 text-sm",
             livePart === index && LIVE_TILE,
           )}
         >
@@ -1835,7 +1836,7 @@ function PartedTile({
 
 /** A button of a tile, or of a part of the lyrics. */
 const TILE_BUTTON =
-  "w-full border text-left transition-colors hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
+  "w-full border text-left transition-colors hover:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:outline-none";
 /** A tile on the screens, or the part of the lyrics on the stream overlay. */
 const LIVE_TILE = "border-primary bg-primary/10 ring-2 ring-primary";
 
@@ -1991,12 +1992,12 @@ function Preview({
       <figcaption className="flex items-center gap-2 text-xs font-medium text-muted">
         {label}
         {modeLabel && (
-          <span className="rounded bg-foreground px-1.5 py-0.5 text-[0.7rem] text-background">
+          <span className="rounded bg-inverse px-1.5 py-0.5 text-[0.7rem] text-inverse-text">
             {modeLabel}
           </span>
         )}
       </figcaption>
-      <div className="relative aspect-video overflow-hidden rounded-md border bg-black">
+      <div className="relative aspect-video overflow-hidden rounded-control border bg-black">
         {slide ? (
           <SlideView slide={slide} mode={mode} look={look} playVideo={playVideo} />
         ) : (
@@ -2057,7 +2058,7 @@ function ScreenCount({ count, overlayCount }: { count: number; overlayCount: num
 
 function LiveMark({ label }: { label: string }) {
   return (
-    <span className="shrink-0 rounded bg-primary px-1.5 py-0.5 text-[0.7rem] font-medium text-primary-foreground">
+    <span className="shrink-0 rounded bg-primary px-1.5 py-0.5 text-[0.7rem] font-medium text-primary-contrast">
       {label}
     </span>
   );

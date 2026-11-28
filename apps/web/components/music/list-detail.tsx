@@ -257,29 +257,3 @@ function Nav({
     </nav>
   );
 }
-
-/**
- * The top of an item with a description: the `PageHeader` (the top bar on
- * small screens, the title of the card on large screens) and the description
- * below it.
- */
-export function ListDetailHeader({
-  title,
-  description,
-  actions,
-}: {
-  title: string;
-  description?: string;
-  actions?: React.ReactNode;
-}) {
-  return (
-    // `contents`: the top bar stays sticky in the whole item.
-    <div data-list-detail-header className="contents">
-      <PageHeader title={title} actions={actions} />
-      {description && (
-        <p className="max-w-3xl px-4 pt-4 text-sm text-muted sm:px-6 lg:pt-0">{description}</p>
-      )}
-      <div className="mx-6 hidden border-b pt-4 lg:block" />
-    </div>
-  );
-}

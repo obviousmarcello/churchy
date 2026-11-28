@@ -45,7 +45,7 @@ export function SourcesPanel({
         {calendars.map((calendar) => (
           <li
             key={calendar.id}
-            className="flex items-center justify-between gap-2 rounded-lg border px-3 py-2"
+            className="flex items-center justify-between gap-2 rounded-card border px-3 py-2"
           >
             <span>
               {calendar.name} <span className="text-sm text-muted">{calendar.urlHint}</span>

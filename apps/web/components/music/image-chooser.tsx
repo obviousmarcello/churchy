@@ -12,7 +12,7 @@ import { useMediaQuery } from "@/lib/music/browser";
 
 /** The box that shows when no pages are chosen. A click opens the file picker. */
 export const PAGES_BOX =
-  "flex cursor-pointer flex-col items-center gap-1 rounded-lg border border-dashed bg-border-strong-background px-4 py-5 text-center transition-colors outline-none hover:bg-surface-sunken focus-visible:border-focus focus-visible:ring-3 focus-visible:ring-focus/50 disabled:pointer-events-none disabled:opacity-50";
+  "flex cursor-pointer flex-col items-center gap-1 rounded-card border border-dashed bg-surface-raised px-4 py-5 text-center transition-colors outline-none hover:bg-surface-sunken focus-visible:border-focus focus-visible:ring-3 focus-visible:ring-focus/50 disabled:pointer-events-none disabled:opacity-50";
 
 /**
  * Object URLs of files on this device, e.g. for thumbnails. `free` frees one

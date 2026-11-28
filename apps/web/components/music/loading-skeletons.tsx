@@ -69,11 +69,11 @@ export function EventCardsSkeleton({
           <div
             key={index}
             className={cn(
-              "flex items-center gap-4 rounded-xl border bg-surface-raised p-4 shadow-xs",
+              "flex items-center gap-4 rounded-card border bg-surface-raised p-4 shadow-xs",
               large && "mb-6 p-5 sm:p-6",
             )}
           >
-            <Skeleton className={cn("size-14 shrink-0 rounded-lg", large && "size-16")} />
+            <Skeleton className={cn("size-14 shrink-0 rounded-card", large && "size-16")} />
             <div className="flex min-w-0 flex-1 flex-col gap-2">
               <Skeleton className={cn("h-4", width(index), large && "h-5")} />
               <Skeleton className="h-3 w-1/2" />
@@ -91,10 +91,10 @@ export function EventCardsSkeleton({
 export function EventRowsSkeleton({ label, count = 5 }: { label: string; count?: number }) {
   return (
     <LoadingRegion label={label} className="flex flex-col gap-1 px-4 pt-4 sm:px-6 lg:px-1 lg:pt-0">
-      <Skeleton className="mb-3 h-9 w-full rounded-lg" />
+      <Skeleton className="mb-3 h-9 w-full rounded-card" />
       {Array.from({ length: count }, (_, index) => (
         <div key={index} className="flex items-center gap-3 p-2">
-          <Skeleton className="size-11 shrink-0 rounded-md" />
+          <Skeleton className="size-11 shrink-0 rounded-control" />
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             <Skeleton className={cn("h-3.5", width(index))} />
             <Skeleton className="h-2.5 w-1/2" />
@@ -109,7 +109,7 @@ export function EventDetailSkeleton({ label }: { label: string }) {
   return (
     <LoadingRegion label={label} className="flex w-full flex-col gap-6 px-4 py-6 sm:px-6">
       <div className="flex items-start gap-4">
-        <Skeleton className="size-16 rounded-lg" />
+        <Skeleton className="size-16 rounded-card" />
         <div className="flex flex-1 flex-col gap-2 pt-1">
           <Skeleton className="h-6 w-1/2" />
           <Skeleton className="h-3 w-2/3" />
@@ -122,7 +122,7 @@ export function EventDetailSkeleton({ label }: { label: string }) {
       </div>
       <div className="flex flex-col gap-2 border-t pt-6">
         {Array.from({ length: 5 }, (_, index) => (
-          <Skeleton key={index} className="h-12 w-full rounded-lg" />
+          <Skeleton key={index} className="h-12 w-full rounded-card" />
         ))}
       </div>
     </LoadingRegion>

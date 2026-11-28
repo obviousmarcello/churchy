@@ -61,7 +61,7 @@ export function PasteScriptureDialog({
               <Dialog.Title className="font-heading text-lg font-semibold tracking-tight">
                 {format(t.title, { reference, translation: translation.shortName })}
               </Dialog.Title>
-              <Dialog.Description className="text-sm text-muted-foreground">
+              <Dialog.Description className="text-sm text-muted">
                 {format(t.description, { max: CACHE_MAX_VERSES })}
               </Dialog.Description>
             </div>
@@ -167,7 +167,7 @@ function PasteEditor({
                 </a>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">{format(t.sourceHint, { reference })}</p>
+            <p className="text-xs text-muted">{format(t.sourceHint, { reference })}</p>
           </div>
         )}
         <div className="flex flex-col gap-2">
@@ -183,7 +183,7 @@ function PasteEditor({
             autoFocus
           />
           {problem && (
-            <p id={`${id}-problem`} className="text-sm text-destructive">
+            <p id={`${id}-problem`} className="text-sm text-danger">
               {problem}
             </p>
           )}
@@ -193,14 +193,14 @@ function PasteEditor({
             {t.preview}
           </h3>
           {verses.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+            <p className="rounded-card border border-dashed p-4 text-center text-sm text-muted">
               {t.previewEmpty}
             </p>
           ) : (
-            <ol className="flex max-h-60 flex-col gap-1 overflow-y-auto rounded-lg border p-3 text-sm">
+            <ol className="flex max-h-60 flex-col gap-1 overflow-y-auto rounded-card border p-3 text-sm">
               {verses.map((verse) => (
                 <li key={`${verse.chapter}:${verse.verse}`}>
-                  <span className="mr-1.5 font-semibold text-muted-foreground tabular-nums">
+                  <span className="mr-1.5 font-semibold text-muted tabular-nums">
                     {verse.chapter}
                     {english ? ":" : ","}
                     {verse.verse}
@@ -210,14 +210,12 @@ function PasteEditor({
               ))}
             </ol>
           )}
-          {translation.notice && (
-            <p className="text-xs text-muted-foreground">{translation.notice}</p>
-          )}
+          {translation.notice && <p className="text-xs text-muted">{translation.notice}</p>}
         </section>
       </DialogBody>
       <DialogFooter>
         {error && (
-          <p role="alert" className="text-sm text-destructive">
+          <p role="alert" className="text-sm text-danger">
             {error}
           </p>
         )}
