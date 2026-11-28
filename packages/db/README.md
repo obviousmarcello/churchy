@@ -30,6 +30,7 @@ DATABASE_URL=… pnpm test:contract                    # D-90 contract suites: m
 | `0005_music_functions.sql` | hand-written (`--custom`) | pg_trgm, `simple_unaccent`, helper functions of the music tables' generated columns/CHECKs          |
 | `0006_music_schema.sql`    | `drizzle-kit generate`    | music tables (`src/schema/music.ts`); replaces Churchy's `songs` / `arrangements`                   |
 | `0007_music_rls.sql`       | hand-written (`--custom`) | role `churchy_music`, RLS + grants of the music tables, SET NULL (col) FKs, partial/deferrable keys |
+| `0025`–`0027`              | hand-written + generated  | platform role (0025, 0026), site builder drafts + fresh-tenant seeding grants (0027, SDD ADR-21)    |
 | `down/<tag>.sql`           | hand-written              | Drizzle has no down migrations; `db down` runs these and removes the journal row                    |
 
 Change the schema in `src/schema/*.ts`, run `db:generate`, commit the SQL **and** add the matching
