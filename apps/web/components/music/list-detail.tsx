@@ -117,7 +117,7 @@ export function ListDetail({
             data-list-detail-detail
             className={cn(
               // `@container`: the parts of the item fit their content to the width of the card.
-              "@container flex min-w-0 flex-1 flex-col lg:rounded-card lg:border lg:bg-surface-raised lg:text-text",
+              "@container flex min-w-0 flex-1 flex-col lg:rounded-card lg:border lg:bg-surface-raised lg:text-text lg:shadow-card",
               // The card stays in view while the list scrolls.
               primary
                 ? "lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:w-96 lg:flex-none lg:overflow-y-auto xl:top-6 xl:max-h-[calc(100dvh-3rem)] xl:w-[28rem]"
@@ -161,7 +161,7 @@ export function ListPaneHeader({
       <PageHeader title={title} details={details} actions={actions} className="lg:hidden" />
       <div className="hidden items-center justify-between gap-2 px-3 pt-2 pb-4 lg:flex">
         <div className="flex min-w-0 flex-col gap-0.5">
-          <Title className="min-w-0 truncate font-heading text-2xl font-semibold tracking-tight">
+          <Title className="min-w-0 truncate font-heading text-fs-6 font-bold tracking-tight text-primary">
             {title}
           </Title>
           {details && <p className="text-sm text-muted">{details}</p>}

@@ -31,7 +31,7 @@ export default async function NotificationsPage() {
   return (
     <main className="flex flex-1 flex-col">
       <PageHeader title={m.notifications.page.title} />
-      <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-6 sm:px-6">
+      <div className="flex w-full max-w-xl flex-col gap-6 px-4 py-6 sm:px-6">
         <p className="text-sm text-muted">{m.notifications.page.lead}</p>
         <NotificationsForm preferences={preferences} pushEnabled={pushConfig() !== null} />
         <PushSettings

@@ -65,7 +65,7 @@ export function WorkspaceFrame({
           })}
         </ul>
       </nav>
-      <div className="min-w-0 flex-1 px-(--gutter) pt-6 pb-28 md:px-0 md:pt-8 md:pb-12">
+      <div className="ws-content min-w-0 flex-1 px-(--gutter) pt-6 pb-28 md:px-0 md:pt-8 md:pb-12">
         {children}
       </div>
     </div>

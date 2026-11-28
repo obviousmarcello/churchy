@@ -26,7 +26,7 @@ export function PlanLink({
 
   return (
     <section className="flex flex-col gap-2" aria-labelledby="plan-h">
-      <h2 id="plan-h" className="text-lg font-semibold">
+      <h2 id="plan-h" className="font-heading text-fs-5 font-bold text-primary">
         {t.title}
       </h2>
       {planId !== null ? (

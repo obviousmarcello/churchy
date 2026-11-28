@@ -70,7 +70,7 @@ export function PageHeader({
             <span className="max-sm:sr-only">{backLink.label}</span>
           </Link>
         )}
-        <h1 className="min-w-0 truncate font-heading text-xl font-semibold tracking-tight">
+        <h1 className="min-w-0 truncate font-heading text-fs-6 font-bold tracking-tight text-primary">
           {title}
         </h1>
         {/* Small screens have no room for it: the header is sticky. */}

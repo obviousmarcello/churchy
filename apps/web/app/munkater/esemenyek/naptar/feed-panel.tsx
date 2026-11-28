@@ -32,7 +32,7 @@ export function FeedPanel({ initiallyOn }: { initiallyOn: boolean }) {
     });
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4 py-6 sm:px-6">
+    <div className="flex w-full max-w-xl flex-col gap-4 px-4 py-6 sm:px-6">
       <p className="text-sm text-muted">{t.lead}</p>
       <p role="status">{on ? t.on : t.off}</p>
       {link && (

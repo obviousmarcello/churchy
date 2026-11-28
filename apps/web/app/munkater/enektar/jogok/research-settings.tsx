@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState } from "@churchy/ui";
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { DownloadIcon, InfoIcon, PlayIcon, RotateCcwIcon, UploadIcon } from "lucide-react";
@@ -181,7 +182,7 @@ function ClosedList({ settings, again }: { settings: ResearchSettingsDTO; again:
         <p className="text-muted">{t.description}</p>
       </div>
       {settings.recentClosed.length === 0 ? (
-        <p className="text-sm text-muted">{t.empty}</p>
+        <EmptyState size="sm" title={t.empty} />
       ) : (
         <ul className="flex flex-col divide-y text-sm">
           {settings.recentClosed.map((row) => (
@@ -275,7 +276,7 @@ function RunNowCard({
           {format(m.songRights.quota.reached, { limit: quota.limit })}
         </p>
       ) : settings.openSongs === 0 ? (
-        <p className="text-sm text-muted">{t.empty}</p>
+        <EmptyState size="sm" title={t.empty} />
       ) : (
         // The number stays in the field after a run.
         <form onSubmit={submitWithoutReset(formAction)} className="flex flex-col gap-4">

@@ -86,7 +86,7 @@ async function Course({ params }: { params: Promise<{ id: string }> }) {
   return (
     <>
       <PageHeader title={course.title} actions={editLink} />
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6">
+      <div className="flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6">
         {!course.isPublished && (
           <p className="flex items-start gap-2 rounded-card border border-warning/40 bg-warning-soft px-3 py-2 text-sm text-warning">
             <EyeOffIcon className="mt-0.5 size-4 shrink-0" />

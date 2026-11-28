@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState } from "@churchy/ui";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/music/ui/button";
@@ -115,7 +116,7 @@ export function TranslationsManager({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6">
+    <div className="flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6">
       <p className="text-sm text-muted">{t.page.lead}</p>
 
       <Card className="flex flex-col gap-1 p-4">
@@ -142,9 +143,7 @@ export function TranslationsManager({
           )}
         </div>
 
-        {translations.length === 0 && !editing && (
-          <p className="text-sm text-muted">{t.own.empty}</p>
-        )}
+        {translations.length === 0 && !editing && <EmptyState size="sm" title={t.own.empty} />}
 
         {translations.map((translation) => (
           <Card key={translation.id} className="flex flex-col gap-2 p-4">
@@ -407,7 +406,7 @@ function BookUpload({ translation, books }: { translation: string; books: string
         {t.fileHint}
       </p>
       {books.length === 0 ? (
-        <p className="text-sm text-muted">{t.none}</p>
+        <EmptyState size="sm" title={t.none} />
       ) : (
         <ul className="flex flex-wrap gap-2">
           {books.map((id) => (

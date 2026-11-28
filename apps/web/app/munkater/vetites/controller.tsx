@@ -1616,7 +1616,9 @@ function Tiles({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h2 className="min-w-0 flex-1 font-heading text-lg font-semibold">{item.title}</h2>
+        <h2 className="min-w-0 flex-1 font-heading font-heading text-fs-5 font-bold text-primary">
+          {item.title}
+        </h2>
         {reading && (
           <ScriptureTranslationSelect
             value={reading.translation.id}

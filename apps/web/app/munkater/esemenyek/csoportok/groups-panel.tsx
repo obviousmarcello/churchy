@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState } from "@churchy/ui";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -47,7 +48,7 @@ export function GroupsPanel({
     });
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6">
+    <div className="flex w-full max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6">
       <p className="text-sm text-muted">{t.lead}</p>
       {error && (
         <p role="alert" className="text-sm text-danger">
@@ -55,7 +56,7 @@ export function GroupsPanel({
         </p>
       )}
       {groups.length === 0 ? (
-        <p className="text-sm text-muted">{t.empty}</p>
+        <EmptyState size="sm" title={t.empty} />
       ) : (
         <ul className="flex flex-col gap-2">
           {groups.map((group) => (

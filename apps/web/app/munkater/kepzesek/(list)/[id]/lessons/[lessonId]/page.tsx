@@ -70,7 +70,7 @@ async function Lesson({ params }: { params: Promise<{ id: string; lessonId: stri
         })}
         back={{ href: `/munkater/kepzesek/${id}`, label: course.title }}
       />
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-6 sm:px-6 lg:flex-row lg:items-start">
+      <div className="flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-6 sm:px-6 lg:flex-row lg:items-start">
         <article className="flex min-w-0 flex-1 flex-col gap-6" lang={course.language}>
           {!course.isPublished && (
             <p className="flex items-start gap-2 rounded-card border border-warning/40 bg-warning-soft px-3 py-2 text-sm text-warning">
