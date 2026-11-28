@@ -70,3 +70,10 @@ Applied in order via the Supabase MCP `apply_migration`, with the comment-stripp
 Verification: `list_migrations` shows 0000 to 0005 (including p1 to p4) as applied. All 59 public tables have RLS enabled and forced, with 48 policies. Roles: `churchy_app` exists (NOLOGIN, no BYPASSRLS). `anon`, `authenticated` and `authenticator` are present. `churchy_music` does not exist yet (expected: created by a later music migration).
 
 Deviations: none. Next migration to apply: `0006_music_schema`.
+
+### Progress: 0006_music_schema applied (dev project)
+
+- `0006_music_schema` applied as four consecutive parts (`_p1`..`_p4`, split at statement boundaries), all successful.
+- It drops and recreates `songs` and `arrangements` (both were empty, no dependent views) and drops the `song_licence` type.
+- Public tables: 59 before, 100 after (43 `CREATE TABLE`, 2 of them recreations). RLS is enabled on all 100, and all foreign keys are validated.
+- Next migration to apply: `0007_music_rls`.
