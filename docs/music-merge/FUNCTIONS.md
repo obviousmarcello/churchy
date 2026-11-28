@@ -19,8 +19,8 @@ naming the tenant.
 |---|---|---|
 | `private.can_project_event(p_event_id uuid, p_user_id uuid)` | invoker | 4 (events, setlists, volunteers) |
 | `private.check_area_members(p_areas jsonb)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
-| `private.check_course_image(p_id uuid, p_doc jsonb)` | invoker | 8 (courses) |
-| `private.check_course_lessons(p_id uuid, p_doc jsonb)` | invoker | 8 (courses) |
+| `private.check_course_image(p_id uuid, p_doc jsonb)` | invoker | 8a — 0021_music_courses (now `public.*`) |
+| `private.check_course_lessons(p_id uuid, p_doc jsonb)` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `private.check_moved_group_projections()` | invoker, trigger | 5 (projection) |
 | `private.check_open_projection_before_delete()` | invoker, trigger | 5a - 0017_music_projection (now public.check_open_projection_before_delete()) |
 | `private.check_projection_users()` | definer, trigger | 5 (projection) |
@@ -32,15 +32,15 @@ naming the tenant.
 | `private.check_service_areas_limit()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.check_team_outsiders(p_event_id uuid, p_teams jsonb)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.check_volunteer_templates_limit()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
-| `private.course_document_with_area_order(p_doc jsonb)` | invoker | 8 (courses) |
-| `private.course_is_open_to(p_course_id uuid, p_user_id uuid)` | invoker | 8 (courses) |
-| `private.course_lesson_document(p_lesson course_lessons)` | invoker | 8 (courses) |
-| `private.courses_before_area_delete()` | invoker, trigger | 8 (courses) |
+| `private.course_document_with_area_order(p_doc jsonb)` | invoker | 8a — 0021_music_courses (now `public.*`) |
+| `private.course_is_open_to(p_course_id uuid, p_user_id uuid, p_is_admin boolean)` | invoker | 8a — 0021_music_courses (now `public.*`; `p_is_admin` replaces the `user_roles` check: the server sets it from `can()` and the `course_admin` area roles) |
+| `private.course_lesson_document(p_lesson course_lessons)` | invoker | 8a — 0021_music_courses (now `public.*`) |
+| `private.courses_before_area_delete()` | invoker, trigger | 8a — 0021_music_courses (now `public.*`) |
 | `private.event_topic_access(p_topic text)` | definer | replaced in 5a by `public.music_realtime_allowed(topic, send)` (token claims; `authorizeRealtimeTopics`) |
 | `private.events_before_area_delete()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.leads_service_area(p_area_id uuid, p_user_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.live_session_access(p_topic text)` | definer | dropped (Churchy login / user admin, PLAN §11) |
-| `private.lock_course(p_id uuid, p_revision integer)` | invoker | 8 (courses) |
+| `private.lock_course(p_id uuid, p_revision integer)` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `private.lock_service_area_tree()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.normalize_event_areas()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `private.normalize_event_blocks(p_event_id uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
@@ -65,9 +65,9 @@ naming the tenant.
 | `public.add_song_sound_file(p_song_id uuid, p_name text, p_file_name text, p_path text, p_size_bytes integer, p_content_type text, p_keys text[], p_arrangement_ids uuid[], p_max integer)` | invoker | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.app_config_check_time_zone()` | invoker, trigger | 9 (modules, permissions) |
 | `public.area_member_ids()` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
-| `public.can_edit_course(p_course_id uuid, p_user_id uuid)` | invoker | 8 (courses) |
+| `public.can_edit_course(p_course_id uuid, p_user_id uuid, p_is_admin boolean)` | invoker | 8a — 0021_music_courses (now `public.*`; `p_is_admin` replaces the `user_roles` check: the server sets it from `can()` and the `course_admin` area roles) |
 | `public.can_read_private_file(p_user_id uuid, p_session_id uuid, p_bucket text, p_path text)` | definer | 9 (modules, permissions) |
-| `public.can_see_course(p_course_id uuid, p_user_id uuid)` | invoker | 8 (courses) |
+| `public.can_see_course(p_course_id uuid, p_user_id uuid, p_is_admin boolean)` | invoker | 8a — 0021_music_courses (now `public.*`; `p_is_admin` replaces the `user_roles` check: the server sets it from `can()` and the `course_admin` area roles) |
 | `public.can_see_event(p_event_id uuid, p_user_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `public.canonical_key(p_key text, p_notation text)` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
 | `public.chart_key_names(p_chordpro text)` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
@@ -102,8 +102,8 @@ naming the tenant.
 | `public.count_event_images_for_limit(p_set_id uuid, p_unused_before timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
 | `public.count_song_rights_proposals()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.count_songs_for_rights_research()` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
-| `public.course_document(p_id uuid)` | invoker | 8 (courses) |
-| `public.course_summaries()` | invoker | 8 (courses) |
+| `public.course_document(p_id uuid)` | invoker | 8a — 0021_music_courses (now `public.*`) |
+| `public.course_summaries()` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `public.create_email_mfa_code(p_user_id uuid, p_session_id uuid, p_code_hash text)` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.create_event_block(p_event_id uuid, p_item_keys uuid[], p_name text, p_countdown text, p_until time without time zone)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.create_event_with_items(p_title text, p_starts_at timestamp with time zone, p_duration_minutes integer, p_youtube_url text, p_items jsonb)` | invoker | 4 (events, setlists, volunteers) |
@@ -118,8 +118,8 @@ naming the tenant.
 | `public.delete_unused_event_announcements(p_before timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
 | `public.delete_unused_event_image_sets(p_before timestamp with time zone)` | invoker | 4 (events, setlists, volunteers) |
 | `public.delete_unused_setlist()` | invoker, trigger | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
-| `public.discard_course_draft(p_id uuid, p_revision integer)` | invoker | 8 (courses) |
-| `public.editable_course_ids(p_user_id uuid)` | invoker | 8 (courses) |
+| `public.discard_course_draft(p_id uuid, p_revision integer)` | invoker | 8a — 0021_music_courses (now `public.*`) |
+| `public.editable_course_ids(p_user_id uuid, p_is_admin boolean)` | invoker | 8a — 0021_music_courses (now `public.*`; `p_is_admin` replaces the `user_roles` check: the server sets it from `can()` and the `course_admin` area roles) |
 | `public.end_live_sessions()` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.end_projections()` | definer | 5 (projection) |
 | `public.event_ends_at(p_starts_at timestamp with time zone, p_duration_minutes integer)` | invoker | 4 (events, setlists, volunteers) |
@@ -145,22 +145,22 @@ naming the tenant.
 | `public.place_service_area(p_id uuid, p_parent_id uuid, p_ids uuid[], p_grant_roles boolean, p_actor_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `public.prevent_setlist_update()` | invoker, trigger | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.prevent_song_id_update()` | invoker, trigger | 2b — 0009_music_files (song files and arrangements) |
-| `public.publish_course(p_id uuid, p_revision integer, p_doc jsonb)` | invoker | 8 (courses) |
+| `public.publish_course(p_id uuid, p_revision integer, p_doc jsonb)` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `public.put_scripture_cache_verses(p_translation text, p_book text, p_verses jsonb, p_book_limit integer)` | invoker | 6a — 0019_music_scripture (SECURITY INVOKER, tenant from `app.current_tenant_id()`: per-tenant cache and lock; the hourly pg_cron expiry is dropped, reads and pastes expire verses) |
 | `public.recent_closed_song_rights_proposals(p_limit integer)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.remove_calendar_entries_from_snapshots()` | invoker, trigger | 4 (events, setlists, volunteers) |
-| `public.remove_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8 (courses) |
+| `public.remove_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `public.remove_event_item(p_event_id uuid, p_key uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
 | `public.reset_notification_deliveries()` | invoker, trigger | 8 (notifications) |
 | `public.reset_volunteer_replies()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
-| `public.restore_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8 (courses) |
+| `public.restore_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `public.review_song_rights_proposal(p_id uuid, p_user uuid, p_accept boolean, p_changes jsonb)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.revoke_user_sessions(p_user_id uuid)` | definer | dropped (Churchy login / user admin, PLAN §11) |
-| `public.save_course_draft(p_id uuid, p_revision integer, p_doc jsonb)` | invoker | 8 (courses) |
+| `public.save_course_draft(p_id uuid, p_revision integer, p_doc jsonb)` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `public.search_key(p_text text)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.service_area_uses(p_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `public.set_announcement_entry_attachment(p_entry_id uuid, p_set_id uuid)` | invoker | 4 (events, setlists, volunteers) |
-| `public.set_course_order(p_ids uuid[])` | invoker | 8 (courses) |
+| `public.set_course_order(p_ids uuid[])` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `public.set_default_arrangement(p_id uuid)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
 | `public.set_default_projection_theme(p_id uuid)` | invoker | 5a - 0017_music_projection |
 | `public.set_event_area_note(p_event_id uuid, p_area_id uuid, p_note text)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
@@ -211,8 +211,8 @@ naming the tenant.
 | `public.valid_announcement_words(p_words text[])` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
 | `public.valid_song_tags(p_tags text[])` | invoker | 1b — copied to 0005_music_functions (SECURITY INVOKER; church_time_zone made tenant-scoped) |
 | `public.verify_email_mfa_code(p_user_id uuid, p_session_id uuid, p_code_hash text)` | definer | dropped (Churchy login / user admin, PLAN §11) |
-| `public.visible_course_ids(p_user_id uuid)` | invoker | 8 (courses) |
-| `public.visible_course_summaries(p_user_id uuid)` | invoker | 8 (courses) |
+| `public.visible_course_ids(p_user_id uuid, p_is_admin boolean)` | invoker | 8a — 0021_music_courses (now `public.*`; `p_is_admin` replaces the `user_roles` check: the server sets it from `can()` and the `course_admin` area roles) |
+| `public.visible_course_summaries(p_user_id uuid, p_is_admin boolean)` | invoker | 8a — 0021_music_courses (now `public.*`; `p_is_admin` replaces the `user_roles` check: the server sets it from `can()` and the `course_admin` area roles) |
 
 ## Churchy-only functions (music phase 2)
 
@@ -229,3 +229,7 @@ naming the tenant.
 |---|---|---|
 | `public.music_calendar_id()` | invoker | 4a-1 — 0011_music_events (the tenant's music calendar, created on first use) |
 | `public.merge_songbook_hymnal_refs(p_dry_run boolean)` | invoker | 7b — 0020_music_hymnal_refs (new in Churchy: links the songbook text to `song_hymnal_refs`) |
+| `public.can_read_course_image(p_path text, p_user_id uuid, p_is_admin boolean)` | invoker | 8a — 0021_music_courses (new in Churchy: replaces the `course-images` branch of `can_read_private_file`) |
+| `public.purge_removed_courses()` | invoker | 8a — 0021_music_courses (new: the body of the pg_cron job `purge-removed-courses`, called per tenant by the phase 8c job) |
+| `public.remove_unused_course_images()` | invoker | 8a — 0021_music_courses (new: the body of the pg_cron job `remove-unused-course-images`, called per tenant by the phase 8c job) |
+| `public.removed_courses()` | invoker | 8a — 0021_music_courses (new: the removed courses with the draft title; the local PostgREST cannot select `draft->>title`) |

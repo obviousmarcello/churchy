@@ -81,6 +81,7 @@ const WS_S50: WorkspaceModuleKey[] = [
   "ws.music.projection.bible-panel",
   "ws.music.mixer",
   "ws.music.rehearsal",
+  "ws.music.courses",
 ];
 const WS_M150: WorkspaceModuleKey[] = [...WS_S50, "ws.hr.confidential", "ws.docs"];
 const WS_L300: WorkspaceModuleKey[] = [...WS_M150, "ws.board"];

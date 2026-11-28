@@ -166,6 +166,9 @@ export const WORKSPACE_TENANT_ACTIONS = [
   "music.scripture.translations.manage",
   "music.mixer.use",
   "music.mixer.setup",
+  "music.course.view",
+  "music.course.edit",
+  "music.course.manage",
   "music.live.join",
   "music.live.lead",
 ] as const;
@@ -196,6 +199,7 @@ export type ResourceByAction = Record<ContentAction, TenantResource> &
     "site.users.manage": UserManagementResource;
     "music.song.manage": MusicAreaResource;
     "music.event.manage": MusicAreaResource;
+    "music.course.manage": MusicAreaResource;
     "directory.viewPerson": DirectoryPersonResource;
     "calendarEvent.create": CalendarEventResource;
     "room.book": RoomResource;

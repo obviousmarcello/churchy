@@ -29,6 +29,7 @@ export type NavKey =
   | "sections.musicNotifications"
   | "sections.musicMixer"
   | "sections.musicRehearsal"
+  | "sections.musicCourses"
   | "sections.absences"
   | "sections.hr"
   | "sections.news"
@@ -224,6 +225,13 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           href: "/munkater/proba",
           module: "ws.music.rehearsal",
           requires: { action: "music.song.view" },
+        },
+        {
+          id: "musicCourses",
+          label: t("sections.musicCourses"),
+          href: "/munkater/kepzesek",
+          module: "ws.music.courses",
+          requires: { action: "music.course.view" },
         },
         {
           id: "musicMixer",

@@ -148,6 +148,13 @@
       "when": 1795843168252,
       "tag": "0020_music_hymnal_refs",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1795849453511,
+      "tag": "0021_music_courses",
+      "breakpoints": true
     }
   ]
 }

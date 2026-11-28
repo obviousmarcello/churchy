@@ -61,6 +61,32 @@ export async function musicRehearsal(
   return (await isWorkspaceModuleOn("ws.music.rehearsal")) ? tenant : null;
 }
 
+/** The training courses (`ws.music.courses`) must be on too. */
+export async function musicCourses(
+  scope: PolicyScope,
+  ...args: unknown[]
+): Promise<{ tenantId: string } | null> {
+  const tenant = await musicTenant(scope, ...args);
+  if (tenant === null) return null;
+  return (await isWorkspaceModuleOn("ws.music.courses")) ? tenant : null;
+}
+
+/**
+ * For `music.course.manage`: the `course_admin` role of any group counts, so the resource names all the
+ * groups of the actor (the policy enricher then loads the grants).
+ */
+export async function musicCourseManage(
+  scope: PolicyScope,
+  ...args: unknown[]
+): Promise<{ tenantId: string; areaIds: string[] } | null> {
+  const tenant = await musicCourses(scope, ...args);
+  if (tenant === null) return null;
+  const actor = scope.actor;
+  if (actor.kind !== "tenant" || actor.userId === null) return { ...tenant, areaIds: [] };
+  const grants = await loadAreaGrants(musicUserId(actor.userId));
+  return { ...tenant, areaIds: grants.map((grant) => grant.areaId) };
+}
+
 /** The music events (`ws.music.events`) must be on too. */
 export async function musicEvents(
   scope: PolicyScope,

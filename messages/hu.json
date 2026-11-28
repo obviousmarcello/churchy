@@ -59,7 +59,8 @@
         "plan": "Csomag",
         "billing": "Számlázás",
         "musicMixer": "Keverőpult",
-        "musicRehearsal": "Próba"
+        "musicRehearsal": "Próba",
+        "musicCourses": "Tudástér"
       },
       "contact": "{contactPage.nom}"
     },
@@ -3371,6 +3372,10 @@
           "music_rehearsal": {
             "title": "Próba",
             "help": "Próbalista összeállítása, vetítése és mentése eseményhez (a böngészőben tárolt piszkozat)."
+          },
+          "music_courses": {
+            "title": "Tudástér",
+            "help": "Önállóan elvégezhető leckék a csapatnak (pl. a kamerakezelés), szerkesztővel, vázlattal és közzététellel."
           }
         }
       },
@@ -3498,7 +3503,8 @@
           "music_scripture_daily_psalm": "A nap zsoltára (munkatér)",
           "music_projection_bible_panel": "Biblia panel (munkatér)",
           "music_mixer": "Keverőpult (munkatér)",
-          "music_rehearsal": "Próba (munkatér)"
+          "music_rehearsal": "Próba (munkatér)",
+          "music_courses": "Tudástér (munkatér)"
         }
       },
       "catalog": {
@@ -7951,6 +7957,319 @@
         "itemsSaved": "A dallista bekerült az eseménybe. Az esemény megnyitása…",
         "eventNotSaved": "Az esemény mentése nem sikerült. Próbáld újra.",
         "eventAdded": "Esemény létrehozva. Az esemény megnyitása…"
+      }
+    },
+    "courses": {
+      "page": {
+        "title": "Tudástér",
+        "loading": "A Tudástér betöltése…"
+      },
+      "gate": {
+        "title": "Nincs hozzáférésed",
+        "description": "Csak a képzésadminok és a szuperadminok módosíthatják a képzéseket."
+      },
+      "languages": {
+        "hu": "Magyar",
+        "en": "Angol"
+      },
+      "icons": {
+        "graduation-cap": "Diplomasapka",
+        "camera": "Kamera",
+        "video": "Videókamera",
+        "clapperboard": "Csapó",
+        "monitor": "Monitor",
+        "tv": "Tévé",
+        "projector": "Projektor",
+        "presentation": "Prezentáció",
+        "cast": "Kivetítés képernyőre",
+        "radio": "Adás",
+        "mic": "Mikrofon",
+        "mic-vocal": "Énekmikrofon",
+        "headphones": "Fejhallgató",
+        "speaker": "Hangfal",
+        "volume-2": "Hangerő",
+        "audio-lines": "Hanghullám",
+        "sliders-horizontal": "Keverőpult",
+        "cable": "Kábel",
+        "plug": "Csatlakozó",
+        "laptop": "Laptop",
+        "smartphone": "Telefon",
+        "keyboard": "Billentyűzet",
+        "wifi": "Wi-Fi",
+        "lightbulb": "Villanykörte",
+        "lamp-ceiling": "Színpadi lámpa",
+        "sun": "Nap",
+        "sparkles": "Csillogás",
+        "music": "Zene",
+        "music-2": "Hangjegy",
+        "guitar": "Gitár",
+        "piano": "Zongora",
+        "drum": "Dob",
+        "list-music": "Dallista",
+        "book-open": "Nyitott könyv",
+        "book-heart": "Biblia",
+        "church": "Templom",
+        "lectern": "Szószék",
+        "cross": "Kereszt",
+        "heart": "Szív",
+        "hand-heart": "Kéz szívvel",
+        "hand-helping": "Segítő kéz",
+        "users": "Emberek",
+        "baby": "Gyerekek",
+        "coffee": "Kávé",
+        "utensils": "Konyha",
+        "door-open": "Fogadás",
+        "car": "Autó",
+        "map-pin": "Helyszín",
+        "calendar": "Naptár",
+        "clock": "Óra",
+        "shield-check": "Biztonság",
+        "briefcase-medical": "Elsősegély",
+        "star": "Csillag",
+        "flag": "Zászló",
+        "megaphone": "Hirdetés",
+        "message-circle": "Üzenet",
+        "pen-line": "Írás",
+        "palette": "Tervezés",
+        "image": "Kép",
+        "printer": "Nyomtató",
+        "settings": "Beállítások",
+        "wrench": "Szerszámok"
+      },
+      "dragHint": "Húzd az átrendezéshez, vagy használd a nyílbillentyűket",
+      "labels": {
+        "draft": "Piszkozat",
+        "hidden": "Elrejtve",
+        "hasChanges": "Módosítva",
+        "noGroup": "Csak képzésadminoknak",
+        "lessonCount": {
+          "one": "{count} lecke",
+          "other": "{count} lecke"
+        }
+      },
+      "list": {
+        "label": "Tudástér",
+        "newCourse": "Új képzés",
+        "leaderHint": "Az általad vezetett csoportok képzéseit hozhatod létre és módosíthatod.",
+        "adminHint": "A fogantyúknál fogva húzd a képzéseket, így állítod be a sorrendjüket minden felhasználónak.",
+        "emptyTitle": "Még nincs képzés számodra",
+        "emptyDescription": "Amikor egy képzésadmin közzétesz egy képzést számodra, itt jelenik meg.",
+        "emptyAdminTitle": "Még nincs képzés",
+        "emptyAdminDescription": "Készítsd el a csapat első képzését, például a kivetítésről vagy a keverőpultról.",
+        "dragCourse": "{title} áthelyezése",
+        "choose": {
+          "title": "Nyiss meg egy képzést",
+          "description": "Válassz egy képzést a listából: itt látod a leírását és a leckéit."
+        }
+      },
+      "removed": {
+        "coursesTitle": "Eltávolított képzések",
+        "emptyCoursesTitle": "Nincs eltávolított képzés",
+        "emptyCoursesDescription": "Az eltávolított képzés 90 napig itt marad.",
+        "lessonsTitle": "Eltávolított leckék",
+        "lessonsDescription": "Az alkalmazás 90 nap után véglegesen törli az eltávolított leckét. A visszaállított lecke a leckék végére kerül.",
+        "emptyLessonsTitle": "Nincs eltávolított lecke",
+        "emptyLessonsDescription": "Az eltávolított lecke 90 napig itt marad.",
+        "daysLeft": {
+          "one": "{count} nap múlva törlődik",
+          "other": "{count} nap múlva törlődik"
+        },
+        "draftOnly": "csak a piszkozatban volt",
+        "restore": "Visszaállítás",
+        "restoring": "Visszaállítás…"
+      },
+      "newCourse": {
+        "title": "Új képzés",
+        "description": "Az új képzés piszkozat. Amíg közzé nem teszed, csak a képzésadminok és a szuperadminok látják.",
+        "courseTitle": "Cím",
+        "language": "A tartalom nyelve",
+        "languageHint": "A leckék nyelve. A gombok és a menük minden felhasználónak a saját nyelvén maradnak.",
+        "create": "Létrehozás",
+        "creating": "Létrehozás…"
+      },
+      "course": {
+        "title": "Képzés",
+        "edit": "Szerkesztés",
+        "start": "A képzés indítása",
+        "lessons": {
+          "one": "{count} lecke",
+          "other": "{count} lecke"
+        },
+        "hiddenNotice": "Ez a képzés el van rejtve. Amíg újra közzé nem teszik, csak a képzésadminok és a szuperadminok nyithatják meg.",
+        "notPublishedTitle": "Ez a képzés még nincs közzétéve",
+        "notPublishedDescription": "Nyisd meg a szerkesztőt, adj hozzá leckéket, és tedd közzé a képzést.",
+        "noLessonsTitle": "Ennek a képzésnek nincs leckéje",
+        "noLessonsDescription": "Egy képzésadmin a szerkesztőben adhat hozzá leckéket."
+      },
+      "notFound": {
+        "title": "A képzés nem található",
+        "description": "A képzés nem létezik, eltávolították, vagy nem a te csoportjaidnak szól.",
+        "back": "Vissza a Tudástérbe"
+      },
+      "lessonNotFound": {
+        "title": "A lecke nem található",
+        "description": "A lecke nem létezik, eltávolították, vagy a képzése nem a te csoportjaidnak szól."
+      },
+      "lesson": {
+        "title": "Lecke",
+        "position": "{course} · {number}. lecke / {count}",
+        "emptyTitle": "Ennek a leckének nincs tartalma",
+        "emptyDescription": "Még nincs videója, szövege és linkje.",
+        "links": "Linkek",
+        "navigation": "Leckék",
+        "allLessons": "Az összes lecke",
+        "previous": "Előző: {title}",
+        "next": "Következő: {title}",
+        "finished": "Vissza a képzéshez"
+      },
+      "video": {
+        "consent": "A videó lejátszása. A videó ekkor a YouTube-ról töltődik be.",
+        "playerTitle": "Videó: {title}",
+        "openOnYoutube": "Megnyitás a YouTube-on"
+      },
+      "editor": {
+        "title": "Képzés szerkesztése",
+        "working": "Mentés…",
+        "saveDraft": "Piszkozat mentése",
+        "publish": "Közzététel",
+        "publishChanges": "Módosítások közzététele",
+        "publishAgain": "Újbóli közzététel",
+        "preview": "Előnézet",
+        "backToEdit": "Vissza a szerkesztéshez",
+        "discard": "Módosítások elvetése",
+        "unpublish": "Közzététel visszavonása",
+        "removeCourse": "Képzés eltávolítása",
+        "publishNeedsLesson": "A közzététel előtt adj hozzá egy leckét.",
+        "previewNotice": "Előnézet: így látják majd a képzést az olvasók a közzététel után. Az előnézet nem menti a módosításokat.",
+        "areasLost": "Valaki törölte a képzés utolsó csoportját, ezért a képzés most nincs közzétéve. Válassz új csoportot, vagy a legfelső csoportot minden felhasználónak.",
+        "state": {
+          "draft": "Piszkozat, még nincs közzétéve",
+          "published": "Közzétéve",
+          "hidden": "Elrejtve az olvasók elől",
+          "unsaved": "Nem mentett módosítások",
+          "notPublished": "A mentett módosítások még nincsenek közzétéve"
+        },
+        "cover": {
+          "label": "Borító",
+          "hint": "Egy ikon vagy egy kép a képzések listájában. A kép négyzetként jelenik meg. PNG, JPEG vagy WebP.",
+          "chooseIcon": "Ikon választása",
+          "uploadImage": "Kép feltöltése",
+          "replaceImage": "Kép cseréje",
+          "uploading": "Feltöltés…",
+          "remove": "Borító eltávolítása",
+          "imageTooLarge": "Ez a kép túl nagy. Válassz egy kisebbet.",
+          "imageDecodeFailed": "A böngésző nem tudja beolvasni ezt a képet. Válassz PNG, JPEG vagy WebP fájlt.",
+          "iconsTitle": "Válassz ikont",
+          "iconsDescription": "Az ikon a képzések listájában és a képzés oldalán jelenik meg.",
+          "searchIcons": "Ikonok keresése",
+          "noIcons": "Nincs ilyen nevű ikon."
+        },
+        "courseSection": "Képzés",
+        "courseTitle": "Cím",
+        "language": "A tartalom nyelve",
+        "description": "Leírás",
+        "descriptionHint": "Nem kötelező. Rövid szöveg a képzések listájában.",
+        "areas": "Csoportok",
+        "areasHint": "A kiválasztott csoportok és az alattuk lévő csoportok tagjai látják ezt a képzést. Minden felhasználónak válaszd ezt: {root}.",
+        "areasLeaderHint": "A kiválasztott csoportok és az alattuk lévő csoportok tagjai látják ezt a képzést. Az általad vezetett csoportokat választhatod.",
+        "areasRequired": "A közzététel előtt válassz legalább egy csoportot.",
+        "leaderAreasRequired": "Válassz legalább egy csoportot a sajátjaid közül.",
+        "noAreas": "Nincsenek csoportok. A Csoportok oldalon adhatod hozzá őket.",
+        "lessonsSection": "Leckék",
+        "lessonCount": {
+          "one": "{count} lecke",
+          "other": "{count} lecke"
+        },
+        "noLessonsTitle": "Még nincs lecke",
+        "noLessonsDescription": "Adj hozzá egy leckét videóval, szöveggel vagy linkekkel.",
+        "addLesson": "Lecke hozzáadása",
+        "newLessonTitle": "{number}. lecke",
+        "untitledLesson": "Cím nélküli lecke",
+        "untitledCourse": "Cím nélküli képzés",
+        "lessonHasErrors": "Ebben a leckében hibák vannak",
+        "newLabel": "Új",
+        "dragLesson": "{title} áthelyezése",
+        "lesson": {
+          "title": "A lecke címe",
+          "video": "YouTube-videó",
+          "videoHint": "Nem kötelező. Egy nyilvános vagy nem listázott videó linkje. A linkben lévő kezdőidő (t=) megmarad.",
+          "videoFound": "Az alkalmazás megtalálta a videót.",
+          "videoFoundAt": "Az alkalmazás megtalálta a videót. {time}-tól indul.",
+          "text": "Szöveg",
+          "links": "Linkek",
+          "noLinks": "Nincs link. Adj hozzá egy linket, például egy PDF-fájlhoz a Google Drive-on.",
+          "linkUrl": "A(z) {number}. link címe",
+          "linkLabel": "A(z) {number}. link neve",
+          "linkLabelPlaceholder": "Név (nem kötelező)",
+          "removeLink": "A(z) {number}. link eltávolítása",
+          "addLink": "Link hozzáadása",
+          "remove": "Lecke eltávolítása"
+        },
+        "text": {
+          "toolbar": "Formázás",
+          "bold": "Félkövér",
+          "italic": "Dőlt",
+          "heading": "Címsor",
+          "subheading": "Alcím",
+          "bulletList": "Felsorolás",
+          "orderedList": "Számozott lista",
+          "quote": "Idézet",
+          "link": "Link",
+          "removeLink": "Link eltávolítása",
+          "undo": "Visszavonás",
+          "redo": "Újra",
+          "linkAddress": "A link címe",
+          "applyLink": "Alkalmaz",
+          "linkHint": "Hagyd üresen a link eltávolításához."
+        },
+        "dialogs": {
+          "removeLesson": {
+            "title": "Eltávolítod: {title}?",
+            "description": "A lecke azonnal kikerül a közzétett képzésből és a piszkozatból. A piszkozat többi módosítása megmarad. 90 napig visszaállíthatod a leckét.",
+            "unsavedDescription": "Ezt a leckét még sosem mentetted, ezért nem lehet visszaállítani.",
+            "last": "Ez az utolsó lecke: a képzés közzététele visszavonódik.",
+            "confirm": "Lecke eltávolítása"
+          },
+          "discard": {
+            "title": "Elveted a módosításokat?",
+            "description": "A piszkozat törlődik, minden közzé nem tett módosítással együtt. A közzétett képzés megmarad.",
+            "confirm": "Módosítások elvetése"
+          },
+          "unpublish": {
+            "title": "Visszavonod a közzétételt?",
+            "description": "Az olvasók nem nyithatják meg a képzést, amíg újra közzé nem teszed. A piszkozat megmarad.",
+            "confirm": "Közzététel visszavonása"
+          },
+          "removeCourse": {
+            "title": "Eltávolítod a képzést?",
+            "description": "Az olvasók többé nem nyithatják meg a képzést. 90 napig visszaállíthatod a Tudástérből.",
+            "confirm": "Képzés eltávolítása"
+          }
+        }
+      },
+      "actions": {
+        "notFound": "Ez a képzés vagy lecke már nem létezik. Töltsd be újra az oldalt.",
+        "createFailed": "A képzés nem jött létre. Próbáld újra.",
+        "saveFailed": "A piszkozat nem mentődött el. Próbáld újra.",
+        "publishFailed": "A képzés közzététele nem sikerült. Próbáld újra.",
+        "discardFailed": "A módosítások elvetése nem sikerült. Próbáld újra.",
+        "unpublishFailed": "A közzététel visszavonása nem sikerült. Próbáld újra.",
+        "removeFailed": "A képzés eltávolítása nem sikerült. Próbáld újra.",
+        "restoreFailed": "A képzés visszaállítása nem sikerült. Próbáld újra.",
+        "removeLessonFailed": "A lecke eltávolítása nem sikerült. Próbáld újra.",
+        "restoreLessonFailed": "A lecke visszaállítása nem sikerült. Próbáld újra.",
+        "orderFailed": "A sorrend nem mentődött el. Próbáld újra.",
+        "imageFailed": "A kép feltöltése nem sikerült. Próbáld újra.",
+        "coursesChanged": "A képzések egy másik eszközön megváltoztak. Töltsd be újra az oldalt, és próbáld újra.",
+        "saved": "Piszkozat elmentve",
+        "published": "Képzés közzétéve",
+        "discarded": "Módosítások elvetve",
+        "unpublished": "Közzététel visszavonva",
+        "courseRemoved": "Képzés eltávolítva",
+        "courseRestored": "Képzés visszaállítva",
+        "lessonRemoved": "Lecke eltávolítva",
+        "lessonRemovedUnpublished": "Lecke eltávolítva. A képzésnek most nincs leckéje, ezért a közzététele visszavonódott.",
+        "lessonRestored": "Lecke visszaállítva"
       }
     }
   },
