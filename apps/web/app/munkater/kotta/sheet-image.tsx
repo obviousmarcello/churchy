@@ -103,7 +103,7 @@ function SheetImagePage({
         <p
           role="img"
           aria-label={label}
-          className="flex size-full items-center justify-center p-4 text-center text-sm text-neutral-600"
+          className="flex size-full items-center justify-center p-4 text-center text-sm text-muted"
         >
           {t.pageFailed}
         </p>

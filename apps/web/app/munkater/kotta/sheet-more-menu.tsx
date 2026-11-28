@@ -77,7 +77,7 @@ export function SheetMoreMenu({
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={8} align="end" collisionPadding={8} className="z-50">
-          <Menu.Popup className="max-h-[var(--available-height)] max-w-[calc(100vw-1rem)] min-w-56 origin-[var(--transform-origin)] overflow-y-auto rounded-lg border bg-surface-raised p-1 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Menu.Popup className="max-h-[var(--available-height)] max-w-[calc(100vw-1rem)] min-w-56 origin-[var(--transform-origin)] overflow-y-auto rounded-card border bg-surface-raised p-1 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             {items.map((item) => (
               <Menu.Item
                 key={item.key}
@@ -85,7 +85,7 @@ export function SheetMoreMenu({
                   if (item.opensPopover) afterClose.current = item.onSelect;
                   else item.onSelect();
                 }}
-                className="flex cursor-default items-center gap-3 rounded-md px-2 py-2.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted"
+                className="flex cursor-default items-center gap-3 rounded-control px-2 py-2.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted"
               >
                 {item.icon}
                 <span className="flex min-w-0 flex-1 flex-col">

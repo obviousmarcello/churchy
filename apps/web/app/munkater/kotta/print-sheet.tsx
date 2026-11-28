@@ -270,12 +270,12 @@ export function PrintButton({
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={8} align="end" collisionPadding={8} className="z-50">
-          <Menu.Popup className="max-w-[calc(100vw-1rem)] min-w-48 origin-[var(--transform-origin)] rounded-lg border bg-surface-raised p-1 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Menu.Popup className="max-w-[calc(100vw-1rem)] min-w-48 origin-[var(--transform-origin)] rounded-card border bg-surface-raised p-1 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             {(["song", "all"] as const).map((scope) => (
               <Menu.Item
                 key={scope}
                 onClick={() => onPrint(scope)}
-                className="flex cursor-default items-center rounded-md px-2 py-2 text-sm outline-none select-none data-highlighted:bg-surface-sunken"
+                className="flex cursor-default items-center rounded-control px-2 py-2 text-sm outline-none select-none data-highlighted:bg-surface-sunken"
               >
                 {scope === "song" ? t.thisSong : t.allSongs}
               </Menu.Item>

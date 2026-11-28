@@ -184,7 +184,7 @@ export function SongViewButton({
         >
           <Popover.Popup
             finalFocus={finalFocusOf(control)}
-            className="flex max-h-[var(--available-height)] w-80 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto rounded-lg border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
+            className="flex max-h-[var(--available-height)] w-80 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-3 overflow-y-auto rounded-card border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
           >
             <fieldset className="flex flex-col gap-1">
               <legend className="mb-1.5 truncate text-xs font-medium text-muted">{title}</legend>
@@ -198,7 +198,7 @@ export function SongViewButton({
                         key={option.choice.kind === "chords" ? "chords" : option.choice.id}
                         className="flex items-center gap-1"
                       >
-                        <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-surface-sunken has-checked:bg-primary has-checked:text-primary-contrast has-focus-visible:ring-3 has-focus-visible:ring-focus/50">
+                        <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-control px-2 py-1.5 text-sm transition-colors hover:bg-surface-sunken has-checked:bg-primary has-checked:text-primary-contrast has-focus-visible:ring-3 has-focus-visible:ring-focus/50">
                           <input
                             type="radio"
                             name={name}
@@ -217,7 +217,7 @@ export function SongViewButton({
                             href={option.href}
                             aria-label={format(t.open, { name: option.label })}
                             title={format(t.open, { name: option.label })}
-                            className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-sunken hover:text-text focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:outline-none pointer-coarse:size-9"
+                            className="flex size-8 shrink-0 items-center justify-center rounded-control text-muted transition-colors hover:bg-surface-sunken hover:text-text focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:outline-none pointer-coarse:size-9"
                           >
                             <SquareArrowOutUpRightIcon className="size-4" />
                           </Link>

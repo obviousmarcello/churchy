@@ -96,10 +96,10 @@ export function LiveControl({
           className={cn(
             "size-2 rounded-full",
             healthy
-              ? "bg-emerald-500"
+              ? "bg-success"
               : status === "ended" || status === "failed"
                 ? "bg-danger"
-                : "bg-amber-500",
+                : "bg-warning",
             healthy && "animate-pulse",
           )}
         />
@@ -110,7 +110,7 @@ export function LiveControl({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner className="z-50" sideOffset={8} align="end" collisionPadding={8}>
-          <Popover.Popup className="flex max-h-[var(--available-height)] w-80 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-4 overflow-y-auto rounded-lg border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Popover.Popup className="flex max-h-[var(--available-height)] w-80 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-4 overflow-y-auto rounded-card border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             <div className="flex flex-col gap-1">
               <Popover.Title className="text-sm font-semibold">{m.sheet.live.title}</Popover.Title>
               <p aria-live="polite" className="text-sm text-muted">
@@ -152,7 +152,7 @@ export function LiveControl({
                         className="flex min-h-7 items-center gap-2 text-sm"
                       >
                         {isParticipantLeader ? (
-                          <CrownIcon aria-hidden className="size-3.5 shrink-0 text-amber-500" />
+                          <CrownIcon aria-hidden className="size-3.5 shrink-0 text-warning" />
                         ) : (
                           <span aria-hidden className="size-3.5 shrink-0" />
                         )}
@@ -267,7 +267,7 @@ function ShareLink({ sessionId, title }: { sessionId: string; title: string }) {
         </Button>
       </div>
       {copied && (
-        <p role="status" className="text-xs text-emerald-700 dark:text-emerald-400">
+        <p role="status" className="text-xs text-success">
           {m.sheet.live.linkCopied}
         </p>
       )}

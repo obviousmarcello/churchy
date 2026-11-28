@@ -336,7 +336,7 @@ export function MetronomeControl({
           align={inFooter ? "start" : "end"}
           collisionPadding={8}
         >
-          <Popover.Popup className="flex max-h-[var(--available-height)] w-72 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-4 overflow-y-auto rounded-lg border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Popover.Popup className="flex max-h-[var(--available-height)] w-72 max-w-[calc(100vw-1rem)] origin-[var(--transform-origin)] flex-col gap-4 overflow-y-auto rounded-card border bg-surface-raised p-4 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             <Popover.Title className="text-sm font-semibold">
               {m.sheet.metronome.title}
             </Popover.Title>
