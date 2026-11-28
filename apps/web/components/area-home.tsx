@@ -57,7 +57,7 @@ export async function AreaHome({
                 <li
                   key={section.id}
                   data-section={section.id}
-                  className="flex items-center justify-between gap-3 rounded-md border border-border bg-surface-raised px-4 py-3"
+                  className="flex items-center justify-between gap-3 rounded-card border border-hairline bg-surface-raised shadow-xs px-4 py-3"
                 >
                   <span className="font-semibold">{section.label}</span>
                   <Badge>{t("upcoming")}</Badge>

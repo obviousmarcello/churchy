@@ -194,7 +194,7 @@ function Calculator({
     : [];
   return (
     <div
-      className="rounded-md border border-border bg-surface-sunken p-4"
+      className="rounded-control border border-hairline bg-surface-sunken p-4"
       data-testid="working-days"
       aria-live="polite"
     >

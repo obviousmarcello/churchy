@@ -159,7 +159,10 @@ export function BookingForm({ rooms, teams, initial, horizon, check, submit }: B
           </Alert>
         ) : null}
         {result && (result.alternativeRooms.length > 0 || result.alternativeSlots.length > 0) ? (
-          <div className="rounded-md border border-border p-3" data-testid="booking-alternatives">
+          <div
+            className="rounded-control border border-hairline p-3"
+            data-testid="booking-alternatives"
+          >
             <p className="font-semibold">{t("alternatives")}</p>
             <ul className="mt-2 flex flex-wrap gap-2">
               {result.alternativeRooms.map((room) => (
@@ -286,7 +289,7 @@ export function BookingForm({ rooms, teams, initial, horizon, check, submit }: B
         optionalLabel={t("optional")}
       />
 
-      <fieldset className="flex flex-col gap-3 rounded-md border border-border p-3">
+      <fieldset className="flex flex-col gap-3 rounded-control border border-hairline p-3">
         <legend className="px-1 font-semibold">{t("repeatLegend")}</legend>
         <Select
           name="repeat"

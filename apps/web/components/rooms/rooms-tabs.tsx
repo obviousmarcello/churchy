@@ -11,7 +11,7 @@ export interface RoomsTab {
 }
 
 const linkClass =
-  "inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-md border-2 border-border-strong px-3 font-semibold text-text no-underline hover:bg-primary-soft aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast";
+  "inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-control border-2 border-border-strong px-3 font-semibold text-text no-underline hover:bg-primary-soft aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast";
 
 /** Sub-navigation of the room booking section; the current page is marked with aria-current. */
 export function RoomsTabs({ label, tabs }: { label: string; tabs: readonly RoomsTab[] }) {

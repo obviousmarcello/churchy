@@ -187,7 +187,7 @@ export function PlanEditor({
                 setDragFrom(null);
                 setArmed(null);
               }}
-              className="rounded-md border border-border bg-surface-raised"
+              className="rounded-card border border-hairline bg-surface-raised shadow-xs"
               data-testid="plan-item"
             >
               <div className="flex flex-wrap items-center gap-2 p-2">

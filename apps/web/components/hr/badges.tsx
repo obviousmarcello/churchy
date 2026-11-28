@@ -65,7 +65,7 @@ export async function TicketRow({
   const t = await getT("munkater.hr.list");
   return (
     <li
-      className="flex flex-col gap-1 rounded-md border border-border bg-surface-raised p-4"
+      className="flex flex-col gap-1 rounded-card border border-hairline bg-surface-raised shadow-xs p-4"
       data-testid="ticket-row"
       data-reference={ticket.reference}
     >
