@@ -63,17 +63,38 @@ SDD §4.2, §25.7. Migration `0003_rls.sql`, checked by `src/rls.ts` and `src/is
 
 **Roles.**
 
-| Role                                         | Used by                             | RLS                                                                                            |
-| -------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------- |
-| migration role (Supabase `postgres`, CI su.) | `db up/down/seed`; owns all tables  | bypasses (superuser / BYPASSRLS) — never used by the app                                       |
-| `churchy_app`                                | the app (Drizzle, `DATABASE_URL`)   | **subject to every policy**: no SUPERUSER, no BYPASSRLS, not the owner, NOINHERIT              |
-| `churchy_music`                              | music module via PostgREST (JWT)    | subject to the policies of `MUSIC_TABLES` only; no grant on any other table (`0007_music_rls`) |
-| `anon`, `authenticated` (Supabase PostgREST) | nothing — Churchy uses no PostgREST | all grants on `public` and their default privileges revoked; no policy names them              |
+| Role                                         | Used by                                                              | RLS                                                                                                                                                                                              |
+| -------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| migration role (Supabase `postgres`, CI su.) | `db up/down/seed`; owns all tables                                   | bypasses (superuser / BYPASSRLS) — never used by the app                                                                                                                                         |
+| `churchy_app`                                | the app (Drizzle, `DATABASE_URL`)                                    | **subject to every policy**: no SUPERUSER, no BYPASSRLS, not the owner, NOINHERIT                                                                                                                |
+| `churchy_music`                              | music module via PostgREST (JWT)                                     | subject to the policies of `MUSIC_TABLES` only; no grant on any other table (`0007_music_rls`)                                                                                                   |
+| `churchy_platform`                           | platform DB (`apps/web/server/platform-db`, `DATABASE_URL_PLATFORM`) | no SUPERUSER, no BYPASSRLS, NOINHERIT, not the owner; reads platform tables + host-lookup columns of `domains`, **INSERT-only** church bootstrap, never reads church data (`0025_platform_role`) |
+| `anon`, `authenticated` (Supabase PostgREST) | nothing — Churchy uses no PostgREST                                  | all grants on `public` and their default privileges revoked; no policy names them                                                                                                                |
 
 The migration creates `churchy_app` as **NOLOGIN**. To let the app connect, an operator runs
 `ALTER ROLE churchy_app LOGIN PASSWORD '…'` out-of-band (Supabase SQL editor / secrets manager) and
 puts the resulting URL into the deployment's `DATABASE_URL`. The password is never in git, a
 migration or a log. The migration role's URL is only used for migrations and the seed.
+
+**Platform role (`0025_platform_role`).** Host → tenant resolution, profile bootstrap, plan
+lookups and church creation have no tenant context, so they use `churchy_platform` (NOLOGIN, NOINHERIT,
+NOBYPASSRLS). The owner creates a login role out-of-band (`churchy_platform_login`, see
+`docs/runbooks/supabase-dev-setup.md`). The exact grants are `PLATFORM_ROLE_ACCESS` in
+`src/table-scopes.ts`; `rlsViolations()` fails when the live grants or policies differ:
+
+| Table                                                | Grant                                                                     | Policy (all `TO churchy_platform`, PERMISSIVE)                                                                                                   |
+| ---------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `plans`, `organizations`, `org_memberships`, `deals` | SELECT                                                                    | `platform_read`                                                                                                                                  |
+| `tenants`, `profiles`, `subscriptions`               | SELECT, INSERT                                                            | `platform_read`; `platform_insert` (tenants: free plan, active, no workspace/organization, not launched; subscriptions: free plan, fresh tenant) |
+| `billing_accounts`, `audit_log`                      | INSERT                                                                    | `platform_insert` (billing: tenant owner, fresh tenant)                                                                                          |
+| `memberships`, `people`                              | INSERT                                                                    | `platform_insert` (role `owner` / linked person; **fresh tenant only**: not launched, created < 10 min ago)                                      |
+| `domains`                                            | SELECT of `tenant_id, hostname, is_primary, verified_at, tls_status` only | `platform_host_lookup`                                                                                                                           |
+
+No UPDATE, DELETE, TRUNCATE, REFERENCES or TRIGGER anywhere, no SELECT on any other tenant or
+catalog table, no `SECURITY DEFINER` function. Host lookup uses a column grant plus a policy on
+`domains` rather than a view: a view would run with its owner's rights (the migration role bypasses
+RLS), the catalog check could not see what it exposes, and the isolation suite verifies columns
+and policies directly.
 
 **Policies.** RLS is enabled **and forced** on every `public` table.
 
@@ -81,7 +102,7 @@ migration or a log. The migration role's URL is only used for migrations and the
 | ------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | `tenant`                  | SELECT, INSERT, UPDATE, DELETE | `tenant_isolation` FOR ALL: `USING` + `WITH CHECK` `tenant_id = (SELECT app.current_tenant_id())`        |
 | `catalog`                 | SELECT, INSERT, UPDATE, DELETE | `tenant_isolation` as above + `catalog_read` FOR SELECT: platform rows, **only inside a tenant context** |
-| `platform`                | none                           | none — denied by default; reached later through a platform role / dedicated policies of their own slices |
+| `platform`                | none                           | none for `churchy_app` — denied by default; `churchy_platform` has its own narrow policies (above)       |
 
 `app.current_tenant_id()` returns `app.tenant_id` as uuid, `NULL` without a context (⇒ 0 rows,
 writes rejected) and **raises** (`42501`) when `app.tenant_id` and `app.org_id` are both set.
