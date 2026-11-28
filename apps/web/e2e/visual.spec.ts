@@ -45,6 +45,10 @@ for (const width of WIDTHS) {
         const bottom = Math.max(a.bottom, b.bottom) + window.scrollY;
         return { x: 0, y: top - 8, width: window.innerWidth, height: bottom - top + 16 };
       });
+      // The floating demo chip sits at a fixed viewport position and can land inside the clip.
+      await page.addStyleTag({
+        content: '[data-testid="demo-banner"] { visibility: hidden !important; }',
+      });
       await expect(page).toHaveScreenshot(`header-menu-open-${width}.png`, {
         clip,
         fullPage: true,
