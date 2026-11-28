@@ -145,7 +145,12 @@ export default async function AbsencePage() {
         {rows.length === 0 ? (
           <p>{t("none")}</p>
         ) : (
-          <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={t("gridTitle")}>
+          <div
+            className="relative overflow-x-auto"
+            tabIndex={0}
+            role="region"
+            aria-label={t("gridTitle")}
+          >
             <table className="min-w-full border-collapse text-fs-2">
               <caption className="sr-only">{t("gridTitle")}</caption>
               <thead>
@@ -206,7 +211,7 @@ export default async function AbsencePage() {
             {conflicts.map((c) => (
               <li
                 key={c.id}
-                className="flex flex-wrap items-center gap-2 rounded-md border border-border p-3"
+                className="flex flex-wrap items-center gap-2 rounded-control border border-hairline p-3"
                 data-testid="conflict"
               >
                 <span>
@@ -231,7 +236,7 @@ export default async function AbsencePage() {
             {t("allBalances", { year })}
           </h2>
           <div
-            className="overflow-x-auto"
+            className="relative overflow-x-auto"
             tabIndex={0}
             role="region"
             aria-label={t("allBalances", { year })}

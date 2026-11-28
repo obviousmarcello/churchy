@@ -261,7 +261,7 @@ async function TicketView({
               return (
                 <li
                   key={s.index}
-                  className="rounded-md border border-border p-3"
+                  className="rounded-control border border-hairline p-3"
                   data-testid="chain-step"
                   data-outcome={s.outcome}
                   aria-current={current ? "step" : undefined}
@@ -355,7 +355,7 @@ async function TicketView({
           {messages.map((m) => (
             <li
               key={m.id}
-              className="rounded-md border border-border bg-surface-raised p-3"
+              className="rounded-card border border-hairline bg-surface-raised shadow-xs p-3"
               data-testid="message"
               data-internal={m.internal}
             >

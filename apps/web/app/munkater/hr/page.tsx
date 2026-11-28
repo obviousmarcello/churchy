@@ -169,7 +169,12 @@ export default async function HrPage({
                   : Math.round(stats.medianResolutionMinutes / 60),
             })}
           </p>
-          <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={t("dashboard")}>
+          <div
+            className="relative overflow-x-auto"
+            tabIndex={0}
+            role="region"
+            aria-label={t("dashboard")}
+          >
             <table className="w-full min-w-96 text-left">
               <caption className="sr-only">{t("dashboard")}</caption>
               <thead>
@@ -240,7 +245,7 @@ export default async function HrPage({
                 key={s ?? "all"}
                 href={s === undefined ? "/munkater/hr" : `/munkater/hr?allapot=${s}`}
                 aria-current={filter === s ? "page" : undefined}
-                className="inline-flex min-h-11 items-center rounded-md border border-border px-3 aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast"
+                className="inline-flex min-h-11 items-center rounded-control border border-hairline px-3 aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast"
               >
                 {s === undefined ? t("all") : common(s)}
               </a>
