@@ -1629,5 +1629,13 @@ export const MIGRATION_SQL: readonly { tag: string; statements: readonly string[
    "REVOKE EXECUTE ON FUNCTION public.put_scripture_cache_verses(text, text, jsonb, integer) FROM PUBLIC;",
    "GRANT EXECUTE ON FUNCTION public.put_scripture_cache_verses(text, text, jsonb, integer) TO churchy_app, churchy_music;"
   ]
+ },
+ {
+  "tag": "0020_music_hymnal_refs",
+  "statements": [
+   "-- Music merge phase 7b: the free-text songbook of a song (\"Hit hangjai 324; HH 12\") becomes rows of\n-- `song_hymnal_refs` where the name or abbreviation matches a hymnal of the platform catalog or of the\n-- church (PLAN O3). The text stays. SECURITY INVOKER: the tenant comes from `app.current_tenant_id()`\n-- and RLS; a dry run changes nothing.\nCREATE OR REPLACE FUNCTION public.merge_songbook_hymnal_refs(p_dry_run boolean DEFAULT false)\n RETURNS TABLE(song_id uuid, hymnal_id uuid, number text, inserted boolean)\n LANGUAGE plpgsql\n SET search_path TO ''\nAS $function$\ndeclare\n  v_tenant uuid := app.current_tenant_id();\n  r record;\n  v_done boolean;\nbegin\n  if v_tenant is null then\n    raise exception 'no tenant' using errcode = '42501';\n  end if;\n  for r in\n    select distinct on (s.id, h.id, m.parts[2])\n      s.id as sid, h.id as hid, m.parts[2] as num\n    from public.songs s\n    cross join lateral regexp_split_to_table(s.songbook, '\\s*;\\s*') as entry\n    cross join lateral (select regexp_match(btrim(entry), '^(.+?)\\s+([0-9]+[a-z]?)$') as parts) m\n    join public.hymnals h\n      on (h.tenant_id is null or h.tenant_id = v_tenant)\n     and (public.search_key(h.abbreviation) = public.search_key(m.parts[1])\n          or public.search_key(h.name) = public.search_key(m.parts[1]))\n    where s.tenant_id = v_tenant and s.songbook is not null and m.parts is not null\n    order by s.id, h.id, m.parts[2], h.tenant_id nulls last\n  loop\n    v_done := false;\n    if not p_dry_run then\n      insert into public.song_hymnal_refs (tenant_id, song_id, hymnal_id, number)\n      values (v_tenant, r.sid, r.hid, r.num)\n      on conflict do nothing;\n      get diagnostics v_done = row_count;\n    else\n      v_done := not exists (\n        select 1 from public.song_hymnal_refs x\n        where x.song_id = r.sid and x.hymnal_id = r.hid and x.number = r.num);\n    end if;\n    song_id := r.sid; hymnal_id := r.hid; number := r.num; inserted := v_done;\n    return next;\n  end loop;\nend;\n$function$;",
+   "REVOKE EXECUTE ON FUNCTION public.merge_songbook_hymnal_refs(boolean) FROM PUBLIC;",
+   "GRANT EXECUTE ON FUNCTION public.merge_songbook_hymnal_refs(boolean) TO churchy_app;"
+  ]
  }
 ];
