@@ -169,6 +169,13 @@
       "when": 1795852403930,
       "tag": "0023_music_rights_batch",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1795853003930,
+      "tag": "0024_revoke_definer_exec",
+      "breakpoints": true
     }
   ]
 }

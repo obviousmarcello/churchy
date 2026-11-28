@@ -31,7 +31,7 @@ tenant, even if a hook or metadata ever put a `tenant_id` into it.
 | Storage buckets | Dashboard → Storage (not a migration) | See [Storage](#storage-music-files) below. |
 | Exposed schemas | Dashboard → API | `public` (music tables live there). Churchy tables stay ungranted to that role. |
 | Custom access token hook | Dashboard → Auth → Hooks | **Not needed** for the tenant claim (per-request tokens are minted by Churchy). The music app's `custom_access_token_hook` goes away with its login (PLAN §11 "Login"). |
-| Realtime (live sessions, projection) | — | Open (phases 3 and 5): Realtime verifies its own JWTs; decide transport first. |
+| Realtime (live sessions, projection) | — | Policies on `realtime.messages` exist on the dev project (0017). Open: JWT signing check (HS256 legacy vs asymmetric keys) and enabling Realtime, see `docs/runbooks/supabase-dev-setup.md` (Owner steps). |
 
 ## Local testing (plain Postgres)
 
@@ -43,7 +43,7 @@ the client header are unit-tested in `apps/web/server/music/tenant-token.test.ts
 
 ## Storage (music files)
 
-Status: phase 1b documents the layout and the policies; the buckets are created on the real
+Status: **applied on the dev project** (10 private buckets, `music_tenant_objects` + `music_buckets_read`; see `docs/runbooks/supabase-dev-setup.md`). Phase 1b documents the layout and the policies; the buckets are created on the real
 Supabase project (Dashboard → Storage or the SQL below run once by an operator), not by a Churchy
 migration (`storage.*` belongs to Supabase, and plain-Postgres CI has no `storage` schema).
 

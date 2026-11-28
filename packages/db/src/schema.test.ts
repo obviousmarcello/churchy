@@ -189,6 +189,7 @@ describe("migrations", () => {
       "0021_music_courses",
       "0022_music_notifications",
       "0023_music_rights_batch",
+      "0024_revoke_definer_exec",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);
