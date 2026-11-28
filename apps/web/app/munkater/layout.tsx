@@ -3,6 +3,7 @@ import { PageShell } from "@churchy/ui";
 import { AreaHome } from "@/components/area-home";
 import { SiteHeader } from "@/components/site-header";
 import { WorkspaceFrame } from "@/components/workspace/workspace-frame";
+import { Toaster } from "@/components/music/ui/toast";
 import { MusicModuleFlags } from "@/components/music/app-config";
 import { getT } from "@/i18n/server";
 import { getWorkspaceSections, isWorkspaceModuleOn } from "@/server/workspace-nav";
@@ -32,6 +33,8 @@ export default async function WorkspaceLayout({ children }: { children: ReactNod
       >
         {/* Flags of the copied music components that are not tied to one page (D-phase 7: OCR reads on the device). */}
         <MusicModuleFlags modules={{ "songs.ocr": ocr }}>{children}</MusicModuleFlags>
+        {/* The toasts of the copied music forms ("Elmentve." …); the one stack of the workspace. */}
+        <Toaster />
       </WorkspaceFrame>
     </PageShell>
   );

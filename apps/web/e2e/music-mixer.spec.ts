@@ -14,8 +14,10 @@ test.describe("Keverőpult (music module)", () => {
 
     await page.locator("#mixer-kind").selectOption("sq-midi");
     await page.getByRole("button", { name: "Mentés" }).click();
+    await expect(page.getByText("Elmentve.").first()).toBeVisible();
+    expect(await axeSeriousOrCritical(page)).toEqual([]);
 
-    // The save answers with a toast; the proof is that the setup is still there after a reload.
+    // The proof that it is stored: the setup is still there after a reload.
     await expect(async () => {
       await page.reload();
       await expect(page.locator("#mixer-kind")).toHaveValue("sq-midi", { timeout: 1000 });

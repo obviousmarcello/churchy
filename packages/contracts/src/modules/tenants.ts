@@ -86,6 +86,7 @@ export const WorkspaceModuleKeySchema = z.enum([
   "ws.music.scripture.daily-psalm",
   "ws.music.projection.bible-panel",
   "ws.music.mixer",
+  "ws.music.rehearsal",
 ]);
 export type WorkspaceModuleKey = z.infer<typeof WorkspaceModuleKeySchema>;
 

@@ -10,10 +10,11 @@ import {
 } from "@/server/music/models/projections";
 import { getEventLiveSession } from "@/server/music/models/live-sessions";
 import { canProjectEvent } from "@/server/music/models/realtime-access";
-import { isWorkspaceModuleOn } from "@/server/workspace-nav";
+import { isWorkspaceModuleOn, requireWorkspaceModule } from "@/server/workspace-nav";
 import type { ProjectionPageProps } from "./page-props";
 import { EventProjectionController } from "./event-controller";
 import { ProjectionGate, ProjectionLoading } from "./gate";
+import { RehearsalProjectionController } from "./rehearsal-controller";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { m } = await getI18n();
@@ -59,6 +60,10 @@ async function Controller({ searchParams }: ProjectionPageProps) {
     );
   }
 
-  // `?rehearsal` (the projection of a rehearsal list in one browser) comes with the rehearsal page.
+  if (params.rehearsal !== undefined) {
+    // The projection of a rehearsal is a part of the module "rehearsal".
+    await requireWorkspaceModule("ws.music.rehearsal");
+    return <RehearsalProjectionController />;
+  }
   return <ProjectionGate reason="noSource" />;
 }

@@ -28,6 +28,7 @@ export type NavKey =
   | "sections.bibleTranslations"
   | "sections.musicNotifications"
   | "sections.musicMixer"
+  | "sections.musicRehearsal"
   | "sections.absences"
   | "sections.hr"
   | "sections.news"
@@ -216,6 +217,13 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           href: "/munkater/biblia-forditasok",
           module: "ws.music.scripture",
           requires: { action: "music.scripture.translations.manage" },
+        },
+        {
+          id: "musicRehearsal",
+          label: t("sections.musicRehearsal"),
+          href: "/munkater/proba",
+          module: "ws.music.rehearsal",
+          requires: { action: "music.song.view" },
         },
         {
           id: "musicMixer",

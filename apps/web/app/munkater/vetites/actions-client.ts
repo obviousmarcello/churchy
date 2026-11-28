@@ -75,3 +75,7 @@ export const cacheVersesAction = (
   verses: CachedVerseDTO[],
   eventId: string | null = null,
 ) => run(server.cacheVersesAction(translation, book, verses, eventId), DENIED);
+
+export const rehearsalSongsAction = (arrangementIds: string[]) =>
+  run(server.rehearsalSongsAction(arrangementIds), { status: "error" as const, message: "" });
+export const defaultProjectionLookAction = () => run(server.defaultProjectionLookAction(), null);
