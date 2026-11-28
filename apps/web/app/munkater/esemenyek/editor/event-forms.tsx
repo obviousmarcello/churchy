@@ -344,7 +344,7 @@ function VolunteersForm({
   return (
     <DialogBody>
       {volunteers.length > 0 ? (
-        <ul className="divide-y rounded-lg border">
+        <ul className="divide-y rounded-card border">
           {volunteers.map((person) => (
             <VolunteerRow key={person.id} eventId={eventId} person={person} />
           ))}

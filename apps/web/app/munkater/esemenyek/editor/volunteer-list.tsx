@@ -18,8 +18,8 @@ type Layout = "chips" | "rows";
 
 const CLASS_NAMES: Record<Layout, string> = {
   chips:
-    "flex max-w-56 items-center gap-2 rounded-full border bg-surface py-1 pr-3 pl-1 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-  rows: "flex w-full min-w-0 items-center gap-3 rounded-lg py-1.5 text-left text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+    "flex max-w-56 items-center gap-2 rounded-full border bg-surface py-1 pr-3 pl-1 text-sm outline-none focus-visible:ring-3 focus-visible:ring-focus/50",
+  rows: "flex w-full min-w-0 items-center gap-3 rounded-card py-1.5 text-left text-sm outline-none focus-visible:ring-3 focus-visible:ring-focus/50",
 };
 
 /**
@@ -57,7 +57,7 @@ export function VolunteerList({
               </Popover.Trigger>
               <Popover.Portal>
                 <Popover.Positioner sideOffset={6} collisionPadding={8}>
-                  <Popover.Popup className="origin-[var(--transform-origin)] rounded-md bg-foreground px-2 py-1 text-xs text-background shadow-md transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-instant:transition-none data-starting-style:scale-95 data-starting-style:opacity-0">
+                  <Popover.Popup className="origin-[var(--transform-origin)] rounded-control bg-inverse px-2 py-1 text-xs text-inverse-text shadow-md transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-instant:transition-none data-starting-style:scale-95 data-starting-style:opacity-0">
                     {person.email}
                   </Popover.Popup>
                 </Popover.Positioner>
@@ -99,7 +99,7 @@ function MyChip({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={6} collisionPadding={8} className="z-50">
-          <Popover.Popup className="flex max-w-(--available-width) origin-[var(--transform-origin)] flex-col gap-2 rounded-lg border bg-surface-raised p-3 text-text shadow-md transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Popover.Popup className="flex max-w-(--available-width) origin-[var(--transform-origin)] flex-col gap-2 rounded-card border bg-surface-raised p-3 text-text shadow-md transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             {person.displayName && person.email && (
               <span className="text-xs text-muted">{person.email}</span>
             )}

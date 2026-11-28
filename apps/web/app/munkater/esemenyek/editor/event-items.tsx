@@ -112,7 +112,7 @@ export function EventItems({
 
   if (items.length === 0) {
     return (
-      <Empty className="rounded-lg border p-6 md:p-8">
+      <Empty className="rounded-card border p-6 md:p-8">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <ListMusicIcon />
@@ -134,20 +134,20 @@ export function EventItems({
             <Fragment key={item.id}>
               {block && (
                 // The top of the card of the block: its items join it below (as in `SetlistRows`).
-                <li className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-t-xl border-l-4 border-l-primary/40 bg-surface-sunken px-3 py-2">
+                <li className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-t-card border-l-4 border-l-primary/40 bg-surface-sunken px-3 py-2">
                   <BlockHeader block={block} />
                 </li>
               )}
               <li
                 className={cn(
-                  "flex items-start gap-3 rounded-xl border-l-4 border-l-transparent bg-surface-sunken px-3 py-2.5 text-sm",
+                  "flex items-start gap-3 rounded-card border-l-4 border-l-transparent bg-surface-sunken px-3 py-2.5 text-sm",
                   inBlock(index) &&
                     "-mt-2 rounded-none border-t border-l-primary/40 border-t-border",
-                  lastInBlock(index) && "rounded-b-xl",
+                  lastInBlock(index) && "rounded-b-card",
                 )}
               >
                 {liveKey !== null && item.key === liveKey && (
-                  <span className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full bg-red-600 px-1.5 py-0.5 text-xs font-medium text-white">
+                  <span className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full bg-danger px-1.5 py-0.5 text-xs font-medium text-white">
                     <RadioIcon aria-hidden className="size-3" />
                     {m.components.setlistRows.live}
                   </span>
@@ -178,7 +178,7 @@ export function EventItems({
                       />
                     </div>
                     {(item.musicalKey ?? item.arrangement.key) && (
-                      <span className="mt-0.5 shrink-0 rounded-md bg-surface-sunken px-1.5 py-0.5 font-mono text-xs">
+                      <span className="mt-0.5 shrink-0 rounded-control bg-surface-sunken px-1.5 py-0.5 font-mono text-xs">
                         <span className="sr-only">{m.events.eventItems.keyPrefix}</span>
                         {/* The key of the slot, in the user's note names. */}
                         <KeyName value={item.musicalKey ?? item.arrangement.key ?? ""} />

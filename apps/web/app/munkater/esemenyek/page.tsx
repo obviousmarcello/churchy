@@ -104,7 +104,7 @@ async function EventList({
             <li key={event.id}>
               <Link
                 href={`/munkater/esemenyek/${event.id}`}
-                className="flex flex-col gap-1 rounded-lg border px-4 py-3 hover:bg-surface"
+                className="flex flex-col gap-1 rounded-card border px-4 py-3 hover:bg-surface"
               >
                 <span className="font-medium">{event.title}</span>
                 <span className="text-sm text-muted">
