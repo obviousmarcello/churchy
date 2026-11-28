@@ -855,3 +855,22 @@ become optional per-translation mappings. Hungarian only.
   via `MusicModulesProvider`); a single slot (`?item=`) still shows its song only.
 - Tests: `daily-psalm.test.ts`, e2e `music-scripture.spec.ts` (sheet with reading between songs, psalm of the day with collapse, axe 0); sheet, live, annotations and workspace specs still pass.
 - Deviation from the music app: the daily psalm is not curated (the first verses of the day's psalm, so a title verse can be the excerpt); a curated Károli list can replace `psalmExcerpt` later.
+
+## 25. Phase 7a: OCR "Read text" (copy-edit)
+- Copied (imports, tokens, strictness edited): `lib/music/ocr/*` (engine, Tesseract.js engine in a Web Worker, fake engine, `readChart`) and
+  `lib/music/chordpro-ocr.ts` (+ tests), `app/munkater/enektar/read-chart-dialog.tsx`. Messages were already in `music.songs.form.ocr`
+  and `music.songs.images.readText`.
+- UI: "Beolvasás képről" on the chart field of the song form (shows the song's images as page sources) and "Szöveg beolvasása" on each image
+  row of the edit page; the result goes into the chart with the existing "Visszavonás" (`BeforeInsert` source `ocr`). Gated by the module
+  `ws.music.songs.ocr` (child of songs, default off, already in the registry, demo seeds and `/admin/modulok`). `MusicModulesProvider` now
+  merges with its parent and the new `MusicModuleFlags` in the `/munkater` layout gives `songs.ocr` to every page that renders a song form
+  (event editor, projection quick add, edit dialog).
+- **Hungarian only** (PLAN 11.1): the engine loads `hun` only; `scripts/copy-tesseract.mjs` copies `hun.traineddata.gz` only and the
+  `@tesseract.js-data/eng` dependency is removed (lockfile -8 lines). The worker, WASM core and `best_int` data are served from
+  `/tesseract/` (git-ignored, copied by `dev`/`build`); there is no CSP in Churchy to widen.
+- The recognition runs on the device: no server action, no table, no migration, so no new policy action (the form that hosts it is already
+  behind `music.songs.*` and the module).
+- Tests: `chordpro-ocr.test.ts`, `ocr/read-chart.test.ts`, `ocr/tesseract-engine.test.ts`; e2e `music-ocr.spec.ts` (draws a Hungarian line on a
+  canvas, reads it with the real engine, inserts it; axe 0).
+- Licensing, to confirm by the owner: Tesseract.js (Apache-2.0), tesseract.js-core (Apache-2.0) and the `best_int` Hungarian data from
+  tessdata_best (Apache-2.0) are bundled as shipped by npm; nothing is downloaded from a CDN.

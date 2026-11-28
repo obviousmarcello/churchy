@@ -45,9 +45,12 @@ import { formatMinutesSeconds } from "@/lib/music/format";
 import { changedPages } from "@/lib/music/page-keys";
 import { cn } from "@/lib/music/utils";
 import { appendChart, type SongpraiseSongDTO } from "@/lib/music/songpraise";
+import { ModuleGate } from "@/components/music/app-config";
+import type { SongImageDTO } from "@/server/music/models/images";
 import type { ArrangementDTO } from "@/server/music/models/arrangements";
 import type { SharedSongRightsDTO } from "@/server/music/models/songs";
 import type { FormState } from "@/server/music/form-state";
+import { ReadChartDialog } from "./read-chart-dialog";
 import { SongpraiseDialog } from "./songpraise-dialog";
 import { TagInput } from "./tag-input";
 
@@ -124,6 +127,7 @@ export function SongForm({
   card = true,
   onSaved,
   chartHandle,
+  images,
   tagOptions = [],
   initialTitle,
   initialChart,
@@ -140,6 +144,8 @@ export function SongForm({
   sharedRights?: SharedSongRightsDTO | null;
   /** Lets other parts of the page put a chart into the chart field. */
   chartHandle?: React.Ref<ChartHandle>;
+  /** The images of the song, which "Read from image" can read. */
+  images?: SongImageDTO[];
   /** The suggestions of the tag field, e.g. the tags of all songs. */
   tagOptions?: string[];
   /** The title of a new song (without `song`), e.g. from the search palette. */
@@ -547,6 +553,13 @@ export function SongForm({
                   isChartEmpty={() => chordpro.trim() === ""}
                   onInsert={insertSongpraise}
                 />
+                <ModuleGate id="songs.ocr">
+                  <ReadChartDialog
+                    images={images}
+                    isChartEmpty={() => chordpro.trim() === ""}
+                    onInsert={insertChart}
+                  />
+                </ModuleGate>
               </div>
             </div>
             <div className="overflow-hidden rounded-lg border bg-surface-raised has-[textarea:focus-visible]:ring-3 has-[textarea:focus-visible]:ring-focus/50">

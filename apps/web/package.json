@@ -33,7 +33,6 @@
     "@electric-sql/pglite": "0.5.16",
     "@supabase/supabase-js": "^2.117.2",
     "@tailwindcss/postcss": "^4.3.5",
-    "@tesseract.js-data/eng": "1.0.0",
     "@tesseract.js-data/hun": "1.0.0",
     "dompurify": "3.4.17",
     "html-to-image": "1.11.13",

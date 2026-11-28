@@ -45,6 +45,9 @@ import { ImageDecodeError, resizeImage } from "@/lib/music/image-resize";
 import { imageHref } from "@/lib/music/next-path";
 import { changedPages } from "@/lib/music/page-keys";
 import { cn } from "@/lib/music/utils";
+import { ModuleGate } from "@/components/music/app-config";
+import { ReadChartDialog } from "../../read-chart-dialog";
+import type { ChartHandle } from "../../song-form";
 import type { FormState } from "@/server/music/form-state";
 import type { SongImageDTO, SongImagePageDTO } from "@/server/music/models/images";
 import {
@@ -84,12 +87,15 @@ export function SongImages({
   images,
   arrangements,
   limits,
+  chart,
 }: {
   songId: string;
   images: SongImageDTO[];
   /** The arrangements of the song, that an image can be for. */
   arrangements: Arrangement[];
   limits: Limits;
+  /** The chart field of the song form, where "Read text" puts the chart of an image. */
+  chart: ChartHandle;
 }) {
   const { m, format } = useI18n();
   const t = m.songs.images;
@@ -138,6 +144,7 @@ export function SongImages({
                 image={image}
                 arrangements={arrangements}
                 limits={limits}
+                chart={chart}
                 editing={editing === image.id}
                 onEdit={(edit) => setEditing(edit ? image.id : null)}
                 previewed={image.id === previewed?.id}
@@ -173,6 +180,7 @@ function ImageRow({
   image,
   arrangements,
   limits,
+  chart,
   editing,
   onEdit,
   previewed,
@@ -182,6 +190,7 @@ function ImageRow({
   image: SongImageDTO;
   arrangements: Arrangement[];
   limits: Limits;
+  chart: ChartHandle;
   editing: boolean;
   onEdit: (editing: boolean) => void;
   /** The preview shows this image. */
@@ -233,6 +242,19 @@ function ImageRow({
               <ExternalLinkIcon />
               {t.open}
             </Link>
+          )}
+          {image.pages.length > 0 && (
+            <ModuleGate id="songs.ocr">
+              <ReadChartDialog
+                source={image}
+                trigger={{
+                  label: t.readText,
+                  title: format(t.readTextTitle, { name: image.name }),
+                }}
+                isChartEmpty={chart.isEmpty}
+                onInsert={chart.insert}
+              />
+            </ModuleGate>
           )}
           <Button
             type="button"

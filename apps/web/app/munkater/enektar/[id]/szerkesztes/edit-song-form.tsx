@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRightIcon } from "lucide-react";
 
 import { FormSection } from "@/components/music/form-parts";
@@ -10,7 +10,7 @@ import type { Messages } from "@/i18n/music/messages";
 import { cn } from "@/lib/music/utils";
 import { DeleteSongButton } from "../../delete-song-button";
 import type { SharedSongRightsDTO } from "@/server/music/models/songs";
-import { SongForm, type SongFormValues } from "../../song-form";
+import { SongForm, type ChartHandle, type SongFormValues } from "../../song-form";
 import { usePolicyAction } from "@/lib/music/policy-form";
 import { updateSongInPlaceAction } from "./actions";
 import type { SongFileModules } from "../../data";
@@ -59,7 +59,7 @@ export function EditSongForm({
   scores: SongScoreDTO[];
   scoreLimits: React.ComponentProps<typeof SongScores>["limits"];
   pdfs: Omit<React.ComponentProps<typeof SongPdfs>, "songId">;
-  images: Omit<React.ComponentProps<typeof SongImages>, "songId">;
+  images: Omit<React.ComponentProps<typeof SongImages>, "songId" | "chart">;
   soundFiles: Omit<React.ComponentProps<typeof SongSoundFiles>, "songId">;
   links: Omit<React.ComponentProps<typeof SongLinks>, "songId">;
   /** The suggestions of the tag field. */
@@ -69,6 +69,7 @@ export function EditSongForm({
 }) {
   const { m } = useI18n();
   const t = m.songs.edit.delete;
+  const chart = useRef<ChartHandle>(null);
   const parts = useMemo(
     () => allParts.filter((part) => !part.module || files[part.module]),
     [files],
@@ -91,6 +92,8 @@ export function EditSongForm({
                 tagOptions={tagOptions}
                 sharedRights={sharedRights}
                 embedded
+                chartHandle={chart}
+                images={files.images ? images.images : undefined}
               />
             </div>
             {files.scores && (
@@ -105,7 +108,14 @@ export function EditSongForm({
             )}
             {files.images && (
               <Part id="images">
-                <SongImages songId={song.id} {...images} />
+                <SongImages
+                  songId={song.id}
+                  {...images}
+                  chart={{
+                    isEmpty: () => chart.current?.isEmpty() ?? true,
+                    insert: (text, replace) => chart.current?.insert(text, replace),
+                  }}
+                />
               </Part>
             )}
             {files.soundFiles && (
