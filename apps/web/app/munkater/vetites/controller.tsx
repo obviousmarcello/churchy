@@ -960,7 +960,7 @@ export function ProjectionController({
         >
           <XIcon />
         </Link>
-        <h1 className="min-w-0 flex-1 truncate font-heading text-base font-semibold">{title}</h1>
+        <h1 className="min-w-0 flex-1 truncate font-heading text-fs-5 font-bold">{title}</h1>
         {schedule && liveBlock && countdownOn && (
           <BlockCountdownBadge
             block={liveBlock}
@@ -1368,7 +1368,7 @@ export function ProjectionController({
                                     drag.move(item.key, offset);
                                   }}
                                   className={cn(
-                                    "absolute top-1/2 left-0.5 flex h-8 w-6 -translate-y-1/2 touch-none items-center justify-center rounded-sm text-muted outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-focus/50 disabled:opacity-50",
+                                    "absolute top-1/2 left-0.5 flex h-8 w-6 -translate-y-1/2 touch-none items-center justify-center rounded-control text-muted outline-none hover:text-text focus-visible:ring-[3px] focus-visible:ring-focus/50 disabled:opacity-50",
                                     drag.dragKey !== null ? "cursor-grabbing" : "cursor-grab",
                                   )}
                                 >
@@ -1687,7 +1687,7 @@ function Tiles({
                 />
                 {hasThumbnail(tile.slide) ? (
                   <span
-                    className="relative block w-full overflow-hidden rounded-sm border bg-black"
+                    className="relative block w-full overflow-hidden rounded-control border bg-black"
                     style={{ aspectRatio }}
                   >
                     <SlideView slide={tile.slide} look={item.look} />
