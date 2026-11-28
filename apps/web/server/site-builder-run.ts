@@ -12,6 +12,13 @@ import { AnthropicPlanner, FakePlanner, type Planner } from "@/server/site-build
 import { MemoryDraftStore, type DraftStore } from "@/server/site-builder/draft-store";
 import { runBudgetFromEnv, type BuildDeps } from "@/server/site-builder/pipeline";
 import { SiteFetcher } from "@/server/site-builder/site-fetcher";
+import type { ApplyMedia } from "@/server/site-builder/apply-existing";
+import type { SiteDraft } from "@/server/site-builder/draft-schema";
+import {
+  MemoryMediaSink,
+  SupabaseMediaSink,
+  supabaseSinkConfigured,
+} from "@/server/site-builder/media-sink";
 
 /**
  * Wires the site builder to its environment. Live: the real fetcher, the Anthropic planner (platform
@@ -88,4 +95,43 @@ export async function ownerDraftsFor(
   if (mode === "live") return listDraftsForTenant(tenantId);
   if (mode !== "demo") return [];
   return demoStore().listForTenant(tenantId);
+}
+
+/** The user id in the Storage token when no signed-in user applies (never a real person). */
+const MEDIA_JOB_USER_ID = "00000000-0000-4000-8000-00000000000b";
+
+const demoSink = (): MemoryMediaSink => {
+  const g = globalThis as { __siteBuilderDemoSink?: MemoryMediaSink };
+  return (g.__siteBuilderDemoSink ??= new MemoryMediaSink());
+};
+
+/**
+ * Where the images of an applied draft come from and go to. Demo: the fixture site and an in-memory
+ * sink (no network). Live: the SSRF-safe `SiteFetcher` for the draft's source site and the Supabase
+ * Storage sink (needs `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_JWT_SECRET`); without them
+ * `null`, and the images stay listed candidates (the apply says so).
+ */
+export function mediaFor(
+  mode: SiteBuilderMode,
+  actorUserId: string | null,
+): (draft: SiteDraft) => ApplyMedia | null {
+  return (draft) => {
+    if (mode === "demo") {
+      return {
+        fetcher: new SiteFetcher(`${FIXTURE_ORIGIN}/`, {
+          limits: { minDelayMs: 0 },
+          sleep: async () => {},
+          transport: fixtureTransport(),
+        }),
+        sink: demoSink(),
+      };
+    }
+    if (mode === "live" && supabaseSinkConfigured()) {
+      return {
+        fetcher: new SiteFetcher(draft.meta.sourceUrl),
+        sink: new SupabaseMediaSink(actorUserId || MEDIA_JOB_USER_ID),
+      };
+    }
+    return null;
+  };
 }

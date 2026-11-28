@@ -60,6 +60,8 @@ export default tseslint.config(
       "apps/web/server/data-adapters.ts",
       "apps/web/server/platform-db/client.ts",
       "apps/web/server/platform-db/*.db.test.ts",
+      // Only the pure tenant storage-key helpers (`@churchy/db/storage-keys`, no adapter, no pool).
+      "apps/web/server/site-builder/media-sink.ts",
     ],
     rules: {
       "no-restricted-imports": [

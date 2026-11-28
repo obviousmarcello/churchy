@@ -22,7 +22,15 @@ export function SiteDraftApply({ draftId }: { draftId: string }) {
               const res = await applyDraftOwnerAction(draftId);
               if (!res.ok) setResult({ tone: "danger", text: t("forbidden") });
               else if (!res.value.ok) setResult({ tone: "danger", text: t("failed") });
-              else setResult({ tone: "success", text: t("done", { ...res.value.summary }) });
+              else
+                setResult({
+                  tone: "success",
+                  text:
+                    t("done", { ...res.value.summary }) +
+                    (res.value.imagesNotApplied > 0
+                      ? ` ${t("imagesNotApplied", { count: res.value.imagesNotApplied })}`
+                      : ""),
+                });
             })
           }
         >

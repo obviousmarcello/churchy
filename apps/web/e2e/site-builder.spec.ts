@@ -105,6 +105,8 @@ test.describe("site builder (operators)", () => {
     await page.getByLabel("A tulajdonos neve").fill("Minta Mihály");
     await page.getByTestId("draft-apply").click();
     await expect(page.getByTestId("draft-applied")).toContainText("Alkalmazva: 1 oldal, 1 hír");
+    // The demo sink carried the on-site fixture images over (fixture site, memory sink, no network).
+    await expect(page.getByTestId("draft-applied")).toContainText(/, [1-9]\d* kép/);
   });
 
   test("a draft for an existing church waits for its owner, who applies it", async ({ page }) => {
@@ -121,5 +123,6 @@ test.describe("site builder (operators)", () => {
     await expect(page.getByTestId("owner-draft-result").first()).toContainText(
       "Alkalmaztuk: 1 oldal",
     );
+    await expect(page.getByTestId("owner-draft-result").first()).toContainText(/, [1-9]\d* kép/);
   });
 });

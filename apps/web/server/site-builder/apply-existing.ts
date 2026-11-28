@@ -2,6 +2,8 @@ import type { Ctx, PageBlock, Repositories } from "@churchy/contracts";
 import type { DraftBlock, SiteDraft } from "./draft-schema";
 import { serviceTypeKey, type ApplySummary } from "./apply-new";
 import { uniqueSlug } from "./map";
+import { prepareImages, storeImages, type ImageFetcher } from "./media-carry";
+import type { MediaSink } from "./media-sink";
 
 /**
  * Applying a draft to an EXISTING church: done by the church's owner under their own tenant context,
@@ -11,11 +13,24 @@ import { uniqueSlug } from "./map";
  * the church's identity and theme stay as they are). Everything lands unpublished.
  */
 
-function pageBlocks(blocks: readonly DraftBlock[]): PageBlock[] {
-  // Images are not carried over here: media arrive with the media pipeline (S2); text and structure do.
+/** Where the images come from and go to; without it they stay listed candidates. */
+export interface ApplyMedia {
+  readonly fetcher: ImageFetcher;
+  readonly sink: MediaSink;
+  readonly signal?: AbortSignal;
+}
+
+function pageBlocks(
+  blocks: readonly DraftBlock[],
+  media: ReadonlyMap<string, string>,
+): PageBlock[] {
+  // An image block keeps its place only when its image was carried over (media row id).
   const out: PageBlock[] = [];
   for (const b of blocks) {
-    if (b.type === "heading") out.push({ type: "heading", text: b.text, level: b.level });
+    if (b.type === "image") {
+      const mediaId = media.get(b.imageId);
+      if (mediaId) out.push({ type: "image", mediaId, caption: b.caption });
+    } else if (b.type === "heading") out.push({ type: "heading", text: b.text, level: b.level });
     else if (b.type === "text") out.push({ type: "text", content: b.content });
     else if (b.type === "quote") out.push({ type: "quote", text: b.text, source: b.source });
   }
@@ -26,6 +41,58 @@ export async function applyDraftWithRepositories(
   ctx: Ctx,
   repos: Repositories,
   draft: SiteDraft,
+  media?: ApplyMedia,
+): Promise<ApplySummary> {
+  // Images first (their media ids go into the page blocks). If anything after this throws, the
+  // uploaded objects and media rows are removed again (best effort; there is no transaction here).
+  const mediaIds = new Map<string, string>();
+  const created: string[] = [];
+  let uploaded: string[] = [];
+  let mediaFailed = 0;
+  try {
+    if (media) {
+      const prep = await prepareImages(draft, media.fetcher, media.signal);
+      const store = await storeImages(ctx, prep.prepared, media.sink);
+      uploaded = store.keys;
+      mediaFailed = prep.failed + store.failed;
+      for (const image of store.stored) {
+        try {
+          const row = await repos.media.create(ctx, {
+            kind: "image",
+            filename: image.filename,
+            mimeType: image.mimeType,
+            storageKey: image.storageKey,
+            bytes: image.bytes,
+            width: image.width,
+            height: image.height,
+            alt: image.alt,
+            decorative: image.decorative,
+          });
+          created.push(row.id);
+          mediaIds.set(image.draftImageId, row.id);
+        } catch {
+          mediaFailed++;
+          await media.sink.remove(ctx, [image.storageKey]);
+          uploaded = uploaded.filter((k) => k !== image.storageKey);
+        }
+      }
+    }
+    return await applyContent(ctx, repos, draft, mediaIds, mediaFailed);
+  } catch (error) {
+    if (media) {
+      for (const id of created) await repos.media.delete(ctx, id).catch(() => undefined);
+      await media.sink.remove(ctx, uploaded);
+    }
+    throw error;
+  }
+}
+
+async function applyContent(
+  ctx: Ctx,
+  repos: Repositories,
+  draft: SiteDraft,
+  mediaIds: ReadonlyMap<string, string>,
+  mediaFailed: number,
 ): Promise<ApplySummary> {
   const taken = new Set<string>();
   for (const p of await repos.pages.list(ctx)) taken.add(p.slug);
@@ -34,7 +101,7 @@ export async function applyDraftWithRepositories(
     await repos.pages.upsert(ctx, {
       slug: uniqueSlug(p.slug, p.title, taken),
       title: p.title,
-      blocks: pageBlocks(p.blocks),
+      blocks: pageBlocks(p.blocks, mediaIds),
       riteKey: p.kind === "rite" ? p.riteKey : null,
       seo: { title: p.title.slice(0, 70), description: null, ogImageMediaId: null },
       sort: 1000 + index,
@@ -106,5 +173,14 @@ export async function applyDraftWithRepositories(
   } else {
     skippedServiceTimes = times.length;
   }
-  return { pages, posts, announcements, locations, serviceRules, media: 0, skippedServiceTimes };
+  return {
+    pages,
+    posts,
+    announcements,
+    locations,
+    serviceRules,
+    media: mediaIds.size,
+    mediaFailed,
+    skippedServiceTimes,
+  };
 }

@@ -17,6 +17,8 @@ import { FakePlanner } from "./site-builder/llm";
 import { buildDraft } from "./site-builder/pipeline";
 import { MemoryDraftStore } from "./site-builder/draft-store";
 import { SiteFetcher } from "./site-builder/site-fetcher";
+import { MemoryMediaSink } from "./site-builder/media-sink";
+import type { ApplyMedia } from "./site-builder/apply-existing";
 import { siteBuilderMode } from "./site-builder-mode";
 
 const U1 = "22222222-2222-4222-8222-222222222222";
@@ -259,5 +261,194 @@ describe("siteBuilderMode", () => {
     );
     expect(siteBuilderMode({ DATABASE_URL_PLATFORM: "postgres://x" })).toBe("off");
     expect(siteBuilderMode({ ANTHROPIC_API_KEY: "k" })).toBe("off");
+  });
+});
+
+describe("applying with a media sink", () => {
+  const input = {
+    name: "Mintavárosi Plébánia",
+    slug: "mintavaros",
+    owner: { authUserId: U1, email: "owner@example.test", name: "Minta Mihály" },
+  };
+  const mediaWith = (sink: MemoryMediaSink) => (): ApplyMedia => ({
+    fetcher: new SiteFetcher(`${FIXTURE_ORIGIN}/`, {
+      limits: { minDelayMs: 0 },
+      sleep: async () => {},
+      transport: fixtureTransport(),
+    }),
+    sink,
+  });
+  const liveDb = (failAt?: RegExp) =>
+    createFakeDb((text) => {
+      if (/from plans/.test(text)) return [{ x: 1 }];
+      if (/into profiles/.test(text)) return [{ id: U1 }];
+      if (failAt?.test(text)) return new Error("boom");
+      return [];
+    });
+
+  it("new church: uploads inside the seed, inserts media rows under the new tenant, reports what is left", async () => {
+    const store = new MemoryDraftStore();
+    const d = await draft();
+    const kept = d.images.filter((i) => i.include && !i.offsite).length;
+    expect(kept).toBeGreaterThan(0);
+    const row = await store.create(d);
+    const sink = new MemoryMediaSink();
+    const { db, calls } = liveDb();
+    const res = await applyToNewChurch({
+      store,
+      draftId: row.id,
+      input,
+      mode: "live",
+      operatorId: U1,
+      db,
+      mediaFor: mediaWith(sink),
+    });
+    expect(res).toMatchObject({ ok: true, summary: { media: kept, mediaFailed: 0 } });
+    expect(res.ok && res.imagesNotApplied).toBe(d.images.filter((i) => i.include).length - kept);
+    const inserts = calls.filter((c) => /insert into media/.test(c.text));
+    expect(inserts).toHaveLength(kept);
+    const tenantId = String(inserts[0]!.values[1]);
+    for (const c of inserts) {
+      expect(String(c.values[4])).toMatch(new RegExp(`^t/${tenantId}/media/[0-9a-f-]{36}\\.webp$`));
+      expect(sink.objects.has(String(c.values[4]))).toBe(true);
+      expect(c.values[3]).toBe("image/webp");
+    }
+  });
+
+  it("new church: a rolled-back transaction removes the uploaded objects again", async () => {
+    const store = new MemoryDraftStore();
+    const row = await store.create(await draft());
+    const sink = new MemoryMediaSink();
+    const { db, events } = liveDb(/insert into pages/);
+    await expect(
+      applyToNewChurch({
+        store,
+        draftId: row.id,
+        input,
+        mode: "live",
+        operatorId: U1,
+        db,
+        mediaFor: mediaWith(sink),
+      }),
+    ).rejects.toThrow("boom");
+    expect(events).toEqual(["begin", "rollback"]);
+    expect(sink.objects.size).toBe(0);
+  });
+
+  it("new church: one failing upload is a warning count, the church is still created", async () => {
+    const store = new MemoryDraftStore();
+    const d = await draft();
+    const row = await store.create(d);
+    const kept = d.images.filter((i) => i.include && !i.offsite).length;
+    const sink = new MemoryMediaSink();
+    const realPut = sink.put.bind(sink);
+    let n = 0;
+    sink.put = async (c, k, b) => {
+      if (n++ === 0) throw new Error("storage down");
+      return realPut(c, k, b);
+    };
+    const { db, events } = liveDb();
+    const res = await applyToNewChurch({
+      store,
+      draftId: row.id,
+      input,
+      mode: "live",
+      operatorId: U1,
+      db,
+      mediaFor: mediaWith(sink),
+    });
+    expect(events).toEqual(["begin", "commit"]);
+    expect(res).toMatchObject({ ok: true, summary: { media: kept - 1, mediaFailed: 1 } });
+  });
+
+  it("new church without a sink: nothing is carried over and all kept images are reported", async () => {
+    const store = new MemoryDraftStore();
+    const d = await draft();
+    const row = await store.create(d);
+    const { db } = liveDb();
+    const res = await applyToNewChurch({
+      store,
+      draftId: row.id,
+      input,
+      mode: "live",
+      operatorId: U1,
+      db,
+    });
+    expect(res).toMatchObject({
+      ok: true,
+      summary: { media: 0 },
+      imagesNotApplied: d.images.filter((i) => i.include).length,
+    });
+  });
+
+  it("demo mode uses the fixture site and the memory sink (no network)", async () => {
+    const store = new MemoryDraftStore();
+    const row = await store.create(await draft());
+    const sink = new MemoryMediaSink();
+    const res = await applyToNewChurch({
+      store,
+      draftId: row.id,
+      input,
+      mode: "demo",
+      operatorId: "op",
+      mediaFor: mediaWith(sink),
+    });
+    expect(res.ok && res.summary.media).toBeGreaterThan(0);
+    expect(sink.objects.size).toBe(res.ok ? res.summary.media : -1);
+  });
+
+  it("owner: carries images over through the media repository and replaces image blocks", async () => {
+    const repos = repositoriesFor("site-builder-media-owner");
+    const tenantId = demoDirectory().defaultTenantId;
+    const store = new MemoryDraftStore();
+    const d = await draft();
+    const row = await store.create(d, { targetTenantId: tenantId });
+    const sink = new MemoryMediaSink();
+    const ctx = { tenantId, actor: { userId: U1, personId: null } };
+    const before = (await repos.media.list(ctx)).total;
+    const res = await applyForOwner({
+      mode: "demo",
+      draftId: row.id,
+      tenantId,
+      userId: U1,
+      ctx,
+      repos,
+      store,
+      mediaFor: mediaWith(sink),
+    });
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.summary.media).toBeGreaterThan(0);
+    expect((await repos.media.list(ctx)).total).toBe(before + res.summary.media);
+    expect(sink.objects.size).toBe(res.summary.media);
+    for (const key of sink.objects.keys())
+      expect(key.startsWith(`t/${tenantId}/media/`)).toBe(true);
+  });
+
+  it("owner: a failure after the upload removes the objects and media rows again", async () => {
+    const repos = repositoriesFor("site-builder-media-owner-fail");
+    const tenantId = demoDirectory().defaultTenantId;
+    const store = new MemoryDraftStore();
+    const row = await store.create(await draft(), { targetTenantId: tenantId });
+    const sink = new MemoryMediaSink();
+    const ctx = { tenantId, actor: { userId: U1, personId: null } };
+    const before = (await repos.media.list(ctx)).total;
+    repos.pages.upsert = async () => {
+      throw new Error("boom");
+    };
+    await expect(
+      applyForOwner({
+        mode: "demo",
+        draftId: row.id,
+        tenantId,
+        userId: U1,
+        ctx,
+        repos,
+        store,
+        mediaFor: mediaWith(sink),
+      }),
+    ).rejects.toThrow("boom");
+    expect(sink.objects.size).toBe(0);
+    expect((await repos.media.list(ctx)).total).toBe(before);
   });
 });

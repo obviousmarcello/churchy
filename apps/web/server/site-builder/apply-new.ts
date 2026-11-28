@@ -33,6 +33,8 @@ export interface StoredImage {
   readonly width: number;
   readonly height: number;
   readonly alt: string | null;
+  /** No alt text known: marked decorative (an image needs one or the other). */
+  readonly decorative: boolean;
 }
 
 export interface ApplySummary {
@@ -42,6 +44,8 @@ export interface ApplySummary {
   readonly locations: number;
   readonly serviceRules: number;
   readonly media: number;
+  /** Included images that could not be carried over (download, decode or upload failed). */
+  readonly mediaFailed: number;
   /** Service times that could not be placed (no location at all). */
   readonly skippedServiceTimes: number;
 }
@@ -115,7 +119,7 @@ export function seedStatements(
   for (const i of images) {
     statements.push({
       text: `insert into media (id, tenant_id, kind, filename, mime_type, storage_key, width, height, bytes, alt, decorative, people_consent, visibility)
-             values ($1, $2, 'image', $3, $4, $5, $6, $7, $8, $9, false, false, 'public')`,
+             values ($1, $2, 'image', $3, $4, $5, $6, $7, $8, $9, $10, false, 'public')`,
       values: [
         i.id,
         tenantId,
@@ -126,6 +130,7 @@ export function seedStatements(
         i.height,
         i.bytes,
         i.alt,
+        i.decorative,
       ],
     });
   }
@@ -265,6 +270,7 @@ export function seedStatements(
       locations: locationRows.length,
       serviceRules,
       media: images.length,
+      mediaFailed: 0,
       skippedServiceTimes,
     },
   };

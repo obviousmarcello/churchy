@@ -54,6 +54,12 @@ export const FIXTURE_PAGES: Readonly<Record<string, string>> = {
 
 export const FIXTURE_ROBOTS = "User-agent: *\nDisallow: /titkos\n";
 
+/** A valid 1x1 PNG: demo mode and tests re-encode it for real. */
+export const FIXTURE_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+  "base64",
+);
+
 /** An in-memory transport (no network, no loopback) serving the fixture site and tiny images. */
 export function fixtureTransport(
   origin: string = FIXTURE_ORIGIN,
@@ -74,8 +80,7 @@ export function fixtureTransport(
     });
     if (url.origin !== origin) return { ok: false, code: "off_scope", url: input };
     if (url.pathname === "/robots.txt") return ok(robots, "text/plain");
-    if (url.pathname.startsWith("/img/"))
-      return ok(Buffer.from([0x89, 0x50, 0x4e, 0x47]), "image/png");
+    if (url.pathname.startsWith("/img/")) return ok(FIXTURE_PNG, "image/png");
     const html = pages[url.pathname];
     return html !== undefined
       ? ok(html, "text/html; charset=utf-8")

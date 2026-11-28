@@ -10,7 +10,7 @@ import {
   type ApplyNewResult,
   type ApplyOwnerResult,
 } from "@/server/site-builder-admin";
-import { draftStoreFor, siteBuilderMode } from "@/server/site-builder-run";
+import { draftStoreFor, mediaFor, siteBuilderMode } from "@/server/site-builder-run";
 import { getActor, getRequestContext } from "@/server/session";
 import { getRequestRepositories } from "@/server/repositories";
 
@@ -53,7 +53,14 @@ export const applyDraftNewChurchAction = withPolicy(
     const operator = await operatorId();
     const store = draftStoreFor(mode, operator);
     if (!id.success || !store) return { ok: false, reason: "not_found" };
-    return applyToNewChurch({ store, draftId: id.data, input, mode, operatorId: operator });
+    return applyToNewChurch({
+      store,
+      draftId: id.data,
+      input,
+      mode,
+      operatorId: operator,
+      mediaFor: mediaFor(mode, operator || null),
+    });
   },
 );
 
@@ -88,6 +95,7 @@ export const applyDraftOwnerAction = withPolicy(
       ctx: scope.ctx,
       repos: await getRequestRepositories(),
       store: draftStoreFor(mode, userId ?? ""),
+      mediaFor: mediaFor(mode, userId),
     });
   },
 );

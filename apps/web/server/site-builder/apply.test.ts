@@ -98,6 +98,7 @@ describe("seedStatements (new church)", () => {
         width: 1,
         height: 1,
         alt: null,
+        decorative: true,
       },
     ];
     const some = seedStatements(withImages, T, stored, ids);

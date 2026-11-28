@@ -209,6 +209,7 @@ describe("migrations", () => {
       "0025_platform_role",
       "0026_platform_role_narrow",
       "0027_site_builder",
+      "0028_site_media",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);

@@ -11,7 +11,7 @@ import {
   type CreateTenantResult,
   type PlatformDb,
 } from "@/server/platform-db";
-import { applyDraftWithRepositories } from "@/server/site-builder/apply-existing";
+import { applyDraftWithRepositories, type ApplyMedia } from "@/server/site-builder/apply-existing";
 import {
   attribution,
   seedStatements,
@@ -19,6 +19,12 @@ import {
   type ApplySummary,
 } from "@/server/site-builder/apply-new";
 import type { SiteDraft } from "@/server/site-builder/draft-schema";
+import {
+  prepareImages,
+  storeImages,
+  type PrepareResult,
+  type StoreResult,
+} from "@/server/site-builder/media-carry";
 import type { DraftStore, StoredDraft } from "@/server/site-builder/draft-store";
 import type { SiteBuilderMode } from "@/server/site-builder-mode";
 
@@ -78,6 +84,17 @@ export type ApplyNewResult =
 type CreateTenantResultFailure = Exclude<CreateTenantResult, { ok: true }>["reason"];
 
 const countImages = (draft: SiteDraft) => draft.images.filter((i) => i.include).length;
+/** Kept images that did not end up as media (no sink, or a download/decode/upload failed). */
+const notCarried = (draft: SiteDraft, summary: ApplySummary) =>
+  Math.max(0, countImages(draft) - summary.media);
+
+const operatorCtx = (tenantId: string, userId: string): Ctx => ({
+  tenantId,
+  actor: { userId: userId || null, personId: null },
+});
+
+/** Fetcher and sink for one draft's images, or `null` when no media storage is configured. */
+export type MediaFor = (draft: SiteDraft) => ApplyMedia | null;
 
 export async function applyToNewChurch(args: {
   readonly store: DraftStore;
@@ -86,6 +103,7 @@ export async function applyToNewChurch(args: {
   readonly mode: SiteBuilderMode;
   readonly operatorId: string;
   readonly db?: Pick<PlatformDb, "transaction">;
+  readonly mediaFor?: MediaFor;
 }): Promise<ApplyNewResult> {
   const parsed = NewChurchInputSchema.safeParse(args.input, { error: huZodErrorMap });
   if (!parsed.success) return { ok: false, reason: "invalid" };
@@ -96,56 +114,102 @@ export async function applyToNewChurch(args: {
 
   if (args.mode === "demo") {
     // No database in demo mode: the draft is marked applied and the summary is what would be created.
-    const { summary } = seedStatements(draft, "00000000-0000-4000-8000-000000000000");
+    const demoCtx = operatorCtx("00000000-0000-4000-8000-000000000000", args.operatorId);
+    const media = args.mediaFor?.(draft) ?? null;
+    const prep = media ? await prepareImages(draft, media.fetcher, media.signal) : null;
+    const store = media && prep ? await storeImages(demoCtx, prep.prepared, media.sink) : null;
+    const { summary } = seedStatements(draft, demoCtx.tenantId!, store?.stored ?? []);
+    const shown = { ...summary, mediaFailed: (prep?.failed ?? 0) + (store?.failed ?? 0) };
     await args.store.markApplied(args.draftId, `demo-${input.slug}`);
-    return { ok: true, slug: input.slug, summary, imagesNotApplied: countImages(draft) };
+    return {
+      ok: true,
+      slug: input.slug,
+      summary: shown,
+      imagesNotApplied: notCarried(draft, shown),
+    };
   }
 
+  // Download and re-encode BEFORE the transaction (slow, needs no tenant); upload inside it, once the
+  // tenant id exists. Storage is not transactional: if the church does not commit, the objects are removed.
+  const media = args.mediaFor?.(draft) ?? null;
+  const prep: PrepareResult | null = media
+    ? await prepareImages(draft, media.fetcher, media.signal)
+    : null;
+  let uploaded: { ctx: Ctx; keys: string[] } | null = null;
+  const cleanup = async () => {
+    if (media && uploaded && uploaded.keys.length > 0) {
+      await media.sink.remove(uploaded.ctx, uploaded.keys);
+    }
+  };
+
   let summary: ApplySummary | null = null;
-  const created = await createTenant(
-    {
-      name: input.name,
-      slug: input.slug,
-      denomination: draft.church.denomination.value,
-      owner: input.owner,
-      actorUserId: args.operatorId,
-    } as CreateTenantInput,
-    {
-      allowReserved: true,
-      siteConfig: siteConfigFromDraft(draft),
-      ...(args.db ? { db: args.db } : {}),
-      seed: async (tx, tenantId) => {
-        const seeded = seedStatements(draft, tenantId);
-        summary = seeded.summary;
-        for (const s of seeded.statements) await tx.query(s.text, s.values);
-        // In the same transaction: the draft is applied and the audit entry (ids and counts, no texts;
-        // the source URLs are the church's own public pages) exists, or none of it does.
-        await tx.query(
-          `update site_drafts set status = 'applied', applied_tenant_id = $2, updated_at = now() where id = $1 and status = 'ready'`,
-          [args.draftId, tenantId],
-        );
-        await writeSiteBuilderAudit(
-          args.operatorId,
-          "site_builder.apply",
-          args.draftId,
-          {
-            mode: "new_church",
-            consent: draft.meta.consent.confirmed,
-            summary,
-            sources: attribution(draft),
-          },
-          tenantId,
-          tx,
-        );
+  let created: CreateTenantResult;
+  try {
+    created = await createTenant(
+      {
+        name: input.name,
+        slug: input.slug,
+        denomination: draft.church.denomination.value,
+        owner: input.owner,
+        actorUserId: args.operatorId,
+      } as CreateTenantInput,
+      {
+        allowReserved: true,
+        siteConfig: siteConfigFromDraft(draft),
+        ...(args.db ? { db: args.db } : {}),
+        seed: async (tx, tenantId) => {
+          let store: StoreResult | null = null;
+          if (media && prep) {
+            const ctx = operatorCtx(tenantId, args.operatorId);
+            store = await storeImages(ctx, prep.prepared, media.sink);
+            uploaded = { ctx, keys: store.keys };
+          }
+          const seeded = seedStatements(draft, tenantId, store?.stored ?? []);
+          summary = {
+            ...seeded.summary,
+            mediaFailed: (prep?.failed ?? 0) + (store?.failed ?? 0),
+          };
+          for (const s of seeded.statements) await tx.query(s.text, s.values);
+          // In the same transaction: the draft is applied and the audit entry (ids and counts, no texts;
+          // the source URLs are the church's own public pages) exists, or none of it does.
+          await tx.query(
+            `update site_drafts set status = 'applied', applied_tenant_id = $2, updated_at = now() where id = $1 and status = 'ready'`,
+            [args.draftId, tenantId],
+          );
+          await writeSiteBuilderAudit(
+            args.operatorId,
+            "site_builder.apply",
+            args.draftId,
+            {
+              mode: "new_church",
+              consent: draft.meta.consent.confirmed,
+              summary,
+              sources: attribution(draft),
+            },
+            tenantId,
+            tx,
+          );
+        },
       },
-    },
-  );
-  if (!created.ok) return { ok: false, reason: created.reason };
-  return { ok: true, slug: created.slug, summary: summary!, imagesNotApplied: countImages(draft) };
+    );
+  } catch (error) {
+    await cleanup(); // the transaction rolled back: no church, so no object may stay behind
+    throw error;
+  }
+  if (!created.ok) {
+    await cleanup();
+    return { ok: false, reason: created.reason };
+  }
+  return {
+    ok: true,
+    slug: created.slug,
+    summary: summary!,
+    imagesNotApplied: notCarried(draft, summary!),
+  };
 }
 
 export type ApplyOwnerResult =
-  | { readonly ok: true; readonly summary: ApplySummary }
+  | { readonly ok: true; readonly summary: ApplySummary; readonly imagesNotApplied: number }
   | { readonly ok: false; readonly reason: "not_found" };
 
 /** The church owner applies a draft the operator prepared for this church, under their own context. */
@@ -159,6 +223,7 @@ export async function applyForOwner(args: {
   readonly store: DraftStore | null;
   readonly now?: Date;
   readonly dbQuery?: Pick<PlatformDb, "query">;
+  readonly mediaFor?: MediaFor;
 }): Promise<ApplyOwnerResult> {
   let stored: StoredDraft | null = null;
   if (args.mode === "live") {
@@ -168,7 +233,12 @@ export async function applyForOwner(args: {
     stored = row && row.status === "ready" && row.targetTenantId === args.tenantId ? row : null;
   }
   if (!stored) return { ok: false, reason: "not_found" };
-  const summary = await applyDraftWithRepositories(args.ctx, args.repos, stored.draft);
+  const summary = await applyDraftWithRepositories(
+    args.ctx,
+    args.repos,
+    stored.draft,
+    args.mediaFor?.(stored.draft) ?? undefined,
+  );
   if (args.store) await args.store.markApplied(args.draftId, args.tenantId);
   if (args.mode === "live" && args.userId) {
     await writeSiteBuilderAudit(
@@ -185,5 +255,5 @@ export async function applyForOwner(args: {
       args.dbQuery as never,
     );
   }
-  return { ok: true, summary };
+  return { ok: true, summary, imagesNotApplied: notCarried(stored.draft, summary) };
 }
