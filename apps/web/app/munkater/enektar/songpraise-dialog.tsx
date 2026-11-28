@@ -451,7 +451,7 @@ function SearchResults({
         const shown = preview?.id === song.id ? preview : null;
         const panelId = `songpraise-lyrics-${song.id}`;
         return (
-          <li key={song.id} className={cn("rounded-lg", shown && "bg-surface-sunken/50")}>
+          <li key={song.id} className={cn("rounded-card", shown && "bg-surface-sunken/50")}>
             <div className="flex items-start gap-1">
               <Button
                 type="button"
@@ -533,7 +533,7 @@ function Lyrics({ chordpro }: { chordpro: string }) {
   if (parts.length === 0)
     return <p className="text-sm text-muted">{m.songs.form.songpraise.noLyrics}</p>;
   return (
-    <div className="flex max-h-72 flex-col gap-3 overflow-y-auto overscroll-contain rounded-md border bg-surface p-3 text-sm">
+    <div className="flex max-h-72 flex-col gap-3 overflow-y-auto overscroll-contain rounded-control border bg-surface p-3 text-sm">
       {parts.map((part, index) => (
         <section key={index} className="flex flex-col">
           {part.section && <h4 className="text-xs font-medium text-muted">{part.section.label}</h4>}

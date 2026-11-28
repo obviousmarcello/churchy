@@ -68,7 +68,7 @@ export function ResearchSettings({
       ) : (
         <p
           role="note"
-          className="flex items-start gap-2 rounded-lg border bg-surface-sunken p-3 text-sm"
+          className="flex items-start gap-2 rounded-card border bg-surface-sunken p-3 text-sm"
           data-testid="ai-research-off"
         >
           <InfoIcon className="mt-0.5 size-4 shrink-0" aria-hidden />

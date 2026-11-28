@@ -58,7 +58,7 @@ export function ChartPreview({
         <div
           // The colors of the paper are in `globals.css`, for the light and the dark theme.
           data-sheet-paper={settings.background}
-          className="overflow-x-auto rounded-lg border bg-(--sheet-bg) p-4 text-[0.9375rem] text-(--sheet-fg)"
+          className="overflow-x-auto rounded-card border bg-(--sheet-bg) p-4 text-[0.9375rem] text-(--sheet-fg)"
         >
           <ChordSheet
             title={title.trim() || chart.meta.title || "—"}

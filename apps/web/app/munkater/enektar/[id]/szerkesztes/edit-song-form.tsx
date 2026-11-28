@@ -134,7 +134,7 @@ export function EditSongForm({
             <FormSection
               title={t.title}
               description={t.description}
-              className="max-w-3xl rounded-lg border border-danger/30 p-4"
+              className="max-w-3xl rounded-card border border-danger/30 p-4"
             >
               <DeleteSongButton songId={song.id} title={song.title} />
             </FormSection>
@@ -214,7 +214,7 @@ function Contents({ parts }: { parts: typeof allParts }) {
                 href={`#${id}`}
                 aria-current={isCurrent ? "location" : undefined}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors outline-none hover:bg-surface-sunken/60 focus-visible:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:ring-inset md:rounded-none md:border-0 md:px-4 md:py-3",
+                  "flex w-full items-center gap-3 rounded-card border px-3 py-2 text-left transition-colors outline-none hover:bg-surface-sunken/60 focus-visible:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:ring-inset md:rounded-none md:border-0 md:px-4 md:py-3",
                   isCurrent && "bg-surface-sunken",
                 )}
               >

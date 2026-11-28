@@ -82,7 +82,7 @@ export function TagInput({
           {tags.map((tag) => (
             <li
               key={tagKey(tag)}
-              className="inline-flex h-7 items-center gap-1 rounded-md bg-surface-sunken pr-1 pl-2.5 text-[0.8rem] text-text"
+              className="inline-flex h-7 items-center gap-1 rounded-control bg-surface-sunken pr-1 pl-2.5 text-[0.8rem] text-text"
             >
               {tag}
               <Button

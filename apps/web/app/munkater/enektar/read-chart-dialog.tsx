@@ -359,13 +359,13 @@ export function ReadChartDialog({
                     <ol
                       className={cn(
                         "grid grid-cols-3 gap-2 sm:grid-cols-4",
-                        zone.over && "rounded-lg outline-2 outline-offset-4 outline-focus",
+                        zone.over && "rounded-card outline-2 outline-offset-4 outline-focus",
                       )}
                     >
                       {pages.map((page, index) => (
                         <li
                           key={page.key}
-                          className="relative aspect-[3/4] overflow-hidden rounded-md border bg-surface-sunken"
+                          className="relative aspect-[3/4] overflow-hidden rounded-control border bg-surface-sunken"
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element -- a file on this device. */}
                           <img

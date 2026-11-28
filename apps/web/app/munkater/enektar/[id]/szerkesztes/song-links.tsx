@@ -59,13 +59,13 @@ export function SongLinks({
     <PreviewLayout>
       <FormSection title={t.title} description={t.description}>
         {links.length === 0 ? (
-          <div className="flex flex-col items-center gap-1 rounded-lg border border-dashed px-4 py-6 text-center">
+          <div className="flex flex-col items-center gap-1 rounded-card border border-dashed px-4 py-6 text-center">
             <LinkIcon aria-hidden className="mb-1 size-5 text-muted" />
             <p className="text-sm font-medium">{t.emptyTitle}</p>
             <p className="text-sm text-muted">{t.emptyDescription}</p>
           </div>
         ) : (
-          <ul aria-label={t.list} className="flex flex-col divide-y rounded-lg border">
+          <ul aria-label={t.list} className="flex flex-col divide-y rounded-card border">
             {links.map((link) => (
               <LinkRow
                 key={link.id}
@@ -116,7 +116,7 @@ function LinkRow({
         <SongLinkAnchor
           link={link}
           details={details(link, arrangements)}
-          className="-mx-1 flex-1 basis-48 rounded-md px-1 py-0.5"
+          className="-mx-1 flex-1 basis-48 rounded-control px-1 py-0.5"
         />
         {/* The name keeps some room: the buttons go under it, and wrap, on a narrow screen. */}
         <div className="ml-auto flex flex-wrap items-center justify-end gap-1">
@@ -210,7 +210,7 @@ function EditLinkForm({
     <form
       ref={formRef}
       onSubmit={onSubmit}
-      className="flex flex-col gap-4 rounded-lg bg-surface-sunken/50 p-3"
+      className="flex flex-col gap-4 rounded-card bg-surface-sunken/50 p-3"
     >
       <input type="hidden" name="id" value={link.id} />
       <LinkFields

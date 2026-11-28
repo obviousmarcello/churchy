@@ -76,13 +76,13 @@ export function SongScores({
     <PreviewLayout lazy preview={<ScorePreview score={previewed} />}>
       <FormSection title={t.title} description={t.description}>
         {scores.length === 0 ? (
-          <div className="flex flex-col items-center gap-1 rounded-lg border border-dashed px-4 py-6 text-center">
+          <div className="flex flex-col items-center gap-1 rounded-card border border-dashed px-4 py-6 text-center">
             <FileMusicIcon aria-hidden className="mb-1 size-5 text-muted" />
             <p className="text-sm font-medium">{t.emptyTitle}</p>
             <p className="text-sm text-muted">{t.emptyDescription}</p>
           </div>
         ) : (
-          <ul aria-label={t.list} className="flex flex-col divide-y rounded-lg border">
+          <ul aria-label={t.list} className="flex flex-col divide-y rounded-card border">
             {scores.map((score) => (
               <ScoreRow
                 key={score.id}
@@ -129,7 +129,7 @@ function ScorePreview({ score }: { score: SongScoreDTO | null }) {
         <div
           // The colors of the paper are in `globals.css`, for the light and the dark theme.
           data-sheet-paper={settings.background}
-          className="overflow-hidden rounded-lg border bg-(--sheet-bg) text-(--sheet-fg)"
+          className="overflow-hidden rounded-card border bg-(--sheet-bg) text-(--sheet-fg)"
         >
           {/* As on the sheet, the score fits its pages to the group and the article. */}
           <div data-sheet-group className="h-[calc(100dvh-12rem)] overflow-y-auto p-4 text-sm">
@@ -338,7 +338,7 @@ function EditScoreForm({
     <form
       ref={formRef}
       onSubmit={onSubmit}
-      className="flex flex-col gap-3 rounded-lg bg-surface-sunken/50 p-3"
+      className="flex flex-col gap-3 rounded-card bg-surface-sunken/50 p-3"
     >
       <input type="hidden" name="id" value={score.id} />
       <Field name={id} label={t.name} hint={t.nameHint} errors={state.fieldErrors.name}>
@@ -396,7 +396,7 @@ function ReplaceScoreForm({
     <form
       ref={formRef}
       onSubmit={onSubmit}
-      className="flex flex-col gap-3 rounded-lg bg-surface-sunken/50 p-3"
+      className="flex flex-col gap-3 rounded-card bg-surface-sunken/50 p-3"
     >
       <input type="hidden" name="id" value={score.id} />
       <p className="text-sm text-muted">{t.replaceHint}</p>
