@@ -52,7 +52,7 @@ export function PersonCard({ entry, labels }: { entry: DirectoryEntry; labels: P
   const { person, teams } = entry;
   return (
     <li
-      className="flex flex-col gap-2 rounded-md border border-border bg-surface-raised p-4"
+      className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised shadow-xs p-4"
       data-testid="directory-person"
     >
       <div>

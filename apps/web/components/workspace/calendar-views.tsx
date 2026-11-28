@@ -89,7 +89,7 @@ export async function WeekView({
           <section
             key={date}
             data-date={date}
-            className="min-w-0 rounded-md border border-border bg-surface-raised p-2"
+            className="min-w-0 rounded-card border border-hairline bg-surface-raised shadow-xs p-2"
           >
             <DayHeading date={date} today={today} />
             {entries.length === 0 ? (
@@ -154,7 +154,7 @@ export async function MonthView({
   const names = weekdayNames({ capitalize: true });
   return (
     <div className={className} data-testid="calendar-month">
-      <table className="w-full table-fixed border-collapse">
+      <table className="w-full table-fixed border-separate border-spacing-0 overflow-hidden rounded-card border border-hairline bg-surface-raised">
         <caption className="sr-only">{t("views.honap")}</caption>
         <thead>
           <tr>
@@ -162,7 +162,7 @@ export async function MonthView({
               <th
                 key={name}
                 scope="col"
-                className="border border-border bg-surface-sunken p-1 text-fs-2 font-semibold"
+                className="border-b border-e border-hairline bg-surface-sunken p-1 text-fs-2 font-semibold"
               >
                 <abbr title={name} className="no-underline">
                   {name.slice(0, 3)}
@@ -176,7 +176,9 @@ export async function MonthView({
             <tr key={i}>
               {week.map((date, j) => {
                 if (date === null) {
-                  return <td key={j} className="border border-border bg-surface-sunken" />;
+                  return (
+                    <td key={j} className="border-b border-e border-hairline bg-surface-sunken" />
+                  );
                 }
                 const entries = byDay.get(date) ?? [];
                 const day = Number(date.slice(8));
@@ -185,7 +187,7 @@ export async function MonthView({
                   <td
                     key={j}
                     data-date={date}
-                    className="h-24 border border-border align-top md:h-28"
+                    className="h-24 border-b border-e border-hairline align-top md:h-28"
                   >
                     <Link
                       href={href}
@@ -206,7 +208,7 @@ export async function MonthView({
                         {entries.slice(0, CHIPS_PER_DAY).map((e) => (
                           <span
                             key={e.key}
-                            className="truncate rounded-sm bg-surface-sunken px-1 text-fs-1"
+                            className="truncate rounded-control bg-surface-sunken px-1 text-fs-1"
                           >
                             {e.title ?? labels.absent}
                           </span>
