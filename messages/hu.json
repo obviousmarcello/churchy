@@ -57,7 +57,8 @@
         "adminRooms": "Termek",
         "modules": "Modulok",
         "plan": "Csomag",
-        "billing": "Számlázás"
+        "billing": "Számlázás",
+        "musicMixer": "Keverőpult"
       },
       "contact": "{contactPage.nom}"
     },
@@ -3361,6 +3362,10 @@
           "music_projection_bible_panel": {
             "title": "Biblia panel",
             "help": "Igehelyek keresése és megjelenítése a vetítésvezérlőben."
+          },
+          "music_mixer": {
+            "title": "Keverőpult",
+            "help": "A dalok tempójának küldése a keverőpultnak (a pult beállítása, tempó küldése az akkordlapról és a vetítésből)."
           }
         }
       },
@@ -3486,7 +3491,8 @@
           "music_projection_quick_add": "Gyors hozzáadás (munkatér)",
           "music_scripture": "Igeolvasások (munkatér)",
           "music_scripture_daily_psalm": "A nap zsoltára (munkatér)",
-          "music_projection_bible_panel": "Biblia panel (munkatér)"
+          "music_projection_bible_panel": "Biblia panel (munkatér)",
+          "music_mixer": "Keverőpult (munkatér)"
         }
       },
       "catalog": {
@@ -7747,6 +7753,118 @@
         "none": "Még nincs feltöltött könyv."
       },
       "karoliSaveFailed": "A beállítás mentése nem sikerült."
+    },
+    "mixer": {
+      "page": {
+        "title": "Keverőpult",
+        "loading": "A keverőpult beállításának betöltése…",
+        "intro": "A keverőpult delay effektjei követik a dalok tempóját. Az app a tempó minden változásánál elküldi az új delay időt: új dalnál, új BPM-nél vagy tap tempónál, a dal közepén is.",
+        "howToSend": "Egy eszköz küldi a tempót: az akkordlapon (a metronóm beállításaiban) vagy a vetítés vezérlőjében kapcsold be a „Tempó küldése a keverőpultnak” opciót. Élő munkamenetben a vezető tempóját küldi, akkor is, ha a metronómja nem szól."
+      },
+      "gate": {
+        "signIn": {
+          "title": "Jelentkezz be a keverőpult beállításához",
+          "description": "Csak a bejelentkezett eseményadminok, zenei vezetők és szuperadminok állíthatják be a keverőpultot."
+        },
+        "forbidden": {
+          "title": "Csak eseményadminok, zenei vezetők és szuperadminok állíthatják be a keverőpultot",
+          "description": "Kérj meg egy eseményadmint, egy zenei vezetőt vagy egy szuperadmint."
+        }
+      },
+      "form": {
+        "kind": "Keverőpult",
+        "kinds": {
+          "off": "Ki",
+          "x32-osc": "Behringer X32 / Midas M32 hálózaton",
+          "x32-midi": "Behringer X32 / Midas M32 MIDI-n",
+          "sq-tcp": "Allen & Heath SQ hálózaton",
+          "sq-midi": "Allen & Heath SQ USB-n (MIDI)"
+        },
+        "networkHint": "Csak az asztali app tud a hálózatra küldeni. A számítógépnek ugyanazon a hálózaton kell lennie, mint a pultnak.",
+        "host": "A pult IP-címe",
+        "hostHint": "A pulton a Setup > Network menüben találod. Hagyd üresen: minden küldő eszköz maga keresi meg a pultot a hálózatán, akkor is, ha a pult címe megváltozik.",
+        "hostAutomatic": "Automatikus",
+        "sqHostHint": "Az SQ-n a Setup > Network menüben találod.",
+        "sqMidiHint": "Csatlakoztasd az SQ USB-B portját a küldő eszközhöz: az SQ MIDI-eszközként jelenik meg. Minden küldő eszköz maga választja ki a MIDI-kimenetét.",
+        "midiChannel": "Az SQ MIDI-csatornája",
+        "midiChannelHint": "Az SQ-n a Utility > General > MIDI menüben találod.",
+        "tapKeys": "Soft keyek tap tempóval",
+        "softKey": "{key}. gomb",
+        "noTapKeys": "Nincs soft key. Válaszd ki azokat a soft keyeket, amelyeken egy delay effekt tap tempója van.",
+        "tapKeysHint": "Az SQ nem tud delay időt kapni: az app 4-szer megnyomja ezeket a soft keyeket, egy negyed hangnyi távolságra. Az SQ-n állítsd minden gombra egy delay effekt tap tempóját, a delay hangértékét pedig az SQ-n állítsd be.",
+        "find": "Pult keresése",
+        "finding": "Keresés a hálózaton…",
+        "findNone": "Ennek a számítógépnek a hálózatán nem válaszolt pult. Ellenőrizd, hogy a pult be van-e kapcsolva, és ugyanazon a hálózaton van-e.",
+        "useDesk": "{name} ({host}) használata",
+        "findDesktopOnly": "Az asztali appban, a pult hálózatán lévő számítógépen az app megkeresi neked a pultot.",
+        "findUpdate": "Telepítsd az új asztali appot, hogy megkeresse a pultot a hálózaton.",
+        "hostInvalid": "Írd be a pult helyi IP-címét, például 192.168.1.50.",
+        "midiHint": "A pulton a Setup > Remote menüben: állítsd be a MIDI-bemenetet (MIDI-aljzat, Card az USB-kártyához, vagy RTP a hálózathoz), és kapcsold be az OSC over MIDI SysEx opciót. Minden küldő eszköz maga választja ki a MIDI-kimenetét.",
+        "slots": "Effektek delayjel",
+        "noSlots": "Nincs effekt. Add hozzá a pult azon effekthelyeit, amelyeken delay van.",
+        "addSlot": "Effekt hozzáadása",
+        "removeSlot": "FX {slot} eltávolítása",
+        "slot": "FX {slot}",
+        "slotLabel": "Effekthely",
+        "effect": "Effekt",
+        "effectHint": "MIDI-n a pult nem mondja meg az effektjeit: válaszd ki minden hely effektjét. Hálózaton az app megkérdezi a pultot.",
+        "noteValue": "Hangérték",
+        "example": "120 BPM-nél: {ms} ms.",
+        "save": "Mentés",
+        "saving": "Mentés…",
+        "saved": "Elmentve."
+      },
+      "subdivisions": {
+        "half": "1/2",
+        "quarter": "1/4",
+        "dottedEighth": "pontozott 1/8",
+        "quarterTriplet": "1/4 triola",
+        "eighth": "1/8",
+        "eighthTriplet": "1/8 triola",
+        "sixteenth": "1/16"
+      },
+      "saveFailed": "Nem tudtuk menteni a keverőpult beállítását. Próbáld újra.",
+      "sync": {
+        "title": "Tempó a keverőpultnak",
+        "button": "Tempó a keverőpultnak",
+        "short": "Keverő",
+        "bpm": "{bpm} BPM",
+        "turnOn": "A tempó küldésének bekapcsolása a keverőpultnak",
+        "turnOff": "A tempó küldésének kikapcsolása a keverőpultnak",
+        "details": "A keverőpultnak küldött tempó részletei",
+        "statusOff": "Ez az eszköz nem küldi a tempót.",
+        "statusOk": "A pult megkapta az utolsó tempót.",
+        "statusWaiting": "Tempóra vagy a pultra vár.",
+        "statusError": "A tempó nem jut el a pultig. Nyisd meg a részleteket.",
+        "send": "Tempó küldése a keverőpultnak",
+        "on": "Be",
+        "off": "Ki",
+        "hint": "Csak azon az eszközön kapcsold be, amelyik a tempót küldi, például a pult melletti számítógépen.",
+        "loading": "A keverőpult beállításának betöltése…",
+        "loadFailed": "Nem tudtuk betölteni a keverőpult beállítását. Ellenőrizd a hálózatot, majd próbáld újra.",
+        "retry": "Újra",
+        "notSetUp": "A keverőpult nincs beállítva. Kérj meg egy eseményadmint vagy egy zenei vezetőt, hogy állítsa be a Keverőpult oldalon.",
+        "notSetUpOwn": "A keverőpult nincs beállítva.",
+        "setUp": "Keverőpult beállítása",
+        "desktopOnly": "Ez a keverőpult hálózaton kapja a tempót: csak az asztali app tudja küldeni.",
+        "searching": "A pult keresése a hálózaton…",
+        "found": "A pult: {name} ({host}).",
+        "noDeskFound": "A hálózaton nem válaszolt pult. Ellenőrizd, hogy a pult be van-e kapcsolva, és ugyanazon a hálózaton van-e, majd koppints a Küldés most gombra.",
+        "severalDesks": "Több pult válaszolt. Egy eseményadmin vagy egy zenei vezető megadhatja a pult IP-címét a Keverőpult oldalon.",
+        "severalDesksOwn": "Több pult válaszolt. Add meg a pult IP-címét a keverőpult beállításában.",
+        "searchUnsupported": "Ez az asztali app nem tudja megkeresni a pultot. Telepítsd az új asztali appot, vagy kérj meg egy eseményadmint vagy egy zenei vezetőt, hogy adja meg a pult IP-címét a Keverőpult oldalon.",
+        "searchUnsupportedOwn": "Ez az asztali app nem tudja megkeresni a pultot. Telepítsd az új asztali appot, vagy add meg a pult IP-címét a keverőpult beállításában.",
+        "midiOutput": "MIDI-kimenet a pult felé",
+        "waiting": "Tempóra vár.",
+        "slotLine": "FX {slot} · {noteValue} · {ms} ms",
+        "tapLine": "Soft keyek: {keys} · koppintás {ms} ms-onként",
+        "sent": "Elküldve.",
+        "sentTo": "Elküldve: {effect}.",
+        "notDelay": "A pulton ezen a helyen nincs delay effekt. Az app nem küld rá semmit.",
+        "noAnswer": "A pult nem válaszol. Ellenőrizd az IP-címet és a hálózatot.",
+        "failed": "Az app nem tudta elküldeni a delay időt.",
+        "sendNow": "Küldés most"
+      }
     }
   },
   "portal": {

@@ -41,6 +41,16 @@ export function musicSheet(module?: "marks" | "metronome") {
   };
 }
 
+/** The mixer module (`ws.music.mixer`) must be on too. */
+export async function musicMixer(
+  scope: PolicyScope,
+  ...args: unknown[]
+): Promise<{ tenantId: string } | null> {
+  const tenant = await musicTenant(scope, ...args);
+  if (tenant === null) return null;
+  return (await isWorkspaceModuleOn("ws.music.mixer")) ? tenant : null;
+}
+
 /** The music events (`ws.music.events`) must be on too. */
 export async function musicEvents(
   scope: PolicyScope,

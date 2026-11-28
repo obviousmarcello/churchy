@@ -178,6 +178,16 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: { leader: "all", musicLeader: "all" },
   },
   {
+    capability: "Music: read the mixer setup of the church (to send the tempo to the desk)",
+    actions: ["music.mixer.use"],
+    grants: EVERY_ROLE,
+  },
+  {
+    capability: "Music: set up the mixer of the church",
+    actions: ["music.mixer.setup"],
+    grants: { leader: "all", musicLeader: "all" },
+  },
+  {
     capability: "Music: join a live session (the model checks the event)",
     actions: ["music.live.join"],
     grants: EVERY_ROLE,

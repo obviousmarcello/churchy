@@ -9,7 +9,7 @@ import { isWorkspaceModuleOn, requireWorkspaceModule } from "@/server/workspace-
 // child modules reach the copied components under the ids of the music app.
 export default async function ProjectionLayout({ children }: { children: ReactNode }) {
   await requireWorkspaceModule("ws.music.projection");
-  const [themes, overlay, countdown, pptxExport, quickAdd, live, scriptureOn, biblePanel] =
+  const [themes, overlay, countdown, pptxExport, quickAdd, live, scriptureOn, biblePanel, mixer] =
     await Promise.all([
       isWorkspaceModuleOn("ws.music.projection.themes"),
       isWorkspaceModuleOn("ws.music.projection.overlay"),
@@ -19,6 +19,7 @@ export default async function ProjectionLayout({ children }: { children: ReactNo
       isWorkspaceModuleOn("ws.music.sheet.live"),
       isWorkspaceModuleOn("ws.music.scripture"),
       isWorkspaceModuleOn("ws.music.projection.bible-panel"),
+      isWorkspaceModuleOn("ws.music.mixer"),
     ]);
   const modules = {
     "projection.themes": themes,
@@ -28,6 +29,7 @@ export default async function ProjectionLayout({ children }: { children: ReactNo
     scripture: scriptureOn,
     "projection.bible-panel": scriptureOn && biblePanel,
     "projection.quick-add": quickAdd,
+    mixer,
     // The controller follows the leader of the event's live session.
     "sheet.live": live,
   };
