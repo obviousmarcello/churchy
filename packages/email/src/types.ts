@@ -24,6 +24,9 @@ export const EMAIL_TEMPLATE_KEYS = [
   "member.invitation",
   "billing.paymentFailed",
   "contact.message",
+  "music.eventAdded",
+  "music.eventReminder",
+  "music.setlist",
 ] as const;
 
 export type EmailTemplateKey = (typeof EMAIL_TEMPLATE_KEYS)[number];

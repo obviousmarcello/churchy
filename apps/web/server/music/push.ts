@@ -44,7 +44,7 @@ type Sender = (
 
 /**
  * Sends the payload to the devices. Returns the endpoints that the push service says are gone
- * (404, 410): the caller removes them. Other failures are logged without the endpoint.
+ * (404, 410): the caller removes them, and the number of devices that got it and that failed. Other failures are logged without the endpoint.
  */
 export async function sendPush(
   targets: readonly PushTarget[],
@@ -53,10 +53,12 @@ export async function sendPush(
   env: PushEnv = process.env,
   send: Sender = (subscription, body, requestOptions) =>
     webpush.sendNotification(subscription, body, requestOptions),
-): Promise<{ gone: string[] }> {
+): Promise<{ gone: string[]; sent: number; failed: number }> {
   const config = pushConfig(env);
-  if (!config || !payload.url.startsWith("/munkater/")) return { gone: [] };
+  if (!config || !payload.url.startsWith("/munkater/")) return { gone: [], sent: 0, failed: 0 };
   const gone: string[] = [];
+  let sent = 0;
+  let failed = 0;
   const body = JSON.stringify(payload);
   await Promise.all(
     targets.map(async (target) => {
@@ -74,12 +76,16 @@ export async function sendPush(
             },
           },
         );
+        sent++;
       } catch (error) {
         const status = (error as { statusCode?: number }).statusCode;
         if (status === 404 || status === 410) gone.push(target.endpoint);
-        else console.error("[push] send failed:", status ?? "no status");
+        else {
+          failed++;
+          console.error("[push] send failed:", status ?? "no status");
+        }
       }
     }),
   );
-  return { gone };
+  return { gone, sent, failed };
 }

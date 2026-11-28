@@ -29,11 +29,14 @@ export function PushSettings({
   publicKey,
   liveSession: initialLiveSession,
   devices: initialDevices,
+  showLive,
 }: {
   /** The VAPID public key; null when push is not configured (the demo). */
   publicKey: string | null;
   liveSession: boolean;
   devices: number;
+  /** The module "sheet.live" is on: the live session toggle shows. */
+  showLive: boolean;
 }) {
   const { m, format } = useI18n();
   const t = m.notifications.settings;
@@ -150,18 +153,20 @@ export function PushSettings({
         )}
         <p className="text-sm text-muted">{format(t.devices, { count: devices })}</p>
       </section>
-      <section className="flex flex-col gap-1">
-        <label className="flex items-center gap-2 text-sm font-medium">
-          <input
-            type="checkbox"
-            checked={liveSession}
-            disabled={pending}
-            onChange={(event) => changePreference(event.target.checked)}
-          />
-          {t.liveSession}
-        </label>
-        <p className="text-sm text-muted">{t.liveSessionHint}</p>
-      </section>
+      {showLive && (
+        <section className="flex flex-col gap-1">
+          <label className="flex items-center gap-2 text-sm font-medium">
+            <input
+              type="checkbox"
+              checked={liveSession}
+              disabled={pending}
+              onChange={(event) => changePreference(event.target.checked)}
+            />
+            {t.liveSession}
+          </label>
+          <p className="text-sm text-muted">{t.liveSessionHint}</p>
+        </section>
+      )}
       {message && (
         <p role="status" className="text-sm">
           {message}

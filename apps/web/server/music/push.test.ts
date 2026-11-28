@@ -56,7 +56,7 @@ describe("web push", () => {
     const send = vi.fn();
     expect(
       await sendPush([target(1)], payload, { ttlSeconds: 1, urgency: "low" }, {}, send),
-    ).toEqual({ gone: [] });
+    ).toEqual({ gone: [], sent: 0, failed: 0 });
     expect(
       await sendPush(
         [target(1)],
@@ -65,7 +65,7 @@ describe("web push", () => {
         ENV,
         send,
       ),
-    ).toEqual({ gone: [] });
+    ).toEqual({ gone: [], sent: 0, failed: 0 });
     expect(send).not.toHaveBeenCalled();
   });
 });

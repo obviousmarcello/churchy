@@ -2205,6 +2205,33 @@ export const eventVolunteerAreas = pgTable(
   ],
 ).enableRLS();
 
+/** The reminders (and "added to an event" notices) that went out, so each goes out once. */
+export const notificationDeliveries = pgTable(
+  "notification_deliveries",
+  {
+    tenantId: tenantId(),
+    eventId: uuid().notNull(),
+    userId: uuid().notNull(),
+    kind: text().notNull(),
+    createdAt: timestamptz().notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({
+      name: "notification_deliveries_pkey",
+      columns: [t.tenantId, t.eventId, t.userId, t.kind],
+    }),
+    check(
+      "notification_deliveries_kind_check",
+      sql`(kind = ANY (ARRAY['event_added'::text, 'event_reminder'::text, 'setlist'::text]))`,
+    ),
+    foreignKey({
+      name: "notification_deliveries_volunteer_fkey",
+      columns: [t.tenantId, t.eventId, t.userId],
+      foreignColumns: [eventVolunteers.tenantId, eventVolunteers.eventId, eventVolunteers.userId],
+    }).onDelete("cascade"),
+  ],
+).enableRLS();
+
 export const eventAreaNotes = pgTable(
   "event_area_notes",
   {

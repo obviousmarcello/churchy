@@ -420,6 +420,33 @@ export function listOutbox(sessionId: string | null = null): OutboxMessage[] {
   }));
 }
 
+/**
+ * Appends a music notification to the outbox of a demo session (`null`: the default store): nothing
+ * is sent in Phase A, the outbox viewer renders it. `profileId` is the music profile id of the
+ * recipient; in the demo it is the hash of the store's user id (`localMusicUserId`), so the user is
+ * found by it, and in a real deployment it is the user id itself.
+ */
+export function appendMusicOutbox(
+  sessionId: string | null,
+  entry: {
+    tenantId: string;
+    profileId: string;
+    channel: "email" | "push";
+    template: "music.eventAdded" | "music.eventReminder" | "music.setlist";
+    params: Record<string, string | number | boolean | null>;
+  },
+): void {
+  const store = storeFor(sessionId);
+  const user = store.data.users.find((u) => localMusicUserId(u.id) === entry.profileId);
+  store.appendOutbox({
+    channel: entry.channel,
+    template: entry.template,
+    recipient: { kind: "user", userId: user?.id ?? entry.profileId },
+    tenantId: entry.tenantId,
+    params: entry.params,
+  });
+}
+
 /** Empties a demo session's outbox (`null`: the default store) — *Kiürítés*. */
 export function clearOutbox(sessionId: string | null = null): void {
   storeFor(sessionId).clearOutbox();

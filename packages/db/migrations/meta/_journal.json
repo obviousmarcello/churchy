@@ -155,6 +155,13 @@
       "when": 1795849453511,
       "tag": "0021_music_courses",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1795851097891,
+      "tag": "0022_music_notifications",
+      "breakpoints": true
     }
   ]
 }

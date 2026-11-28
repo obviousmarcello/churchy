@@ -938,3 +938,23 @@ become optional per-translation mappings. Hungarian only.
   the demo cannot do it). `ws.music.courses` is on in the demo seeds, off for real tenants until switched on.
 - Tests: isolation test (draft/publish/visibility/area delete/purge, per tenant), copied `rich-text.test.ts`, policy matrix, e2e
   `music-courses.spec.ts` (leader creates a course, volunteer cannot; axe 0; desktop and mobile).
+
+## 30. Phase 8b: notifications (outbox, push for the remaining kinds)
+- Kinds (as in the source): `event_added`, `event_reminder`, `setlist`; `live_session` (push only) came with phase 5d. The source `welcome` kind
+  is dropped (Churchy has its own `member.invitation` mail). Each kind goes to the **outbox** (email, `packages/email`, new template keys
+  `music.eventAdded`, `music.eventReminder`, `music.setlist`, visible in the outbox viewer) and, on the devices with the push consent, to
+  web push. Resend, the DB-stored email templates and their superadmin editor are **not ported** (decision: email only through the outbox
+  and React Email templates); the `email_templates` table stays unused. Churchy has no mail transport yet, so nothing is delivered by mail.
+- Privacy: the email and the push carry **no names, no event title and no setlist content**: the email has the event start time and an app
+  link (`/munkater/esemenyek/<id>`, the setlist `/munkater/kotta?event=<id>`), the push a fixed text and the link. The source put the title,
+  the setlist items and the volunteers' names into them. Outbox params are the event id, the start time and the link (short scalars).
+- Migration `0022_music_notifications` (down included): table `notification_deliveries` (tenant table, RLS, scopes; deleted with the volunteer),
+  `list_due_notifications`, `reset_notification_deliveries` + trigger on `events.starts_at`. `consume_cron_token` is dropped (pg-boss, 8c).
+- `server/music/notifications.ts` (copy-edit of the source `notifications.ts`): `queueEventAddedNotifications` (called after teams are set, a
+  volunteer is added and a copy keeps volunteers; never for oneself), `notifyEventAdded`, `sendDueNotifications(db, tenantId)`. They take
+  the client of one church (`db`) so the 8c job can run them per church; `sendPush` now also returns `sent` and `failed`.
+- Preferences: `models/notification-preferences.ts` and the form on `/munkater/ertesitesek`: emails, the three kinds, the days
+  and hours; no time zone field (the church's zone). The page now needs the events module (nav likewise); device registration no longer needs
+  the live module. `music.notifications.*` lost the template editor keys.
+- Tests: unit (`notifications.test.ts`: added, started event, due run, told-when-added), isolation (`list_due_notifications` windows, deliveries,
+  reset on a new start time, volunteer cascade, other church), e2e (preferences saved and kept, axe). Not verified: real push delivery (no VAPID).

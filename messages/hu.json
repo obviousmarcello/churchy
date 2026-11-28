@@ -1228,6 +1228,11 @@
         },
         "contact": {
           "message": "Kapcsolat: üzenet az irodának"
+        },
+        "music": {
+          "eventAdded": "Zene: felvettek egy eseményre",
+          "eventReminder": "Zene: közeleg az esemény",
+          "setlist": "Zene: elkészült a dallista"
         }
       }
     },
@@ -1502,6 +1507,35 @@
         "cta": "Megnyitás",
         "pushTitle": "Új üzenet a honlapról",
         "pushBody": "Új üzenet érkezett: {reference}."
+      }
+    },
+    "music": {
+      "eventAdded": {
+        "subject": "Felvettek egy eseményre: {when}",
+        "preheader": "Önkéntesként felvettek egy eseményre.",
+        "heading": "Felvettek egy eseményre",
+        "body": "Önkéntesként felvettek egy eseményre. A részleteket a Munkatérben találod.",
+        "cta": "Esemény megnyitása",
+        "pushTitle": "Új esemény",
+        "pushBody": "Önkéntesként felvettek egy eseményre."
+      },
+      "eventReminder": {
+        "subject": "Közeleg az eseményed: {when}",
+        "preheader": "Hamarosan kezdődik egy esemény, amelyen szolgálsz.",
+        "heading": "Közeleg az eseményed",
+        "body": "Hamarosan kezdődik egy esemény, amelyen önkéntesként szolgálsz. A részleteket a Munkatérben találod.",
+        "cta": "Esemény megnyitása",
+        "pushTitle": "Közeleg az eseményed",
+        "pushBody": "Hamarosan kezdődik egy esemény, amelyen szolgálsz."
+      },
+      "setlist": {
+        "subject": "Elkészült a dallista: {when}",
+        "preheader": "Megnézheted az eseményed dallistáját.",
+        "heading": "Elkészült a dallista",
+        "body": "Megnézheted az eseményed dallistáját és az akkordlapokat a Munkatérben.",
+        "cta": "Dallista megnyitása",
+        "pushTitle": "Dallista",
+        "pushBody": "Elkészült az eseményed dallistája."
       }
     }
   },
@@ -7385,26 +7419,15 @@
     "notifications": {
       "page": {
         "title": "Értesítések",
-        "lead": "Értesítést kapsz a készülékedre, amikor elindul egy közös alkalom azokon az eseményeken, amelyeken szolgálsz.",
+        "lead": "Itt állítod be, miről kapsz értesítést az eseményeiddel kapcsolatban: e-mailben, és push-értesítésként azokon az eszközökön, ahol bekapcsoltad.",
         "metadataTitle": "Értesítések",
-        "checkingAccess": "Hozzáférés ellenőrzése…"
+        "checkingAccess": "Hozzáférés ellenőrzése…",
+        "preferencesTitle": "Miről kapsz értesítést"
       },
       "push": {
         "liveSession": {
           "title": "Közös alkalom indult",
           "body": "Csatlakozhatsz az alkalom énekeihez."
-        },
-        "eventAdded": {
-          "title": "{event}",
-          "body": "Önkéntese vagy ennek az eseménynek. Kezdés: {date}."
-        },
-        "eventReminder": {
-          "title": "{event}",
-          "body": "Az eseményed kezdete: {date}."
-        },
-        "setlist": {
-          "title": "Dallista: {event}",
-          "body": "Elkészült a dallista. Koppints az akkordlap megnyitásához."
         }
       },
       "settings": {
@@ -7420,113 +7443,23 @@
         "failed": "Nem sikerült beállítani az értesítést. Próbáld újra.",
         "saved": "Elmentve."
       },
-      "gate": {
-        "signIn": {
-          "title": "Jelentkezz be az e-mail-értesítések kezeléséhez",
-          "description": "Csak bejelentkezett szuperadminok módosíthatják az e-mailek szövegét."
-        },
-        "forbidden": {
-          "title": "Csak szuperadminok kezelhetik az e-mail-értesítéseket",
-          "description": "A saját e-mail-értesítéseidet a Beállításokban kapcsolhatod be vagy ki."
-        }
-      },
-      "kinds": {
-        "event_added": {
-          "title": "Hozzáadás egy eseményhez",
-          "description": "Akkor megy ki, amikor egy eseményadmin önkéntesként hozzáad egy felhasználót egy eseményhez."
-        },
-        "event_reminder": {
-          "title": "Emlékeztető eseményről",
-          "description": "Egyszer megy ki minden eseményről, amelyen a felhasználó önkéntes, amikor az esemény a felhasználó által választott számú napon belül kezdődik."
-        },
-        "setlist": {
-          "title": "Dallista az esemény előtt",
-          "description": "Egyszer megy ki minden eseményről, amelyen a felhasználó önkéntes, a kezdés előtt annyi órával, amennyit a felhasználó választott. Az esemény programpontjait tartalmazza."
-        },
-        "welcome": {
-          "title": "Üdvözlés",
-          "description": "Akkor megy ki, amikor egy szuperadmin hozzáad egy felhasználót. A jelszó beállításának linkjét tartalmazza. Az adatvédelmi tájékoztatás mindig a szöveg alatt jelenik meg."
-        }
-      },
-      "placeholders": {
-        "app": "Az alkalmazás neve",
-        "name": "A felhasználó megjelenített neve, vagy ha nincs, az e-mail-címe",
-        "event": "Az esemény címe",
-        "date": "Az esemény kezdete a felhasználó időzónájában",
-        "link": "Az esemény linkje",
-        "settings": "A beállítások linkje, ahol a felhasználó kikapcsolhatja az e-maileket",
-        "setlist": "Az esemény programpontjai, soronként egy",
-        "sheet": "Az esemény akkordlapjainak linkje",
-        "email": "Az e-mail-cím, amellyel a felhasználó bejelentkezik",
-        "privacy": "Az adatvédelmi tájékoztató linkje"
-      },
-      "editor": {
-        "listLabel": "E-mail-sablonok",
-        "language": "Nyelv",
-        "subjectLabel": "Tárgy",
-        "bodyLabel": "Szöveg",
-        "placeholdersTitle": "Helyőrzők",
-        "placeholdersHint": "Írj egy helyőrzőt, például: {event}, a tárgyba vagy a szövegbe. Minden e-mail az értékét mutatja a helyén.",
-        "sheetOff": "Üres, amíg az akkordlap ki van kapcsolva.",
-        "previewTitle": "Előnézet",
-        "previewHint": "Mintaértékekkel.",
-        "customBadge": "Egyéni",
-        "defaultBadge": "Alapértelmezett",
-        "save": "Sablon mentése",
+      "form": {
+        "emailLabel": "E-mailek",
+        "recipient": "Az e-maileket a fiókodhoz tartozó címre küldjük. Az e-mailben és a push-értesítésben nincs név és nincs az esemény címe, csak az időpont és egy link.",
+        "kindsTitle": "Miről kapsz értesítést",
+        "kindsHint": "E-mailben és push-értesítésként is, azokon az eszközökön, ahol a push be van kapcsolva.",
+        "eventAddedLabel": "Amikor felvesznek egy eseményre",
+        "eventAddedHint": "Egy eseményadmin önkéntesként felvesz egy eseményre.",
+        "eventReminderLabel": "Az eseményeim előtt",
+        "eventReminderHint": "Egy értesítés minden eseményről, amelyen önkéntes vagy, amikor ennyi napon belül kezdődik. Ha ezen az időn belül vettek fel az eseményre, az erről szóló értesítés az emlékeztető.",
+        "reminderDaysLabel": "Nap az esemény előtt",
+        "setlistLabel": "Az eseményeim dallistája",
+        "setlistHint": "Egy értesítés minden eseményről, amelyen önkéntes vagy, ennyi órával a kezdés előtt.",
+        "setlistHoursLabel": "Óra az esemény előtt",
+        "save": "Értesítések mentése",
         "saving": "Mentés…",
-        "reset": "Visszaállítás alapértelmezettre",
-        "resetting": "Visszaállítás…",
-        "resetTitle": "Visszaállítod ezt a sablont?",
-        "resetDescription": "Az e-mail újra az alkalmazás alapértelmezett szövegét használja. A te szövegedet töröljük.",
-        "welcomeLink": "A jelszó beállításának linkje. A szövegnek tartalmaznia kell.",
-        "htmlPreview": "Az e-mail előnézete"
-      },
-      "sample": {
-        "name": "Anna",
-        "event": "Vasárnapi istentisztelet",
-        "date": "2026. október 18., vasárnap 10:00 CEST",
-        "setlist": "1. Amazing Grace (G) – Anna\n2. Hirdetések\n3. 10,000 Reasons (E) – Péter",
-        "email": "anna@example.com"
-      },
-      "email": {
-        "setlistEmpty": "Az eseménynek még nincsenek programpontjai.",
-        "item": "{position}. {title}",
-        "songWithKey": "{title} ({key})",
-        "scripture": "Igeolvasás: {reference}",
-        "itemWithVolunteer": "{item} – {volunteer}",
-        "openEvent": "Esemény megnyitása",
-        "buttonFallback": "Ha a gomb nem működik, nyisd meg ezt a linket:"
-      },
-      "templates": {
-        "event_added": {
-          "subject": "Önkéntes vagy: {event}",
-          "body": "Szia {name}!\n\nEgy eseményadmin önkéntesként hozzáadott ehhez az eseményhez:\n\n{event}\n{date}\n\nAz eseménynél jelezd, hogy ott leszel-e:\n{link}\n\nAz e-mail-értesítéseidet a beállításaidban módosíthatod:\n{settings}"
-        },
-        "event_reminder": {
-          "subject": "Hamarosan: {event}",
-          "body": "Szia {name}!\n\nHamarosan kezdődik egy esemény, amelyen önkéntes vagy:\n\n{event}\n{date}\n\nAz eseménynél jelezd, hogy ott leszel-e:\n{link}\n\nAz e-mail-értesítéseidet a beállításaidban módosíthatod:\n{settings}"
-        },
-        "setlist": {
-          "subject": "Dallista: {event}",
-          "body": "Szia {name}!\n\nA következő eseményed dallistája:\n\n{event}\n{date}\n\n{setlist}\n\nAkkordlapok:\n{sheet}\n\nAz esemény:\n{link}\n\nAz e-mail-értesítéseidet a beállításaidban módosíthatod:\n{settings}"
-        },
-        "welcome": {
-          "subject": "Üdvözlünk a(z) {app} alkalmazásban",
-          "body": "Egy szuperadmin hozzáadott a(z) {app} alkalmazáshoz. Ezzel az e-mail-címmel jelentkezel be: {email}\n\nA jelszavad beállításához nyisd meg ezt a linket:\n{link}\n\nA link csak egyszer és korlátozott ideig működik. Ha nem működik, kérj egy szuperadmintól új bejelentkezési e-mailt.\n\nA jelszó beállítása után a bejelentkezés egy második lépést is kér.\n\nHa nem vártad ezt az e-mailt, nyugodtan hagyd figyelmen kívül."
-        }
-      },
-      "actions": {
-        "saved": "A sablon mentve.",
-        "saveFailed": "Nem sikerült menteni a sablont. Próbáld újra.",
-        "reset": "Az e-mail újra az alapértelmezett szöveget használja.",
-        "resetFailed": "Nem sikerült visszaállítani a sablont. Próbáld újra.",
-        "notFound": "Ez a sablon nem létezik."
-      },
-      "errors": {
-        "unknownPlaceholders": "Ismeretlen helyőrzők: {names}",
-        "missingPlaceholders": "A szövegnek tartalmaznia kell: {names}",
-        "bodyOnlyPlaceholders": "A tárgy nem tartalmazhatja: {names}",
-        "welcomeMigrationMissing": "Az adatbázis még nem tudja tárolni az üdvözlő e-mail szövegét. Kérd meg a szerver rendszergazdáját, hogy frissítse az adatbázist, majd próbáld újra."
+        "saved": "Az értesítéseid mentve.",
+        "notSaved": "Nem sikerült menteni az értesítéseidet. Próbáld újra."
       }
     },
     "announcements": {

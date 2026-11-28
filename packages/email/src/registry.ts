@@ -7,6 +7,7 @@ import {
 } from "./templates/assignment";
 import { BookingDecided, BookingRequested } from "./templates/booking";
 import { ContactMessage } from "./templates/contact";
+import { MusicEventAdded, MusicEventReminder, MusicSetlist } from "./templates/music";
 import { HrTicketCreated, HrTicketReceived, HrTicketUpdated } from "./templates/hr";
 import { PlanApproved, PlanMention, PlanReviewRequested } from "./templates/plan";
 import { RequestConfirmation, RequestOfficeNotification } from "./templates/request";
@@ -30,6 +31,9 @@ export const EMAIL_TEMPLATES: Readonly<Record<EmailTemplateKey, EmailTemplate>> 
   "member.invitation": MemberInvitation,
   "billing.paymentFailed": BillingPaymentFailed,
   "contact.message": ContactMessage,
+  "music.eventAdded": MusicEventAdded,
+  "music.eventReminder": MusicEventReminder,
+  "music.setlist": MusicSetlist,
 };
 
 export function isEmailTemplateKey(value: string): value is EmailTemplateKey {

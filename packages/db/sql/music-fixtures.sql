@@ -61,6 +61,8 @@ BEGIN
     SELECT t, e.id, u FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
   INSERT INTO event_volunteer_areas (tenant_id, event_id, area_id, user_id, position)
     SELECT t, e.id, area, u, 0 FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
+  INSERT INTO notification_deliveries (tenant_id, event_id, user_id, kind)
+    SELECT t, e.id, u, 'event_added' FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
   INSERT INTO event_projection_controllers (tenant_id, event_id, user_id)
     SELECT t, e.id, u FROM events e WHERE e.tenant_id = t AND e.setlist_id = setlist;
   INSERT INTO live_sessions (tenant_id, leader_id, arrangement_ids) VALUES (t, u, ARRAY[arr]);

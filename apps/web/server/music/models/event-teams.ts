@@ -1,3 +1,4 @@
+import { queueEventAddedNotifications } from "@/server/music/notifications";
 import "server-only";
 
 import { z } from "zod";
@@ -205,7 +206,10 @@ export async function setEventTeams(
     .parse(data);
   if (!result) return false;
 
-  // The "you were added" e-mails come with the notifications phase (8).
+  queueEventAddedNotifications(
+    eventId,
+    result.added.filter((row) => row.user_id !== currentUser.id).map((row) => row.user_id),
+  );
   return true;
 }
 
@@ -262,7 +266,10 @@ export async function setEventAreaTeam(
     .parse(data);
   if (!result) return false;
 
-  // The "you were added" e-mails come with the notifications phase (8).
+  queueEventAddedNotifications(
+    eventId,
+    result.added.filter((row) => row.user_id !== currentUser.id).map((row) => row.user_id),
+  );
   return true;
 }
 

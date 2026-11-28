@@ -134,7 +134,7 @@ naming the tenant.
 | `public.keep_session_after_totp_removal(p_user_id uuid, p_session_id uuid)` | definer | dropped (Churchy login / user admin, PLAN §11) |
 | `public.keep_stray_file()` | invoker, trigger | 2b — 0009_music_files (SECURITY INVOKER, tenant via RLS; stray-file rows name their own tenant) |
 | `public.led_area_ids(p_user_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
-| `public.list_due_notifications(p_limit integer)` | invoker | 8 (notifications) |
+| `public.list_due_notifications(p_limit integer)` | invoker | 8b — 0022_music_notifications (final form of the source: reminder and setlist windows, email or a consented device) |
 | `public.mark_event_announcement_used()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `public.mark_event_image_set_used()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `public.member_area_ids(p_user_id uuid)` | invoker | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
@@ -151,7 +151,7 @@ naming the tenant.
 | `public.remove_calendar_entries_from_snapshots()` | invoker, trigger | 4 (events, setlists, volunteers) |
 | `public.remove_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `public.remove_event_item(p_event_id uuid, p_key uuid)` | invoker | 4a-2 — 0012_music_setlists (SECURITY INVOKER, tenant via RLS) |
-| `public.reset_notification_deliveries()` | invoker, trigger | 8 (notifications) |
+| `public.reset_notification_deliveries()` | invoker, trigger | 8b — 0022_music_notifications (a new start time sends the reminders again) |
 | `public.reset_volunteer_replies()` | invoker, trigger | 4b-1 — 0015_music_areas (SECURITY INVOKER, tenant via RLS; `private.*` moved to `public.*`) |
 | `public.restore_course_lesson(p_course_id uuid, p_lesson_id uuid, p_revision integer)` | invoker | 8a — 0021_music_courses (now `public.*`) |
 | `public.review_song_rights_proposal(p_id uuid, p_user uuid, p_accept boolean, p_changes jsonb)` | invoker | 2 — 0008_music_songs (SECURITY INVOKER, tenant via RLS) |
