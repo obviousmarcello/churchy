@@ -99,3 +99,7 @@ Applied in order: 0013_music_stats, 0014_events_tenant_default, 0015_music_areas
 ### Progress: 0016-0017 applied (dev project)
 
 Applied in order: 0016_music_images_announcements (_p1, _p2; split at the last statement-breakpoint, p2 is the unmarked tail) and 0017_music_projection (one piece, SQL unchanged). The realtime policies in 0017 were created without errors (`music participants can receive`, `can track presence`, `can broadcast` on `realtime.messages`). Checked: all 121 public tables have RLS enabled and forced, the only SECURITY DEFINER function in public is `share_song_rights`, and anon/authenticated hold no table grants. Next: 0018_music_live.
+
+### Progress: 0018-0023 applied (dev project) - schema complete
+
+Applied in order, all successful: 0018_music_live, 0019_music_scripture, 0020_music_hymnal_refs, 0021_music_courses (_p1-_p3, split at statement boundaries, SQL unchanged), 0022_music_notifications, 0023_music_rights_batch. `0019` drops `app_config.scripture_ruf` and its check constraint as the migration states (checked first: `app_config`, `scripture_books` and `scripture_verse_cache` were empty, no view depended on the column). `realtime.send` exists on this project, so `notify_event` is active. Checked: 38 migration records (parts counted), all 124 public tables have RLS enabled and forced, SECURITY DEFINER functions in public are exactly `share_song_rights` and `notify_event`, anon/authenticated hold no table grants, the scripture catalog tables exist, 118 policies in public. All migrations are applied.
