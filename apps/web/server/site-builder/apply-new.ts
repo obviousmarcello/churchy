@@ -46,6 +46,8 @@ export interface ApplySummary {
   readonly media: number;
   /** Included images that could not be carried over (download, decode or upload failed). */
   readonly mediaFailed: number;
+  /** The logo image was carried over (new church: set in site_config; existing church: set only when none existed). */
+  readonly logoSet: boolean;
   /** Service times that could not be placed (no location at all). */
   readonly skippedServiceTimes: number;
 }
@@ -271,6 +273,7 @@ export function seedStatements(
       serviceRules,
       media: images.length,
       mediaFailed: 0,
+      logoSet: false,
       skippedServiceTimes,
     },
   };

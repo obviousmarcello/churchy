@@ -92,6 +92,7 @@ async function bootstrap(
   input: z.output<typeof CreateTenantInputSchema>,
   slug: string,
   siteConfig?: Record<string, unknown>,
+  presetTenantId?: string,
 ): Promise<CreateTenantResult> {
   const plan = await tx.query("select 1 from plans where key = $1::plan_key", [FREE_PLAN]);
   if (plan.rows.length === 0) return { ok: false, reason: "plan_missing" };
@@ -99,7 +100,7 @@ async function bootstrap(
   const org = await tx.query("select 1 from organizations where slug = $1", [slug]);
   if (org.rows.length > 0) return { ok: false, reason: "slug_taken" };
 
-  const tenantId = randomUUID();
+  const tenantId = presetTenantId ?? randomUUID();
   const personId = randomUUID();
   const { owner } = input;
   const actor = input.actorUserId ?? owner.authUserId;
@@ -174,6 +175,11 @@ export interface CreateTenantOptions {
   /** The church's own config overrides, written with the tenant row (site builder draft apply). */
   readonly siteConfig?: Record<string, unknown>;
   /**
+   * A tenant id chosen by the caller (a uuid) so objects keyed by it (the site builder's logo) can exist
+   * before the row and be named in `siteConfig`. Operator path only; self-serve signup never sets it.
+   */
+  readonly tenantId?: string;
+  /**
    * Runs inside the same transaction right after the church exists (fresh-tenant INSERT-only seeding,
    * 0027_site_builder). A throw rolls the whole church back.
    */
@@ -200,7 +206,13 @@ export async function createTenant(
   let result: CreateTenantResult;
   try {
     result = await source.transaction(async (tx) => {
-      const created = await bootstrap(tx, parsed.data, slug.slug, options.siteConfig);
+      const created = await bootstrap(
+        tx,
+        parsed.data,
+        slug.slug,
+        options.siteConfig,
+        options.tenantId,
+      );
       if (created.ok && options.seed) await options.seed(tx, created.tenantId);
       return created;
     });

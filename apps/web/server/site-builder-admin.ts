@@ -1,5 +1,7 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
+
 import type { Ctx, Repositories } from "@churchy/contracts";
 import { z } from "zod";
 import { huZodErrorMap } from "@churchy/i18n";
@@ -20,6 +22,7 @@ import {
 } from "@/server/site-builder/apply-new";
 import type { SiteDraft } from "@/server/site-builder/draft-schema";
 import {
+  keptLogo,
   prepareImages,
   storeImages,
   type PrepareResult,
@@ -79,6 +82,8 @@ export type ApplyNewResult =
       readonly slug: string;
       readonly summary: ApplySummary;
       readonly imagesNotApplied: number;
+      /** A kept logo image was not set as the church's logo (not carried over). */
+      readonly logoMissing: boolean;
     }
   | { readonly ok: false; readonly reason: "not_found" | "invalid" | CreateTenantResultFailure };
 type CreateTenantResultFailure = Exclude<CreateTenantResult, { ok: true }>["reason"];
@@ -119,13 +124,16 @@ export async function applyToNewChurch(args: {
     const prep = media ? await prepareImages(draft, media.fetcher, media.signal) : null;
     const store = media && prep ? await storeImages(demoCtx, prep.prepared, media.sink) : null;
     const { summary } = seedStatements(draft, demoCtx.tenantId!, store?.stored ?? []);
-    const shown = { ...summary, mediaFailed: (prep?.failed ?? 0) + (store?.failed ?? 0) };
+    const demoLogo = keptLogo(draft);
+    const logoSet = !!demoLogo && !!store?.stored.some((i) => i.draftImageId === demoLogo.id);
+    const shown = { ...summary, mediaFailed: (prep?.failed ?? 0) + (store?.failed ?? 0), logoSet };
     await args.store.markApplied(args.draftId, `demo-${input.slug}`);
     return {
       ok: true,
       slug: input.slug,
       summary: shown,
       imagesNotApplied: notCarried(draft, shown),
+      logoMissing: !!demoLogo && !logoSet,
     };
   }
 
@@ -135,7 +143,21 @@ export async function applyToNewChurch(args: {
   const prep: PrepareResult | null = media
     ? await prepareImages(draft, media.fetcher, media.signal)
     : null;
-  let uploaded: { ctx: Ctx; keys: string[] } | null = null;
+  // The church logo is named in site_config at the tenant INSERT (the platform role cannot UPDATE
+  // tenants), so its id and object must exist before the row: the tenant id is chosen here and the
+  // logo is uploaded first. Only a stored logo is referenced; if it fails the logo stays unset.
+  const tenantId = randomUUID();
+  const tenantCtx = operatorCtx(tenantId, args.operatorId);
+  const logo = keptLogo(draft);
+  const logoPrepared = prep?.prepared.filter((p) => logo && p.draftImageId === logo.id) ?? [];
+  const logoStore: StoreResult | null =
+    media && logoPrepared.length > 0
+      ? await storeImages(tenantCtx, logoPrepared, media.sink)
+      : null;
+  const logoImage = logoStore?.stored[0] ?? null;
+  let uploaded: { ctx: Ctx; keys: string[] } | null = logoStore
+    ? { ctx: tenantCtx, keys: [...logoStore.keys] }
+    : null;
   const cleanup = async () => {
     if (media && uploaded && uploaded.keys.length > 0) {
       await media.sink.remove(uploaded.ctx, uploaded.keys);
@@ -155,26 +177,29 @@ export async function applyToNewChurch(args: {
       } as CreateTenantInput,
       {
         allowReserved: true,
-        siteConfig: siteConfigFromDraft(draft),
+        siteConfig: siteConfigFromDraft(draft, logoImage?.id),
+        tenantId,
         ...(args.db ? { db: args.db } : {}),
-        seed: async (tx, tenantId) => {
+        seed: async (tx, seedTenantId) => {
           let store: StoreResult | null = null;
           if (media && prep) {
-            const ctx = operatorCtx(tenantId, args.operatorId);
-            store = await storeImages(ctx, prep.prepared, media.sink);
-            uploaded = { ctx, keys: store.keys };
+            const rest = prep.prepared.filter((p) => p.draftImageId !== logo?.id);
+            store = await storeImages(tenantCtx, rest, media.sink);
+            uploaded = { ctx: tenantCtx, keys: [...(logoStore?.keys ?? []), ...store.keys] };
           }
-          const seeded = seedStatements(draft, tenantId, store?.stored ?? []);
+          const all = [...(logoImage ? [logoImage] : []), ...(store?.stored ?? [])];
+          const seeded = seedStatements(draft, seedTenantId, all);
           summary = {
             ...seeded.summary,
-            mediaFailed: (prep?.failed ?? 0) + (store?.failed ?? 0),
+            mediaFailed: (prep?.failed ?? 0) + (logoStore?.failed ?? 0) + (store?.failed ?? 0),
+            logoSet: logoImage !== null,
           };
           for (const s of seeded.statements) await tx.query(s.text, s.values);
           // In the same transaction: the draft is applied and the audit entry (ids and counts, no texts;
           // the source URLs are the church's own public pages) exists, or none of it does.
           await tx.query(
             `update site_drafts set status = 'applied', applied_tenant_id = $2, updated_at = now() where id = $1 and status = 'ready'`,
-            [args.draftId, tenantId],
+            [args.draftId, seedTenantId],
           );
           await writeSiteBuilderAudit(
             args.operatorId,
@@ -186,7 +211,7 @@ export async function applyToNewChurch(args: {
               summary,
               sources: attribution(draft),
             },
-            tenantId,
+            seedTenantId,
             tx,
           );
         },
@@ -205,11 +230,17 @@ export async function applyToNewChurch(args: {
     slug: created.slug,
     summary: summary!,
     imagesNotApplied: notCarried(draft, summary!),
+    logoMissing: logo !== null && logoImage === null,
   };
 }
 
 export type ApplyOwnerResult =
-  | { readonly ok: true; readonly summary: ApplySummary; readonly imagesNotApplied: number }
+  | {
+      readonly ok: true;
+      readonly summary: ApplySummary;
+      readonly imagesNotApplied: number;
+      readonly logoMissing: boolean;
+    }
   | { readonly ok: false; readonly reason: "not_found" };
 
 /** The church owner applies a draft the operator prepared for this church, under their own context. */
@@ -255,5 +286,11 @@ export async function applyForOwner(args: {
       args.dbQuery as never,
     );
   }
-  return { ok: true, summary, imagesNotApplied: notCarried(stored.draft, summary) };
+  const logo = keptLogo(stored.draft);
+  return {
+    ok: true,
+    summary,
+    imagesNotApplied: notCarried(stored.draft, summary),
+    logoMissing: logo !== null && !summary.logoSet,
+  };
 }

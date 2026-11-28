@@ -8351,6 +8351,7 @@
         "existingBody": "Ezt a vázlatot a tulajdonos alkalmazza a saját fiókjából, a Beállítás oldalon. Nálad nincs további teendő.",
         "done": "Elkészült: {slug}. Alkalmazva: {pages} oldal, {posts} hír, {announcements} hirdetés, {locations} helyszín, {serviceRules} alkalom, {media} kép.",
         "imagesNotApplied": "{count} kép nem került át: nem sikerült letölteni vagy feldolgozni őket, vagy a képtároló nincs beállítva.",
+        "logoMissing": "A logót nem sikerült átvenni, ezért nincs beállítva.",
         "errors": {
           "invalid": "Hiányzó vagy hibás adat.",
           "not_found": "A vázlat nem található, lejárt vagy már alkalmazták.",
@@ -8369,6 +8370,7 @@
         "apply": "Vázlat alkalmazása",
         "done": "Alkalmaztuk: {pages} oldal, {posts} hír, {announcements} hirdetés, {locations} helyszín, {serviceRules} alkalom, {media} kép.",
         "imagesNotApplied": "{count} kép nem került át: nem sikerült letölteni vagy feldolgozni őket, vagy a képtároló nincs beállítva.",
+        "logoMissing": "A logót nem sikerült átvenni, ezért nincs beállítva.",
         "failed": "Nem sikerült: a vázlat nem található vagy lejárt.",
         "forbidden": "Ehhez nincs jogosultságod."
       }

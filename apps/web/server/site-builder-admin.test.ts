@@ -451,4 +451,110 @@ describe("applying with a media sink", () => {
     expect(sink.objects.size).toBe(0);
     expect((await repos.media.list(ctx)).total).toBe(before);
   });
+
+  it("new church: logoMediaId in the tenant INSERT matches the media row inserted in the seed", async () => {
+    const store = new MemoryDraftStore();
+    const d = await draft();
+    expect(d.images.some((i) => i.role === "logo" && i.include && !i.offsite)).toBe(true);
+    const row = await store.create(d);
+    const sink = new MemoryMediaSink();
+    const { db, calls } = liveDb();
+    const res = await applyToNewChurch({
+      store,
+      draftId: row.id,
+      input,
+      mode: "live",
+      operatorId: U1,
+      db,
+      mediaFor: mediaWith(sink),
+    });
+    expect(res).toMatchObject({ ok: true, logoMissing: false, summary: { logoSet: true } });
+    const tenantInsert = calls.find((c) => /insert into tenants/.test(c.text))!;
+    const logoId = JSON.parse(String(tenantInsert.values[5])).identity.logoMediaId as string;
+    expect(logoId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(String(tenantInsert.values[0])).toBe(
+      String(calls.find((c) => /insert into media/.test(c.text))!.values[1]),
+    );
+    const mediaRow = calls.find((c) => /insert into media/.test(c.text) && c.values[0] === logoId);
+    expect(mediaRow).toBeDefined();
+    expect(sink.objects.has(String(mediaRow!.values[4]))).toBe(true);
+    expect(calls.findIndex((c) => c === tenantInsert)).toBeLessThan(calls.indexOf(mediaRow!));
+  });
+
+  it("new church: a failing logo leaves logoMediaId unset and is reported", async () => {
+    const store = new MemoryDraftStore();
+    const row = await store.create(await draft());
+    const sink = new MemoryMediaSink();
+    const realPut = sink.put.bind(sink);
+    let n = 0;
+    sink.put = async (c, k, b) => {
+      if (n++ === 0) throw new Error("storage down"); // the logo is uploaded first
+      return realPut(c, k, b);
+    };
+    const { db, calls } = liveDb();
+    const res = await applyToNewChurch({
+      store,
+      draftId: row.id,
+      input,
+      mode: "live",
+      operatorId: U1,
+      db,
+      mediaFor: mediaWith(sink),
+    });
+    expect(res).toMatchObject({ ok: true, logoMissing: true, summary: { logoSet: false } });
+    const tenantInsert = calls.find((c) => /insert into tenants/.test(c.text))!;
+    expect(JSON.parse(String(tenantInsert.values[5])).identity.logoMediaId).toBeUndefined();
+  });
+
+  it("new church: the logo object is removed too when the transaction rolls back", async () => {
+    const store = new MemoryDraftStore();
+    const row = await store.create(await draft());
+    const sink = new MemoryMediaSink();
+    const { db } = liveDb(/insert into pages/);
+    await expect(
+      applyToNewChurch({
+        store,
+        draftId: row.id,
+        input,
+        mode: "live",
+        operatorId: U1,
+        db,
+        mediaFor: mediaWith(sink),
+      }),
+    ).rejects.toThrow("boom");
+    expect(sink.objects.size).toBe(0);
+  });
+
+  it("owner: sets the logo when none exists, never overwrites an existing one", async () => {
+    const tenantId = demoDirectory().defaultTenantId;
+    const ctx = { tenantId, actor: { userId: U1, personId: null } };
+    const run = async (name: string, preset?: string) => {
+      const repos = repositoriesFor(name);
+      const cur = await repos.tenants.current(ctx);
+      await repos.tenants.updateSiteConfig(ctx, {
+        ...cur!.siteConfig,
+        identity: { ...cur!.siteConfig.identity, logoMediaId: preset },
+      } as never);
+      const store = new MemoryDraftStore();
+      const row = await store.create(await draft(), { targetTenantId: tenantId });
+      const res = await applyForOwner({
+        mode: "demo",
+        draftId: row.id,
+        tenantId,
+        userId: U1,
+        ctx,
+        repos,
+        store,
+        mediaFor: mediaWith(new MemoryMediaSink()),
+      });
+      return { res, after: (await repos.tenants.current(ctx))!.siteConfig.identity?.logoMediaId };
+    };
+    const fresh = await run("site-builder-logo-none");
+    expect(fresh.res).toMatchObject({ ok: true, logoMissing: false, summary: { logoSet: true } });
+    expect(fresh.after).toMatch(/^[0-9a-f-]{36}$|^.+$/);
+    const existing = "11111111-1111-4111-8111-111111111111";
+    const kept = await run("site-builder-logo-kept", existing);
+    expect(kept.after).toBe(existing);
+    expect(kept.res).toMatchObject({ ok: true, logoMissing: false, summary: { logoSet: true } });
+  });
 });
