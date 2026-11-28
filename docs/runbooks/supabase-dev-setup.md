@@ -56,3 +56,17 @@ schema and `auth.users` all behave as the migrations assume.
 Stripped-file generator (comments and blank lines removed, statements unchanged):
 `grep -v '^\s*--' f.sql | grep -v '^\s*$'` (the trailing `--> statement-breakpoint` stays on a
 line and is a harmless SQL comment, drop it).
+
+### Progress log: migrations 0001_schema_p4 to 0005 (dev project lsduqjfpeksznhgtwhvm)
+
+Applied in order via the Supabase MCP `apply_migration`, with the comment-stripped SQL passed verbatim:
+
+- `0001_schema_p4` (stripped lines 937 to end: foreign keys and indexes)
+- `0002_constraints`
+- `0003_rls`
+- `0004_tenant_claim`
+- `0005_music_functions`
+
+Verification: `list_migrations` shows 0000 to 0005 (including p1 to p4) as applied. All 59 public tables have RLS enabled and forced, with 48 policies. Roles: `churchy_app` exists (NOLOGIN, no BYPASSRLS). `anon`, `authenticated` and `authenticator` are present. `churchy_music` does not exist yet (expected: created by a later music migration).
+
+Deviations: none. Next migration to apply: `0006_music_schema`.
