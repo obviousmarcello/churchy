@@ -346,7 +346,7 @@ export function RehearsalBuilder({
           ) : (
             <Empty
               className={cn(
-                "rounded-xl border p-6 transition-colors md:p-8",
+                "rounded-card border p-6 transition-colors md:p-8",
                 draggingSong && "border-primary/50 bg-primary/5",
                 drop && "border-primary bg-primary/10",
               )}
@@ -471,7 +471,7 @@ function SaveDialog({
               {events.length > 0 ? (
                 <fieldset>
                   <legend className="sr-only">{m.rehearsal.saveDialog.targetLegend}</legend>
-                  <div className="grid grid-cols-2 gap-1 rounded-lg bg-surface-sunken p-1">
+                  <div className="grid grid-cols-2 gap-1 rounded-card bg-surface-sunken p-1">
                     <TargetOption
                       value="existing"
                       checked={target === "existing"}
@@ -552,9 +552,7 @@ function SaveDialog({
                   role={state.status === "error" ? "alert" : "status"}
                   className={cn(
                     "text-sm",
-                    state.status === "error"
-                      ? "text-danger"
-                      : "text-emerald-700 dark:text-emerald-400",
+                    state.status === "error" ? "text-danger" : "text-success",
                   )}
                 >
                   {state.message}
@@ -601,8 +599,8 @@ function TargetOption({
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-center justify-center rounded-md px-3 py-1.5 text-center text-sm font-medium text-muted transition-colors has-focus-visible:ring-3 has-focus-visible:ring-focus/50",
-        checked && "bg-surface text-foreground shadow-xs",
+        "flex cursor-pointer items-center justify-center rounded-control px-3 py-1.5 text-center text-sm font-medium text-muted transition-colors has-focus-visible:ring-3 has-focus-visible:ring-focus/50",
+        checked && "bg-surface text-text shadow-xs",
       )}
     >
       <input
