@@ -1703,5 +1703,11 @@ export const MIGRATION_SQL: readonly { tag: string; statements: readonly string[
    "REVOKE ALL ON FUNCTION public.claim_songs_for_rights_research(integer, text, text) FROM PUBLIC;",
    "GRANT EXECUTE ON FUNCTION public.claim_songs_for_rights_research(integer, text, text) TO churchy_app, churchy_music;"
   ]
+ },
+ {
+  "tag": "0024_revoke_definer_exec",
+  "statements": [
+   "-- Supabase grants EXECUTE on new public functions to anon/authenticated/service_role through default\n-- privileges (REVOKE ... FROM PUBLIC does not remove those). Churchy uses no PostgREST for these:\n-- share_song_rights() is a trigger function, notify_event() is called by churchy_app / churchy_music.\n-- No-op on plain Postgres (the roles may not exist there).\nDO $$\nDECLARE r text;\nBEGIN\n  FOREACH r IN ARRAY ARRAY['anon', 'authenticated'] LOOP\n    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = r) THEN\n      EXECUTE format('REVOKE ALL ON FUNCTION public.share_song_rights() FROM %I', r);\n      EXECUTE format('REVOKE ALL ON FUNCTION public.notify_event(uuid, text) FROM %I', r);\n    END IF;\n  END LOOP;\nEND $$;"
+  ]
  }
 ];
