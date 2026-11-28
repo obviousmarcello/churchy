@@ -84,3 +84,10 @@ Deviations: none. Next migration to apply: `0006_music_schema`.
 - `0008_music_songs` applied as four parts (`_p1`..`_p4`, split at statement boundaries): the shared `song_rights` catalog table, song functions and triggers, and the SECURITY DEFINER `share_song_rights()` (EXECUTE revoked from PUBLIC).
 - Verification: 101 public tables, all with RLS enabled and forced. 13 have no policy (deny-all for non-owner roles): `audit_log`, `billing_accounts`, `deals`, `invoices`, `notification_prefs`, `org_memberships`, `organizations`, `payment_events`, `plans`, `profiles`, `subscriptions`, `tenants`, `workday_calendar`. The only SECURITY DEFINER function in `public` is `share_song_rights`. `anon` and `authenticated` hold no table grants in `public`.
 - Next migration to apply: `0009_music_files`.
+
+### Progress: migrations 0009-0012 applied to the dev project
+
+- Applied in order, all successful: `0009_music_files`, `0010_music_sheet`, `0011_music_events`, `0012_music_setlists` (each as a single migration, SQL unchanged).
+- `0011` and `0012` drop and recreate existing objects as the migrations themselves state (`tenant_isolation` policies on `events`/`calendars`; `service_plans_setlist_id_fkey`). No other drops.
+- Checks after applying: every public table has RLS enabled and forced; `music_scope` restrictive policies exist on `events` and `calendars` for `churchy_music`; the only SECURITY DEFINER function in `public` is `share_song_rights`; `anon`/`authenticated` hold no table grants in `public`.
+- Next migration: `0013_music_stats`.
