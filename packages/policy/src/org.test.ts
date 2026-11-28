@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Action, HrCategoryRef, HrTicketResource } from "./actions";
-import { ACTIONS, ORG_ACTIONS } from "./actions";
+import { ACTIONS, ORG_ACTIONS, PLATFORM_ACTIONS } from "./actions";
 import {
   CERTIFICATE,
   COMPLAINT,
@@ -91,7 +91,10 @@ describe("SDD §25.7 organization roles", () => {
 describe("organization actors have NOTHING outside delegated HR", () => {
   const admin = diocesanActor([...ORG_ROLES]);
   const nonHr = ACTIONS.filter(
-    (action) => !action.startsWith("hr.") && !ORG_ACTIONS.includes(action as never),
+    (action) =>
+      !action.startsWith("hr.") &&
+      !ORG_ACTIONS.includes(action as never) &&
+      !PLATFORM_ACTIONS.includes(action as never),
   );
 
   it.each(nonHr)("all org roles ✘ %s on a parish delegating all HR", (action) => {

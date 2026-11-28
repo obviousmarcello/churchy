@@ -4,6 +4,7 @@ import { expect, type Page } from "@playwright/test";
 /** Persona keys and their switcher labels (messages/hu.json `common.demo.personas`, rk terms). */
 export const PERSONAS = {
   latogato: "Látogató",
+  uzemelteto: "Üzemeltető (Churchy)",
   tulajdonos: "Tulajdonos",
   szerkeszto: "Szerkesztő",
   iroda: "Iroda",

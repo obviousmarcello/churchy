@@ -38,6 +38,21 @@ export const DEFAULT_RUN_BUDGET: RunBudget = {
   maxCostUsd: 1,
 };
 
+/** `SITE_BUILDER_MAX_COST_USD` (default 1) and `SITE_BUILDER_MAX_INPUT_TOKENS` (default 120000). */
+export function runBudgetFromEnv(env: Record<string, string | undefined> = process.env): RunBudget {
+  const num = (v: string | undefined, fallback: number) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? n : fallback;
+  };
+  return {
+    ...DEFAULT_RUN_BUDGET,
+    maxCostUsd: num(env.SITE_BUILDER_MAX_COST_USD, DEFAULT_RUN_BUDGET.maxCostUsd),
+    maxInputTokens: Math.floor(
+      num(env.SITE_BUILDER_MAX_INPUT_TOKENS, DEFAULT_RUN_BUDGET.maxInputTokens),
+    ),
+  };
+}
+
 export const CONSENT_STATEMENT = "The church asked us to prepare its site from this address.";
 
 export interface BuildInput {

@@ -3,9 +3,11 @@ import { DEMO_ACCOUNTS, demoAccountByEmail, looksLikeEmail } from "./accounts";
 import { DEMO_PERSONA_KEYS } from "./personas";
 
 describe("demo accounts", () => {
-  it("has one fictitious account for every persona except the visitor", () => {
+  it("has one fictitious account for every persona except the visitor and the platform operator (switcher only)", () => {
     const personas = DEMO_ACCOUNTS.map((a) => a.persona).sort();
-    expect(personas).toEqual(DEMO_PERSONA_KEYS.filter((k) => k !== "latogato").sort());
+    expect(personas).toEqual(
+      DEMO_PERSONA_KEYS.filter((k) => k !== "latogato" && k !== "uzemelteto").sort(),
+    );
   });
 
   it("uses unique example-domain addresses", () => {

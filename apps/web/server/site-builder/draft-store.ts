@@ -71,6 +71,25 @@ export class MemoryDraftStore implements DraftStore {
     return true;
   }
 
+  /** Ready drafts prepared for a church (the owner's list). */
+  listForTenant(
+    tenantId: string,
+    now: Date = new Date(),
+  ): { id: string; sourceUrl: string; expiresAt: string }[] {
+    return [...this.rows.values()]
+      .filter(
+        (r) =>
+          r.status === "ready" &&
+          r.targetTenantId === tenantId &&
+          new Date(r.draft.meta.expiresAt) > now,
+      )
+      .map((r) => ({
+        id: r.id,
+        sourceUrl: r.draft.meta.sourceUrl,
+        expiresAt: r.draft.meta.expiresAt,
+      }));
+  }
+
   async delete(id: string): Promise<boolean> {
     return this.rows.delete(id);
   }

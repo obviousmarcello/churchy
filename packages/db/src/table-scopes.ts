@@ -29,6 +29,7 @@ export const TABLE_SCOPES = {
   invoices: "platform",
   payment_events: "platform",
   audit_log: "platform",
+  site_drafts: "platform",
   workday_calendar: "platform",
   notification_prefs: "platform",
   domains: "tenant",
@@ -256,10 +257,14 @@ export function tablesWithScope(scope: TableScope): TableName[] {
  * - `select`: `true` = whole table (policy `platform_read`); a column list = column-level grant
  *   (policy `platform_host_lookup`).
  * - `insert`: INSERT only (policy `platform_insert`); tenant-scoped tables admit a FRESH tenant only.
+ * - `update` / `delete`: only on the platform table `site_drafts` (0027_site_builder).
  */
 export interface PlatformAccess {
   readonly select?: true | readonly string[];
   readonly insert?: true;
+  /** UPDATE / DELETE (policies `platform_update` / `platform_delete`): `site_drafts` only. */
+  readonly update?: true;
+  readonly delete?: true;
 }
 
 export const PLATFORM_ROLE_ACCESS: Readonly<Partial<Record<TableName, PlatformAccess>>> = {
@@ -273,4 +278,14 @@ export const PLATFORM_ROLE_ACCESS: Readonly<Partial<Record<TableName, PlatformAc
   memberships: { insert: true },
   people: { insert: true },
   domains: { select: ["tenant_id", "hostname", "is_primary", "verified_at", "tls_status"] },
+  // 0027_site_builder: drafts of the site builder (platform table) ...
+  site_drafts: { select: true, insert: true, update: true, delete: true },
+  // ... and the fresh-tenant seeding of a drafted church (INSERT only, fresh tenant only).
+  media: { insert: true },
+  locations: { insert: true },
+  schedule_periods: { insert: true },
+  service_rules: { insert: true },
+  announcements: { insert: true },
+  posts: { insert: true },
+  pages: { insert: true },
 };

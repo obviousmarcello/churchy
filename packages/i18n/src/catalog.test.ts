@@ -16,7 +16,17 @@ const catalog = JSON.parse(
   readFileSync(new URL("../../../messages/hu.json", import.meta.url), "utf8"),
 ) as MessageTree;
 
-const NAMESPACES = ["common", "public", "admin", "munkater", "music", "portal", "dev", "email"];
+const NAMESPACES = [
+  "common",
+  "public",
+  "admin",
+  "munkater",
+  "music",
+  "portal",
+  "dev",
+  "email",
+  "platform",
+];
 
 function leaves(node: MessageTree, prefix = ""): Array<[string, unknown]> {
   return Object.entries(node).flatMap(([k, v]) =>
@@ -41,10 +51,12 @@ describe("messages/hu.json", () => {
     }
   });
 
-  // The music namespace (merged Music Sheet DB) is already informal (tegező, decision 2026-11-24);
+  // The music and platform namespaces are already informal (tegező, decision 2026-11-24);
   // the rest of the catalog is converted by the dedicated tone pass, which then drops this check.
-  it("uses the formal address (no informal forms) outside the music namespace", () => {
-    for (const [key, value] of all.filter(([key]) => !key.startsWith("music."))) {
+  it("uses the formal address (no informal forms) outside the music and platform namespaces", () => {
+    for (const [key, value] of all.filter(
+      ([key]) => !key.startsWith("music.") && !key.startsWith("platform."),
+    )) {
       expect(value as string, key).not.toMatch(/\b(te|neked|téged|kérlek|add meg|kattints)\b/i);
     }
   });

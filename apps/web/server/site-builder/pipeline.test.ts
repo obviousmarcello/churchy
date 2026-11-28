@@ -3,95 +3,15 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 import { SiteDraftSchema } from "./draft-schema";
-import { FIXTURE_ORIGIN, FIXTURE_PAGES, fixtureTransport } from "./fixtures";
+import { FIXTURE_ORIGIN, FIXTURE_PAGES, fixturePlan, fixtureTransport } from "./fixtures";
 import { FakePlanner } from "./llm";
-import type { LlmPlan } from "./plan-schema";
 import { buildDraft, draftTtlHours } from "./pipeline";
+import type { LlmPlan } from "./plan-schema";
 import { SiteFetcher } from "./site-fetcher";
 
 const U = (p: string) => `${FIXTURE_ORIGIN}${p}`;
 
-const goodPlan = (): LlmPlan => ({
-  church: {
-    name: "Mintavárosi Szent Példa Plébánia",
-    shortName: "Szent Példa",
-    nameSourceUrl: U("/"),
-    denomination: "rk",
-    denominationConfidence: 0.9,
-    tagline: "Gyere el, szeretettel várunk.",
-    welcome: "Örülünk, hogy itt vagy. Nézd meg a miserendet, és gyere el közénk.",
-  },
-  locations: [
-    {
-      name: "Szent Példa templom",
-      kind: "templom",
-      postalCode: "1234",
-      city: "Mintaváros",
-      line1: "Példa utca 5.",
-      sourceUrl: U("/kapcsolat"),
-      confidence: 0.9,
-    },
-  ],
-  serviceTimes: [
-    {
-      label: "Szentmise",
-      weekday: 7,
-      time: "10:00",
-      locationName: "Szent Példa templom",
-      sourceUrl: U("/miserend"),
-      confidence: 0.95,
-    },
-    {
-      label: "Szentmise",
-      weekday: 1,
-      time: "18:30",
-      locationName: "Szent Példa templom",
-      sourceUrl: U("/miserend"),
-      confidence: 0.95,
-    },
-    // hallucinated: not on the page
-    {
-      label: "Szentmise",
-      weekday: 3,
-      time: "19:00",
-      locationName: "",
-      sourceUrl: U("/miserend"),
-      confidence: 0.9,
-    },
-  ],
-  pages: [
-    { url: U("/"), role: "home", title: "Főoldal", slug: "fooldal", riteKey: "" },
-    { url: U("/rolunk"), role: "about", title: "Rólunk", slug: "rolunk", riteKey: "" },
-    { url: U("/miserend"), role: "schedule", title: "Miserend", slug: "miserend", riteKey: "" },
-    { url: U("/hirek"), role: "news_index", title: "Hírek", slug: "hirek", riteKey: "" },
-    {
-      url: U("/hirek/majus-1"),
-      role: "news_article",
-      title: "Májusi ünnep",
-      slug: "majusi-unnep",
-      riteKey: "",
-    },
-    { url: U("/kapcsolat"), role: "contact", title: "Kapcsolat", slug: "kapcsolat", riteKey: "" },
-    // not crawled: must be dropped
-    {
-      url: "https://evil.example.com/x",
-      role: "about",
-      title: "Idegen",
-      slug: "idegen",
-      riteKey: "",
-    },
-  ],
-  posts: [
-    {
-      url: U("/hirek/majus-1"),
-      title: "Májusi ünnep",
-      lead: "Közös ünnep a templomkertben.",
-      publishedAt: "",
-    },
-  ],
-  announcements: [],
-  notes: [],
-});
+const goodPlan = fixturePlan;
 
 function run(
   overrides: {

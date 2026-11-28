@@ -1,4 +1,5 @@
 import type { FetchResult } from "./fetcher";
+import type { LlmPlan } from "./plan-schema";
 
 /**
  * A fictitious church website for tests, demo mode and e2e: "Mintavárosi Szent Példa Plébánia".
@@ -81,3 +82,88 @@ export function fixtureTransport(
       : { ok: false, code: "bad_status", url: input, status: 404 };
   };
 }
+
+const u = (p: string) => `${FIXTURE_ORIGIN}${p}`;
+
+/** The plan a (fake) model returns for the fixture church: demo mode, tests and e2e. */
+export const fixturePlan = (): LlmPlan => ({
+  church: {
+    name: "Mintavárosi Szent Példa Plébánia",
+    shortName: "Szent Példa",
+    nameSourceUrl: u("/"),
+    denomination: "rk",
+    denominationConfidence: 0.9,
+    tagline: "Gyere el, szeretettel várunk.",
+    welcome: "Örülünk, hogy itt vagy. Nézd meg a miserendet, és gyere el közénk.",
+  },
+  locations: [
+    {
+      name: "Szent Példa templom",
+      kind: "templom",
+      postalCode: "1234",
+      city: "Mintaváros",
+      line1: "Példa utca 5.",
+      sourceUrl: u("/kapcsolat"),
+      confidence: 0.9,
+    },
+  ],
+  serviceTimes: [
+    {
+      label: "Szentmise",
+      weekday: 7,
+      time: "10:00",
+      locationName: "Szent Példa templom",
+      sourceUrl: u("/miserend"),
+      confidence: 0.95,
+    },
+    {
+      label: "Szentmise",
+      weekday: 1,
+      time: "18:30",
+      locationName: "Szent Példa templom",
+      sourceUrl: u("/miserend"),
+      confidence: 0.95,
+    },
+    // hallucinated: not on the page
+    {
+      label: "Szentmise",
+      weekday: 3,
+      time: "19:00",
+      locationName: "",
+      sourceUrl: u("/miserend"),
+      confidence: 0.9,
+    },
+  ],
+  pages: [
+    { url: u("/"), role: "home", title: "Főoldal", slug: "fooldal", riteKey: "" },
+    { url: u("/rolunk"), role: "about", title: "Rólunk", slug: "rolunk", riteKey: "" },
+    { url: u("/miserend"), role: "schedule", title: "Miserend", slug: "miserend", riteKey: "" },
+    { url: u("/hirek"), role: "news_index", title: "Hírek", slug: "hirek", riteKey: "" },
+    {
+      url: u("/hirek/majus-1"),
+      role: "news_article",
+      title: "Májusi ünnep",
+      slug: "majusi-unnep",
+      riteKey: "",
+    },
+    { url: u("/kapcsolat"), role: "contact", title: "Kapcsolat", slug: "kapcsolat", riteKey: "" },
+    // not crawled: must be dropped
+    {
+      url: "https://evil.example.com/x",
+      role: "about",
+      title: "Idegen",
+      slug: "idegen",
+      riteKey: "",
+    },
+  ],
+  posts: [
+    {
+      url: u("/hirek/majus-1"),
+      title: "Májusi ünnep",
+      lead: "Közös ünnep a templomkertben.",
+      publishedAt: "",
+    },
+  ],
+  announcements: [],
+  notes: [],
+});

@@ -23,8 +23,8 @@
  *    expects `churchy_app, churchy_music`).
  * 7. `churchy_platform` (platform role, 0025_platform_role): same attribute checks; its grants and
  *    policies are exactly `PLATFORM_ROLE_ACCESS` — whole-table SELECT or a column list, INSERT
- *    only, never UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER — with policies named `platform_read`,
- *    `platform_host_lookup`, `platform_insert` that name only that role. Everything else is denied.
+ *    only (UPDATE/DELETE only on `site_drafts`), never TRUNCATE/REFERENCES/TRIGGER — with policies named `platform_read`,
+ *    `platform_host_lookup`, `platform_insert` (plus `platform_update` / `platform_delete` where declared) that name only that role. Everything else is denied.
  */
 import type pg from "pg";
 import {
@@ -53,6 +53,8 @@ export const MUSIC_SCOPE_POLICY = "music_scope";
 export const PLATFORM_READ_POLICY = "platform_read";
 export const PLATFORM_HOST_POLICY = "platform_host_lookup";
 export const PLATFORM_INSERT_POLICY = "platform_insert";
+export const PLATFORM_UPDATE_POLICY = "platform_update";
+export const PLATFORM_DELETE_POLICY = "platform_delete";
 
 /** `pg_get_expr` output of the canonical policy expressions. */
 export const TENANT_EXPR = "(tenant_id = ( SELECT app.current_tenant_id() AS current_tenant_id))";
@@ -278,8 +280,8 @@ function platformViolations(
   const want: Record<string, boolean> = {
     SELECT: wholeSelect,
     INSERT: access?.insert === true,
-    UPDATE: false,
-    DELETE: false,
+    UPDATE: access?.update === true,
+    DELETE: access?.delete === true,
     TRUNCATE: false,
     REFERENCES: false,
     TRIGGER: false,
@@ -307,6 +309,8 @@ function platformViolations(
   if (wholeSelect) expected.set(PLATFORM_READ_POLICY, "r");
   if (columns.length > 0) expected.set(PLATFORM_HOST_POLICY, "r");
   if (access?.insert === true) expected.set(PLATFORM_INSERT_POLICY, "a");
+  if (access?.update === true) expected.set(PLATFORM_UPDATE_POLICY, "w");
+  if (access?.delete === true) expected.set(PLATFORM_DELETE_POLICY, "d");
   for (const p of own) {
     const cmd = expected.get(p.name);
     if (cmd === undefined)

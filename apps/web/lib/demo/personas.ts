@@ -13,6 +13,8 @@ export type PersonaScope = "public" | "tenant" | "org";
 
 export const DEMO_PERSONAS = [
   { key: "latogato", scope: "public" },
+  // A platform operator (Churchy staff): sees the platform console, no church of its own.
+  { key: "uzemelteto", scope: "public" },
   { key: "tulajdonos", scope: "tenant" },
   { key: "szerkeszto", scope: "tenant" },
   { key: "iroda", scope: "tenant" },

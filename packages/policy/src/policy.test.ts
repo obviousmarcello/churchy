@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Action, Resource } from "./actions";
-import { ACTIONS, HR_ACTIONS, isHrAction } from "./actions";
+import { ACTIONS, HR_ACTIONS, PLATFORM_ACTIONS, isHrAction } from "./actions";
 import type { Actor, OrgActor, PlatformActor, TenantActor } from "./actor";
 import { inScope, orgActor, tenantActor } from "./actor";
 import {
@@ -62,15 +62,18 @@ describe("deny by default", () => {
   });
 
   const platform: PlatformActor = { kind: "platform", userId: "u-operator" };
-  it.each(ACTIONS)("a platform actor ✘ %s", (action) => {
-    const decision = explain(platform, action, KITCHEN_SINK as never);
-    expect(decision.allowed).toBe(false);
-    expect(decision.reason).toBe(
-      isHrAction(action)
-        ? "platform actors are excluded from HR"
-        : "platform actors have no tenant or organization capability",
-    );
-  });
+  it.each(ACTIONS.filter((a) => !PLATFORM_ACTIONS.includes(a as never)))(
+    "a platform actor ✘ %s",
+    (action) => {
+      const decision = explain(platform, action, KITCHEN_SINK as never);
+      expect(decision.allowed).toBe(false);
+      expect(decision.reason).toBe(
+        isHrAction(action)
+          ? "platform actors are excluded from HR"
+          : "platform actors have no tenant or organization capability",
+      );
+    },
+  );
 
   it("unknown actions are denied", () => {
     expect(

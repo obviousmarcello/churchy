@@ -35,6 +35,16 @@ function tenantIdIsIndexed(table: string): boolean {
   );
 }
 
+const SITE_BUILDER_SEED_TABLES = [
+  "media",
+  "locations",
+  "schedule_periods",
+  "service_rules",
+  "announcements",
+  "posts",
+  "pages",
+];
+
 describe("schema check: table classification (SDD §4.2)", () => {
   it("classifies every table of the schema, and nothing else", () => {
     expect(tables.map((t) => t.name).sort()).toEqual(Object.keys(TABLE_SCOPES).sort());
@@ -198,6 +208,7 @@ describe("migrations", () => {
       "0024_revoke_definer_exec",
       "0025_platform_role",
       "0026_platform_role_narrow",
+      "0027_site_builder",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);
@@ -207,6 +218,7 @@ describe("migrations", () => {
 
   it("down of 0001 / 0006 / 0008 drops every table and enum of the schema", () => {
     const down = [
+      readDownMigration("0027_site_builder"),
       readDownMigration("0008_music_songs"),
       readDownMigration("0006_music_schema"),
       readDownMigration("0012_music_setlists"),
@@ -243,6 +255,7 @@ describe("migrations", () => {
       .map((e) => readFileSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`, "utf8"))
       .join("\n");
     const down = [
+      readDownMigration("0027_site_builder"),
       readDownMigration("0022_music_notifications"),
       readDownMigration("0019_music_scripture"),
       readDownMigration("0018_music_live"),
@@ -319,11 +332,15 @@ describe("migrations", () => {
           /GRANT (SELECT|INSERT)(?: \(([^)]*)\))? ON TABLE "(\w+)" TO churchy_platform;/g,
         ),
       ];
-      const declared = Object.entries(PLATFORM_ROLE_ACCESS).flatMap(([t, a]) => [
-        ...(a.select === true ? [`SELECT ${t}`] : []),
-        ...(Array.isArray(a.select) ? [`SELECT(${a.select.join(",")}) ${t}`] : []),
-        ...(a.insert ? [`INSERT ${t}`] : []),
-      ]);
+      // 0027_site_builder adds the site_drafts table and the fresh-tenant seeding inserts (tested below).
+      const later = ["site_drafts", ...SITE_BUILDER_SEED_TABLES];
+      const declared = Object.entries(PLATFORM_ROLE_ACCESS)
+        .filter(([t]) => !later.includes(t))
+        .flatMap(([t, a]) => [
+          ...(a.select === true ? [`SELECT ${t}`] : []),
+          ...(Array.isArray(a.select) ? [`SELECT(${a.select.join(",")}) ${t}`] : []),
+          ...(a.insert ? [`INSERT ${t}`] : []),
+        ]);
       const actual = grants.map((m) =>
         m[2] ? `${m[1]}(${m[2].replace(/[" ]/g, "")}) ${m[3]}` : `${m[1]} ${m[3]}`,
       );
@@ -334,6 +351,41 @@ describe("migrations", () => {
       );
       const remaining = actual.filter((g) => !/ (subscriptions|billing_accounts)$/.test(g));
       expect(remaining.sort()).toEqual(declared.sort());
+    });
+
+    it("0027 gives the platform role site_drafts and fresh-tenant INSERTs, nothing else", () => {
+      const sql = readFileSync(`${MIGRATIONS_FOLDER}/0027_site_builder.sql`, "utf8").replace(
+        /--[^\n]*/g,
+        "",
+      );
+      expect(sql).not.toMatch(/SECURITY DEFINER/i);
+      expect(sql).not.toMatch(/GRANT (ALL|TRUNCATE|REFERENCES|TRIGGER)/i);
+      const grants = [
+        ...sql.matchAll(/GRANT ([A-Z, ]+) ON TABLE "(\w+)" TO churchy_platform;/g),
+      ].map((m) => `${m[1]!.replace(/ /g, "")} ${m[2]}`);
+      expect(grants.sort()).toEqual(
+        [
+          "SELECT,INSERT,UPDATE,DELETE site_drafts",
+          ...SITE_BUILDER_SEED_TABLES.map((t) => `INSERT ${t}`),
+        ].sort(),
+      );
+      expect(PLATFORM_ROLE_ACCESS.site_drafts).toEqual({
+        select: true,
+        insert: true,
+        update: true,
+        delete: true,
+      });
+      for (const t of SITE_BUILDER_SEED_TABLES) {
+        expect(PLATFORM_ROLE_ACCESS[t as keyof typeof PLATFORM_ROLE_ACCESS], t).toEqual({
+          insert: true,
+        });
+        // fresh tenants only
+        expect(sql, t).toMatch(
+          new RegExp(
+            `CREATE POLICY "platform_insert" ON "${t}"[^;]*launched_at IS NULL AND t.created_at >= now\\(\\) - interval '10 minutes'`,
+          ),
+        );
+      }
     });
 
     it("creates the app role without BYPASSRLS and revokes the Supabase PostgREST grants", () => {

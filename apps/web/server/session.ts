@@ -91,10 +91,18 @@ export function memberMayHandleRequests(
   return can(actor, "pastoralRequest.handle", { tenantId: membership.tenantId });
 }
 
+/**
+ * The demo's platform operator (persona *Üzemeltető*): a `PlatformActor` with no church of its own.
+ * Real operators sign in with Phase B auth, where this resolver looks the user up in the operator
+ * list; until then the platform console is reachable in demo mode only.
+ */
+export const DEMO_OPERATOR: Actor = { kind: "platform", userId: "demo-operator" };
+
 const defaultResolver: ActorResolver = async () => {
   const demo = await getDemoState();
   if (demo === null) return ANONYMOUS;
   const { persona, contextId } = demo.selection;
+  if (persona === "uzemelteto") return DEMO_OPERATOR;
   return actorFromIdentity(demoIdentity(demo.sessionId, persona, contextId));
 };
 
