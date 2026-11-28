@@ -54,7 +54,8 @@ test("a key change transposes the chords and is saved for the user", async ({ pa
   await select.selectOption({ index: 3 });
   await expect.poll(async () => group.innerText()).not.toBe(before);
   // The own key survives a reload (saved by `music.sheet.personalize`).
-  await page.waitForTimeout(500);
+  // The save is asynchronous and a reload would cancel it: let the request finish first.
+  await page.waitForLoadState("networkidle");
   await page.reload();
   await expect(page.getByRole("link", { name: "Az akkordlap bezárása" })).toBeVisible();
   await expect
