@@ -91,3 +91,7 @@ Deviations: none. Next migration to apply: `0006_music_schema`.
 - `0011` and `0012` drop and recreate existing objects as the migrations themselves state (`tenant_isolation` policies on `events`/`calendars`; `service_plans_setlist_id_fkey`). No other drops.
 - Checks after applying: every public table has RLS enabled and forced; `music_scope` restrictive policies exist on `events` and `calendars` for `churchy_music`; the only SECURITY DEFINER function in `public` is `share_song_rights`; `anon`/`authenticated` hold no table grants in `public`.
 - Next migration: `0013_music_stats`.
+
+### Progress: 0013-0015 applied (dev project)
+
+Applied in order: 0013_music_stats, 0014_events_tenant_default, 0015_music_areas (p1-p3). Replaced `filter_songs` (9-arg) by the 10-arg version per 0013. Checked: all 116 public tables have RLS enabled and forced, the only SECURITY DEFINER function in public is `share_song_rights`, and anon/authenticated hold no table grants. Next: 0016_music_images_announcements (2 parts), then 0017_music_projection.
