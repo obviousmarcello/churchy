@@ -188,6 +188,23 @@ export const WORKSPACE_MATRIX: readonly MatrixRow<
     grants: { leader: "all", musicLeader: "all" },
   },
   {
+    capability: "Music: read the training courses (the model checks the groups of the course)",
+    actions: ["music.course.view"],
+    grants: EVERY_ROLE,
+  },
+  {
+    capability:
+      "Music: make the courses of one's own groups (a leader of the groups; the model checks)",
+    actions: ["music.course.edit"],
+    grants: EVERY_ROLE,
+  },
+  {
+    capability:
+      "Music: manage all training courses and their order (a course_admin role of any group, or the leader)",
+    actions: ["music.course.manage"],
+    grants: { leader: "all" },
+  },
+  {
     capability: "Music: join a live session (the model checks the event)",
     actions: ["music.live.join"],
     grants: EVERY_ROLE,
@@ -317,6 +334,7 @@ function evaluateCalendarEvent(actor: TenantActor, event: CalendarEventResource)
 const AREA_ROLE_ACTIONS: Readonly<Record<string, readonly MusicAreaRole[]>> = {
   "music.song.manage": ["song_admin", "music_leader"],
   "music.event.manage": ["event_admin", "music_leader"],
+  "music.course.manage": ["course_admin"],
 };
 
 function evaluateMusicAreaRoles(

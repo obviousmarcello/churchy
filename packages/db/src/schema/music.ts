@@ -1406,7 +1406,7 @@ export const courses = pgTable(
     title: huText().notNull(),
     language: text().notNull(),
     description: text(),
-    position: bigint({ mode: "number" }).notNull(),
+    position: bigint({ mode: "number" }).notNull().generatedByDefaultAsIdentity(),
     isPublished: boolean()
       .notNull()
       .default(sql`false`),

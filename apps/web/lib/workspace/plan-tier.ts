@@ -45,6 +45,7 @@ const S50: readonly WorkspaceModuleKey[] = [
   "ws.music.projection.bible-panel",
   "ws.music.mixer",
   "ws.music.rehearsal",
+  "ws.music.courses",
 ];
 const M150: readonly WorkspaceModuleKey[] = [...S50, "ws.hr.confidential", "ws.docs"];
 const L300: readonly WorkspaceModuleKey[] = [...M150, "ws.board"];
@@ -105,7 +106,8 @@ export function musicParent(key: WorkspaceModuleKey): WorkspaceModuleKey | null 
     key === "ws.music.sheet" ||
     key === "ws.music.events" ||
     key === "ws.music.mixer" ||
-    key === "ws.music.rehearsal"
+    key === "ws.music.rehearsal" ||
+    key === "ws.music.courses"
   )
     return "ws.music.songs";
   if (key === "ws.music.projection" || key === "ws.music.scripture") return "ws.music.events";

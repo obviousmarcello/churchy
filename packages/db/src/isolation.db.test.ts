@@ -1108,6 +1108,130 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
       });
     });
 
+    it("courses: draft, publish and the lesson/area rules per tenant; visibility by group; areas deleted", async () => {
+      const lesson = randomUUID();
+      const user = randomUUID();
+      let courseId = "";
+      let seeded = "";
+      let areaId = "";
+      let rootId = "";
+      await asApp({ tenantId: A }, async (c) => {
+        seeded = (await c.query("select id from courses limit 1")).rows[0].id;
+        rootId = (await c.query("select music_root_area_id() as id")).rows[0].id;
+        areaId = (
+          await c.query(
+            "insert into service_areas (name, parent_id) values ('Technika', $1) returning id",
+            [rootId],
+          )
+        ).rows[0].id;
+        courseId = (
+          await c.query(
+            "insert into courses (title, language) values ('Kamerák', 'hu') returning id",
+          )
+        ).rows[0].id;
+        const doc = {
+          title: "Kamerák",
+          language: "hu",
+          description: null,
+          icon: null,
+          imagePath: null,
+          areaIds: [areaId],
+          lessons: [
+            {
+              id: lesson,
+              title: "Első",
+              videoUrl: null,
+              body: { type: "doc", content: [] },
+              links: [],
+            },
+          ],
+        };
+        const rev = async () =>
+          (await c.query("select revision from courses where id = $1", [courseId])).rows[0]
+            .revision;
+        // A stale revision is refused with the hint `course_changed`.
+        await c.query("savepoint s1");
+        expect(
+          await attempt(
+            c,
+            `select save_course_draft('${courseId}', 7, '${JSON.stringify(doc)}'::jsonb)`,
+          ),
+        ).toMatchObject({ code: "P0001" });
+        await c.query("rollback to savepoint s1");
+        const saved = await c.query("select save_course_draft($1, $2, $3::jsonb) as rev", [
+          courseId,
+          await rev(),
+          JSON.stringify(doc),
+        ]);
+        expect(saved.rows[0].rev).toBe(1);
+        // No lessons: not publishable.
+        await c.query("savepoint s2");
+        expect(
+          await attempt(
+            c,
+            `select publish_course('${courseId}', 1, '${JSON.stringify({ ...doc, lessons: [] })}'::jsonb)`,
+          ),
+        ).toMatchObject({ code: "P0001" });
+        await c.query("rollback to savepoint s2");
+        expect(
+          (
+            await c.query("select publish_course($1, 1, $2::jsonb) as rev", [
+              courseId,
+              JSON.stringify(doc),
+            ])
+          ).rows[0].rev,
+        ).toBe(2);
+        expect(
+          (
+            await c.query("select count(*)::int as n from course_lessons where course_id = $1", [
+              courseId,
+            ])
+          ).rows[0].n,
+        ).toBe(1);
+        // A course of the group Technika: not open to a stranger, open to the admin flag and to a member.
+        const open = async (u: string, admin = false) =>
+          (await c.query("select can_see_course($1, $2, $3) as ok", [courseId, u, admin])).rows[0]
+            .ok;
+        expect(await open(user)).toBe(false);
+        expect(await open(user, true)).toBe(true);
+        expect(
+          (await c.query("select * from visible_course_summaries($1, false)", [user])).rowCount,
+        ).toBe(0);
+        expect(
+          (await c.query("select 1 from course_summaries() where id = $1", [courseId])).rowCount,
+        ).toBe(1);
+        // The only group goes away: the course is unpublished and marked.
+        await c.query("delete from service_areas where id = $1", [areaId]);
+        const after = (
+          await c.query("select is_published, areas_lost from courses where id = $1", [courseId])
+        ).rows[0];
+        expect(after).toEqual({ is_published: false, areas_lost: true });
+        // Removed lessons: the removed course is purged only after 90 days.
+        await c.query("update courses set removed_at = now() - interval '91 days' where id = $1", [
+          courseId,
+        ]);
+        expect(
+          (await c.query("select purge_removed_courses() as n")).rows[0].n,
+        ).toBeGreaterThanOrEqual(1);
+        expect((await c.query("select 1 from courses where id = $1", [courseId])).rowCount).toBe(0);
+      });
+      await asApp({ tenantId: B }, async (c) => {
+        // The church B sees none of the courses of the church A (here: the demo course of A).
+        expect(
+          (await c.query("select 1 from course_summaries() where id = $1", [seeded])).rowCount,
+        ).toBe(0);
+        expect(
+          (await c.query("select can_see_course($1, $2, true) as ok", [seeded, randomUUID()]))
+            .rows[0].ok,
+        ).toBe(false);
+        expect((await c.query("select purge_removed_courses() as n")).rows[0].n).toBe(0);
+      });
+      await asApp({}, async (c) => {
+        // Without a church no course is visible.
+        expect((await c.query("select * from course_summaries()")).rowCount).toBe(0);
+      });
+    });
+
     it("hymnal refs: the songbook text of a song becomes refs, per tenant, idempotent, dry run writes nothing", async () => {
       await asApp({ tenantId: A }, async (c) => {
         await c.query(

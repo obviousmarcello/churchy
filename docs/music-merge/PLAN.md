@@ -919,3 +919,22 @@ become optional per-translation mappings. Hungarian only.
 - Policy: no new action (page view `music.song.view`, saving `music.event.manage`, projection `music.projection.use`).
 - Not ported: the source's search palette (Churchy has its own navigation; its Bible/rehearsal entries have no counterpart), its offline page copies.
 - Tests: e2e `music-rehearsal.spec.ts` (setlist built, kept after reload, saved as a new event, `?rehearsal` controller; volunteer has no save panel; axe 0).
+
+## 29. Phase 8a: courses
+- Owner decisions for phase 8: pg-boss is added as a runtime dependency for the nightly jobs (8c; reason: the stack names it, there is no
+  other job runner); the per-DB AI key functions (`set_song_rights_research_api_key`, `song_rights_research_api_key`) are dropped in favour
+  of the platform `ANTHROPIC_API_KEY` and a per-tenant cap; notification kinds become `music.*` kinds on Churchy's outbox and push stack
+  (payload = reference + link); Resend is dropped (email through `packages/email` and the outbox).
+- Migration `0021_music_courses` (down included): the tables existed since phase 1/4b; this adds `courses.position` identity, the updated_at
+  and stray-file triggers, and the functions of the courses migrations in their final form as SECURITY INVOKER `public.*`. Admin checks
+  take `p_is_admin` (no `user_roles` view): the server derives it. New helpers: `can_read_course_image`, `purge_removed_courses`,
+  `remove_unused_course_images` (the pg_cron bodies, run per tenant by the 8c job). Isolation test added; PGlite bundle regenerated.
+- Policy: `music.course.view` and `music.course.edit` (every role; the model checks, a leader of the groups of a course edits it) and
+  `music.course.manage` (leader, or a `course_admin` area role of any group: the resolver names all the actor's groups). MATRIX regenerated.
+- Module `ws.music.courses` (child of songs, `/admin/modulok`, demo seeds, nav "Tudástér"), pages under `/munkater/kepzesek`, image route
+  `/munkater/kepzesek/kep/<path>`; copy-edit of the course models, editor, list and lesson pages; messages `music.courses.*`.
+- `apps/web` now declares `@tiptap/pm`, `@tiptap/react`, `@tiptap/starter-kit` (`^3.34.0`, the versions `packages/ui` already uses; no new
+  packages in the lockfile) for the copied rich-text editor. `removed_courses()` replaces the `draft->>title` select (the local PostgREST of
+  the demo cannot do it). `ws.music.courses` is on in the demo seeds, off for real tenants until switched on.
+- Tests: isolation test (draft/publish/visibility/area delete/purge, per tenant), copied `rich-text.test.ts`, policy matrix, e2e
+  `music-courses.spec.ts` (leader creates a course, volunteer cannot; axe 0; desktop and mobile).

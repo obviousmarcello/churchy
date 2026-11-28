@@ -37,6 +37,13 @@ export type CurrentUser = {
   eventAreaIds: () => Promise<string[]>;
   /** Leads a music area (a leader of an area may manage its team). */
   leadsGroups: boolean;
+  /**
+   * `music.course.manage` (leader, or the `course_admin` role of any group): changes all courses.
+   * False while the courses module is off.
+   */
+  canEditCourses: boolean;
+  /** Leads a group and may make the courses of their groups. False while the courses module is off. */
+  leadsCourseGroups: boolean;
 };
 
 /** Whether the user leads a music area (one query; only with the events module on). */
@@ -59,11 +66,38 @@ export async function getLedGroupIds(userId: string): Promise<Set<string>> {
   );
 }
 
+/**
+ * The course rights of the actor (one query for the area roles and one for the led groups, only with the
+ * courses module on): `course_admin` of any group, or the church leader, changes all courses; a leader of
+ * groups makes the courses of their groups (`can_edit_course()` checks each course).
+ */
+async function courseRights(
+  actor: Extract<Awaited<ReturnType<typeof getActor>>, { kind: "tenant" }>,
+  userId: string,
+): Promise<{ canEditCourses: boolean; leadsCourseGroups: boolean }> {
+  if (!(await isWorkspaceModuleOn("ws.music.courses"))) {
+    return { canEditCourses: false, leadsCourseGroups: false };
+  }
+  const grants = await loadAreaGrants(userId);
+  const canEditCourses = can({ ...actor, musicAreaGrants: grants }, "music.course.manage", {
+    tenantId: actor.tenantId,
+    areaIds: grants.map((grant) => grant.areaId),
+  });
+  return {
+    canEditCourses,
+    leadsCourseGroups: !canEditCourses && (await getLedGroupIds(userId)).size > 0,
+  };
+}
+
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const actor = await getActor();
   if (actor.kind !== "tenant" || actor.userId === null) return null;
   const resource = { tenantId: actor.tenantId };
   if (!can(actor, "music.song.view", resource)) return null;
+  const { canEditCourses, leadsCourseGroups } = await courseRights(
+    actor,
+    musicUserId(actor.userId),
+  );
   return {
     id: musicUserId(actor.userId),
     tenantId: actor.tenantId,
@@ -71,6 +105,8 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     canEditSongs: can(actor, "music.song.manage", resource),
     canEditEvents: can(actor, "music.event.manage", resource),
     leadsGroups: await leadsAnyGroup(musicUserId(actor.userId)),
+    canEditCourses,
+    leadsCourseGroups,
     eventAreaIds: async () => {
       const grants = await loadAreaGrants(musicUserId(actor.userId!));
       return grants
@@ -150,5 +186,12 @@ export async function requirePrivateFileAccess(_bucket: string, _path: string): 
 export async function requireSongAdmin(): Promise<CurrentUser> {
   const user = await requireUser();
   if (!user.canEditSongs) throw new ForbiddenError();
+  return user;
+}
+
+/** A course admin: `music.course.manage`, or a `course_admin` role of any group. */
+export async function requireCourseAdmin(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.canEditCourses) throw new ForbiddenError();
   return user;
 }

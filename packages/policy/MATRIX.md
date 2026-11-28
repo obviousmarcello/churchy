@@ -102,6 +102,9 @@ These capabilities are not rows of the SDD table; the README documents the resol
 | Music: manage the church's Bible translations (music merge)                   | edit Bible translations                    | `music.scripture.translations.manage` |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
 | Music: read the mixer setup (music merge)                                     | read the mixer setup                       | `music.mixer.use`                     |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 | Music: set up the mixer (music merge)                                         | set up the mixer                           | `music.mixer.setup`                   |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: read the training courses (music merge)                                | read courses                               | `music.course.view`                   |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: make the courses of one's own groups (music merge)                     | edit courses (the model checks)            | `music.course.edit`                   |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
+| Music: manage all training courses (music merge)                              | manage courses                             | `music.course.manage`                 |  ✔  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
 | Music: join a live session (music merge)                                      | join a live session                        | `music.live.join`                     |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 | Music: start and lead a live session (music merge)                            | lead a live session                        | `music.live.lead`                     |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 | Music: manage songs and arrangements (music merge)                            | edit songs and arrangements                | `music.song.manage`                   |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
@@ -129,16 +132,19 @@ These capabilities are not rows of the SDD table; the README documents the resol
 
 ### Music area roles: the role of an area applies to the events and songs of that area only
 
-| Check                                                | Action                    | Allowed |
-| ---------------------------------------------------- | ------------------------- | :-----: |
-| music.event.manage, event_admin in the event's area  | `music.event.manage`      |    ✔    |
-| music.event.manage, music_leader in the event's area | `music.event.manage`      |    ✔    |
-| music.event.manage, event_admin of another area      | `music.event.manage`      |    –    |
-| music.event.manage, song_admin only                  | `music.event.manage`      |    –    |
-| music.event.manage, no area context                  | `music.event.manage`      |    –    |
-| music.song.manage, song_admin in the song's area     | `music.song.manage`       |    ✔    |
-| music.song.manage, event_admin only                  | `music.song.manage`       |    –    |
-| music.songRights.manage, any area role               | `music.songRights.manage` |    –    |
+| Check                                                             | Action                    | Allowed |
+| ----------------------------------------------------------------- | ------------------------- | :-----: |
+| music.event.manage, event_admin in the event's area               | `music.event.manage`      |    ✔    |
+| music.event.manage, music_leader in the event's area              | `music.event.manage`      |    ✔    |
+| music.event.manage, event_admin of another area                   | `music.event.manage`      |    –    |
+| music.event.manage, song_admin only                               | `music.event.manage`      |    –    |
+| music.event.manage, no area context                               | `music.event.manage`      |    –    |
+| music.course.manage, course_admin of the area the user belongs to | `music.course.manage`     |    ✔    |
+| music.course.manage, event_admin only                             | `music.course.manage`     |    –    |
+| music.course.manage, course_admin without the area context        | `music.course.manage`     |    –    |
+| music.song.manage, song_admin in the song's area                  | `music.song.manage`       |    ✔    |
+| music.song.manage, event_admin only                               | `music.song.manage`       |    –    |
+| music.songRights.manage, any area role                            | `music.songRights.manage` |    –    |
 
 ### teamLeader: own team vs other team
 
