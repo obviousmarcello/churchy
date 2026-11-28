@@ -343,6 +343,16 @@ export const README_ROWS: readonly MatrixRow[] = [
     variants: [v("edit Bible translations", "music.scripture.translations.manage", tenant, "YNNNYNNN")],
   },
   {
+    capability: "Music: read the mixer setup (music merge)",
+    sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
+    variants: [v("read the mixer setup", "music.mixer.use", tenant, "YYYYYYYY")],
+  },
+  {
+    capability: "Music: set up the mixer (music merge)",
+    sdd: ["✔", "", "", "", "✔", "", "", ""],
+    variants: [v("set up the mixer", "music.mixer.setup", tenant, "YNNNYNNN")],
+  },
+  {
     capability: "Music: join a live session (music merge)",
     sdd: ["✔", "✔", "✔", "✔", "✔", "✔", "✔", "✔"],
     variants: [v("join a live session", "music.live.join", tenant, "YYYYYYYY")],

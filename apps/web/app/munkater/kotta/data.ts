@@ -71,14 +71,16 @@ export async function loadSheetPage(
   params: SearchParams,
 ): Promise<{ data: SheetPageData } | { notFound: SheetNotFound }> {
   const i18n = createI18n((await getRequestI18n()).m);
-  const [marksOn, metronomeOn, midiOn, diagramsOn, liveOn, scriptureOn] = await Promise.all([
-    isWorkspaceModuleOn("ws.music.sheet.marks"),
-    isWorkspaceModuleOn("ws.music.sheet.metronome"),
-    isWorkspaceModuleOn("ws.music.sheet.midi-out"),
-    isWorkspaceModuleOn("ws.music.sheet.chord-diagrams"),
-    isWorkspaceModuleOn("ws.music.sheet.live"),
-    isWorkspaceModuleOn("ws.music.scripture"),
-  ]);
+  const [marksOn, metronomeOn, midiOn, diagramsOn, liveOn, scriptureOn, mixerOn] =
+    await Promise.all([
+      isWorkspaceModuleOn("ws.music.sheet.marks"),
+      isWorkspaceModuleOn("ws.music.sheet.metronome"),
+      isWorkspaceModuleOn("ws.music.sheet.midi-out"),
+      isWorkspaceModuleOn("ws.music.sheet.chord-diagrams"),
+      isWorkspaceModuleOn("ws.music.sheet.live"),
+      isWorkspaceModuleOn("ws.music.scripture"),
+      isWorkspaceModuleOn("ws.music.mixer"),
+    ]);
   const modules = {
     "sheet.marks": marksOn,
     "sheet.metronome": metronomeOn,
@@ -86,6 +88,7 @@ export async function loadSheetPage(
     "sheet.chord-diagrams": diagramsOn,
     "sheet.live": liveOn,
     scripture: scriptureOn,
+    mixer: mixerOn,
   };
   const scriptureConfig = scriptureOn ? await getScriptureConfig() : DEFAULT_SCRIPTURE_CONFIG;
   const listMarks = (arrangementIds: string[]) =>

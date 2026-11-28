@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { ModuleGate } from "@/components/music/app-config";
+import { MixerSyncField, useMixerSync } from "../keverpult/mixer-sync";
 import { Button } from "@/components/music/ui/button";
 import { Input } from "@/components/music/ui/input";
 import { NativeSelect } from "@/components/music/ui/native-select";
@@ -128,6 +129,16 @@ export function useMetronome(song: SheetSong | undefined, shared?: SharedMetrono
   const quarterNotesPerBeat =
     meter?.beatsPerBar === playedBeatsPerBar ? meter.quarterNotesPerBeat : 1;
   const midi = useMidiOut(engine, quarterNotesPerBeat);
+  // In a live session, the desk gets the leader's tempo, also when the metronome does not play here.
+  // Else a tempo of the song or of the user: a song without `{tempo}` keeps the last tempo of the
+  // desk, as in the projection controller, not the default or the tempo of the previous song.
+  const ownTempo = tempoSong?.bpm || tempo.edited ? bpm : null;
+  const mixer = useMixerSync({
+    bpm: isShared ? (sharedGrid?.bpm ?? null) : ownTempo,
+    quarterNotesPerBeat,
+    grid: sharedGrid,
+    clock: sharedClock,
+  });
 
   // The leader's tempo and beats (of the song on the screen, or its own) go to all.
   useEffect(() => {
@@ -183,6 +194,7 @@ export function useMetronome(song: SheetSong | undefined, shared?: SharedMetrono
     error,
     toggle,
     stopForAll,
+    mixer,
     bpm: readOnly && sharedGrid ? sharedGrid.bpm : bpm,
     beatsPerBar: playedBeatsPerBar,
     song: tempoSong,
@@ -460,6 +472,9 @@ export function MetronomeControl({
                 )}
                 <ModuleGate id="sheet.midi-out">
                   <MidiOutField midi={metronome.midi} />
+                </ModuleGate>
+                <ModuleGate id="mixer">
+                  <MixerSyncField sync={metronome.mixer} />
                 </ModuleGate>
               </>
             )}

@@ -115,6 +115,7 @@ import { useBible } from "./bible";
 import { BiblePanel, BiblePanelButton, useBiblePanelLayout } from "./bible-panel";
 import { useProjectionChannel, type ProjectionChannelConfig } from "./channel";
 import { DownloadSlidesButton } from "./download-slides";
+import { MixerSyncButton } from "./mixer-sync-button";
 import { ImageAdjustDialog } from "./image-adjust-dialog";
 import { PasteScriptureDialog } from "./paste-scripture-dialog";
 import { projectionFontVariables } from "./projection-fonts";
@@ -976,6 +977,9 @@ export function ProjectionController({
         </ModuleGate>
         <ModuleGate id="projection.pptx-export">
           <DownloadSlidesButton title={title} items={items} aspectRatio={aspectRatio} />
+        </ModuleGate>
+        <ModuleGate id="mixer">
+          <MixerSyncButton sources={allSources} liveKey={liveKey} leader={leaderState} />
         </ModuleGate>
         {/* While a screen of this computer runs, closing it is the main action: the close button is primary, at the end.
             The picker keeps its place, so it does not mount again when a screen opens or closes. */}

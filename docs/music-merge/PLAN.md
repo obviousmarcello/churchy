@@ -885,3 +885,20 @@ become optional per-translation mappings. Hungarian only.
 - No UI and no policy action yet: it is an operator/SQL tool, run after the import (`docs/music-merge/IMPORT.md`). A button on the
   songbook field can call it through a `withPolicy` action later (needs an owner decision on who may press it).
 - `packages/db/scripts/import-music-prod.ts` (`pnpm --filter @churchy/db import:music`): see `IMPORT.md`. Test `import-music.db.test.ts`.
+
+## 27. Phase 7c-1: the mixer (browser side)
+- The "mixer" of the music app is the sync of the **tempo to a digital mixing desk** (X32/M32 delay effects over OSC or MIDI SysEx, Allen & Heath
+  SQ taps), not an audio mixer for sound files; there is no such mixer in the source.
+- Copied (imports, tokens, strictness edited): `lib/music/mixer/*` (settings, x32, sq, osc, chart-tempo, desktop-bridge, tests), the page
+  `/munkater/keverpult` (setup form, `mixer-sync.tsx` with `useMixerSync` / `MixerSyncField`), `vetites/mixer-sync-button.tsx`; the model
+  `server/music/models/mixer-settings.ts` now uses `getMusicSupabase()` (table `mixer_settings`, one row per church, RLS).
+- Module `ws.music.mixer` (child of songs, default off, nav "Keverőpult", `/admin/modulok`, demo seeds). The metronome popover shows the
+  sync field (`ModuleGate id="mixer"`), the projection controller the sync button; both use the flag `mixer` of the page's modules.
+- Policy: `music.mixer.use` (every role; read the setup) and `music.mixer.setup` (leader, music leader), MATRIX regenerated; actions
+  `mixerSettingsAction` / `saveMixerSettingsAction` (`withPolicy`, `musicMixer` resolver). The page gate uses `can()`, not role flags.
+- **Live sync**: the desk follows the leader's beat grid of a live session, which already travels over the phase 5 realtime transport
+  (per-tenant channels, tenant token, demo BroadcastChannel stub); `useMixerSync` takes that grid and clock. No new channel was needed.
+- **Desktop app**: browser side only. `desktop-bridge.ts` keeps the interface (`window.desktopApp.x32/sq`); without the Electron app the
+  bridge is null, so network desks cannot be reached (MIDI desks work through Web MIDI). The Electron main-process code is not copied.
+- Messages `music.mixer.*`, `admin.modules.workspace.items.music_mixer`, nav `musicMixer`. Tests: the copied unit tests of `lib/music/mixer`,
+  policy matrix, e2e `music-mixer.spec.ts` (setup saved and kept after reload, volunteer sees no form; axe 0).
