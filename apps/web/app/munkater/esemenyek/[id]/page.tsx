@@ -36,7 +36,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
         <EventView result={result} />
       </MusicModulesProvider>
       {plan && (
-        <div className="w-full max-w-3xl px-4 pb-8 sm:px-6">
+        <div data-reveal="" className="w-full max-w-3xl px-4 pb-8 sm:px-6">
           <PlanLink eventId={id} planId={plan.planId} canCreate={plan.canCreate} />
         </div>
       )}

@@ -42,7 +42,7 @@ export function LessonContent({ lesson }: { lesson: LessonDoc }) {
       {hasText && <RichTextView doc={lesson.body} />}
       {lesson.links.length > 0 && (
         <section className="flex flex-col gap-2">
-          <h2 className="font-heading text-base font-semibold tracking-tight">{t.links}</h2>
+          <h2 className="font-heading text-fs-5 font-bold tracking-tight">{t.links}</h2>
           <ul className="flex flex-col gap-1">
             {lesson.links.map((link, index) => (
               <li key={index}>

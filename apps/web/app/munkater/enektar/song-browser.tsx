@@ -694,7 +694,7 @@ function SongDetails({
   return (
     <article className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h2 className="font-heading text-xl font-semibold tracking-tight">{song.title}</h2>
+        <h2 className="font-heading text-fs-6 font-bold tracking-tight">{song.title}</h2>
         <p className="text-sm text-muted">{song.artist ?? m.songs.browser.details.noArtist}</p>
       </div>
 

@@ -536,10 +536,7 @@ export function SongForm({
             className="flex scroll-mt-32 flex-col gap-2"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2
-                id="chart-heading"
-                className="font-heading text-base font-semibold tracking-tight"
-              >
+              <h2 id="chart-heading" className="font-heading text-fs-5 font-bold tracking-tight">
                 <label htmlFor="chordpro">{t.chart}</label>
               </h2>
               <div className="flex flex-wrap gap-2">
@@ -790,7 +787,7 @@ export function SongForm({
             aria-labelledby="rights-heading"
             className="scroll-mt-32 rounded-card border"
           >
-            <h2 id="rights-heading" className="font-heading text-base font-semibold tracking-tight">
+            <h2 id="rights-heading" className="font-heading text-fs-5 font-bold tracking-tight">
               <button
                 type="button"
                 aria-expanded={rightsOpen}

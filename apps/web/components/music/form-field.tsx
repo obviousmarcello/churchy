@@ -16,7 +16,7 @@ export function SectionHeading({
   const Heading = level === 3 ? "h3" : "h2";
   return (
     <div className="flex flex-col gap-1">
-      <Heading className="font-heading text-base font-semibold tracking-tight">{title}</Heading>
+      <Heading className="font-heading text-fs-5 font-bold tracking-tight">{title}</Heading>
       {description && (
         <p id={descriptionId} className="text-sm text-muted">
           {description}

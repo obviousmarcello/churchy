@@ -359,7 +359,7 @@ function EventDetails({ result }: { result: EventPageResult }) {
 
         <section aria-labelledby="event-items" className="flex flex-col gap-4 border-t pt-6">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h2 id="event-items" className="font-heading text-base font-semibold tracking-tight">
+            <h2 id="event-items" className="font-heading text-fs-5 font-bold tracking-tight">
               {m.events.detail.items}
             </h2>
             {event.items.length > 0 && (
@@ -538,7 +538,7 @@ function EventSummary({
           <DateBadge date={event.startsAt} featured />
           <div className="flex min-w-0 flex-1 flex-col gap-1 pt-1">
             {/* Small screens: the top bar has the heading. */}
-            <h1 className="hidden font-heading text-2xl font-semibold tracking-tight break-words lg:block">
+            <h1 className="hidden font-heading text-fs-6 font-bold tracking-tight break-words lg:block">
               {event.title}
             </h1>
             <p

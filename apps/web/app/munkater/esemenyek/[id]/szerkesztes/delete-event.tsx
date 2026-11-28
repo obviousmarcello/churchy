@@ -24,7 +24,7 @@ export function DeleteEvent({
   const run = usePolicyAction(action);
   const [pending, start] = useTransition();
   return (
-    <div className="w-full max-w-xl px-4 pb-10 sm:px-6">
+    <div data-reveal="" className="w-full max-w-xl px-4 pb-10 sm:px-6">
       <Button
         variant="outline"
         disabled={pending}
