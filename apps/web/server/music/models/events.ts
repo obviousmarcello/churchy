@@ -1,3 +1,4 @@
+import { queueEventAddedNotifications } from "@/server/music/notifications";
 import "server-only";
 
 import { randomUUID } from "node:crypto";
@@ -769,6 +770,23 @@ export async function copyEvent(sourceId: string, input: CopyEventInput): Promis
   if (error) throw databaseError("copy an event", error);
   if (data === null) return null;
   await removeUntakenCopies(id, files);
+  if (copy.copyVolunteers) {
+    const { data: volunteers, error: volunteersError } = await (
+      await getMusicSupabase()
+    )
+      .from("event_volunteers")
+      .select("user_id")
+      .eq("event_id", id);
+    if (volunteersError) throw databaseError("list copied volunteers", volunteersError);
+    queueEventAddedNotifications(
+      id,
+      z
+        .array(z.object({ user_id: z.uuid() }))
+        .parse(volunteers)
+        .map((volunteer) => volunteer.user_id)
+        .filter((volunteerId) => volunteerId !== user.id),
+    );
+  }
   return getEvent(id);
 }
 
@@ -813,17 +831,20 @@ export async function listEventVolunteers(eventId: string): Promise<VolunteerDTO
 export async function addEventVolunteer(eventId: string, userId: string): Promise<boolean> {
   const current = await requireEventAdminOf(eventId);
   if (!current || !isId(userId)) return false;
-  const { error } = await withAuthor(
+  // Returns the row only if it is new.
+  const { data, error } = await withAuthor(
     (await getMusicSupabase())
       .from("event_volunteers")
       .upsert(
         { event_id: eventId, user_id: userId },
-        { onConflict: "event_id,user_id", ignoreDuplicates: true },
-      ),
+        { onConflict: "tenant_id,event_id,user_id", ignoreDuplicates: true },
+      )
+      .select("created_at"),
     current.id,
   );
   if (error?.code === "23503") return false;
   if (error) throw databaseError("add event volunteer", error);
+  if (data.length > 0 && userId !== current.id) queueEventAddedNotifications(eventId, [userId]);
   return true;
 }
 

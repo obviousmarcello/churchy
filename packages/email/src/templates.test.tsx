@@ -43,6 +43,21 @@ const PARAMS: Record<EmailTemplateKey, EmailParams> = {
   "plan.reviewRequested": { planId: "pl-1", link: "/munkater/szolgalatok/pl-1" },
   "plan.approved": { planId: "pl-1", link: "/munkater/szolgalatok/pl-1" },
   "plan.mention": { planId: "pl-1", link: "/munkater/szolgalatok/pl-1" },
+  "music.eventAdded": {
+    eventId: "ev-1",
+    startsAt: "2026-11-29T09:00:00Z",
+    link: "/munkater/esemenyek/ev-1",
+  },
+  "music.eventReminder": {
+    eventId: "ev-1",
+    startsAt: "2026-11-29T09:00:00Z",
+    link: "/munkater/esemenyek/ev-1",
+  },
+  "music.setlist": {
+    eventId: "ev-1",
+    startsAt: "2026-11-29T09:00:00Z",
+    link: "/munkater/esemenyek/ev-1",
+  },
   "member.invitation": { link: "/belepes" },
   "billing.paymentFailed": { link: "/admin/elofizetes" },
   "contact.message": {

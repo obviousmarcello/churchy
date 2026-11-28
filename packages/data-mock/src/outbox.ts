@@ -44,7 +44,10 @@ export type OutboxTemplate =
   | "plan.mention"
   | "member.invitation"
   | "billing.paymentFailed"
-  | "contact.message";
+  | "contact.message"
+  | "music.eventAdded"
+  | "music.eventReminder"
+  | "music.setlist";
 
 export type OutboxParams = Record<string, string | number | boolean | null>;
 

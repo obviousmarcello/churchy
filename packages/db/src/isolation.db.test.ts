@@ -1108,6 +1108,97 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
       });
     });
 
+    it("notifications: due reminders per volunteer, once each, again after a new start time; other church sees none", async () => {
+      const [profile] = await ownerQuery<{ id: string }>(
+        "select id from profiles order by id limit 1",
+      );
+      let ev = "";
+      await asMusic(A, async (c) => {
+        const cal = (await c.query<{ id: string }>("select public.music_calendar_id() as id"))
+          .rows[0]!.id;
+        ev = (
+          await c.query<{ id: string }>(
+            `insert into events (calendar_id, visibility, slug, title, starts_at, ends_at, status)
+             values ('${cal}', 'staff', 'ertesites-${randomUUID()}', 'Értesítés', now() + interval '1 hour',
+                     now() + interval '2 hours', 'published') returning id`,
+          )
+        ).rows[0]!.id;
+        await c.query("insert into event_volunteers (event_id, user_id) values ($1, $2)", [
+          ev,
+          profile!.id,
+        ]);
+        const due = async () =>
+          (
+            await c.query(
+              "select kind from list_due_notifications(100) where event_id = $1 order by kind",
+              [ev],
+            )
+          ).rows.map((r) => r.kind);
+        // Within the 5-day window and within the 2 hours of the setlist.
+        expect(await due()).toEqual(["event_reminder", "setlist"]);
+        await c.query(
+          "insert into notification_deliveries (event_id, user_id, kind) values ($1, $2, 'setlist')",
+          [ev, profile!.id],
+        );
+        expect(await due()).toEqual(["event_reminder"]);
+        // A user who turned the reminder off and the emails off, with no device, gets nothing.
+        await c.query(
+          "insert into notification_preferences (user_id, event_reminder, email) values ($1, false, false) on conflict (tenant_id, user_id) do update set event_reminder = false, email = false",
+          [profile!.id],
+        );
+        expect(await due()).toEqual([]);
+        await c.query(
+          "update notification_preferences set event_reminder = true, email = true, reminder_days = 5, setlist = true, setlist_hours = 2 where user_id = $1",
+          [profile!.id],
+        );
+        // A new start time makes the reminders go out again.
+        await c.query(
+          "update events set starts_at = starts_at + interval '10 minutes' where id = $1",
+          [ev],
+        );
+        expect(await due()).toEqual(["event_reminder", "setlist"]);
+        // A reply "no" stops them.
+        await c.query(
+          "update event_volunteers set reply = 'no', replied_at = now() where event_id = $1",
+          [ev],
+        );
+        expect(await due()).toEqual([]);
+        // The delivery needs the volunteer: removing the volunteer removes the marks.
+        await c.query(
+          "update event_volunteers set reply = null, replied_at = null where event_id = $1",
+          [ev],
+        );
+        await c.query(
+          "insert into notification_deliveries (event_id, user_id, kind) values ($1, $2, 'event_added')",
+          [ev, profile!.id],
+        );
+        await c.query("delete from event_volunteers where event_id = $1", [ev]);
+        expect(
+          (await c.query("select 1 from notification_deliveries where event_id = $1", [ev]))
+            .rowCount,
+        ).toBe(0);
+        // Not a volunteer of the event: no insert.
+        await c.query("savepoint s1");
+        expect(
+          await attempt(
+            c,
+            `insert into notification_deliveries (event_id, user_id, kind) values ('${ev}', '${profile!.id}', 'setlist')`,
+          ),
+        ).toMatchObject({ code: "23503" });
+        await c.query("rollback to savepoint s1");
+      });
+      await asMusic(B, async (c) => {
+        expect(
+          (await c.query("select * from list_due_notifications(100) where event_id = $1", [ev]))
+            .rowCount,
+        ).toBe(0);
+        expect(
+          (await c.query("select 1 from notification_deliveries where event_id = $1", [ev]))
+            .rowCount,
+        ).toBe(0);
+      });
+    });
+
     it("courses: draft, publish and the lesson/area rules per tenant; visibility by group; areas deleted", async () => {
       const lesson = randomUUID();
       const user = randomUUID();

@@ -244,8 +244,8 @@ export function buildAppNav(t: NavTranslator): readonly PermissionNavItem[] {
           id: "musicNotifications",
           label: t("sections.musicNotifications"),
           href: "/munkater/ertesitesek",
-          module: "ws.music.sheet.live",
-          requires: { action: "music.live.join" },
+          module: "ws.music.events",
+          requires: { action: "music.event.view" },
         },
         {
           id: "absences",

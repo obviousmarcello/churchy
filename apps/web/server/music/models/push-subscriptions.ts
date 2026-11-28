@@ -2,6 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { requireUser } from "@/server/music/auth";
 import { getMusicSupabase } from "@/server/music/db";
 import { databaseError, idSchema, parseInput } from "./shared";
@@ -72,11 +74,12 @@ export async function removePushSubscription(endpoint: unknown): Promise<void> {
 }
 
 /** Removes endpoints that the push service reports as gone (after a send). */
-export async function removeGoneEndpoints(endpoints: readonly string[]): Promise<void> {
+export async function removeGoneEndpoints(
+  endpoints: readonly string[],
+  client?: SupabaseClient,
+): Promise<void> {
   if (endpoints.length === 0) return;
-  const { error } = await (
-    await getMusicSupabase()
-  )
+  const { error } = await (client ?? (await getMusicSupabase()))
     .from("push_subscriptions")
     .delete()
     .in("endpoint", [...endpoints]);
@@ -161,4 +164,34 @@ export async function listLivePushTargets(
     .parse(devices.data)
     .filter((row) => !silent.has(row.user_id))
     .map(({ endpoint, p256dh, auth }) => ({ endpoint, p256dh, auth }));
+}
+
+/**
+ * The devices with the push consent of these users, by user (for the notifications of the events).
+ * `db` is the tenant client of the caller (a request, or a job for one church).
+ */
+export async function listPushTargets(
+  userIds: readonly string[],
+  db: SupabaseClient,
+): Promise<Map<string, PushTargetRow[]>> {
+  const ids = userIds.filter((id) => idSchema.safeParse(id).success);
+  const targets = new Map<string, PushTargetRow[]>();
+  if (ids.length === 0) return targets;
+  const { data, error } = await db
+    .from("push_subscriptions")
+    .select("user_id, endpoint, p256dh, auth")
+    .in("user_id", ids)
+    .not("consented_at", "is", null);
+  if (error) throw databaseError("list push devices", error);
+  for (const row of z
+    .array(
+      z.object({ user_id: idSchema, endpoint: z.string(), p256dh: z.string(), auth: z.string() }),
+    )
+    .parse(data)) {
+    targets.set(row.user_id, [
+      ...(targets.get(row.user_id) ?? []),
+      { endpoint: row.endpoint, p256dh: row.p256dh, auth: row.auth },
+    ]);
+  }
+  return targets;
 }
