@@ -292,7 +292,7 @@ function SlotRow({
   const removeLabel = format(t.removeSlot, { slot: slot.slot });
 
   return (
-    <li className="flex flex-col gap-1.5 rounded-md border p-3">
+    <li className="flex flex-col gap-1.5 rounded-control border p-3">
       <div className="flex flex-wrap items-center gap-2">
         <NativeSelect
           aria-label={t.slotLabel}

@@ -423,7 +423,7 @@ export function MixerSyncField({ sync }: { sync: MixerSync }) {
             {isMidiKind(settings.kind) && <MixerMidiOutput midi={sync.midi} />}
             {isSqKind(settings.kind) && (
               <p aria-live="polite" className="text-xs text-muted">
-                <span className="font-medium text-foreground tabular-nums">
+                <span className="font-medium text-text tabular-nums">
                   {format(messages.tapLine, {
                     keys: settings.tapKeys.join(", "),
                     ms: sync.taps ? sync.taps.intervalMs : "–",
@@ -443,7 +443,7 @@ export function MixerSyncField({ sync }: { sync: MixerSync }) {
                     <li key={slot.slot} aria-live="polite" className="text-xs text-muted">
                       {command ? (
                         <>
-                          <span className="font-medium text-foreground tabular-nums">
+                          <span className="font-medium text-text tabular-nums">
                             {format(messages.slotLine, {
                               slot: slot.slot,
                               noteValue: m.mixer.subdivisions[slot.subdivision],
