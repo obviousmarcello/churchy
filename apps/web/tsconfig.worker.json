@@ -1,0 +1,11 @@
+{
+  // The worker runs outside Next: `server-only` (which throws outside a server bundle) is an empty module.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "@messages/*": ["../../messages/*"],
+      "server-only": ["./server/jobs/shims/server-only.ts"]
+    }
+  }
+}

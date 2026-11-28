@@ -1,0 +1,23 @@
+{
+  "name": "@churchy/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
+    "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@churchy/contracts": "workspace:*",
+    "@churchy/hu": "workspace:*",
+    "@churchy/presets": "workspace:*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "intl-messageformat": "^12.1.5"
+  }
+}

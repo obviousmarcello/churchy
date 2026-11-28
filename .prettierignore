@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+.next
+coverage
+docs
+.claude
+packages/db/migrations/meta
+packages/db/src/local/sql.generated.ts
+apps/web/public/bible/

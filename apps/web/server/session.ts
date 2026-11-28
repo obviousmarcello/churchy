@@ -1,0 +1,175 @@
+import type { Actor } from "@churchy/policy";
+import { can, orgActor, tenantActor } from "@churchy/policy";
+import type { Membership } from "@churchy/contracts";
+import { contextOf } from "@/lib/demo/personas";
+import { demoDirectory, demoIdentity, type DemoIdentity } from "@/server/data-adapters";
+import { getDemoState, type DemoState } from "@/server/demo";
+
+/**
+ * Session / actor access — THE single seam through which the app learns who is acting.
+ *
+ * Everything that needs permissions (RSC pages, nav, server helpers) calls `getActor()`; nothing
+ * else may read roles or build actors (the lint rule in `eslint.permissions.mjs` exempts only
+ * this file).
+ *
+ * - Demo mode (D-92, `DEMO_MODE=1`): the role switcher replaces login. The selected persona is
+ *   looked up in the visitor's demo data (membership, teams, managed rooms, HR scopes, direct
+ *   reports, diocesan links) and turned into a real `Actor` by `actorFromIdentity()`, so menus,
+ *   buttons and routes are decided by the real `can()`.
+ * - Otherwise (Phase A): an anonymous visitor.
+ *
+ * Phase B replaces `defaultResolver` with the Auth.js session + membership lookup; callers do not
+ * change. Tests can still install their own resolver with `setActorResolver()`.
+ */
+export type ActorResolver = () => Actor | Promise<Actor>;
+
+const ANONYMOUS: Actor = { kind: "anonymous" };
+
+/**
+ * Builds the policy actor from what the data says about a user (memberships and scopes). `null`
+ * (no user, or no active membership in this context) is the anonymous visitor.
+ */
+export function actorFromIdentity(identity: DemoIdentity | null): Actor {
+  if (identity === null) return ANONYMOUS;
+
+  if (identity.kind === "org") {
+    const { membership } = identity;
+    return orgActor({
+      orgId: identity.orgId,
+      userId: identity.userId,
+      personId: null,
+      orgRoles: membership.roles,
+      // `org_memberships`: a null scope column means "all" (SDD §25.7).
+      categoryScopes: membership.categoryScopes ?? "*",
+      parishScopes: membership.parishScopes ?? "*",
+      links: identity.links.map((link) => ({
+        tenantId: link.tenantId,
+        status: link.status,
+        delegatedCategoryKeys: link.categoryKeys.includes("*") ? "*" : link.categoryKeys,
+      })),
+    });
+  }
+
+  const { membership } = identity;
+  const confidential = new Set(
+    identity.hrCategories.filter((c) => c.confidential).map((c) => c.id),
+  );
+  return tenantActor({
+    tenantId: identity.tenantId,
+    userId: identity.userId,
+    personId: identity.personId,
+    websiteRoles: membership.role === null ? [] : [membership.role],
+    workspaceRoles: membership.wsRoles,
+    groupIds: membership.groupIds,
+    leadTeamIds: identity.teamMembers.filter((m) => m.isLeader).map((m) => m.teamId),
+    memberTeamIds: identity.teamMembers.map((m) => m.teamId),
+    managedRoomIds: membership.roomIds,
+    // One `hr_category_ids` column scopes both HR roles; the policy keeps them apart.
+    hrCategoryIds: membership.hrCategoryIds.filter((id) => !confidential.has(id)),
+    confidentialCategoryIds: membership.hrCategoryIds.filter((id) => confidential.has(id)),
+    directReportPersonIds: identity.directReportPersonIds,
+  });
+}
+
+/**
+ * Whether a church member may handle pastoral requests (`can()` on the actor their membership
+ * describes). Used to offer only valid assignees in the requests inbox (D-29); the one place
+ * outside `actorFromIdentity()` that reads a membership's roles.
+ */
+export function memberMayHandleRequests(
+  membership: Pick<Membership, "tenantId" | "userId" | "role" | "wsRoles" | "groupIds" | "active">,
+): boolean {
+  if (!membership.active) return false;
+  const actor = tenantActor({
+    tenantId: membership.tenantId,
+    userId: membership.userId,
+    personId: null,
+    websiteRoles: membership.role === null ? [] : [membership.role],
+    workspaceRoles: membership.wsRoles,
+    groupIds: membership.groupIds,
+  });
+  return can(actor, "pastoralRequest.handle", { tenantId: membership.tenantId });
+}
+
+/**
+ * The demo's platform operator (persona *Üzemeltető*): a `PlatformActor` with no church of its own.
+ * Real operators sign in with Phase B auth, where this resolver looks the user up in the operator
+ * list; until then the platform console is reachable in demo mode only.
+ */
+export const DEMO_OPERATOR: Actor = { kind: "platform", userId: "demo-operator" };
+
+const defaultResolver: ActorResolver = async () => {
+  const demo = await getDemoState();
+  if (demo === null) return ANONYMOUS;
+  const { persona, contextId } = demo.selection;
+  if (persona === "uzemelteto") return DEMO_OPERATOR;
+  return actorFromIdentity(demoIdentity(demo.sessionId, persona, contextId));
+};
+
+let resolver: ActorResolver = defaultResolver;
+
+/** Installs the resolver used by `getActor()` (tests; Phase B auth). */
+export function setActorResolver(next: ActorResolver): void {
+  resolver = next;
+}
+
+/** Restores the default resolver (demo persona, or anonymous); used by tests. */
+export function resetActorResolver(): void {
+  resolver = defaultResolver;
+}
+
+/**
+ * Workspace roles of the acting church member, for the room booking auto-approval
+ * (`ApprovalPolicy.autoApprove.roles`, SDD §23.2). Like `actorFromIdentity()` this is one of the
+ * few places that read role lists; visibility and permissions still come from `can()`.
+ */
+export async function getActorWorkspaceRoles(): Promise<readonly string[]> {
+  const actor = await getActor();
+  return actor.kind === "tenant" ? actor.workspaceRoles : [];
+}
+
+/** The actor of the current request. */
+export async function getActor(): Promise<Actor> {
+  return resolver();
+}
+
+/**
+ * Tenant (church) or organization (diocese) context of the current request — never both
+ * (SDD §25.7). Demo mode: the church or diocese chosen in the switcher. Otherwise the demo's
+ * default church until host-based tenant resolution arrives (D-03).
+ */
+export type RequestContext =
+  | { readonly tenantId: string; readonly orgId?: undefined }
+  | { readonly orgId: string; readonly tenantId?: undefined };
+
+export async function getRequestContext(): Promise<RequestContext> {
+  return requestContextFrom(await getDemoState());
+}
+
+/**
+ * The request context for a request's demo state — the one place that decides which church a
+ * request is for, shared by `getRequestContext()` and the proxy (`siteConfigForRequest()`). Host-based
+ * resolution (D-03) replaces this; its callers do not change.
+ */
+export function requestContextFrom(
+  demo: Pick<DemoState, "directory" | "selection"> | null,
+): RequestContext {
+  if (demo === null) return { tenantId: demoDirectory().defaultTenantId };
+  const context = contextOf(demo.directory, demo.selection.contextId);
+  return context.kind === "org" ? { orgId: context.id } : { tenantId: context.id };
+}
+
+/**
+ * The people who hold the leader role (*Vezető*) in a church — used to resolve `role: leader`
+ * approval steps (D-72). Like `memberMayHandleRequests`, one of the few places that read a
+ * membership's roles.
+ */
+export function leaderPersonIds(
+  members: readonly Pick<Membership, "userId" | "wsRoles" | "active">[],
+  people: readonly { id: string; userId: string | null }[],
+): string[] {
+  const leaders = new Set(
+    members.filter((m) => m.active && m.wsRoles.includes("leader")).map((m) => m.userId),
+  );
+  return people.filter((p) => p.userId !== null && leaders.has(p.userId)).map((p) => p.id);
+}

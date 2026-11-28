@@ -1,0 +1,38 @@
+{
+  "name": "@churchy/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./register": "./src/register.ts",
+    "./platform": "./src/platform.ts",
+    "./storage-keys": "./src/storage-keys.ts",
+    "./schema": "./src/schema/index.ts",
+    "./seed": "./src/seed/index.ts",
+    "./local": "./src/local/index.ts"
+  },
+  "scripts": {
+    "db": "tsx src/cli.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:check": "drizzle-kit check",
+    "test": "TZ=Europe/Budapest vitest run --passWithNoTests",
+    "test:coverage": "TZ=Europe/Budapest vitest run --passWithNoTests --coverage",
+    "test:isolation": "REQUIRE_TEST_DATABASE=1 TZ=Europe/Budapest vitest run src/isolation.db.test.ts",
+    "typecheck": "tsc --noEmit",
+    "local:sql": "tsx scripts/gen-local-sql.ts"
+  },
+  "dependencies": {
+    "@churchy/contracts": "workspace:*",
+    "@electric-sql/pglite": "0.5.16",
+    "drizzle-orm": "0.45.4",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@churchy/data-mock": "workspace:*",
+    "@supabase/supabase-js": "2.119.2",
+    "@types/pg": "8.23.1",
+    "drizzle-kit": "0.31.11",
+    "tsx": "4.23.15"
+  }
+}

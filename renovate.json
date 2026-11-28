@@ -1,0 +1,8 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "rangeStrategy": "pin",
+  "schedule": ["before 6am on monday"],
+  "timezone": "Europe/Budapest",
+  "packageRules": [{ "matchUpdateTypes": ["minor", "patch"], "groupName": "minor and patch" }]
+}
