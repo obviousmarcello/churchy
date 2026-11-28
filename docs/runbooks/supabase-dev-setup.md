@@ -95,3 +95,7 @@ Deviations: none. Next migration to apply: `0006_music_schema`.
 ### Progress: 0013-0015 applied (dev project)
 
 Applied in order: 0013_music_stats, 0014_events_tenant_default, 0015_music_areas (p1-p3). Replaced `filter_songs` (9-arg) by the 10-arg version per 0013. Checked: all 116 public tables have RLS enabled and forced, the only SECURITY DEFINER function in public is `share_song_rights`, and anon/authenticated hold no table grants. Next: 0016_music_images_announcements (2 parts), then 0017_music_projection.
+
+### Progress: 0016-0017 applied (dev project)
+
+Applied in order: 0016_music_images_announcements (_p1, _p2; split at the last statement-breakpoint, p2 is the unmarked tail) and 0017_music_projection (one piece, SQL unchanged). The realtime policies in 0017 were created without errors (`music participants can receive`, `can track presence`, `can broadcast` on `realtime.messages`). Checked: all 121 public tables have RLS enabled and forced, the only SECURITY DEFINER function in public is `share_song_rights`, and anon/authenticated hold no table grants. Next: 0018_music_live.
