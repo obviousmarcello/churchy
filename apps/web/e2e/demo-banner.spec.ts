@@ -25,6 +25,8 @@ const SAMPLE_PARAMS: Record<string, string> = {
   rite: "keresztelo",
   // An admin item (D-21): unknown ids render the shell's not-found page, which has the banner too.
   id: "nincs-ilyen",
+  // An unknown site-builder draft (platform console): renders the not-found page, which has the banner too.
+  draftId: "nincs-ilyen",
   // An unknown course lesson (music courses): renders the not-found page, which has the banner too.
   lessonId: "nincs-ilyen",
   // A course image path (music courses): unknown paths render the not-found response.
