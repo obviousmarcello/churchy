@@ -50,7 +50,7 @@ const WS_MODULES: Record<string, WorkspaceModuleKey[]> = {
   ],
 };
 
-const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
+export const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
   "ws.music.songs",
   "ws.music.songs.pdfs",
   "ws.music.songs.images",

@@ -44,7 +44,7 @@ const ALL_MODULES: ModuleKey[] = [
   "massIntentions",
   "funeralNotices",
 ];
-const WS_S50: WorkspaceModuleKey[] = [
+export const WS_S50: WorkspaceModuleKey[] = [
   "ws.calendar",
   "ws.rooms",
   "ws.worship",

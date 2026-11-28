@@ -3381,7 +3381,7 @@
           },
           "music_sheet_live": {
             "title": "Közös alkalom (élő)",
-            "help": "Az akkordlapot a vezető követőivel együtt, közös metronómmal."
+            "help": "Az akkordlap közös követése a vezetővel, közös metronómmal."
           },
           "music_projection_quick_add": {
             "title": "Gyors hozzáadás",
