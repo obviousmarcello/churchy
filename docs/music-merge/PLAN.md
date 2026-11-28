@@ -874,3 +874,14 @@ become optional per-translation mappings. Hungarian only.
   canvas, reads it with the real engine, inserts it; axe 0).
 - Licensing, to confirm by the owner: Tesseract.js (Apache-2.0), tesseract.js-core (Apache-2.0) and the `best_int` Hungarian data from
   tessdata_best (Apache-2.0) are bundled as shipped by npm; nothing is downloaded from a CDN.
+
+## 26. Phase 7b: songbook to hymnal refs, production import script
+- Migration `0020_music_hymnal_refs` (+ down): `public.merge_songbook_hymnal_refs(p_dry_run boolean default false)`, SECURITY INVOKER,
+  tenant from `app.current_tenant_id()`, granted to `churchy_app` only (the music role has no grant on `hymnals`). It splits the
+  songbook text of every song of the tenant on `;`, reads `<name or abbreviation> <number>`, matches accent- and case-insensitively
+  (`search_key`) a hymnal of the platform catalog or of the church, and inserts `song_hymnal_refs` (`ON CONFLICT DO NOTHING`).
+  The text stays; unmatched entries are ignored; it returns one row per match with `inserted`. No schema change, so no table-scopes entry.
+  Isolation suite: dry run writes nothing, a run inserts, the second run inserts nothing, another tenant sees nothing, no tenant fails.
+- No UI and no policy action yet: it is an operator/SQL tool, run after the import (`docs/music-merge/IMPORT.md`). A button on the
+  songbook field can call it through a `withPolicy` action later (needs an owner decision on who may press it).
+- `packages/db/scripts/import-music-prod.ts` (`pnpm --filter @churchy/db import:music`): see `IMPORT.md`. Test `import-music.db.test.ts`.

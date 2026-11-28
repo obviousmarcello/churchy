@@ -1108,6 +1108,32 @@ describe.skipIf(!url || unsafeEnv)("tenant isolation (D-03, TEST_DATABASE_URL)",
       });
     });
 
+    it("hymnal refs: the songbook text of a song becomes refs, per tenant, idempotent, dry run writes nothing", async () => {
+      await asApp({ tenantId: A }, async (c) => {
+        await c.query(
+          "insert into songs (title, songbook) values ('Énekfüzetes', 'saját énekfüzet 12; SAJ 12; Nincs ilyen 5')",
+        );
+        const refs = async () => (await c.query("select 1 from song_hymnal_refs")).rowCount ?? 0;
+        const before = await refs();
+        const dry = await c.query("select * from merge_songbook_hymnal_refs(true)");
+        expect(dry.rows.map((r) => [r.number, r.inserted])).toEqual([["12", true]]);
+        expect(await refs()).toBe(before);
+        const real = await c.query("select * from merge_songbook_hymnal_refs()");
+        expect(real.rows.map((r) => r.inserted)).toEqual([true]);
+        expect(await refs()).toBe(before + 1);
+        const again = await c.query("select * from merge_songbook_hymnal_refs()");
+        expect(again.rows.map((r) => r.inserted)).toEqual([false]);
+      });
+      await asApp({ tenantId: B }, async (c) => {
+        expect((await c.query("select * from merge_songbook_hymnal_refs(true)")).rowCount).toBe(0);
+      });
+      await asApp({}, async (c) => {
+        expect(await attempt(c, "select * from merge_songbook_hymnal_refs(true)")).toHaveProperty(
+          "code",
+        );
+      });
+    });
+
     it("scripture: translations are per tenant, Károli is reserved, the verse cache has per-tenant limits", async () => {
       await asMusic(A, async (c) => {
         await c.query(

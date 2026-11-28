@@ -228,3 +228,4 @@ naming the tenant.
 | Function | Security | Phase |
 |---|---|---|
 | `public.music_calendar_id()` | invoker | 4a-1 — 0011_music_events (the tenant's music calendar, created on first use) |
+| `public.merge_songbook_hymnal_refs(p_dry_run boolean)` | invoker | 7b — 0020_music_hymnal_refs (new in Churchy: links the songbook text to `song_hymnal_refs`) |
