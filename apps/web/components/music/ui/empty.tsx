@@ -5,7 +5,7 @@ function Empty({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="empty"
       className={cn(
-        "flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg border-dashed p-6 text-center text-balance md:p-12",
+        "flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-card border-dashed p-6 text-center text-balance md:p-12",
         className,
       )}
       {...props}
@@ -26,7 +26,7 @@ function EmptyHeader({ className, ...props }: React.ComponentProps<"div">) {
 // Their `cva()` variants, as a plain map (no class-variance-authority in Churchy).
 const emptyMediaVariants = {
   default: "bg-transparent",
-  icon: "flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-sunken text-text [&_svg:not([class*='size-'])]:size-6",
+  icon: "flex size-10 shrink-0 items-center justify-center rounded-card bg-surface-sunken text-text [&_svg:not([class*='size-'])]:size-6",
 } as const;
 
 function EmptyMedia({

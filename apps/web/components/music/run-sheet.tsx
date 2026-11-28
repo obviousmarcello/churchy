@@ -161,7 +161,7 @@ export function RunSheetSummary({
       {sheet.totalSeconds > durationMinutes * 60 && (
         <p
           role="note"
-          className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200"
+          className="flex items-start gap-2 rounded-card border border-warning/40 bg-warning-soft p-3 text-sm text-warning"
         >
           <TriangleAlertIcon aria-hidden className="mt-0.5 size-4 shrink-0" />
           {/* Rounded up, so the total never shows as the duration of the event. */}

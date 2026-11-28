@@ -42,7 +42,7 @@ function ToastList() {
         "[--gap:0.75rem] [--peek:0.5rem] [--scale:calc(max(0,1-(var(--toast-index)*0.05)))] [--shrink:calc(1-var(--scale))] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))]",
         "absolute right-0 bottom-0 left-0 z-[calc(1000-var(--toast-index))] h-[var(--height)] origin-bottom select-none",
         "[transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))]",
-        "rounded-xl border bg-surface-raised text-text shadow-lg",
+        "rounded-card border bg-surface-raised text-text shadow-lg",
         "[transition:transform_0.45s_cubic-bezier(0.22,1,0.36,1),opacity_0.45s,height_0.15s] motion-reduce:[transition:opacity_0.2s]",
         // A strip below each toast, so the stack stays open while the pointer moves between toasts.
         "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
@@ -55,10 +55,7 @@ function ToastList() {
     >
       <Toast.Content className="flex h-full items-center gap-3 overflow-hidden py-2.5 pr-2 pl-3.5 transition-opacity duration-200 data-behind:opacity-0 data-expanded:opacity-100">
         {toast.type === "success" && (
-          <CircleCheckIcon
-            aria-hidden
-            className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
-          />
+          <CircleCheckIcon aria-hidden className="size-4 shrink-0 text-success" />
         )}
         {toast.type === "error" && (
           <TriangleAlertIcon aria-hidden className="size-4 shrink-0 text-danger" />

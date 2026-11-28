@@ -267,7 +267,7 @@ export function FileDropArea({ children }: { children: React.ReactNode }) {
       {drag && !drag.inZone && (
         <div
           role="status"
-          className="fixed inset-x-4 bottom-[calc(max(var(--tab-bar-height,0px),env(safe-area-inset-bottom,0px))+1rem)] z-50 mx-auto flex max-w-md flex-col gap-3 rounded-xl border bg-surface-raised p-4 text-text shadow-lg"
+          className="fixed inset-x-4 bottom-[calc(max(var(--tab-bar-height,0px),env(safe-area-inset-bottom,0px))+1rem)] z-50 mx-auto flex max-w-md flex-col gap-3 rounded-overlay border bg-surface-raised p-4 text-text shadow-lg"
         >
           <div className="flex items-start gap-3">
             <FileUpIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-muted" />
@@ -286,7 +286,7 @@ export function FileDropArea({ children }: { children: React.ReactNode }) {
                   }
                   aria-current={drag.selected === option.id || undefined}
                   className={cn(
-                    "rounded-lg border border-dashed bg-border-strong-background px-3 py-3 text-sm transition-colors",
+                    "rounded-card border border-dashed bg-surface-raised px-3 py-3 text-sm transition-colors",
                     drag.selected === option.id && cn(DROP_SELECTED, "border-solid font-medium"),
                   )}
                 >

@@ -121,4 +121,4 @@ export function AttachmentFields({
 
 /** A checkbox that looks like a button: it is filled when checked. */
 const CHIP =
-  "flex h-8 min-w-10 cursor-pointer items-center justify-center rounded-md border bg-border-strong-background px-2 text-sm transition-colors select-none hover:bg-surface-sunken has-checked:border-primary has-checked:bg-primary has-checked:text-primary-contrast has-focus-visible:ring-3 has-focus-visible:ring-focus/50";
+  "flex h-8 min-w-10 cursor-pointer items-center justify-center rounded-control border bg-surface-raised px-2 text-sm transition-colors select-none hover:bg-surface-sunken has-checked:border-primary has-checked:bg-primary has-checked:text-primary-contrast has-focus-visible:ring-3 has-focus-visible:ring-focus/50";

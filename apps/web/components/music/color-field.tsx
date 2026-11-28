@@ -25,10 +25,10 @@ export function ColorField({
         value={value}
         onChange={(event) => onChange(event.target.value.toLowerCase())}
         aria-describedby={describedBy}
-        className="size-9 shrink-0 cursor-pointer rounded-md border bg-transparent p-0.5"
+        className="size-9 shrink-0 cursor-pointer rounded-control border bg-transparent p-0.5"
       />
       <Label htmlFor={id}>{label}</Label>
-      <span className="font-mono text-xs text-muted-foreground uppercase">{value}</span>
+      <span className="font-mono text-xs text-muted uppercase">{value}</span>
     </div>
   );
 }

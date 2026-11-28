@@ -107,10 +107,10 @@ export function BlockCountdownBadge({
       className={cn(
         "flex min-w-0 shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums",
         countdown.kind === "notStarted"
-          ? "bg-muted text-muted-foreground"
+          ? "bg-surface-sunken text-muted"
           : over
-            ? "bg-amber-500/15 text-amber-900 dark:text-amber-200"
-            : "bg-sky-500/15 text-sky-900 dark:text-sky-200",
+            ? "bg-warning-soft text-warning"
+            : "bg-info-soft text-info",
         className,
       )}
     >

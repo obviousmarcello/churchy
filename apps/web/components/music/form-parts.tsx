@@ -299,7 +299,7 @@ export function AutoSaveStatus({
       {failedCount > 0 && (
         <div
           role="alert"
-          className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-danger/30 px-3 py-2 text-sm text-danger"
+          className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-card border border-danger/30 px-3 py-2 text-sm text-danger"
         >
           <p className="min-w-0 flex-1">
             {plural(t.failed, failedCount)}

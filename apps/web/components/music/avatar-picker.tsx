@@ -60,7 +60,7 @@ export function AvatarPicker<Option extends PickerOption>({
       <Combobox.Trigger
         aria-label={format(t.value, { label, value: selected!.label })}
         title={selected!.label}
-        className="inline-flex size-8 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50 data-popup-open:ring-3 data-popup-open:ring-ring/30"
+        className="inline-flex size-8 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-focus/50 data-popup-open:ring-3 data-popup-open:ring-focus/30"
       >
         {avatar(selected!, "md")}
       </Combobox.Trigger>
@@ -73,7 +73,7 @@ export function AvatarPicker<Option extends PickerOption>({
         >
           <Combobox.Popup
             aria-label={label}
-            className="flex w-64 max-w-(--available-width) origin-(--transform-origin) flex-col gap-1 rounded-lg border bg-surface-raised p-1 text-text shadow-md transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
+            className="flex w-64 max-w-(--available-width) origin-(--transform-origin) flex-col gap-1 rounded-card border bg-surface-raised p-1 text-text shadow-md transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
           >
             <Combobox.Input placeholder={placeholder} render={<Input />} autoFocus={defaultOpen} />
             <Combobox.Empty>
@@ -84,7 +84,7 @@ export function AvatarPicker<Option extends PickerOption>({
                 <Combobox.Item
                   key={option.id ?? ""}
                   value={option}
-                  className="flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken"
+                  className="flex cursor-default items-center gap-2 rounded-control px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken"
                 >
                   {avatar(option, "sm")}
                   <span className="min-w-0 flex-1 truncate">{option.label}</span>
@@ -112,7 +112,7 @@ export function EmptyAvatar({ icon: Icon, size }: { icon: LucideIcon; size: Avat
     <span
       aria-hidden
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full border border-dashed border-muted-foreground/50 text-muted",
+        "inline-flex shrink-0 items-center justify-center rounded-full border border-dashed border-border-strong/50 text-muted",
         EMPTY_SIZES[size],
       )}
     >

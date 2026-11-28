@@ -17,7 +17,7 @@ export const DIALOG_BACKDROP_CLASS =
 // stays reachable when the header and the footer alone are higher than the
 // screen (a phone in landscape, an open keyboard, a long description).
 export const DIALOG_POPUP_CLASS =
-  "fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto overscroll-contain rounded-xl border bg-surface-raised text-text shadow-lg transition-[scale,opacity] duration-150 ease-out outline-none data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0";
+  "fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-2rem)] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto overscroll-contain rounded-overlay border bg-surface-raised text-text shadow-lg transition-[scale,opacity] duration-150 ease-out outline-none data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0";
 
 /** A `<form>` (or a `<div>`) in the popup that holds a `DialogBody` and a `DialogFooter`. */
 export const DIALOG_FORM_CLASS = "flex min-h-0 flex-1 flex-col";

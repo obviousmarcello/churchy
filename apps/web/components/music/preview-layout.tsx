@@ -94,7 +94,7 @@ export function PreviewEmpty({
   description: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-1 rounded-lg border border-dashed px-4 py-6 text-center [&>svg]:mb-1 [&>svg]:size-5 [&>svg]:text-muted">
+    <div className="flex flex-col items-center gap-1 rounded-card border border-dashed px-4 py-6 text-center [&>svg]:mb-1 [&>svg]:size-5 [&>svg]:text-muted">
       {icon}
       <p className="text-sm font-medium">{title}</p>
       <p className="text-sm text-muted">{description}</p>
@@ -107,7 +107,7 @@ export function PreviewPages({ className, ...props }: React.ComponentProps<"div"
   return (
     <div
       className={cn(
-        "max-h-[calc(100dvh-12rem)] overflow-y-auto rounded-lg border bg-surface-sunken/40 p-3",
+        "max-h-[calc(100dvh-12rem)] overflow-y-auto rounded-card border bg-surface-sunken/40 p-3",
         className,
       )}
       {...props}
@@ -117,4 +117,4 @@ export function PreviewPages({ className, ...props }: React.ComponentProps<"div"
 
 /** The part of a row of a list that shows its item in the preview, e.g. the name of a file. */
 export const previewButtonClass =
-  "-mx-1 flex min-w-0 flex-1 cursor-pointer rounded-md px-1 text-left outline-none focus-visible:ring-3 focus-visible:ring-focus/50";
+  "-mx-1 flex min-w-0 flex-1 cursor-pointer rounded-control px-1 text-left outline-none focus-visible:ring-3 focus-visible:ring-focus/50";

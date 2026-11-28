@@ -47,13 +47,13 @@ export function TextKindMenu({
         aria-label={format(t.label, { title })}
         title={t.hint}
         // The round mark of an item, as `ITEM_ICON_CLASS` of `setlist-rows.tsx`.
-        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground outline-none hover:bg-secondary/70 focus-visible:ring-[3px] focus-visible:ring-ring/50 data-popup-open:ring-2 data-popup-open:ring-ring/40"
+        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-sunken text-text outline-none hover:bg-surface-sunken/70 focus-visible:ring-[3px] focus-visible:ring-focus/50 data-popup-open:ring-2 data-popup-open:ring-focus/40"
       >
         <Icon aria-hidden className="size-4" />
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={6} align="start" collisionPadding={8} className="z-50">
-          <Menu.Popup className="min-w-48 origin-[var(--transform-origin)] rounded-lg border bg-surface-raised p-1 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Menu.Popup className="min-w-48 origin-[var(--transform-origin)] rounded-card border bg-surface-raised p-1 text-text shadow-lg outline-none transition-[scale,opacity] duration-100 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             {/* Base UI also calls `onValueChange` for the kind of now: that is no change, e.g. no question for the live item. */}
             <Menu.RadioGroup
               value={kind}
@@ -66,7 +66,7 @@ export function TextKindMenu({
                     key={option}
                     value={option}
                     closeOnClick
-                    className="flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted"
+                    className="flex cursor-default items-center gap-2 rounded-control px-2 py-1.5 text-sm outline-none select-none data-highlighted:bg-surface-sunken [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted"
                   >
                     <OptionIcon />
                     <span className="flex-1">{labels[option]}</span>

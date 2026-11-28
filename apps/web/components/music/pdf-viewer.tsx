@@ -265,7 +265,7 @@ export function PdfPreview({ url, downloadUrl }: { url: string; downloadUrl: str
           ? t.loadFailed
           : t.noPages;
     return (
-      <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-6 text-center">
+      <div className="flex flex-col items-center gap-3 rounded-card border border-dashed px-4 py-6 text-center">
         <div className="flex flex-col items-center gap-1">
           {state.status === "password" ? (
             <LockIcon aria-hidden className="mb-1 size-5 text-muted" />
@@ -478,7 +478,7 @@ export function PdfPage({
     >
       <canvas ref={canvasRef} className="size-full origin-top-left" />
       {failed && (
-        <p className="absolute inset-0 flex items-center justify-center p-4 text-center text-sm text-neutral-600">
+        <p className="absolute inset-0 flex items-center justify-center p-4 text-center text-sm text-muted">
           {failedText}
         </p>
       )}

@@ -78,7 +78,7 @@ export function SoundFilePlayer({
           href={`${file.url}?download=1`}
           aria-label={format(t.download, { name: file.name })}
           title={format(t.download, { name: file.name })}
-          className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-sunken hover:text-text focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:outline-none pointer-coarse:size-9"
+          className="flex size-8 shrink-0 items-center justify-center rounded-control text-muted transition-colors hover:bg-surface-sunken hover:text-text focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:outline-none pointer-coarse:size-9"
         >
           <DownloadIcon className="size-4" />
         </a>

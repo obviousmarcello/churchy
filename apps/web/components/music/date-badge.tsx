@@ -24,9 +24,9 @@ export function DateBadge({
     <div
       aria-hidden
       className={cn(
-        "flex size-14 shrink-0 flex-col items-center justify-center rounded-lg bg-surface-sunken",
+        "flex size-14 shrink-0 flex-col items-center justify-center rounded-card bg-surface-sunken",
         featured && "size-16",
-        small && "size-11 rounded-md",
+        small && "size-11 rounded-control",
       )}
     >
       <span
