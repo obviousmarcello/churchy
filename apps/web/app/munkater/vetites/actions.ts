@@ -4,7 +4,7 @@ import type { I18n } from "@/i18n/music/i18n";
 import { getRequestI18n } from "@/i18n/music/server";
 import type { EventAnnouncementsDTO } from "@/lib/music/announcements/schema";
 import type { EventImageSetsDTO } from "@/lib/music/projection/images";
-import type { ProjectionThemeDTO } from "@/lib/music/projection/themes";
+import type { ProjectionLook, ProjectionThemeDTO } from "@/lib/music/projection/themes";
 import { SafeError } from "@/server/music/errors";
 import {
   cacheVerses,
@@ -19,7 +19,10 @@ import {
   listEventVolunteers,
   type VolunteerDTO,
 } from "@/server/music/models/events";
-import { readProjectionThemes } from "@/server/music/models/projection-themes";
+import {
+  getDefaultProjectionLook,
+  readProjectionThemes,
+} from "@/server/music/models/projection-themes";
 import { SETLIST_MAX_ITEMS, type SetlistItemDTO } from "@/server/music/models/setlists";
 import { isWorkspaceModuleOn } from "@/server/workspace-nav";
 import { getCurrentUser } from "@/server/music/auth";
@@ -51,6 +54,7 @@ import {
 import {
   musicEventIn,
   musicProjection,
+  musicRehearsal,
   musicProjectionChild,
   musicScripture,
 } from "@/server/music/policy";
@@ -408,4 +412,34 @@ export const cacheVersesAction = withPolicy(
       },
       () => cacheVerses({ translation, book, verses }, eventId),
     ),
+);
+
+/** The songs of the rehearsal list of this browser, by arrangement (the rehearsal projection; module `rehearsal`). */
+export const rehearsalSongsAction = withPolicy(
+  "music.projection.use",
+  musicRehearsal,
+  async (_scope: PolicyScope, arrangementIds: string[]): Promise<RehearsalSongsResult> => {
+    try {
+      return { status: "success", songs: await listRehearsalProjectionSongs(arrangementIds) };
+    } catch (cause) {
+      if (!(cause instanceof SafeError))
+        console.error("[projection] Failed to list the rehearsal songs:", cause);
+      return { status: "error", message: (await getRequestI18n()).m.project.gate.loadFailed };
+    }
+  },
+);
+
+/** The look of the default projection theme, for a rehearsal. Null when it fails: then the look from before. */
+export const defaultProjectionLookAction = withPolicy(
+  "music.projection.use",
+  musicRehearsal,
+  async (_scope: PolicyScope): Promise<ProjectionLook | null> => {
+    try {
+      return await getDefaultProjectionLook();
+    } catch (cause) {
+      if (!(cause instanceof SafeError))
+        console.error("[projection] Failed to get the default theme:", cause);
+      return null;
+    }
+  },
 );

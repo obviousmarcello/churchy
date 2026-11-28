@@ -5,6 +5,7 @@ import { getI18n } from "@/i18n/music/server";
 import { firstParam } from "@/lib/music/song-filters";
 import { requirePageUser } from "@/server/music/auth";
 import { getEventProjectionConnection } from "@/server/music/models/projections";
+import { requireWorkspaceModule } from "@/server/workspace-nav";
 import { ProjectionGate, ProjectionLoading } from "../gate";
 import type { ProjectionPageProps } from "../page-props";
 import { ProjectionScreen } from "../screen";
@@ -39,8 +40,8 @@ async function Screen({ searchParams }: ProjectionPageProps) {
   }
 
   if (params.rehearsal !== undefined) {
-    // A rehearsal projection runs in the browser of its controller only (the rehearsal page is not
-    // merged yet).
+    // As in the controller: the projection of a rehearsal is a part of the module "rehearsal".
+    await requireWorkspaceModule("ws.music.rehearsal");
     return <ProjectionScreen channel={{ eventId: null, connection: null }} />;
   }
   return <ProjectionGate reason="noSource" />;

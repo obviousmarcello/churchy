@@ -80,6 +80,7 @@ const DEMO_MUSIC_MODULES: WorkspaceModuleKey[] = [
   "ws.music.scripture.daily-psalm",
   "ws.music.projection.bible-panel",
   "ws.music.mixer",
+  "ws.music.rehearsal",
 ];
 
 export function buildTenant(b: Build): void {

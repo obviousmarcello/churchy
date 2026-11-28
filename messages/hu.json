@@ -58,7 +58,8 @@
         "modules": "Modulok",
         "plan": "Csomag",
         "billing": "Számlázás",
-        "musicMixer": "Keverőpult"
+        "musicMixer": "Keverőpult",
+        "musicRehearsal": "Próba"
       },
       "contact": "{contactPage.nom}"
     },
@@ -3366,6 +3367,10 @@
           "music_mixer": {
             "title": "Keverőpult",
             "help": "A dalok tempójának küldése a keverőpultnak (a pult beállítása, tempó küldése az akkordlapról és a vetítésből)."
+          },
+          "music_rehearsal": {
+            "title": "Próba",
+            "help": "Próbalista összeállítása, vetítése és mentése eseményhez (a böngészőben tárolt piszkozat)."
           }
         }
       },
@@ -3492,7 +3497,8 @@
           "music_scripture": "Igeolvasások (munkatér)",
           "music_scripture_daily_psalm": "A nap zsoltára (munkatér)",
           "music_projection_bible_panel": "Biblia panel (munkatér)",
-          "music_mixer": "Keverőpult (munkatér)"
+          "music_mixer": "Keverőpult (munkatér)",
+          "music_rehearsal": "Próba (munkatér)"
         }
       },
       "catalog": {
@@ -7864,6 +7870,87 @@
         "noAnswer": "A pult nem válaszol. Ellenőrizd az IP-címet és a hálózatot.",
         "failed": "Az app nem tudta elküldeni a delay időt.",
         "sendNow": "Küldés most"
+      }
+    },
+    "rehearsal": {
+      "page": {
+        "title": "Próba",
+        "loadingSongs": "Dalok betöltése…",
+        "loadingSetlist": "Dallista betöltése…",
+        "startFresh": "Újrakezdés",
+        "openSheet": "Akkordlap megnyitása",
+        "project": "Kivetítés"
+      },
+      "catalog": {
+        "title": "Dalok",
+        "search": "Dalok keresése",
+        "add": "{title} hozzáadása a dallistához",
+        "dragHint": "Húzd a dallistába",
+        "inSetlist": "A dallistában van",
+        "full": "A dallista megtelt.",
+        "noMatches": {
+          "title": "Nincs találat",
+          "description": "Módosítsd a keresést, és próbáld újra."
+        },
+        "noSongs": {
+          "title": "Még nincsenek dalok",
+          "description": "Itt jelennek meg az adatbázis dalai. Dallistába csak olyan dal kerülhet, amelynek van változata."
+        },
+        "loadMore": "Továbbiak betöltése"
+      },
+      "setlist": {
+        "title": "Dallista",
+        "description": "Dalok és szöveges programpontok lejátszási sorrendben.",
+        "emptyTitle": "A dallistád üres",
+        "emptyCanSave": "Lent adhatsz hozzá dalokat és szöveges programpontokat. A dallista ebben a böngészőben marad, amíg egy eseményhez nem mented, vagy újra nem kezded.",
+        "emptyCannotSave": "Lent adhatsz hozzá dalokat és szöveges programpontokat. A dallista ebben a böngészőben marad, amíg újra nem kezded.",
+        "undoStartFresh": "Újrakezdés visszavonása",
+        "sheetSongsOnly": "Az akkordlapon csak a dalok látszanak, a szöveges programpontok nem.",
+        "needTitles": "Adj címet minden szöveges programpontnak és igehelyet minden igeolvasásnak. Utána egy eseményhez mentheted a dallistát.",
+        "summary": "{items} · kb. {duration}",
+        "summaryWithUnknown": {
+          "one": "{items} · kb. {duration} · {count} dal időtartam nélkül",
+          "other": "{items} · kb. {duration} · {count} dal időtartam nélkül"
+        },
+        "full": {
+          "one": "A dallista megtelt. Egy dallistán legfeljebb {count} programpont lehet.",
+          "other": "A dallista megtelt. Egy dallistán legfeljebb {count} programpont lehet."
+        }
+      },
+      "saveDialog": {
+        "trigger": "Mentés eseményhez",
+        "title": "Mentés egy eseményhez",
+        "description": {
+          "one": "A dallista {count} programpontjából lesznek az esemény programpontjai.",
+          "other": "A dallista {count} programpontjából lesznek az esemény programpontjai."
+        },
+        "targetLegend": "Mentés ide",
+        "existingEvent": "Meglévő esemény",
+        "newEvent": "Új esemény",
+        "noEvents": "Még nincs esemény. Itt hozhatsz létre egyet.",
+        "eventLabel": "Esemény",
+        "addsAfterItems": {
+          "one": "A dallista az esemény {count} programpontja után kerül.",
+          "other": "A dallista az esemény {count} programpontja után kerül."
+        },
+        "noItems": "Ennek az eseménynek még nincs programpontja.",
+        "selectEvent": "Válassz eseményt",
+        "upcoming": "Közelgő",
+        "past": "Korábbi",
+        "eventOption": "{title} – {date}",
+        "defaultEventTitle": "Próba",
+        "submitExisting": "Mentés eseményhez",
+        "submitNew": "Esemény létrehozása a dallistával"
+      },
+      "actions": {
+        "addItems": "Adj hozzá legalább egy dalt vagy szöveges programpontot",
+        "selectEvent": "Válassz eseményt",
+        "eventNotFound": "Ez az esemény már nem létezik.",
+        "itemsNotSaved": "A dallista mentése nem sikerült. Próbáld újra.",
+        "tooManyItems": "Az eseménynek nem lehet ennyi programpontja. Előbb távolíts el néhányat a dallistából vagy az eseményből.",
+        "itemsSaved": "A dallista bekerült az eseménybe. Az esemény megnyitása…",
+        "eventNotSaved": "Az esemény mentése nem sikerült. Próbáld újra.",
+        "eventAdded": "Esemény létrehozva. Az esemény megnyitása…"
       }
     }
   },

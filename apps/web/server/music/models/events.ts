@@ -11,6 +11,7 @@ import {
   forbiddenEventAreaChanges,
   type EventScopeOptions,
 } from "@/lib/music/event-scopes";
+import { splitEventsByTime } from "@/lib/music/event-time";
 import { pathLabel, treeOrder } from "@/lib/music/groups";
 import { VOLUNTEER_REPLIES, type VolunteerReply } from "@/lib/music/volunteer-replies";
 import { toYoutubeUrl } from "@/lib/music/youtube";
@@ -252,6 +253,33 @@ export async function listEvents(): Promise<EventDTO[]> {
   return z.array(eventRowSchema).parse(data).map(toEvent);
 }
 
+export type EventWithItemCountDTO = EventDTO & { itemCount: number };
+
+/**
+ * The events (series masters once, not their changed occurrences) split into upcoming and past, each
+ * with the number of items of its setlist: for the "Save to event" panel of the rehearsal page.
+ */
+export async function listEventsByTime() {
+  const events = (await listEvents()).filter((event) => event.parentEventId === null);
+  const { data, error } = await (
+    await getMusicSupabase()
+  )
+    .from("setlists")
+    .select("id, item_count");
+  if (error) throw databaseError("count setlist items", error);
+  const counts = new Map(
+    z
+      .array(z.object({ id: z.uuid(), item_count: z.number().int() }))
+      .parse(data)
+      .map((row) => [row.id, row.item_count]),
+  );
+  const withCounts: EventWithItemCountDTO[] = events.map((event) => ({
+    ...event,
+    itemCount: (event.setlistId && counts.get(event.setlistId)) || 0,
+  }));
+  return splitEventsByTime(withCounts, Date.now());
+}
+
 /**
  * The occurrences in the window, series expanded in Europe/Budapest, changed occurrences in
  * place of the originals. The window is at most `MAX_SERIES_WINDOW_DAYS`.
@@ -319,6 +347,25 @@ export async function createEvent(input: NewEventInput): Promise<EventDTO> {
     .single();
   if (error) throw databaseError("create an event", error);
   return toEvent(eventRowSchema.parse(data));
+}
+
+const newEventWithItemsInputSchema = newEventInputSchema.extend({ items: setlistItemsInputSchema });
+
+/**
+ * A new event with its items, e.g. from the rehearsal page. Churchy has no single-transaction
+ * `create_event_with_items`: the event is created, then its items are set; when that fails the event
+ * is removed again, so no empty event stays.
+ */
+export async function createEventWithItems(input: unknown): Promise<EventDTO> {
+  const { items, ...details } = parseInput(newEventWithItemsInputSchema, input);
+  const event = await createEvent(details);
+  try {
+    await applyEventItems(event.id, items);
+  } catch (error) {
+    await (await getMusicSupabase()).from("events").delete().eq("id", event.id);
+    throw error;
+  }
+  return (await getEvent(event.id)) ?? event;
 }
 
 /**

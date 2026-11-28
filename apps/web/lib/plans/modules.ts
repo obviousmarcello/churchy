@@ -124,6 +124,7 @@ const WORKSPACE_IDS = {
   "ws.music.scripture.daily-psalm": "music_scripture_daily_psalm",
   "ws.music.projection.bible-panel": "music_projection_bible_panel",
   "ws.music.mixer": "music_mixer",
+  "ws.music.rehearsal": "music_rehearsal",
 } as const satisfies Record<WorkspaceModuleKey, string>;
 export type WorkspaceModuleId = (typeof WORKSPACE_IDS)[WorkspaceModuleKey];
 export const workspaceModuleId = (key: WorkspaceModuleKey): WorkspaceModuleId => WORKSPACE_IDS[key];

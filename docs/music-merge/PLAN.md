@@ -902,3 +902,20 @@ become optional per-translation mappings. Hungarian only.
   bridge is null, so network desks cannot be reached (MIDI desks work through Web MIDI). The Electron main-process code is not copied.
 - Messages `music.mixer.*`, `admin.modules.workspace.items.music_mixer`, nav `musicMixer`. Tests: the copied unit tests of `lib/music/mixer`,
   policy matrix, e2e `music-mixer.spec.ts` (setup saved and kept after reload, volunteer sees no form; axe 0).
+
+## 28. Phase 7c-2: rehearsal page and `?rehearsal` projection; Toaster
+- Toaster: `components/music/ui/toast` (Churchy tokens, base-ui Toast, `lib/music/toast`) is mounted once in the `/munkater` layout, so the
+  copied forms show their saved/error toasts ("Elmentve."); the mixer e2e asserts it.
+- Page `/munkater/proba` (nav "Próba", module `ws.music.rehearsal`, child of songs, default off, `/admin/modulok`, demo seeds): copy-edit of the
+  rehearsal route (`rehearsal-builder`, `song-catalog`, `draft` in localStorage, header). The page cache layer of the source (`PageResult`,
+  `usePageData`, `StaleCopyNotice`, `page-keys`) is not used: Churchy renders the page on the server (`data.ts`), the builder keeps the draft in the browser.
+- "Save to event": `saveSetlistAction` (`withPolicy` `music.event.manage`, `musicEvents`); an existing event gets the items after its own
+  (`addEventItems`), a new one is created. New models `listEventsByTime` (events by time with the item count of their setlist) and
+  `createEventWithItems`. Churchy has no `create_event_with_items` function (not migrated, no migration added): the event is created, then its
+  items are set, and the event is removed if setting them fails (not one transaction).
+- Projection `?rehearsal` on `/munkater/vetites` and `/munkater/vetites/kepernyo`: `RehearsalProjectionController` (copy-edit) reads the draft of the
+  browser, loads the songs with `rehearsalSongsAction` and the default look with `defaultProjectionLookAction` (both `music.projection.use`,
+  resolver `musicRehearsal`: module `rehearsal` instead of the quick-add child). Channel stays local (BroadcastChannel); the module off is a 404.
+- Policy: no new action (page view `music.song.view`, saving `music.event.manage`, projection `music.projection.use`).
+- Not ported: the source's search palette (Churchy has its own navigation; its Bible/rehearsal entries have no counterpart), its offline page copies.
+- Tests: e2e `music-rehearsal.spec.ts` (setlist built, kept after reload, saved as a new event, `?rehearsal` controller; volunteer has no save panel; axe 0).
