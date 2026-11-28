@@ -176,6 +176,13 @@
       "when": 1795853003930,
       "tag": "0024_revoke_definer_exec",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795853603930,
+      "tag": "0025_platform_role",
+      "breakpoints": true
     }
   ]
 }

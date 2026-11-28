@@ -54,3 +54,10 @@ export {
   tenantStoragePrefix,
 } from "./storage-keys";
 // The demo seed (it imports the mock fixtures) is a separate entry: `@churchy/db/seed`.
+export {
+  PLATFORM_URL_ENV,
+  UnsafePlatformRoleError,
+  assertPlatformRole,
+  createPlatformPool,
+  platformDatabaseUrl,
+} from "./platform";
