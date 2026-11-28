@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { addDays } from "@churchy/hu";
-import { Badge, ButtonLink, FormattedDate, FormattedTime, Stagger } from "@churchy/ui";
+import { EmptyState, Badge, ButtonLink, FormattedDate, FormattedTime, Stagger } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { dayBlocks, dayTicks } from "@/lib/rooms/day";
 import { loadOccupancy, loadRoomViews } from "@/server/rooms";
@@ -68,7 +68,7 @@ export default async function RoomsBoardPage({
         <FormattedDate value={date} />
       </h2>
 
-      {views.length === 0 ? <p>{t("empty")}</p> : null}
+      {views.length === 0 ? <EmptyState size="sm" title={t("empty")} /> : null}
       <Stagger as="ul" className="flex flex-col gap-3">
         {views.map(({ room, locationName, canBook }) => {
           const blocks = dayBlocks(occupancies, room.id, date);

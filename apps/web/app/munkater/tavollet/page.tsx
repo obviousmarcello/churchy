@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ButtonLink, FormattedDate } from "@churchy/ui";
+import { EmptyState, ButtonLink, FormattedDate } from "@churchy/ui";
 import { buildWorkdayCalendar, leaveBalance, dayKind } from "@churchy/hr";
 import { addDays, startOfIsoWeek } from "@churchy/hu";
 import { can } from "@churchy/policy";
@@ -115,7 +115,7 @@ export default async function AbsencePage() {
       {balance !== null ? (
         <section
           aria-labelledby="a-balance"
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised p-(--space-card) shadow-xs sm:p-6"
           data-testid="leave-balance"
         >
           <h2 id="a-balance" className="font-heading text-fs-5 font-bold text-primary">
@@ -138,12 +138,16 @@ export default async function AbsencePage() {
         </section>
       ) : null}
 
-      <section aria-labelledby="a-grid" className="flex flex-col gap-2" data-testid="absence-grid">
+      <section
+        aria-labelledby="a-grid"
+        className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised p-(--space-card) shadow-xs sm:p-6"
+        data-testid="absence-grid"
+      >
         <h2 id="a-grid" className="font-heading text-fs-5 font-bold text-primary">
           {t("gridTitle")}
         </h2>
         {rows.length === 0 ? (
-          <p>{t("none")}</p>
+          <EmptyState size="sm" title={t("none")} />
         ) : (
           <div
             className="relative overflow-x-auto"
@@ -201,7 +205,7 @@ export default async function AbsencePage() {
       {conflicts.length > 0 ? (
         <section
           aria-labelledby="a-conflicts"
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised p-(--space-card) shadow-xs sm:p-6"
           data-testid="absence-conflicts"
         >
           <h2 id="a-conflicts" className="font-heading text-fs-5 font-bold text-primary">
@@ -231,7 +235,11 @@ export default async function AbsencePage() {
       ) : null}
 
       {mayAll && balances.length > 0 ? (
-        <section aria-labelledby="a-all" className="flex flex-col gap-2" data-testid="all-balances">
+        <section
+          aria-labelledby="a-all"
+          className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised p-(--space-card) shadow-xs sm:p-6"
+          data-testid="all-balances"
+        >
           <h2 id="a-all" className="font-heading text-fs-5 font-bold text-primary">
             {t("allBalances", { year })}
           </h2>

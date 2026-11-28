@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, PersonName, Stagger } from "@churchy/ui";
+import { EmptyState, Badge, PersonName, Stagger } from "@churchy/ui";
 import { nameOf } from "@/components/workspace/person-card";
 import { getT } from "@/i18n/server";
 import { getMemberEnv } from "@/server/workspace";
@@ -26,7 +26,7 @@ export default async function TeamsPage() {
         <p className="mt-1 text-fs-4 text-muted">{t("lead")}</p>
       </header>
       {data.teams.length === 0 ? (
-        <p>{t("empty")}</p>
+        <EmptyState size="sm" title={t("empty")} />
       ) : (
         <Stagger as="ul" className="grid gap-3 md:grid-cols-2">
           {data.teams.map((team) => {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { MonthGrid } from "@churchy/events";
 import { weekdayNames } from "@churchy/hu";
-import { Badge, FormattedDate } from "@churchy/ui";
+import { Badge, EmptyState, FormattedDate } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import {
   calendarQuery,
@@ -117,7 +117,7 @@ export async function AgendaView({
   return (
     <section aria-label={t("views.napirend")} data-testid={testId}>
       {filled.length === 0 ? (
-        <p className="text-muted">{t("emptyAgenda")}</p>
+        <EmptyState size="sm" title={t("emptyAgenda")} />
       ) : (
         <div className="flex flex-col gap-5">
           {filled.map((date) => (

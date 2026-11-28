@@ -1,7 +1,15 @@
 import Link from "next/link";
 import type { Booking } from "@churchy/contracts";
 import { addDays } from "@churchy/hu";
-import { Alert, Badge, ButtonLink, FormattedDate, FormattedTime, Stagger } from "@churchy/ui";
+import {
+  EmptyState,
+  Alert,
+  Badge,
+  ButtonLink,
+  FormattedDate,
+  FormattedTime,
+  Stagger,
+} from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { getMemberEnv } from "@/server/workspace";
 
@@ -83,7 +91,7 @@ export default async function MyBookingsPage({
         />
       ) : null}
       {cards.length === 0 ? (
-        <p>{t("empty")}</p>
+        <EmptyState size="sm" title={t("empty")} />
       ) : (
         <Stagger as="ul" className="flex flex-col gap-3">
           {cards.map(({ first, count }) => (
