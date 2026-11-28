@@ -135,7 +135,7 @@ function ProposalCard({ proposal }: { proposal: RightsProposalDTO }) {
     <Card className="gap-4">
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h3 className="font-heading text-base font-semibold break-words">
+          <h3 className="font-heading text-fs-5 font-bold break-words">
             <Link href={`/munkater/enektar?song=${song.id}`} className="hover:underline">
               {song.title}
             </Link>

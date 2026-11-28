@@ -159,7 +159,7 @@ export function ListPaneHeader({
   return (
     <>
       <PageHeader title={title} details={details} actions={actions} className="lg:hidden" />
-      <div className="hidden items-center justify-between gap-2 px-3 pt-2 pb-4 lg:flex">
+      <div className="hidden flex-wrap items-center justify-between gap-x-2 gap-y-3 px-3 pt-2 pb-4 lg:flex">
         <div className="flex min-w-0 flex-col gap-0.5">
           <Title className="min-w-0 truncate font-heading text-fs-6 font-bold tracking-tight text-primary">
             {title}

@@ -49,7 +49,7 @@ export default async function EventsPage() {
           ) : undefined
         }
       />
-      <div className="flex w-full max-w-3xl flex-col gap-8 px-4 py-6 sm:px-6">
+      <div data-reveal="" className="flex w-full max-w-3xl flex-col gap-8 px-4 py-6 sm:px-6">
         <p className="text-sm text-muted">{t.lead}</p>
         <nav aria-label={t.title} className="flex flex-wrap gap-2">
           <Link

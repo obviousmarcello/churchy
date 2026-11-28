@@ -841,7 +841,7 @@ function Preview({
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-4">
           <CourseCoverView cover={doc} className="size-16" />
-          <h2 className="font-heading text-2xl font-semibold tracking-tight">
+          <h2 className="font-heading text-fs-6 font-bold tracking-tight">
             {doc.title || t.untitledCourse}
           </h2>
         </div>
@@ -859,7 +859,7 @@ function Preview({
       {lesson ? (
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
           <article className="flex min-w-0 flex-1 flex-col gap-4">
-            <h3 className="font-heading text-xl font-semibold tracking-tight">
+            <h3 className="font-heading text-fs-6 font-bold tracking-tight">
               {lesson.title || t.untitledLesson}
             </h3>
             <LessonContent lesson={lesson} />

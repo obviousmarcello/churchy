@@ -185,7 +185,7 @@ export function BiblePanel({ layout, ...props }: BibleBrowserProps & { layout: B
             className="fixed inset-y-0 right-0 flex w-[min(28rem,100vw)] flex-col border-l bg-surface-raised pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-text shadow-lg transition-transform duration-200 ease-out outline-none data-ending-style:translate-x-full data-starting-style:translate-x-full"
           >
             <div className="flex items-center gap-2 border-b px-3 py-2">
-              <Dialog.Title className="min-w-0 flex-1 font-heading text-base font-semibold">
+              <Dialog.Title className="min-w-0 flex-1 font-heading text-fs-5 font-bold">
                 {t.title}
               </Dialog.Title>
               <Dialog.Close
@@ -259,7 +259,7 @@ function DockedPanel({ layout, ...props }: BibleBrowserProps & { layout: BiblePa
         onReset={() => layout.setWidth(DEFAULT_LAYOUT.width)}
       />
       <div className="flex items-center gap-2 border-b px-3 py-2">
-        <h2 className="min-w-0 flex-1 font-heading text-base font-semibold">{t.title}</h2>
+        <h2 className="min-w-0 flex-1 font-heading text-fs-5 font-bold">{t.title}</h2>
         <Button
           type="button"
           variant="ghost"

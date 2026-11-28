@@ -85,7 +85,7 @@ export function PlanComments({
             key={c.id}
             data-testid="plan-comment"
             data-resolved={c.resolved ? "1" : "0"}
-            className="rounded-md border border-border bg-surface-raised p-3"
+            className="rounded-card border border-hairline bg-surface-raised shadow-xs p-3"
           >
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold">{c.author}</span>
@@ -115,7 +115,7 @@ export function PlanComments({
       </ul>
 
       {readOnly ? null : (
-        <div className="flex flex-col gap-3 rounded-md border border-border p-3">
+        <div className="flex flex-col gap-3 rounded-control border border-hairline p-3">
           <Textarea
             label={t("body")}
             rows={3}

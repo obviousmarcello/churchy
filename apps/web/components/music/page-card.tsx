@@ -15,13 +15,13 @@ export function PageCard({ className, ...props }: React.ComponentProps<typeof Ca
 
   if (pane) {
     return (
-      <div className="w-full max-w-2xl px-4 py-6 sm:px-6">
+      <div data-reveal="" className="w-full max-w-2xl px-4 py-6 sm:px-6">
         <div className={cn("flex flex-col gap-6", className)} {...props} />
       </div>
     );
   }
   return (
-    <div className="w-full max-w-2xl px-4 py-6 sm:px-6">
+    <div data-reveal="" className="w-full max-w-2xl px-4 py-6 sm:px-6">
       <Card className={className} {...props} />
     </div>
   );

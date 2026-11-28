@@ -319,10 +319,7 @@ export function RehearsalBuilder({
             />
           )}
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h2
-              id="rehearsal-setlist"
-              className="font-heading text-base font-semibold tracking-tight"
-            >
+            <h2 id="rehearsal-setlist" className="font-heading text-fs-5 font-bold tracking-tight">
               {m.rehearsal.setlist.title}
             </h2>
             {rows.length > 0 && (
