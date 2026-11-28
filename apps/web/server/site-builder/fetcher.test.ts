@@ -185,3 +185,53 @@ describe("fetchPublic without the override (production policy)", () => {
     }
   });
 });
+
+describe("fixture override cannot be switched on from outside", () => {
+  it("is a code-level option only: environment variables and config do not enable loopback", async () => {
+    const saved = { ...process.env };
+    Object.assign(process.env, {
+      NODE_ENV: "production",
+      SITE_BUILDER_FIXTURE: "1",
+      SITE_BUILDER_ALLOW_LOOPBACK: "1",
+      ALLOW_LOOPBACK: "1",
+      DEMO_MODE: "1",
+    });
+    try {
+      hits = [];
+      const res = await fetchPublic(`${base()}/ok`);
+      expect(res).toMatchObject({ ok: false, code: "blocked_url" });
+      expect(hits).toEqual([]);
+      await expect(fetchPublic(`${base()}/ok`, { fixture: fixture() })).rejects.toThrow(
+        /production/,
+      );
+    } finally {
+      for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k];
+      Object.assign(process.env, saved);
+    }
+  });
+
+  it("is used by no production source file (static scan)", async () => {
+    const { readdirSync, readFileSync, statSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const root = join(__dirname, "..", "..");
+    const offenders: string[] = [];
+    const walk = (dir: string) => {
+      for (const name of readdirSync(dir)) {
+        if (name === "node_modules" || name === ".next" || name === "e2e") continue;
+        const p = join(dir, name);
+        if (statSync(p).isDirectory()) walk(p);
+        else if (
+          /\.(ts|tsx)$/.test(name) &&
+          !/\.test\.tsx?$/.test(name) &&
+          p !== join(__dirname, "fetcher.ts")
+        ) {
+          const src = readFileSync(p, "utf8");
+          if (/\bfixture\s*:\s*\{/.test(src) || /allowLoopback\s*:\s*true/.test(src))
+            offenders.push(p.replace(root, ""));
+        }
+      }
+    };
+    walk(root);
+    expect(offenders).toEqual([]);
+  });
+});

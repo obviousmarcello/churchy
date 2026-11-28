@@ -53,6 +53,11 @@ export interface SiteFetcherOptions {
   readonly limits?: Partial<SiteFetcherLimits>;
   /** Passed to every request (resolver, fixture override, timeouts). */
   readonly base?: Pick<FetchOptions, "resolver" | "fixture" | "timeoutMs" | "maxRedirects">;
+  /**
+   * Replaces the network (demo mode and tests serve fixture pages from memory through it). It
+   * receives the same options as `fetchPublic` and must return the same result shape.
+   */
+  readonly transport?: typeof fetchPublic;
   readonly sleep?: (ms: number) => Promise<void>;
   readonly now?: () => number;
 }
@@ -67,6 +72,7 @@ export class SiteFetcher {
   private readonly lastRequest = new Map<string, number>();
   private readonly sleep: (ms: number) => Promise<void>;
   private readonly now: () => number;
+  private readonly transport: typeof fetchPublic;
 
   constructor(
     startUrl: string,
@@ -78,6 +84,7 @@ export class SiteFetcher {
     this.limits = { ...DEFAULT_SITE_LIMITS, ...options.limits };
     this.sleep = options.sleep ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
     this.now = options.now ?? Date.now;
+    this.transport = options.transport ?? fetchPublic;
   }
 
   get usage() {
@@ -99,7 +106,7 @@ export class SiteFetcher {
   }
 
   private async loadRobots(origin: string): Promise<Robots> {
-    const res = await fetchPublic(`${origin}/robots.txt`, {
+    const res = await this.transport(`${origin}/robots.txt`, {
       ...this.fetchOptions({ maxBytes: ROBOTS_MAX_BYTES, timeoutMs: 10_000 }),
     });
     if (res.ok) return parseRobots(res.body.toString("utf8"));
@@ -145,7 +152,7 @@ export class SiteFetcher {
     await this.pace(parsed.origin, robots);
     if (kind === "page") this.pages++;
     else this.images++;
-    const res = await fetchPublic(
+    const res = await this.transport(
       url,
       this.fetchOptions(
         kind === "page"
