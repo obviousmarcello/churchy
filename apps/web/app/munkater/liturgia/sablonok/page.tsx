@@ -1,4 +1,4 @@
-import { Badge, ButtonLink } from "@churchy/ui";
+import { Badge, ButtonLink, Stagger } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { getMemberEnv } from "@/server/workspace";
 import { requireWorkspaceModule } from "@/server/workspace-nav";
@@ -24,11 +24,11 @@ export default async function TemplatesPage() {
       <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
         {t("templates")}
       </h1>
-      <ul className="flex flex-col gap-3">
+      <Stagger as="ul" className="flex flex-col gap-3">
         {templates.map((tpl) => (
           <li
             key={tpl.id}
-            className="rounded-md border border-border bg-surface-raised p-3"
+            className="rounded-card border border-hairline bg-surface-raised shadow-xs p-3"
             data-testid="template"
           >
             <div className="flex flex-wrap items-center gap-2">
@@ -45,7 +45,7 @@ export default async function TemplatesPage() {
             </ol>
           </li>
         ))}
-      </ul>
+      </Stagger>
     </div>
   );
 }

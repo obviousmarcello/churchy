@@ -245,7 +245,7 @@ export default async function PlanPage({
       {diff && !diff.empty ? (
         <section
           aria-labelledby="diff-h"
-          className="rounded-md border-2 border-warning p-4"
+          className="rounded-card border-2 border-warning p-4"
           data-testid="plan-diff"
         >
           <h2 id="diff-h" className="font-heading text-fs-5 font-bold">
@@ -299,7 +299,7 @@ export default async function PlanPage({
                 return (
                   <li
                     key={i.id}
-                    className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-surface-raised p-2"
+                    className="flex flex-wrap items-center gap-2 rounded-card border border-hairline bg-surface-raised shadow-xs p-2"
                   >
                     <span className="w-6 text-right text-muted">{n + 1}.</span>
                     <Badge>{t(`editor.types.${i.type}`)}</Badge>
@@ -333,7 +333,10 @@ export default async function PlanPage({
           if (block === null) return null;
           const { team, manage, positions, teamMembers, isMember } = block;
           return (
-            <div key={team.id} className="rounded-md border border-border bg-surface-raised p-3">
+            <div
+              key={team.id}
+              className="rounded-card border border-hairline bg-surface-raised shadow-xs p-3"
+            >
               <h3 className="font-semibold">{team.name}</h3>
               <ul className="mt-2 flex flex-col gap-3">
                 {positions.map((pos) => {
