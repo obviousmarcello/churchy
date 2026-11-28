@@ -197,6 +197,7 @@ describe("migrations", () => {
       "0023_music_rights_batch",
       "0024_revoke_definer_exec",
       "0025_platform_role",
+      "0026_platform_role_narrow",
     ]);
     for (const e of journal) {
       expect(existsSync(`${MIGRATIONS_FOLDER}/${e.tag}.sql`), e.tag).toBe(true);
@@ -326,7 +327,13 @@ describe("migrations", () => {
       const actual = grants.map((m) =>
         m[2] ? `${m[1]}(${m[2].replace(/[" ]/g, "")}) ${m[3]}` : `${m[1]} ${m[3]}`,
       );
-      expect(actual.sort()).toEqual(declared.sort());
+      // 0026_platform_role_narrow takes billing_accounts and subscriptions away again.
+      const narrow = readFileSync(`${MIGRATIONS_FOLDER}/0026_platform_role_narrow.sql`, "utf8");
+      expect(narrow).toContain(
+        'REVOKE ALL ON TABLE "subscriptions", "billing_accounts" FROM churchy_platform;',
+      );
+      const remaining = actual.filter((g) => !/ (subscriptions|billing_accounts)$/.test(g));
+      expect(remaining.sort()).toEqual(declared.sort());
     });
 
     it("creates the app role without BYPASSRLS and revokes the Supabase PostgREST grants", () => {

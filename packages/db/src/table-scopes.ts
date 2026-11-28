@@ -247,7 +247,7 @@ export function tablesWithScope(scope: TableScope): TableName[] {
 }
 
 /**
- * What the platform role `churchy_platform` (0025_platform_role, SDD §4.2) may do. It serves
+ * What the platform role `churchy_platform` (0025/0026_platform_role, SDD §4.2) may do. It serves
  * everything that has no tenant context yet (host resolution, profile bootstrap, plan lookups) and
  * the INSERTs that create a church. Every table not listed here is denied to it entirely; tenant
  * tables are never readable (the one exception: the host-lookup columns of `domains`) and never
@@ -269,8 +269,6 @@ export const PLATFORM_ROLE_ACCESS: Readonly<Partial<Record<TableName, PlatformAc
   deals: { select: true },
   tenants: { select: true, insert: true },
   profiles: { select: true, insert: true },
-  subscriptions: { select: true, insert: true },
-  billing_accounts: { insert: true },
   audit_log: { insert: true },
   memberships: { insert: true },
   people: { insert: true },

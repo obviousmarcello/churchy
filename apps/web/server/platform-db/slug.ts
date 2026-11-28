@@ -26,6 +26,9 @@ export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
   "production",
   "preview",
   "churchy",
+  // Names the operator keeps for itself: created by the platform operator only (allowReserved).
+  "golgota",
+  "golgotabudapest",
   // auth and account flows
   "login",
   "logout",
@@ -86,13 +89,17 @@ export type SlugCheck =
 
 /**
  * Normalizes `input` with `slugify()` (no diacritics, lower case, single hyphens) and checks length
- * and the reserved words. `invalid`: nothing usable is left or the length is out of range.
+ * and the reserved words (`allowReserved`: operator path only, see `createTenant`). `invalid`: nothing usable is left or the length is out of range.
  */
-export function checkSlug(input: string): SlugCheck {
+export function checkSlug(
+  input: string,
+  options: { readonly allowReserved?: boolean } = {},
+): SlugCheck {
   const slug = slugify(input);
   if (slug.length < SLUG_MIN_LENGTH || slug.length > SLUG_MAX_LENGTH) {
     return { ok: false, reason: "invalid" };
   }
-  if (RESERVED_SLUGS.has(slug)) return { ok: false, reason: "reserved" };
+  if (RESERVED_SLUGS.has(slug) && options.allowReserved !== true)
+    return { ok: false, reason: "reserved" };
   return { ok: true, slug };
 }

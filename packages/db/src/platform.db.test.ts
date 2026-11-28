@@ -20,6 +20,7 @@ import { UnsafePlatformRoleError, assertPlatformRole } from "./platform";
 import { migrateUp } from "./migrate";
 import { APP_ROLE, MUSIC_ROLE, PLATFORM_ROLE, rlsViolations } from "./rls";
 import { seedDemo, type SeedEncryptor } from "./seed/demo";
+import { seedPlans } from "./seed/plans";
 import { demoUuid } from "./seed/ids";
 import { PLATFORM_ROLE_ACCESS, tablesWithScope } from "./table-scopes";
 
@@ -93,17 +94,6 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
       userId,
       `${userId}@example.test`,
     ]);
-    const billingId = randomUUID();
-    await c.query(
-      `insert into billing_accounts (id, owner_type, owner_id, name, address, email, payment_method)
-       values ($1, 'tenant', $2, 'Próba plébánia', '{"postalCode":"1011","city":"Budapest","line1":"Fő utca 1.","line2":null}', 'p@example.test', 'transfer')`,
-      [billingId, tenantId],
-    );
-    await c.query(
-      `insert into subscriptions (billing_account_id, plan_key, tenant_id, period, status, current_period_end)
-       values ($1, 'ingyenes', $2, 'yearly', 'active', now() + interval '100 years')`,
-      [billingId, tenantId],
-    );
     await c.query(`insert into memberships (tenant_id, user_id, role) values ($1, $2, 'owner')`, [
       tenantId,
       userId,
@@ -257,8 +247,7 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
       }
     });
 
-    it("cannot read billing_accounts or audit_log although it inserts into them", async () => {
-      expect(await attempt(platform, "select 1 from billing_accounts")).toMatchObject(DENIED);
+    it("cannot read audit_log although it inserts into it", async () => {
       expect(await attempt(platform, "select 1 from audit_log")).toMatchObject(DENIED);
     });
   });
@@ -283,8 +272,6 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
         `select (select count(*) from tenants where id = $1) as tenants,
                 (select count(*) from memberships where tenant_id = $1 and role = 'owner') as memberships,
                 (select count(*) from people where tenant_id = $1) as people,
-                (select count(*) from subscriptions where tenant_id = $1) as subscriptions,
-                (select count(*) from billing_accounts where owner_id = $1) as billing,
                 (select count(*) from audit_log where tenant_id = $1) as audit`,
         [tenantId],
       );
@@ -292,8 +279,6 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
         tenants: "1",
         memberships: "1",
         people: "1",
-        subscriptions: "1",
-        billing: "1",
         audit: "1",
       });
     });
@@ -341,7 +326,7 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
       );
     });
 
-    it("cannot add owners, people, subscriptions or billing to an existing church", async () => {
+    it("cannot add owners or people to an existing church, and has no billing or subscription access", async () => {
       const userId = await newUser();
       await owner.query(`insert into profiles (id, email, name) values ($1, $2, 'Próba Anna')`, [
         userId,
@@ -361,14 +346,12 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
           [A, userId],
         ),
       ).toMatchObject(DENIED);
-      expect(
-        await attempt(
-          platform,
-          `insert into billing_accounts (owner_type, owner_id, name, address, email, payment_method)
-           values ('tenant', $1, 'X', '{}', 'x@example.test', 'transfer')`,
-          [A],
-        ),
-      ).toMatchObject(DENIED);
+      for (const table of ["billing_accounts", "subscriptions"]) {
+        expect(await attempt(platform, `insert into ${table} default values`), table).toMatchObject(
+          DENIED,
+        );
+        expect(await attempt(platform, `select 1 from ${table}`), table).toMatchObject(DENIED);
+      }
     });
 
     it("a tenant older than ten minutes is closed to the seeding inserts", async () => {
@@ -426,8 +409,6 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
         "delete from tenants",
         "update profiles set name = 'x'",
         "delete from profiles",
-        "update subscriptions set quantity = 2",
-        "delete from subscriptions",
         "delete from memberships",
         "update people set active = false",
         "delete from audit_log",
@@ -493,6 +474,26 @@ describe.skipIf(!url || unsafeEnv)("platform role churchy_platform (TEST_DATABAS
     await expect(assertPlatformRole(platform)).resolves.toBeUndefined();
     await expect(assertPlatformRole(owner)).rejects.toBeInstanceOf(UnsafePlatformRoleError);
     await expect(assertPlatformRole(app)).rejects.toBeInstanceOf(UnsafePlatformRoleError);
+  });
+
+  it("seedPlans upserts the five plan rows idempotently (catalog seed, placeholder prices)", async () => {
+    const db = createDb(owner);
+    expect(await seedPlans(db)).toBe(5);
+    expect(await seedPlans(db)).toBe(5);
+    const rows = await ownerRows<{ key: string; price_monthly: number; price_yearly: number }>(
+      "select key, price_monthly, price_yearly from plans",
+    );
+    expect(rows.sort((a, b) => (a.key < b.key ? -1 : 1))).toEqual([
+      { key: "ingyenes", price_monthly: 0, price_yearly: 0 },
+      { key: "teljes", price_monthly: 4990, price_yearly: 49900 },
+      { key: "ws_l300", price_monthly: 34900, price_yearly: 349000 },
+      { key: "ws_m150", price_monthly: 19900, price_yearly: 199000 },
+      { key: "ws_s50", price_monthly: 9900, price_yearly: 99000 },
+    ]);
+    const [ent] = await ownerRows<{ n: number }>(
+      "select (entitlements ->> 'musicResearchPerMonth')::int as n from plans where key = 'ws_m150'",
+    );
+    expect(ent?.n).toBe(20);
   });
 
   it("no SECURITY DEFINER function besides the two music ones", async () => {

@@ -7,6 +7,7 @@
  *   reset            revert every applied migration
  *   status           list applied and pending migrations
  *   auth-stub        create a minimal `auth.users` on a plain Postgres (tests/CI; never Supabase)
+ *   seed-plans       upsert the 5 plans (PLACEHOLDER prices; catalog data, owner role)
  *   seed             load the D-91 demo fixtures (refused when APP_ENV=production)
  */
 import { readFileSync } from "node:fs";
@@ -14,6 +15,7 @@ import { fileURLToPath } from "node:url";
 import { createDb, createPool } from "./client";
 import { appliedMigrations, migrateDown, migrateReset, migrateUp, readJournal } from "./migrate";
 import { seedDemo } from "./seed/demo";
+import { seedPlans } from "./seed/plans";
 
 const AUTH_STUB = fileURLToPath(new URL("../sql/supabase-auth-stub.sql", import.meta.url));
 
@@ -57,6 +59,9 @@ async function main(argv: string[]): Promise<void> {
         console.log("Created auth.users stub.");
         break;
       }
+      case "seed-plans":
+        console.log(`plans: ${await seedPlans(createDb(pool))}`);
+        break;
       case "seed": {
         const report = await seedDemo(createDb(pool));
         for (const [table, n] of Object.entries(report.counts)) console.log(`${table}: ${n}`);
@@ -67,7 +72,7 @@ async function main(argv: string[]): Promise<void> {
       }
       default:
         throw new Error(
-          `Unknown command "${command ?? ""}" (up | down | reset | status | auth-stub | seed)`,
+          `Unknown command "${command ?? ""}" (up | down | reset | status | auth-stub | seed | seed-plans)`,
         );
     }
   } finally {

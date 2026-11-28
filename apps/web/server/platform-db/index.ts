@@ -12,5 +12,5 @@ export type { HostResolution } from "./hosts";
 export { getEntitlementsRow, getProfileByAuthUser } from "./queries";
 export type { PlatformProfile } from "./queries";
 export { createTenant } from "./create-tenant";
-export type { CreateTenantInput, CreateTenantResult } from "./create-tenant";
+export type { CreateTenantInput, CreateTenantOptions, CreateTenantResult } from "./create-tenant";
 export { RESERVED_SLUGS, checkSlug } from "./slug";

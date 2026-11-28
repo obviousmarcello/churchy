@@ -368,7 +368,7 @@ describe("createTenant", () => {
 
   it("bootstraps the church in one transaction with audit entries", async () => {
     const { db, calls, events } = createFakeDb(happy);
-    const result = await createTenant(input, db);
+    const result = await createTenant(input, { db: db });
     expect(result).toMatchObject({ ok: true, slug: "szent-istvan", profileExisted: false });
     expect(events).toEqual(["begin", "commit"]);
     expect(calls.every((c) => c.tx)).toBe(true);
@@ -378,8 +378,6 @@ describe("createTenant", () => {
       "organizations",
       "tenants",
       "profiles",
-      "billing_accounts",
-      "subscriptions",
       "memberships",
       "people",
       "audit_log",
@@ -407,7 +405,7 @@ describe("createTenant", () => {
 
   it("skips the profile audit entry when the profile already existed", async () => {
     const { db, calls } = createFakeDb((text) => (/from plans/.test(text) ? [{ x: 1 }] : []));
-    const result = await createTenant(input, db);
+    const result = await createTenant(input, { db: db });
     expect(result).toMatchObject({ ok: true, profileExisted: true });
     expect(calls.filter((c) => /into audit_log/.test(c.text))).toHaveLength(1);
   });
@@ -416,7 +414,7 @@ describe("createTenant", () => {
     const { db, events } = createFakeDb();
     const result = await createTenant(
       { ...input, name: " ", owner: { ...input.owner, authUserId: "nope", email: "not-an-email" } },
-      db,
+      { db },
     );
     expect(result).toMatchObject({ ok: false, reason: "invalid" });
     if (!result.ok && result.reason === "invalid") {
@@ -430,13 +428,37 @@ describe("createTenant", () => {
     expect(events).toEqual([]);
   });
 
+  it("operator path: allowReserved admits golgota; self-serve signup refuses it", async () => {
+    for (const slug of ["golgota", "golgotabudapest", "Golgota"]) {
+      const { db, events } = createFakeDb(happy);
+      expect(await createTenant({ ...input, slug }, { db })).toEqual({
+        ok: false,
+        reason: "slug_reserved",
+      });
+      expect(events).toEqual([]);
+      const operator = createFakeDb(happy);
+      expect(
+        await createTenant({ ...input, slug }, { db: operator.db, allowReserved: true }),
+      ).toMatchObject({
+        ok: true,
+        slug: slug.toLowerCase(),
+      });
+    }
+    // allowReserved never lets an unusable slug through.
+    const { db } = createFakeDb(happy);
+    expect(await createTenant({ ...input, slug: "ab" }, { db, allowReserved: true })).toEqual({
+      ok: false,
+      reason: "slug_invalid",
+    });
+  });
+
   it("refuses reserved and invalid slugs before touching the database", async () => {
     const { db, events } = createFakeDb();
-    expect(await createTenant({ ...input, slug: "admin" }, db)).toEqual({
+    expect(await createTenant({ ...input, slug: "admin" }, { db: db })).toEqual({
       ok: false,
       reason: "slug_reserved",
     });
-    expect(await createTenant({ ...input, slug: "ab" }, db)).toEqual({
+    expect(await createTenant({ ...input, slug: "ab" }, { db: db })).toEqual({
       ok: false,
       reason: "slug_invalid",
     });
@@ -453,7 +475,7 @@ describe("createTenant", () => {
       if (/into tenants/.test(text)) return dup;
       return [];
     });
-    expect(await createTenant(input, db)).toEqual({ ok: false, reason: "slug_taken" });
+    expect(await createTenant(input, { db: db })).toEqual({ ok: false, reason: "slug_taken" });
     expect(events).toEqual(["begin", "rollback"]);
   });
 
@@ -467,16 +489,16 @@ describe("createTenant", () => {
       if (/into profiles/.test(text)) return dupEmail;
       return [];
     });
-    expect(await createTenant(input, a.db)).toEqual({ ok: false, reason: "email_taken" });
+    expect(await createTenant(input, { db: a.db })).toEqual({ ok: false, reason: "email_taken" });
 
     const b = createFakeDb((text) =>
       /from plans/.test(text) ? [{ x: 1 }] : /from organizations/.test(text) ? [{ x: 1 }] : [],
     );
-    expect(await createTenant(input, b.db)).toEqual({ ok: false, reason: "slug_taken" });
+    expect(await createTenant(input, { db: b.db })).toEqual({ ok: false, reason: "slug_taken" });
     expect(b.calls.some((c) => /into tenants/.test(c.text))).toBe(false);
 
     const c = createFakeDb();
-    expect(await createTenant(input, c.db)).toEqual({ ok: false, reason: "plan_missing" });
+    expect(await createTenant(input, { db: c.db })).toEqual({ ok: false, reason: "plan_missing" });
   });
 
   it("rethrows unexpected errors (permission, connection)", async () => {
@@ -486,7 +508,7 @@ describe("createTenant", () => {
       if (/into memberships/.test(text)) return denied;
       return [];
     });
-    await expect(createTenant(input, db)).rejects.toThrow("permission denied");
+    await expect(createTenant(input, { db: db })).rejects.toThrow("permission denied");
     expect(events).toEqual(["begin", "rollback"]);
   });
 });

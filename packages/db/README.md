@@ -76,7 +76,7 @@ The migration creates `churchy_app` as **NOLOGIN**. To let the app connect, an o
 puts the resulting URL into the deployment's `DATABASE_URL`. The password is never in git, a
 migration or a log. The migration role's URL is only used for migrations and the seed.
 
-**Platform role (`0025_platform_role`).** Host → tenant resolution, profile bootstrap, plan
+**Platform role (`0025_platform_role`, narrowed by `0026_platform_role_narrow`: no billing_accounts/subscriptions access).** Host → tenant resolution, profile bootstrap, plan
 lookups and church creation have no tenant context, so they use `churchy_platform` (NOLOGIN, NOINHERIT,
 NOBYPASSRLS). The owner creates a login role out-of-band (`churchy_platform_login`, see
 `docs/runbooks/supabase-dev-setup.md`). The exact grants are `PLATFORM_ROLE_ACCESS` in

@@ -1746,5 +1746,14 @@ export const MIGRATION_SQL: readonly { tag: string; statements: readonly string[
    "GRANT INSERT ON TABLE \"audit_log\" TO churchy_platform;",
    "CREATE POLICY \"platform_insert\" ON \"audit_log\" AS PERMISSIVE FOR INSERT TO churchy_platform\n  WITH CHECK (true);"
   ]
+ },
+ {
+  "tag": "0026_platform_role_narrow",
+  "statements": [
+   "-- S1 platform role, narrowed (forward migration after 0025, already applied live): church signup no\n-- longer creates a billing account or subscription (the plan lives in tenants.plan_key; billing rows\n-- come with D-88 when a paid plan is chosen). Removes the INSERT grants/policies on billing_accounts\n-- and subscriptions, and the then-unused SELECT on subscriptions.\nDROP POLICY IF EXISTS \"platform_insert\" ON \"subscriptions\";",
+   "DROP POLICY IF EXISTS \"platform_read\" ON \"subscriptions\";",
+   "DROP POLICY IF EXISTS \"platform_insert\" ON \"billing_accounts\";",
+   "REVOKE ALL ON TABLE \"subscriptions\", \"billing_accounts\" FROM churchy_platform;"
+  ]
  }
 ];

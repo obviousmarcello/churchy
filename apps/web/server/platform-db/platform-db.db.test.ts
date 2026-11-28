@@ -111,12 +111,11 @@ describe.skipIf(!ownerUrl || unsafe)("platform-db on a real database", () => {
       await owner!.query(
         `select (select count(*) from memberships where tenant_id = $1 and user_id = $2 and role = 'owner') as m,
                 (select count(*) from people where tenant_id = $1 and family_name = 'Próba' and prefix = 'dr.') as p,
-                (select count(*) from subscriptions where tenant_id = $1 and plan_key = 'ingyenes') as s,
                 (select count(*) from audit_log where tenant_id = $1 and action = 'tenant.create') as a`,
         [result.tenantId, u.id],
       )
     ).rows;
-    expect(counts).toEqual({ m: "1", p: "1", s: "1", a: "1" });
+    expect(counts).toEqual({ m: "1", p: "1", a: "1" });
   });
 
   it("reports a duplicate slug and a taken e-mail as results and leaves nothing behind", async (ctx) => {

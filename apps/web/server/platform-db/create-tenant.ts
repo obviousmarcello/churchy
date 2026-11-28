@@ -10,11 +10,11 @@ import { checkSlug } from "./slug";
 
 /**
  * Creates a church and its owner in ONE transaction through the platform role (SDD §19 step 1):
- * `tenants` (free plan, active, not launched), the owner's `profiles` row (when missing), the free
- * plan's `billing_accounts` + `subscriptions`, the owner's `memberships` (role `owner`) and `people`
+ * `tenants` (free plan, active, not launched), the owner's `profiles` row (when missing), the owner's
+ * `memberships` (role `owner`) and `people`
  * rows, and the `audit_log` entries. Nothing is read from church data; every insert is INSERT-only
  * and, for tenant tables, admitted by RLS only for a tenant created in the last ten minutes
- * (0025_platform_role). The church's own settings (`site_config`, `app_config`, domains) start
+ * (0025/0026_platform_role). The church's own settings (`site_config`, `app_config`, domains, billing) start
  * empty/default and are changed later by the owner under the tenant role.
  */
 
@@ -99,7 +99,6 @@ async function bootstrap(
   if (org.rows.length > 0) return { ok: false, reason: "slug_taken" };
 
   const tenantId = randomUUID();
-  const billingId = randomUUID();
   const personId = randomUUID();
   const { owner } = input;
   const actor = input.actorUserId ?? owner.authUserId;
@@ -116,17 +115,6 @@ async function bootstrap(
     [owner.authUserId, owner.email, owner.name],
   );
   const profileExisted = profile.rows.length === 0;
-  await tx.query(
-    // The billing details are entered later by the owner; the free plan needs the row only to hang the subscription on.
-    `insert into billing_accounts (id, owner_type, owner_id, name, address, email, payment_method)
-     values ($1, 'tenant', $2, $3, '{}'::jsonb, $4, 'transfer')`,
-    [billingId, tenantId, input.name, owner.email],
-  );
-  await tx.query(
-    `insert into subscriptions (billing_account_id, plan_key, tenant_id, period, status, current_period_end)
-     values ($1, $2::plan_key, $3, 'yearly', 'active', now() + interval '100 years')`,
-    [billingId, FREE_PLAN, tenantId],
-  );
   await tx.query(`insert into memberships (tenant_id, user_id, role) values ($1, $2, 'owner')`, [
     tenantId,
     owner.authUserId,
@@ -175,9 +163,18 @@ async function bootstrap(
  * results, never exceptions: invalid input, a reserved/invalid/taken slug, a taken e-mail, a missing
  * free plan. Anything else (connection, permission) throws.
  */
+export interface CreateTenantOptions {
+  readonly db?: Pick<PlatformDb, "transaction">;
+  /**
+   * Operator path (platform console, `server/platform-db` internals): allows a reserved slug such as
+   * `golgota`. Self-serve signup (`server/signup.ts`) never sets it and has no way to pass it on.
+   */
+  readonly allowReserved?: boolean;
+}
+
 export async function createTenant(
   rawInput: CreateTenantInput,
-  db?: Pick<PlatformDb, "transaction">,
+  options: CreateTenantOptions = {},
 ): Promise<CreateTenantResult> {
   const parsed = CreateTenantInputSchema.safeParse(rawInput, { error: huZodErrorMap });
   if (!parsed.success) {
@@ -187,11 +184,11 @@ export async function createTenant(
       issues: parsed.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })),
     };
   }
-  const slug = checkSlug(parsed.data.slug);
+  const slug = checkSlug(parsed.data.slug, { allowReserved: options.allowReserved === true });
   if (!slug.ok)
     return { ok: false, reason: slug.reason === "reserved" ? "slug_reserved" : "slug_invalid" };
 
-  const source = db ?? (await getPlatformDb());
+  const source = options.db ?? (await getPlatformDb());
   let result: CreateTenantResult;
   try {
     result = await source.transaction((tx) => bootstrap(tx, parsed.data, slug.slug));
