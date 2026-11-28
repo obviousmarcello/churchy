@@ -4458,7 +4458,7 @@
         "songsAndProjection": "Dalok és vetítés",
         "hubForbidden": {
           "title": "Itt nincs elérhető oldalad",
-          "description": "Ezek az oldalak adminisztrátoroknak szólnak. Ha szükséged van rájuk, kérj meg egy szuperadmint."
+          "description": "Ezek az oldalak adminisztrátoroknak szólnak. Ha szükséged van rájuk, kérj meg egy vezetőt."
         },
         "rail": {
           "courses": "Tudástér",
@@ -5355,11 +5355,11 @@
         "checkingAccess": "Hozzáférés ellenőrzése…",
         "signIn": {
           "title": "Jelentkezz be a dalok hozzáadásához",
-          "description": "Csak bejelentkezett daladminok és szuperadminok adhatnak dalokat az adatbázishoz."
+          "description": "Csak bejelentkezett daladminok és vezetők adhatnak dalokat az adatbázishoz."
         },
         "forbidden": {
           "title": "Csak daladminok adhatnak hozzá dalokat",
-          "description": "Kérj meg egy daladmint, hogy adja hozzá a dalt, vagy kérj meg egy szuperadmint, hogy adjon neked daladmin szerepkört."
+          "description": "Kérj meg egy daladmint, hogy adja hozzá a dalt, vagy kérj meg egy vezetőt, hogy adjon neked daladmin szerepkört."
         },
         "submit": "Dal hozzáadása",
         "pending": "Dal hozzáadása…"
@@ -5369,11 +5369,11 @@
         "loading": "Dal betöltése…",
         "signIn": {
           "title": "Jelentkezz be a dalok szerkesztéséhez",
-          "description": "Csak bejelentkezett daladminok és szuperadminok szerkeszthetnek dalokat."
+          "description": "Csak bejelentkezett daladminok és vezetők szerkeszthetnek dalokat."
         },
         "forbidden": {
           "title": "Csak daladminok szerkeszthetnek dalokat",
-          "description": "Kérj meg egy daladmint, hogy végezze el a módosítást, vagy kérj meg egy szuperadmint, hogy adjon neked daladmin szerepkört."
+          "description": "Kérj meg egy daladmint, hogy végezze el a módosítást, vagy kérj meg egy vezetőt, hogy adjon neked daladmin szerepkört."
         },
         "noArrangement": {
           "title": "Ennek a dalnak nincs változata",
@@ -5413,21 +5413,21 @@
       "gate": {
         "signIn": {
           "title": "Jelentkezz be a jogkutatás kezeléséhez",
-          "description": "Csak bejelentkezett szuperadminok állíthatják be a kutatást és nézhetik át a javaslatait."
+          "description": "Csak bejelentkezett vezetők állíthatják be a kutatást és nézhetik át a javaslatait."
         },
         "forbidden": {
-          "title": "A jogkutatást csak szuperadminok kezelhetik",
+          "title": "A jogkutatást csak vezetők kezelhetik",
           "description": "Egy dal jogait a dal szerkesztőoldalán módosíthatod."
         }
       },
       "reviewGate": {
         "signIn": {
           "title": "Jelentkezz be a jogi javaslatok átnézéséhez",
-          "description": "Csak bejelentkezett daladminok és szuperadminok nézhetik át a javaslatokat."
+          "description": "Csak bejelentkezett daladminok és vezetők nézhetik át a javaslatokat."
         },
         "forbidden": {
           "title": "A jogi javaslatokat csak daladminok nézhetik át",
-          "description": "Kérj meg egy daladmint vagy szuperadmint."
+          "description": "Kérj meg egy daladmint vagy vezetőt."
         }
       },
       "songsLink": {
@@ -5538,7 +5538,7 @@
       },
       "proposals": {
         "title": "Átnézendő javaslatok",
-        "description": "Ezeket a dalokat egy MI-ügynök kutatta, éjjel vagy egy szuperadmin gépén. Ellenőrizz minden értéket: tartsd meg a helyeseket, szükség esetén javítsd őket, majd fogadd el. Az elutasított dal éjjel nem kap új kutatást.",
+        "description": "Ezeket a dalokat egy MI-ügynök kutatta, éjjel vagy egy vezető gépén. Ellenőrizz minden értéket: tartsd meg a helyeseket, szükség esetén javítsd őket, majd fogadd el. Az elutasított dal éjjel nem kap új kutatást.",
         "emptyTitle": "Nincs átnézendő javaslat",
         "emptyDescription": "Az éjszakai kutatás ide teszi a javaslatait.",
         "firstOfTotal": "Ez az első {shown} javaslat a(z) {total} közül. Nézd át őket, aztán nyisd meg újra az oldalt a következőkért.",
@@ -5625,24 +5625,24 @@
         "samePassword": "Adj meg a jelenlegitől eltérő jelszót",
         "wrongCurrentPassword": "A jelenlegi jelszó nem helyes",
         "weakPassword": "Ez a jelszó túl gyenge. Adj meg hosszabb jelszót.",
-        "otherDevicesSignedIn": "A jelszavad megváltozott, de lehet, hogy más eszközökön még be vagy jelentkezve. Jelentkezz ki ott, vagy kérj segítséget egy szuperadmintól.",
+        "otherDevicesSignedIn": "A jelszavad megváltozott, de lehet, hogy más eszközökön még be vagy jelentkezve. Jelentkezz ki ott, vagy kérj segítséget egy vezetőtól.",
         "tooManyAttempts": "Túl sok próbálkozás. Várj néhány percet, és próbáld újra.",
-        "blocked": "Ez a fiók le van tiltva. Fordulj egy szuperadminhoz.",
+        "blocked": "Ez a fiók le van tiltva. Fordulj egy vezetőhoz.",
         "signInFailed": "Nem sikerült bejelentkezni. Próbáld újra.",
         "setupFailed": "Nem sikerült elindítani a beállítást. Próbáld újra.",
         "verifyFailed": "Nem sikerült ellenőrizni a kódot. Próbáld újra.",
         "checkPasswordFailed": "Nem sikerült ellenőrizni a jelenlegi jelszavadat. Próbáld újra.",
         "removeAuthenticatorFailed": "Nem sikerült kikapcsolni a hitelesítő alkalmazásodat. Próbáld újra.",
-        "authenticatorOffOtherDevicesSignedIn": "A hitelesítő alkalmazásod ki van kapcsolva, de lehet, hogy más eszközökön még be vagy jelentkezve. Próbáld újra, vagy kérj segítséget egy szuperadmintól.",
+        "authenticatorOffOtherDevicesSignedIn": "A hitelesítő alkalmazásod ki van kapcsolva, de lehet, hogy más eszközökön még be vagy jelentkezve. Próbáld újra, vagy kérj segítséget egy vezetőtól.",
         "changePasswordFailed": "Nem sikerült megváltoztatni a jelszavadat. Próbáld újra.",
         "setPasswordFailed": "Nem sikerült beállítani a jelszavadat. Próbáld újra.",
-        "loginLinkExpired": "Ez a link lejárt, vagy már felhasználták. Kérj egy szuperadmintól új bejelentkezési e-mailt.",
-        "noEmail": "A fiókodhoz nem tartozik e-mail-cím. Használd a hitelesítő alkalmazásodat, vagy fordulj egy szuperadminhoz.",
+        "loginLinkExpired": "Ez a link lejárt, vagy már felhasználták. Kérj egy vezetőtól új bejelentkezési e-mailt.",
+        "noEmail": "A fiókodhoz nem tartozik e-mail-cím. Használd a hitelesítő alkalmazásodat, vagy fordulj egy vezetőhoz.",
         "enterEmailCode": "Add meg az e-mailben kapott 6 jegyű kódot.",
         "wrongEmailCode": "A kód nem helyes. Add meg a legújabb e-mailben kapott kódot.",
         "emailCodeExpired": "A kód lejárt, vagy túl sok volt a hibás próbálkozás. Kérj új kódot.",
         "emailCodeTooSoon": "Egy percen belül már küldtünk kódot. Várj egy percet, és utána kérj új kódot.",
-        "emailCodeTooMany": "Ma már túl sok kódot kértél. Próbáld újra holnap, vagy kérj egy szuperadmintól bejelentkezési e-mailt.",
+        "emailCodeTooMany": "Ma már túl sok kódot kértél. Próbáld újra holnap, vagy kérj egy vezetőtól bejelentkezési e-mailt.",
         "emailCodeUseApp": "A fiókodhoz hitelesítő alkalmazás tartozik. Az alkalmazásban látható kódot add meg.",
         "emailCodeNotSent": "Nem sikerült elküldeni az e-mailt. Várj egy percet, és próbáld újra.",
         "emailCodeMessage": {
@@ -5678,7 +5678,7 @@
         "projectionUser": "Az esemény vetítése nyitva van, és a kezelője elveszítené a hozzáférését. Várj, amíg a vetítés bezárul, vagy zárd be a vetítést a módosítással együtt.",
         "youtubeUrlInvalid": "Adj meg egy YouTube-linket, pl. https://youtu.be/…",
         "replyClosed": "Az esemény véget ért. A válaszodat már nem módosíthatod.",
-        "privateWithoutAccess": "A privát eseményt csak az önkéntesei, a hozzáadója és a szuperadminok látják. Előbb add hozzá magad önkéntesként, aztán tedd privátra az eseményt.",
+        "privateWithoutAccess": "A privát eseményt csak az önkéntesei, a hozzáadója és a vezetők látják. Előbb add hozzá magad önkéntesként, aztán tedd privátra az eseményt.",
         "areasRequired": "Válassz legalább egy csoportot.",
         "areasNotYours": "Csak azokat a csoportokat adhatod hozzá vagy veheted el, amelyeknek tagja vagy.",
         "areasWithoutAccess": "Nem vagy tagja ezeknek a csoportoknak, így nem látnád az eseményt. Válassz egy csoportot, amelynek tagja vagy, vagy előbb add hozzá magad önkéntesként.",
@@ -5797,9 +5797,9 @@
         "cycle": "Egy csoport nem kerülhet saját maga vagy egyik alcsoportja alá.",
         "hasChildren": "Ennek a csoportnak vannak alcsoportjai. Előbb töröld vagy helyezd át őket.",
         "root": "A gyökércsoport megmarad, és nincsenek szerepkörei: minden felhasználó a tagja.",
-        "rolesNeedSuperadmin": "Ez a csoport szerepköröket ad a tagjainak. Csak egy szuperadmin vehet fel bele embereket, vagy helyezhet alá tagokkal rendelkező csoportot.",
-        "removeNeedsLeader": "Ez a csoport szerepköröket ad a tagjainak. Csak egy szuperadmin, vagy ennek a csoportnak vagy egy fölötte lévő csoportnak a vezetője vehet ki belőle embereket, módosíthatja a vezetőit, viheti el egy szerepkör alól, vagy törölheti a tagjaival együtt.",
-        "rootLeadersNeedSuperadmin": "A gyökércsoport vezetőit csak egy szuperadmin választhatja ki.",
+        "rolesNeedSuperadmin": "Ez a csoport szerepköröket ad a tagjainak. Csak egy vezető vehet fel bele embereket, vagy helyezhet alá tagokkal rendelkező csoportot.",
+        "removeNeedsLeader": "Ez a csoport szerepköröket ad a tagjainak. Csak egy vezető, vagy ennek a csoportnak vagy egy fölötte lévő csoportnak a vezetője vehet ki belőle embereket, módosíthatja a vezetőit, viheti el egy szerepkör alól, vagy törölheti a tagjaival együtt.",
+        "rootLeadersNeedSuperadmin": "A gyökércsoport vezetőit csak egy vezető választhatja ki.",
         "projectionUser": "Egy esemény vetítése nyitva van, és a kezelője ezzel a módosítással elveszítené a hozzáférését. Várj, amíg a vetítés bezárul, aztán próbáld újra."
       },
       "eventImages": {
@@ -5838,21 +5838,21 @@
         "groupMissing": "Egy bejelölt csoport már nem létezik. Töltsd újra az oldalt.",
         "groupFull": "Egy bejelölt csoportnak már {max} tagja van. Előbb vegyél ki belőle egy tagot.",
         "emailExists": "Már van felhasználó ezzel az e-mail-címmel",
-        "ownRole": "A saját szerepköreidet nem változtathatod meg. Kérj meg rá egy másik szuperadmint.",
+        "ownRole": "A saját szerepköreidet nem változtathatod meg. Kérj meg rá egy másik vezetőt.",
         "userGone": "Ez a felhasználó már nem létezik.",
-        "lastSuperadmin": "Az alkalmazásban legalább egy szuperadminnak maradnia kell. Előbb tegyél szuperadminná egy másik felhasználót.",
+        "lastSuperadmin": "Az alkalmazásban legalább egy vezetőnak maradnia kell. Előbb tegyél vezetőná egy másik felhasználót.",
         "ownBlock": "A saját fiókodat nem tilthatod le.",
-        "ownTwoStepReset": "A saját kétlépcsős azonosításodat nem állíthatod vissza. Kérj meg rá egy másik szuperadmint.",
-        "ownDelete": "A saját fiókodat nem törölheted. Kérj meg rá egy másik szuperadmint.",
+        "ownTwoStepReset": "A saját kétlépcsős azonosításodat nem állíthatod vissza. Kérj meg rá egy másik vezetőt.",
+        "ownDelete": "A saját fiókodat nem törölheted. Kérj meg rá egy másik vezetőt.",
         "blockedSignOutFailed": "A felhasználó le van tiltva. De lehet, hogy más eszközökön még be van jelentkezve. Próbáld újra.",
         "twoStepResetSignOutFailed": "A kétlépcsős azonosítás vissza van állítva. De lehet, hogy a felhasználó más eszközökön még be van jelentkezve. Próbáld újra.",
         "ownLoginEmail": "Saját magadnak nem küldhetsz bejelentkezési e-mailt. A jelszavadat a Beállítások oldalon módosíthatod.",
-        "enterOwnPassword": "Ez a felhasználó szuperadmin. Add meg a saját jelszavadat.",
+        "enterOwnPassword": "Ez a felhasználó vezető. Add meg a saját jelszavadat.",
         "wrongOwnPassword": "A jelszavad nem helyes.",
         "emailChangeSignOutFailed": "Az e-mail-cím megváltozott, de a felhasználót nem sikerült minden eszközön kijelentkeztetni. Tiltsd le, majd engedélyezd újra a felhasználót a kijelentkeztetéshez.",
         "emailChangedMessage": {
           "subject": "Megváltozott a(z) {app} bejelentkezési e-mail-címed",
-          "text": "Egy szuperadmin megváltoztatta az e-mail-címet, amellyel a(z) {app} alkalmazásba bejelentkezel. Az új cím: {email}\n\nMinden eszközön kijelentkeztettünk. Ha nem számítottál erre a változásra, azonnal szólj a(z) {app} szuperadminjainak."
+          "text": "Egy vezető megváltoztatta az e-mail-címet, amellyel a(z) {app} alkalmazásba bejelentkezel. Az új cím: {email}\n\nMinden eszközön kijelentkeztettünk. Ha nem számítottál erre a változásra, azonnal szólj a(z) {app} vezetőinek."
         },
         "loginEmailBlocked": "A felhasználó le van tiltva. Előbb oldd fel a letiltást.",
         "loginEmailNoEmail": "A felhasználónak nincs e-mail-címe. Előbb adj meg egyet.",
@@ -5864,9 +5864,9 @@
         "newUserEmailUncertain": "A felhasználót hozzáadtuk, de nem tudjuk, hogy a bejelentkezési e-mail elment-e. Ha nem érkezik meg, nyisd meg a felhasználót, és küldd el újra.",
         "loginEmailMessage": {
           "subject": "Állítsd be a jelszavadat – {app}",
-          "privacyNew": "{controller} Elérhetőség: {contact}. Az e-mail-címedet egy szuperadmin adta meg az alkalmazásnak. Mit tárol rólad az alkalmazás: az e-mail-címedet, a jelszavadat (hash formában), a kétlépcsős azonosításod adatait, a bejelentkezési kísérleteid és néhány kérésed rövid ideig tartó számlálását (körülbelül egy napig), a szerepköreidet, amelyeket egy szuperadmin ad neked közvetlenül vagy egy csoporttal, azokat az eseményeket és programpontokat, amelyekhez egy eseményadmin beoszt, ezeknek az eseményeknek azokat a csapatait (például zene vagy közvetítés), amelyekbe egy eseményadmin vagy egy csoportvezető beoszt, azokat a csoportokat (például zene → zenekar), amelyekbe egy eseményadmin, egy szuperadmin vagy egy csoportvezető felvesz, és azt, hogy vezeted-e őket, az ezekre az eseményekre adott válaszaidat az idejükkel, és ha megadod, a megjelenített nevedet, a profilképedet, az értesítéseid beállításait, az eszközeid push-címét és a naptárfeeded titkos linkjének hash-ét. Minden bejelentkezett tag látja a nevedet és a képedet, azt, hogy mely események önkéntese vagy, a csapataidat ezekben, a válaszaidat ezekre, és a nevedet azoknál a programpontoknál, amelyekhez beosztottak; egy privát eseménynél ezeket csak az önkéntesei, a hozzáadója és a szuperadminok látják, egy csak egyes csoportoknak szóló eseménynél pedig ezeknek a csoportoknak és az alattuk lévő csoportoknak a tagjai is. A csoportjaidat csak az eseményadminok, a szuperadminok és a csoportjaid vezetői látják. A csoportjaid azt is meghatározzák, hogy a csapat mely eseményeit és képzéseit látod. Egy esemény önkéntesei e-mailben a nevedet azoknál a programpontoknál is megkapják, amelyekhez beosztottak. A szuperadminok az e-mail-címedet is látják. Az alkalmazás értesítést is küld azokról az eseményekről, amelyeken önkéntes vagy, e-mailben és, ha bekapcsolod, push-értesítésben; ezeket az értesítéseket a Beállításokban kikapcsolhatod. Az alkalmazás a Vercel (az USA-ban, az Európai Bizottság általános adatvédelmi kikötései szerint) és a Supabase (az EU-ban) szolgáltatásain fut, az e-maileket a Resend küldi, a hibajelentéseit pedig a Sentrynek (az EU-ban tárolva, legfeljebb 90 napig; a cég az USA-ban van, az általános adatvédelmi kikötések szerint), a felhasználói azonosítód helyett egy álneves kóddal, a neved, az e-mail-címed és az IP-címed nélkül (egy hibaüzenet így is tartalmazhat adatot az oldalról, például egy nevet). A push-értesítések a böngésződ push-szolgáltatásán (Google, Microsoft, Mozilla vagy Apple) keresztül mennek, az USA-ban; a push bekapcsolása előtt a Beállítások ehhez a hozzájárulásodat kérik. Ha bekapcsolod a naptárfeedet, a naptáralkalmazásod cége (például a Google, az Apple vagy a Microsoft) az USA-ban is tárolhatja az eseményeidet; a Beállítások ehhez is a hozzájárulásodat kérik, és a feedben nincs más tagok neve. Az alkalmazás ezeket az adatokat a gyülekezet dalainak, eseményeinek, próbáinak és képzéseinek szervezésére, valamint az alkalmazás hibáinak megtalálására és kijavítására használja. A jogalap a gyülekezet jogos érdeke a zenélés és az események megszervezésében, a csapata képzésében és egy hibátlanul működő alkalmazásban (GDPR 6. cikk (1) bekezdés f) pont). Az adataid addig maradnak, amíg egy szuperadmin nem törli a fiókodat. Az adatkezelőtől kérhetsz másolatot az adataidról, kérheted a helyesbítésüket, a fiókod törlését vagy az adatkezelés korlátozását, és tiltakozhatsz az adatkezelés ellen. Panaszt tehetsz az adatvédelmi hatóságnál is: {authority}. A teljes adatvédelmi tájékoztató:\n{privacy}",
+          "privacyNew": "{controller} Elérhetőség: {contact}. Az e-mail-címedet egy vezető adta meg az alkalmazásnak. Mit tárol rólad az alkalmazás: az e-mail-címedet, a jelszavadat (hash formában), a kétlépcsős azonosításod adatait, a bejelentkezési kísérleteid és néhány kérésed rövid ideig tartó számlálását (körülbelül egy napig), a szerepköreidet, amelyeket egy vezető ad neked közvetlenül vagy egy csoporttal, azokat az eseményeket és programpontokat, amelyekhez egy eseményadmin beoszt, ezeknek az eseményeknek azokat a csapatait (például zene vagy közvetítés), amelyekbe egy eseményadmin vagy egy csoportvezető beoszt, azokat a csoportokat (például zene → zenekar), amelyekbe egy eseményadmin, egy vezető vagy egy csoportvezető felvesz, és azt, hogy vezeted-e őket, az ezekre az eseményekre adott válaszaidat az idejükkel, és ha megadod, a megjelenített nevedet, a profilképedet, az értesítéseid beállításait, az eszközeid push-címét és a naptárfeeded titkos linkjének hash-ét. Minden bejelentkezett tag látja a nevedet és a képedet, azt, hogy mely események önkéntese vagy, a csapataidat ezekben, a válaszaidat ezekre, és a nevedet azoknál a programpontoknál, amelyekhez beosztottak; egy privát eseménynél ezeket csak az önkéntesei, a hozzáadója és a vezetők látják, egy csak egyes csoportoknak szóló eseménynél pedig ezeknek a csoportoknak és az alattuk lévő csoportoknak a tagjai is. A csoportjaidat csak az eseményadminok, a vezetők és a csoportjaid vezetői látják. A csoportjaid azt is meghatározzák, hogy a csapat mely eseményeit és képzéseit látod. Egy esemény önkéntesei e-mailben a nevedet azoknál a programpontoknál is megkapják, amelyekhez beosztottak. A vezetők az e-mail-címedet is látják. Az alkalmazás értesítést is küld azokról az eseményekről, amelyeken önkéntes vagy, e-mailben és, ha bekapcsolod, push-értesítésben; ezeket az értesítéseket a Beállításokban kikapcsolhatod. Az alkalmazás a Vercel (az USA-ban, az Európai Bizottság általános adatvédelmi kikötései szerint) és a Supabase (az EU-ban) szolgáltatásain fut, az e-maileket a Resend küldi, a hibajelentéseit pedig a Sentrynek (az EU-ban tárolva, legfeljebb 90 napig; a cég az USA-ban van, az általános adatvédelmi kikötések szerint), a felhasználói azonosítód helyett egy álneves kóddal, a neved, az e-mail-címed és az IP-címed nélkül (egy hibaüzenet így is tartalmazhat adatot az oldalról, például egy nevet). A push-értesítések a böngésződ push-szolgáltatásán (Google, Microsoft, Mozilla vagy Apple) keresztül mennek, az USA-ban; a push bekapcsolása előtt a Beállítások ehhez a hozzájárulásodat kérik. Ha bekapcsolod a naptárfeedet, a naptáralkalmazásod cége (például a Google, az Apple vagy a Microsoft) az USA-ban is tárolhatja az eseményeidet; a Beállítások ehhez is a hozzájárulásodat kérik, és a feedben nincs más tagok neve. Az alkalmazás ezeket az adatokat a gyülekezet dalainak, eseményeinek, próbáinak és képzéseinek szervezésére, valamint az alkalmazás hibáinak megtalálására és kijavítására használja. A jogalap a gyülekezet jogos érdeke a zenélés és az események megszervezésében, a csapata képzésében és egy hibátlanul működő alkalmazásban (GDPR 6. cikk (1) bekezdés f) pont). Az adataid addig maradnak, amíg egy vezető nem törli a fiókodat. Az adatkezelőtől kérhetsz másolatot az adataidról, kérheted a helyesbítésüket, a fiókod törlését vagy az adatkezelés korlátozását, és tiltakozhatsz az adatkezelés ellen. Panaszt tehetsz az adatvédelmi hatóságnál is: {authority}. A teljes adatvédelmi tájékoztató:\n{privacy}",
           "button": "Jelszó beállítása",
-          "textAgain": "Egy szuperadmin új linket küldött a(z) {app} jelszavad beállításához. Ezzel az e-mail-címmel jelentkezel be: {email}\n\nAz új jelszó beállításához nyisd meg ezt a linket:\n{link}\n\nA link csak egyszer és korlátozott ideig működik. Amíg nem állítasz be új jelszót, a jelenlegi jelszavad működik.\n\nAdatvédelmi tájékoztató:\n{privacy}\n\nHa nem vártad ezt az e-mailt, nyugodtan hagyd figyelmen kívül."
+          "textAgain": "Egy vezető új linket küldött a(z) {app} jelszavad beállításához. Ezzel az e-mail-címmel jelentkezel be: {email}\n\nAz új jelszó beállításához nyisd meg ezt a linket:\n{link}\n\nA link csak egyszer és korlátozott ideig működik. Amíg nem állítasz be új jelszót, a jelenlegi jelszavad működik.\n\nAdatvédelmi tájékoztató:\n{privacy}\n\nHa nem vártad ezt az e-mailt, nyugodtan hagyd figyelmen kívül."
         }
       }
     },
@@ -5917,11 +5917,11 @@
       "gate": {
         "signIn": {
           "title": "Jelentkezz be a modulok beállításához",
-          "description": "Csak bejelentkezett szuperadminok kapcsolhatják be és ki a modulokat."
+          "description": "Csak bejelentkezett vezetők kapcsolhatják be és ki a modulokat."
         },
         "forbidden": {
-          "title": "Csak szuperadminok kapcsolhatják be és ki a modulokat",
-          "description": "Kérj meg egy szuperadmint."
+          "title": "Csak vezetők kapcsolhatják be és ki a modulokat",
+          "description": "Kérj meg egy vezetőt."
         }
       },
       "form": {
@@ -5945,8 +5945,8 @@
       },
       "off": {
         "title": "{module}: kikapcsolva",
-        "description": "Egy szuperadmin kikapcsolta az alkalmazásnak ezt a részét.",
-        "descriptionSuperadmin": "A Konfiguráció oldal Modulok fülén újra bekapcsolhatod.",
+        "description": "Egy vezető kikapcsolta az alkalmazásnak ezt a részét.",
+        "descriptionSuperadmin": "Az admin Modulok oldalán újra bekapcsolhatod.",
         "openModules": "Modulok megnyitása"
       },
       "items": {
@@ -6391,7 +6391,7 @@
         "areasHint": "Csak a kijelölt területeken hozhatsz létre eseményt.",
         "checkingAccess": "Hozzáférés ellenőrzése…",
         "forbiddenTitle": "Csak eseményadmin adhat hozzá eseményt",
-        "forbiddenDescription": "Kérj meg egy eseményadmint, hogy adja hozzá az eseményt, vagy kérj meg egy szuperadmint, hogy adja meg neked az eseményadmin szerepkört.",
+        "forbiddenDescription": "Kérj meg egy eseményadmint, hogy adja hozzá az eseményt, vagy kérj meg egy vezetőt, hogy adja meg neked az eseményadmin szerepkört.",
         "afterAdd": "Az esemény hozzáadása után kiválaszthatod a programpontjait és az önkénteseit.",
         "submitting": "Esemény hozzáadása…"
       },
@@ -6424,10 +6424,10 @@
         "youtubeUrl": "YouTube-link",
         "youtubeUrlHint": "Nem kötelező, pl. az esemény élő közvetítése",
         "isPrivate": "Privát esemény",
-        "isPrivateHint": "Csak az esemény önkéntesei, a hozzáadója és a szuperadminok látják.",
+        "isPrivateHint": "Csak az esemény önkéntesei, a hozzáadója és a vezetők látják.",
         "groups": "Csoportok",
         "groupsHint": "{root}: minden felhasználó látja az eseményt. Más csoportok: csak a tagjaik és az alattuk lévő csoportok tagjai látják. Az önkéntesek mindig látják.",
-        "groupsLocked": "A lakatos csoportoknak nem vagy tagja. A tagjaik és a szuperadminok módosíthatják őket. Az eseménynél maradnak, hacsak nem a(z) {root} csoportot választod.",
+        "groupsLocked": "A lakatos csoportoknak nem vagy tagja. A tagjaik és a vezetők módosíthatják őket. Az eseménynél maradnak, hacsak nem a(z) {root} csoportot választod.",
         "titleRequired": "Add meg a címet",
         "startsAtRequired": "Add meg a dátumot és az időpontot",
         "durationInvalid": "Az időtartamot egész percekben add meg"
@@ -6682,7 +6682,7 @@
         "onlyFor": "Csak nekik:",
         "hidden": "Rejtett",
         "showHidden": "Rejtett események mutatása ({count})",
-        "showHiddenHint": "Más csoportok eseményei és más felhasználók privát eseményei. Csak a szuperadminok látják őket.",
+        "showHiddenHint": "Más csoportok eseményei és más felhasználók privát eseményei. Csak a vezetők látják őket.",
         "noMatchHidden": "Néhány esemény rejtett: más csoportoknak szól, vagy privát.",
         "onlyHiddenDescription": "Minden esemény rejtett: más csoportoknak szól, vagy privát. Mutasd a rejtett eseményeket, hogy lásd őket.",
         "showHiddenAction": "Rejtett események mutatása",
@@ -6754,7 +6754,7 @@
         "loading": "Esemény betöltése…",
         "notFoundTitle": "Az esemény nem található",
         "notFoundDescription": "Az esemény nem létezik, egy eseményadmin törölte, vagy csak egyes csoportoknak szól, illetve privát, és nem láthatod.",
-        "private": "Privát esemény: csak az önkéntesei, a hozzáadója és a szuperadminok látják.",
+        "private": "Privát esemény: csak az önkéntesei, a hozzáadója és a vezetők látják.",
         "backToEvents": "Vissza az eseményekhez",
         "starts": "Kezdés",
         "ends": "Vége",
@@ -6822,7 +6822,7 @@
         "addVolunteer": "Önkéntes hozzáadása",
         "adding": "Hozzáadás…",
         "everyoneIsVolunteer": "Minden felhasználó önkéntese ennek az eseménynek.",
-        "unnamedHidden": "A megjelenített név nélküli felhasználók nincsenek a listában. Egy szuperadmin hozzáadhatja őket.",
+        "unnamedHidden": "A megjelenített név nélküli felhasználók nincsenek a listában. Egy vezető hozzáadhatja őket.",
         "removeVolunteer": "{name} eltávolítása",
         "endProjections": "A hozzáférést elvesztő felhasználók vetítésének bezárása",
         "removeAndEndProjection": "Eltávolítás és a vetítés bezárása",
@@ -6923,11 +6923,11 @@
         "gate": {
           "signIn": {
             "title": "Jelentkezz be a folytatáshoz",
-            "description": "Csak az eseményadminok, a szuperadminok és a csoportvezetők használhatják a szolgálati beosztást."
+            "description": "Csak az eseményadminok, a vezetők és a csoportvezetők használhatják a szolgálati beosztást."
           },
           "forbidden": {
             "title": "Nincs hozzáférésed",
-            "description": "Csak az eseményadminok, a szuperadminok és a csoportvezetők használhatják a szolgálati beosztást."
+            "description": "Csak az eseményadminok, a vezetők és a csoportvezetők használhatják a szolgálati beosztást."
           }
         },
         "timeframe": "Időszak",
@@ -7004,7 +7004,7 @@
       },
       "gate": {
         "forbiddenTitle": "Nincs hozzáférésed ehhez a kivetítéshez",
-        "forbiddenDescription": "Az esemény kivetítését csak az önkéntesei, a zenei vezetők és a szuperadminok használhatják.",
+        "forbiddenDescription": "Az esemény kivetítését csak az önkéntesei, a zenei vezetők és a vezetők használhatják.",
         "notFoundTitle": "Az esemény nem található",
         "notFoundDescription": "Ez az esemény már nem létezik.",
         "noSourceTitle": "Nincs mit kivetíteni",
@@ -7294,11 +7294,11 @@
       "gate": {
         "signIn": {
           "title": "Jelentkezz be a folytatáshoz",
-          "description": "Csak az eseményadminok és a szuperadminok szerkeszthetik a vetítési témákat."
+          "description": "Csak az eseményadminok és a vezetők szerkeszthetik a vetítési témákat."
         },
         "forbidden": {
           "title": "Nincs hozzáférésed",
-          "description": "Csak az eseményadminok és a szuperadminok szerkeszthetik a vetítési témákat."
+          "description": "Csak az eseményadminok és a vezetők szerkeszthetik a vetítési témákat."
         }
       },
       "list": {
@@ -7521,7 +7521,7 @@
         "missing": "Ez a hirdetések programpont már nem létezik. Töltsd újra az oldalt.",
         "settingsHeading": "Beállítások",
         "calendars": "Naptárak",
-        "noCalendars": "Még nincs naptár. Egy szuperadmin adja hozzá őket a Konfiguráció > Hirdetési naptárak lapon. Addig add hozzá a saját bejegyzéseidet.",
+        "noCalendars": "Még nincs naptár. Egy vezető adhatja hozzá őket a Hirdetési naptárak oldalon. Addig add hozzá a saját bejegyzéseidet.",
         "calendarOff": "{name} (kikapcsolva)",
         "details": "Részletek a listákban",
         "detailsHint": "Minden bejegyzés módosíthatja ezeket. A saját diája minden részletet mutat, amelyet nem rejt el.",
@@ -7709,11 +7709,11 @@
       "gate": {
         "signIn": {
           "title": "Jelentkezz be a keverőpult beállításához",
-          "description": "Csak a bejelentkezett eseményadminok, zenei vezetők és szuperadminok állíthatják be a keverőpultot."
+          "description": "Csak a bejelentkezett eseményadminok, zenei vezetők és vezetők állíthatják be a keverőpultot."
         },
         "forbidden": {
-          "title": "Csak eseményadminok, zenei vezetők és szuperadminok állíthatják be a keverőpultot",
-          "description": "Kérj meg egy eseményadmint, egy zenei vezetőt vagy egy szuperadmint."
+          "title": "Csak eseményadminok, zenei vezetők és vezetők állíthatják be a keverőpultot",
+          "description": "Kérj meg egy eseményadmint, egy zenei vezetőt vagy egy vezetőt."
         }
       },
       "form": {
@@ -7899,7 +7899,7 @@
       },
       "gate": {
         "title": "Nincs hozzáférésed",
-        "description": "Csak a képzésadminok és a szuperadminok módosíthatják a képzéseket."
+        "description": "Csak a képzésadminok és a vezetők módosíthatják a képzéseket."
       },
       "languages": {
         "hu": "Magyar",
@@ -8013,7 +8013,7 @@
       },
       "newCourse": {
         "title": "Új képzés",
-        "description": "Az új képzés piszkozat. Amíg közzé nem teszed, csak a képzésadminok és a szuperadminok látják.",
+        "description": "Az új képzés piszkozat. Amíg közzé nem teszed, csak a képzésadminok és a vezetők látják.",
         "courseTitle": "Cím",
         "language": "A tartalom nyelve",
         "languageHint": "A leckék nyelve. A gombok és a menük minden felhasználónak a saját nyelvén maradnak.",
@@ -8028,7 +8028,7 @@
           "one": "{count} lecke",
           "other": "{count} lecke"
         },
-        "hiddenNotice": "Ez a képzés el van rejtve. Amíg újra közzé nem teszik, csak a képzésadminok és a szuperadminok nyithatják meg.",
+        "hiddenNotice": "Ez a képzés el van rejtve. Amíg újra közzé nem teszik, csak a képzésadminok és a vezetők nyithatják meg.",
         "notPublishedTitle": "Ez a képzés még nincs közzétéve",
         "notPublishedDescription": "Nyisd meg a szerkesztőt, adj hozzá leckéket, és tedd közzé a képzést.",
         "noLessonsTitle": "Ennek a képzésnek nincs leckéje",

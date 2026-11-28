@@ -5,9 +5,6 @@ import {
   createAnnouncement,
   refreshAnnouncementNow,
   removeEntry,
-  saveEntrySettings,
-  saveManualEntry,
-  updateAnnouncement,
 } from "@/server/music/models/announcements";
 import {
   saveAnnouncementCalendar,
@@ -106,63 +103,12 @@ export const createAnnouncementAction = withPolicy(
   },
 );
 
-/** The calendars of an announcement (`calendarId` fields; none: all that are on) and a read now. */
-export const saveAnnouncementAction = withPolicy(
-  "music.event.manage",
-  inModule("announcements"),
-  async (_scope, formData: FormData): Promise<Result> => {
-    const announcementId = text(formData, "announcementId");
-    const calendarIds = formData.getAll("calendarId").map(String);
-    const saved = await updateAnnouncement(announcementId, {
-      calendarIds: calendarIds.length > 0 ? calendarIds : null,
-    });
-    if (saved && formData.get("refresh") === "on") await refreshAnnouncementNow(announcementId);
-    return { ok: saved };
-  },
-);
-
 export const refreshAnnouncementAction = withPolicy(
   "music.event.manage",
   inModule("announcements"),
   async (_scope, formData: FormData): Promise<Result> => ({
     ok: await refreshAnnouncementNow(text(formData, "announcementId")),
   }),
-);
-
-/** Leaves a calendar entry out of the announcement, or takes it back. */
-export const excludeEntryAction = withPolicy(
-  "music.event.manage",
-  inModule("announcements"),
-  async (_scope, formData: FormData): Promise<Result> => ({
-    ok: await saveEntrySettings(
-      text(formData, "announcementId"),
-      {
-        calendarId: text(formData, "calendarId"),
-        uid: text(formData, "uid"),
-        occurrence: text(formData, "occurrence"),
-      },
-      { excluded: formData.get("excluded") === "true" },
-    ),
-  }),
-);
-
-export const addManualEntryAction = withPolicy(
-  "music.event.manage",
-  inModule("announcements"),
-  async (_scope, formData: FormData): Promise<Result> => {
-    const day = text(formData, "date");
-    return {
-      ok: await saveManualEntry(text(formData, "announcementId"), null, {
-        title: text(formData, "title"),
-        startsAt: null,
-        endsAt: null,
-        startDate: day || null,
-        endDate: null,
-        location: text(formData, "location"),
-        description: null,
-      }),
-    };
-  },
 );
 
 export const removeEntryAction = withPolicy(

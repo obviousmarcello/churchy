@@ -57,8 +57,3 @@ export function DateBadge({
     </ViewTransition>
   );
 }
-
-/** The `transitionName` of the date badge of an event. */
-export function eventDateTransition(eventId: string): string {
-  return `event-date-${eventId}`;
-}
