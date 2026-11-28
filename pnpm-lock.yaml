@@ -107,9 +107,6 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.3.5
         version: 4.3.5
-      '@tesseract.js-data/eng':
-        specifier: 1.0.0
-        version: 1.0.0
       '@tesseract.js-data/hun':
         specifier: 1.0.0
         version: 1.0.0
@@ -2314,9 +2311,6 @@ packages:
 
   '@tailwindcss/postcss@4.3.5':
     resolution: {integrity: sha512-FAV37Tlx9wBiT/hkfgVD0Q6CWsP2oUX3lf28nrfjW8+ksILjnpuFulUqWDfNR4/ZiEHHDRBX8DUTzD1Rys687A==}
-
-  '@tesseract.js-data/eng@1.0.0':
-    resolution: {integrity: sha512-mbTumm6KQPUHyzTPQaF3ObXYnx0SqqfV2nabqFVQBwD6Kl7PhGSLSzOlfFTWy0P3BjghaSKA2W9GB19Jk+ZcTg==}
 
   '@tesseract.js-data/hun@1.0.0':
     resolution: {integrity: sha512-HoMZ/9ULBzp6WBFLz8H3dBfeO9OK5E5kUL17oQp9wRbslXqpYdxeXMX2WLHrdZzeuGCGu+CByoMWKkDbX+BvqQ==}
@@ -5643,8 +5637,6 @@ snapshots:
       '@tailwindcss/oxide': 4.3.5
       postcss: 8.5.32
       tailwindcss: 4.3.5
-
-  '@tesseract.js-data/eng@1.0.0': {}
 
   '@tesseract.js-data/hun@1.0.0': {}
 

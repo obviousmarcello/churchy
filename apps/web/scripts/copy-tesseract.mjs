@@ -1,6 +1,6 @@
 // Copies the files that the text recognition (Tesseract.js) loads at run time
-// to `public/tesseract`: its worker, the WebAssembly engine and the English
-// and Hungarian language data. The site serves them itself, because the
+// to `public/tesseract`: its worker, the WebAssembly engine and the
+// Hungarian language data. The site serves them itself, because the
 // Content Security Policy allows no other sites. The `dev` and `build` scripts
 // run this first. See `src/lib/ocr/tesseract-engine.ts`.
 
@@ -24,7 +24,7 @@ for (const file of await readdir(core)) {
   if (/-lstm\.wasm\.js$/.test(file)) await cp(join(core, file), join(target, "core", file));
 }
 // The smaller, faster LSTM data ("best_int"), gzipped.
-for (const language of ["eng", "hun"]) {
+for (const language of ["hun"]) {
   const data = dirname(require.resolve(`@tesseract.js-data/${language}/package.json`));
   await cp(
     join(data, "4.0.0_best_int", `${language}.traineddata.gz`),

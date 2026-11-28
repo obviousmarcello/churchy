@@ -3,8 +3,9 @@ import { PageShell } from "@churchy/ui";
 import { AreaHome } from "@/components/area-home";
 import { SiteHeader } from "@/components/site-header";
 import { WorkspaceFrame } from "@/components/workspace/workspace-frame";
+import { MusicModuleFlags } from "@/components/music/app-config";
 import { getT } from "@/i18n/server";
-import { getWorkspaceSections } from "@/server/workspace-nav";
+import { getWorkspaceSections, isWorkspaceModuleOn } from "@/server/workspace-nav";
 
 /**
  * Shell of every `/munkater` route (D-53, SDD §20): bottom bar on phones, sidebar on desktop, with
@@ -13,11 +14,12 @@ import { getWorkspaceSections } from "@/server/workspace-nav";
  * private, never cached (`next.config.ts` headers) and `noindex` (metadata of the pages).
  */
 export default async function WorkspaceLayout({ children }: { children: ReactNode }) {
-  const [sections, t, home, common] = await Promise.all([
+  const [sections, t, home, common, ocr] = await Promise.all([
     getWorkspaceSections(),
     getT("munkater.shell"),
     getT("munkater.home"),
     getT("common"),
+    isWorkspaceModuleOn("ws.music.songs.ocr"),
   ]);
   if (sections.length === 0) {
     return <AreaHome area="workspace" title={home("title")} lead={home("lead")} />;
@@ -28,7 +30,8 @@ export default async function WorkspaceLayout({ children }: { children: ReactNod
         label={t("navigation")}
         items={sections.map(({ id, label, href }) => ({ id, label, href }))}
       >
-        {children}
+        {/* Flags of the copied music components that are not tied to one page (D-phase 7: OCR reads on the device). */}
+        <MusicModuleFlags modules={{ "songs.ocr": ocr }}>{children}</MusicModuleFlags>
       </WorkspaceFrame>
     </PageShell>
   );

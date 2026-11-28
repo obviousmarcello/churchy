@@ -42,11 +42,24 @@ export function MusicModulesProvider({
   // After a change of the translations the app does not keep the licensed text of the old configuration.
   const key = `${scripture.karoli}/${scripture.own.map(({ id, source }) => `${id}:${source}`).join(",")}`;
   useEffect(() => forgetDatabaseBooks(), [key]);
+  const parent = useContext(ModulesContext);
   return (
-    <ModulesContext value={modules}>
+    <ModulesContext value={{ ...parent, ...modules }}>
       <ScriptureContext value={scripture}>{children}</ScriptureContext>
     </ModulesContext>
   );
+}
+
+/** Module flags for the whole workspace (e.g. `songs.ocr`): nested providers add to them, they do not replace them. */
+export function MusicModuleFlags({
+  modules,
+  children,
+}: {
+  modules: Readonly<Record<string, boolean>>;
+  children: React.ReactNode;
+}) {
+  const parent = useContext(ModulesContext);
+  return <ModulesContext value={{ ...parent, ...modules }}>{children}</ModulesContext>;
 }
 
 /** Whether a module of the music app is on, e.g. `useModule("sheet.marks")`. */
