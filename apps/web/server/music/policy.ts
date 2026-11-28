@@ -3,6 +3,7 @@ import "server-only";
 import type { PolicyScope } from "@/server/policy";
 import { setPolicyActorEnricher } from "@/server/policy";
 import { loadAreaGrants } from "./area-grants";
+import { getLedGroupIds } from "./auth";
 import { getEvent } from "./models/events";
 import { musicUserId } from "./db";
 import { getRequestContext } from "@/server/session";
@@ -98,11 +99,17 @@ export async function musicEvents(
 }
 
 // Area roles: for a music action whose resource names areas, `can()` also sees the roles that
-// the actor's music areas give (loaded once per request and user).
+// the actor's music areas give, and the led-area actions see the areas the actor leads (loaded once
+// per request and user).
 setPolicyActorEnricher(async (actor, resource) => {
   if (actor.kind !== "tenant" || actor.userId === null || !("areaIds" in resource)) return actor;
   try {
-    return { ...actor, musicAreaGrants: await loadAreaGrants(musicUserId(actor.userId)) };
+    const userId = musicUserId(actor.userId);
+    return {
+      ...actor,
+      musicAreaGrants: await loadAreaGrants(userId),
+      musicLedAreaIds: [...(await getLedGroupIds(userId))],
+    };
   } catch {
     return actor;
   }

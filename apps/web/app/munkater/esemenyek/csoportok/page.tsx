@@ -41,7 +41,7 @@ export default async function GroupsPage() {
           memberIds: memberIds.get(group.id) ?? [],
           roles: roles.get(group.id) ?? [],
         }))}
-        canEditRoles={user.isSuperadmin}
+        canEditRoles={user.canManageGroupRoles}
         people={people.map((person) => ({ id: person.id, name: person.name }))}
       />
     </main>

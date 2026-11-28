@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AnnouncementSourcesPage() {
   const [user, { m }] = await Promise.all([requireEventsPageUser(), getI18n()]);
-  if (!user.isSuperadmin || !(await isWorkspaceModuleOn("ws.music.events.announcements")))
+  if (!user.canManageAnnouncements || !(await isWorkspaceModuleOn("ws.music.events.announcements")))
     notFound();
   const { calendars } = await getAnnouncementCalendars();
   return (

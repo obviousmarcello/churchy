@@ -65,7 +65,7 @@ export default async function EventsPage() {
               {t.groupsLink}
             </Link>
           )}
-          {user.isSuperadmin && (
+          {user.canManageAnnouncements && (
             <Link
               href="/munkater/esemenyek/hirdetesek"
               className={buttonVariants({ variant: "outline" })}

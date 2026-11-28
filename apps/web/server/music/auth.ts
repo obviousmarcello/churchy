@@ -2,7 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { notFound } from "next/navigation";
-import { can } from "@churchy/policy";
+import { can, type TenantActor } from "@churchy/policy";
 import { getActor } from "@/server/session";
 import { isWorkspaceModuleOn, requireWorkspaceModule } from "@/server/workspace-nav";
 import { loadAreaGrants } from "./area-grants";
@@ -17,14 +17,25 @@ import { ForbiddenError, UnauthorizedError } from "./errors";
  *
  * - `canEditSongs`: `music.song.manage` (leader, music leader);
  * - `canEditEvents`: `music.event.manage` (leader, music leader);
- * - `isSuperadmin`: `music.songRights.manage` — in the music app only the superadmin opened the
- *   song-rights research; Churchy maps it to the same roles (owner decision 2026-11-24).
+ * - `isSuperadmin`: `music.songRights.manage` (the song-rights research only);
+ * - the other superadmin-only features of the music app have their own actions (PLAN §32):
+ *   `canManageGroupRoles`, `canManageAnnouncements`, `canViewPeopleEmails`, `canSetDefaultTheme`;
+ * - `leadsGroups` / `leadsCourseGroups`: `music.group.manageLed` / `music.course.editLed` with the
+ *   areas the user leads as area context.
  */
 export type CurrentUser = {
   /** Profile id as the music tables store it. */
   id: string;
   tenantId: string;
   isSuperadmin: boolean;
+  /** `music.group.roles.manage`: edits the roles that the areas give. */
+  canManageGroupRoles: boolean;
+  /** `music.announcement.manage`: announcement sources and calendars. */
+  canManageAnnouncements: boolean;
+  /** `music.people.emails.view`: sees the email addresses of people. */
+  canViewPeopleEmails: boolean;
+  /** `music.projection.themes.setDefault`. */
+  canSetDefaultTheme: boolean;
   canEditSongs: boolean;
   /** `music.event.manage` (leader, music leader): sees and changes all music events. */
   canEditEvents: boolean;
@@ -47,9 +58,22 @@ export type CurrentUser = {
 };
 
 /** Whether the user leads a music area (one query; only with the events module on). */
-async function leadsAnyGroup(userId: string): Promise<boolean> {
+async function leadsAnyGroup(actor: TenantActor, userId: string): Promise<boolean> {
   if (!(await isWorkspaceModuleOn("ws.music.events"))) return false;
-  return (await getLedGroupIds(userId)).size > 0;
+  return leadsAny(actor, userId, "music.group.manageLed");
+}
+
+/** `can()` for a led-area action, with the areas the user leads as the area context. */
+async function leadsAny(
+  actor: TenantActor,
+  userId: string,
+  action: "music.group.manageLed" | "music.course.editLed",
+): Promise<boolean> {
+  const led = [...(await getLedGroupIds(userId))];
+  return can({ ...actor, musicLedAreaIds: led }, action, {
+    tenantId: actor.tenantId,
+    areaIds: led,
+  });
 }
 
 /** The ids of the music areas that the user leads, with the areas below them. */
@@ -72,7 +96,7 @@ export async function getLedGroupIds(userId: string): Promise<Set<string>> {
  * groups makes the courses of their groups (`can_edit_course()` checks each course).
  */
 async function courseRights(
-  actor: Extract<Awaited<ReturnType<typeof getActor>>, { kind: "tenant" }>,
+  actor: TenantActor,
   userId: string,
 ): Promise<{ canEditCourses: boolean; leadsCourseGroups: boolean }> {
   if (!(await isWorkspaceModuleOn("ws.music.courses"))) {
@@ -85,7 +109,7 @@ async function courseRights(
   });
   return {
     canEditCourses,
-    leadsCourseGroups: !canEditCourses && (await getLedGroupIds(userId)).size > 0,
+    leadsCourseGroups: !canEditCourses && (await leadsAny(actor, userId, "music.course.editLed")),
   };
 }
 
@@ -98,13 +122,18 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     actor,
     musicUserId(actor.userId),
   );
+  const leadsGroups = await leadsAnyGroup(actor, musicUserId(actor.userId));
   return {
     id: musicUserId(actor.userId),
     tenantId: actor.tenantId,
     isSuperadmin: can(actor, "music.songRights.manage", resource),
     canEditSongs: can(actor, "music.song.manage", resource),
     canEditEvents: can(actor, "music.event.manage", resource),
-    leadsGroups: await leadsAnyGroup(musicUserId(actor.userId)),
+    canManageGroupRoles: can(actor, "music.group.roles.manage", resource),
+    canManageAnnouncements: can(actor, "music.announcement.manage", resource),
+    canViewPeopleEmails: can(actor, "music.people.emails.view", resource),
+    canSetDefaultTheme: can(actor, "music.projection.themes.setDefault", resource),
+    leadsGroups,
     canEditCourses,
     leadsCourseGroups,
     eventAreaIds: async () => {
@@ -168,9 +197,31 @@ export async function requireGroupManager(): Promise<CurrentUser> {
   return user;
 }
 
+/** Song-rights research and settings: `music.songRights.manage`. */
 export async function requireSuperadmin(): Promise<CurrentUser> {
   const user = await requireUser();
   if (!user.isSuperadmin) throw new ForbiddenError();
+  return user;
+}
+
+/** May edit the roles that music areas give: `music.group.roles.manage`. */
+export async function requireGroupRoleAdmin(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.canManageGroupRoles) throw new ForbiddenError();
+  return user;
+}
+
+/** May manage announcement sources and calendars: `music.announcement.manage`. */
+export async function requireAnnouncementAdmin(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.canManageAnnouncements) throw new ForbiddenError();
+  return user;
+}
+
+/** May set the default projection theme: `music.projection.themes.setDefault`. */
+export async function requireThemeDefaultAdmin(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.canSetDefaultTheme) throw new ForbiddenError();
   return user;
 }
 

@@ -24,7 +24,7 @@ vi.mock("@/i18n/music/server", () => ({ getRequestI18n: vi.fn() }));
 vi.mock("@/server/music/auth", () => ({
   requireEventAdmin: vi.fn(async () => ({ id: "3e4f5a6b-7c8d-4e9f-8a0b-2c3d4e5f6a7b" })),
   requireUser: vi.fn(async () => undefined),
-  requireSuperadmin: vi.fn(async () => undefined),
+  requireThemeDefaultAdmin: vi.fn(async () => undefined),
   requirePrivateFileAccess: vi.fn(async () => true),
 }));
 // The images and the bookkeeping of unused files have their own tests; here only the calls count.

@@ -187,7 +187,7 @@ export async function loadEventPage(id: string): Promise<EventPageResult> {
         users && catalog && themes && scope
           ? {
               users,
-              unnamedHidden: !user.isSuperadmin,
+              unnamedHidden: !user.canViewPeopleEmails,
               catalog,
               maxItems: SETLIST_MAX_ITEMS,
               themes: themes.map(({ id, name, isDefault }) => ({ id, name, isDefault })),

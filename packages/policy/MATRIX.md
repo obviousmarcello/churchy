@@ -108,6 +108,11 @@ These capabilities are not rows of the SDD table; the README documents the resol
 | Music: join a live session (music merge)                                      | join a live session                        | `music.live.join`                     |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 | Music: start and lead a live session (music merge)                            | lead a live session                        | `music.live.lead`                     |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 | Music: manage songs and arrangements (music merge)                            | edit songs and arrangements                | `music.song.manage`                   |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: edit the roles of the music areas (music merge, was superadmin)        | edit area roles                            | `music.group.roles.manage`            |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: announcement sources and calendars (music merge, was superadmin)       | manage announcement sources                | `music.announcement.manage`           |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: email addresses of people (music merge, was superadmin)                | see emails of people                       | `music.people.emails.view`            |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
+| Music: teams of led areas (music merge; area context only)                    | tenant-wide, no area context               | `music.group.manageLed`               |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
+| Music: courses of led groups (music merge; area context only)                 | tenant-wide, no area context               | `music.course.editLed`                |  –  |  –  |  –  |  –  |  –  |  –  |  –  |  –  |
 | Music: shared song rights and research (music merge)                          | song rights and research                   | `music.songRights.manage`             |  ✔  |  –  |  –  |  –  |  ✔  |  –  |  –  |  –  |
 | Create private events (README: every workspace role has a personal calendar)  | private event                              | `calendarEvent.create`                |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
 | Own leave balance (README)                                                    | own leave balance                          | `hr.leaveBalance.view`                |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |  ✔  |
@@ -132,19 +137,24 @@ These capabilities are not rows of the SDD table; the README documents the resol
 
 ### Music area roles: the role of an area applies to the events and songs of that area only
 
-| Check                                                             | Action                    | Allowed |
-| ----------------------------------------------------------------- | ------------------------- | :-----: |
-| music.event.manage, event_admin in the event's area               | `music.event.manage`      |    ✔    |
-| music.event.manage, music_leader in the event's area              | `music.event.manage`      |    ✔    |
-| music.event.manage, event_admin of another area                   | `music.event.manage`      |    –    |
-| music.event.manage, song_admin only                               | `music.event.manage`      |    –    |
-| music.event.manage, no area context                               | `music.event.manage`      |    –    |
-| music.course.manage, course_admin of the area the user belongs to | `music.course.manage`     |    ✔    |
-| music.course.manage, event_admin only                             | `music.course.manage`     |    –    |
-| music.course.manage, course_admin without the area context        | `music.course.manage`     |    –    |
-| music.song.manage, song_admin in the song's area                  | `music.song.manage`       |    ✔    |
-| music.song.manage, event_admin only                               | `music.song.manage`       |    –    |
-| music.songRights.manage, any area role                            | `music.songRights.manage` |    –    |
+| Check                                                             | Action                     | Allowed |
+| ----------------------------------------------------------------- | -------------------------- | :-----: |
+| music.event.manage, event_admin in the event's area               | `music.event.manage`       |    ✔    |
+| music.event.manage, music_leader in the event's area              | `music.event.manage`       |    ✔    |
+| music.event.manage, event_admin of another area                   | `music.event.manage`       |    –    |
+| music.event.manage, song_admin only                               | `music.event.manage`       |    –    |
+| music.event.manage, no area context                               | `music.event.manage`       |    –    |
+| music.course.manage, course_admin of the area the user belongs to | `music.course.manage`      |    ✔    |
+| music.course.manage, event_admin only                             | `music.course.manage`      |    –    |
+| music.course.manage, course_admin without the area context        | `music.course.manage`      |    –    |
+| music.song.manage, song_admin in the song's area                  | `music.song.manage`        |    ✔    |
+| music.song.manage, event_admin only                               | `music.song.manage`        |    –    |
+| music.group.manageLed, leader of the area                         | `music.group.manageLed`    |    ✔    |
+| music.group.manageLed, leader of another area                     | `music.group.manageLed`    |    –    |
+| music.course.editLed, leader of the group                         | `music.course.editLed`     |    ✔    |
+| music.course.editLed, no area context                             | `music.course.editLed`     |    –    |
+| music.group.roles.manage, any area role                           | `music.group.roles.manage` |    –    |
+| music.songRights.manage, any area role                            | `music.songRights.manage`  |    –    |
 
 ### teamLeader: own team vs other team
 

@@ -3,7 +3,7 @@ import "server-only";
 import { z } from "zod";
 
 import { ANNOUNCEMENT_LIMITS, type CalendarOption } from "@/lib/music/announcements/schema";
-import { requireEventAdmin, requireSuperadmin } from "@/server/music/auth";
+import { requireEventAdmin, requireAnnouncementAdmin } from "@/server/music/auth";
 import { ConflictError } from "@/server/music/errors";
 import { getMusicSupabase } from "@/server/music/db";
 import { databaseError, idSchema, isId, parseInput, requiredText } from "./shared";
@@ -77,7 +77,7 @@ async function readRows(): Promise<z.infer<typeof calendarRowSchema>[]> {
 
 /** The calendars and the exclude words, for the settings page. */
 export async function getAnnouncementCalendars(): Promise<AnnouncementCalendarsDTO> {
-  await requireSuperadmin();
+  await requireAnnouncementAdmin();
   const [rows, excludeWords] = await Promise.all([readRows(), readExcludeWords()]);
   return {
     calendars: rows.map(({ id, name, ics_url, enabled }) => ({
@@ -125,7 +125,7 @@ export async function saveAnnouncementCalendar(
   id: string | null,
   input: unknown,
 ): Promise<boolean> {
-  await requireSuperadmin();
+  await requireAnnouncementAdmin();
   const calendar = parseInput(calendarInputSchema, input);
   if (id === null) {
     if (!calendar.url)
@@ -163,7 +163,7 @@ export async function saveAnnouncementCalendar(
 
 /** Removes a calendar, with the settings of its entries. A trigger removes its entries from all the announcements. */
 export async function removeAnnouncementCalendar(id: string): Promise<boolean> {
-  await requireSuperadmin();
+  await requireAnnouncementAdmin();
   if (!isId(id)) return false;
   const { data, error } = await (
     await getMusicSupabase()
@@ -178,7 +178,7 @@ export async function removeAnnouncementCalendar(id: string): Promise<boolean> {
 
 /** Moves a calendar one place up (-1) or down (1). */
 export async function moveAnnouncementCalendar(id: string, direction: unknown): Promise<boolean> {
-  await requireSuperadmin();
+  await requireAnnouncementAdmin();
   const step = parseInput(z.union([z.literal(-1), z.literal(1)]), direction);
   const calendarId = parseInput(idSchema, id);
   const rows = await readRows();
@@ -196,7 +196,7 @@ export async function moveAnnouncementCalendar(id: string, direction: unknown): 
 
 /** Saves the words that exclude a calendar entry by its title. */
 export async function saveExcludeWords(input: unknown): Promise<boolean> {
-  const user = await requireSuperadmin();
+  const user = await requireAnnouncementAdmin();
   const words = parseInput(excludeWordsSchema, input);
   const { error } = await (
     await getMusicSupabase()

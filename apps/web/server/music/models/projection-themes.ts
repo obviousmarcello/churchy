@@ -34,7 +34,7 @@ import { getRequestI18n } from "@/i18n/music/server";
 import {
   requireEventAdmin,
   requirePrivateFileAccess,
-  requireSuperadmin,
+  requireThemeDefaultAdmin,
   requireUser,
 } from "@/server/music/auth";
 import { ConflictError, ValidationError, type Text } from "@/server/music/errors";
@@ -411,7 +411,7 @@ export async function countProjectionThemeUses(id: string): Promise<ThemeUsesDTO
 
 /** Makes the theme the default. Only for superadmins. Returns false if there is no such theme. */
 export async function setDefaultProjectionTheme(id: string): Promise<boolean> {
-  await requireSuperadmin();
+  await requireThemeDefaultAdmin();
   if (!isId(id)) return false;
 
   const { data, error } = await (
