@@ -77,3 +77,10 @@ Deviations: none. Next migration to apply: `0006_music_schema`.
 - It drops and recreates `songs` and `arrangements` (both were empty, no dependent views) and drops the `song_licence` type.
 - Public tables: 59 before, 100 after (43 `CREATE TABLE`, 2 of them recreations). RLS is enabled on all 100, and all foreign keys are validated.
 - Next migration to apply: `0007_music_rls`.
+
+### Progress: 0007_music_rls and 0008_music_songs applied (dev project)
+
+- `0007_music_rls` applied in one piece. It created the `churchy_music` role (NOLOGIN, NOINHERIT, no BYPASSRLS) and `GRANT churchy_music TO authenticator` succeeded (`pg_has_role('authenticator','churchy_music','member')` is true). It forces RLS and adds the `tenant_isolation` policies (plus `catalog_read` on `scripture_books`, `scripture_verse_cache`).
+- `0008_music_songs` applied as four parts (`_p1`..`_p4`, split at statement boundaries): the shared `song_rights` catalog table, song functions and triggers, and the SECURITY DEFINER `share_song_rights()` (EXECUTE revoked from PUBLIC).
+- Verification: 101 public tables, all with RLS enabled and forced. 13 have no policy (deny-all for non-owner roles): `audit_log`, `billing_accounts`, `deals`, `invoices`, `notification_prefs`, `org_memberships`, `organizations`, `payment_events`, `plans`, `profiles`, `subscriptions`, `tenants`, `workday_calendar`. The only SECURITY DEFINER function in `public` is `share_song_rights`. `anon` and `authenticated` hold no table grants in `public`.
+- Next migration to apply: `0009_music_files`.
