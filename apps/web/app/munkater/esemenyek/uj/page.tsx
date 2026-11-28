@@ -38,7 +38,7 @@ export default async function NewEventPage() {
         cancel="/munkater/esemenyek"
       />
       {user.canEditEvents && (
-        <p className="mx-auto w-full max-w-xl px-4 pb-8 text-sm sm:px-6">
+        <p className="w-full max-w-xl px-4 pb-8 text-sm sm:px-6">
           <Link href="/munkater/esemenyek/uj/sorozat" className="underline">
             {m.events.series.link}
           </Link>

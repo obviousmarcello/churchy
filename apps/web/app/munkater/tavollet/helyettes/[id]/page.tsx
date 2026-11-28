@@ -68,7 +68,7 @@ export default async function SubstitutePage({ params }: { params: Promise<{ id:
           {candidates.map((personId) => (
             <li
               key={personId}
-              className="flex flex-wrap items-center gap-3 rounded-md border border-border p-3"
+              className="flex flex-wrap items-center gap-3 rounded-control border border-hairline p-3"
               data-testid="candidate"
             >
               <span className="font-bold">{personLabel(env, personId)}</span>

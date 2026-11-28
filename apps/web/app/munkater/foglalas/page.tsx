@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { addDays } from "@churchy/hu";
-import { Badge, ButtonLink, FormattedDate, FormattedTime } from "@churchy/ui";
+import { EmptyState, Badge, ButtonLink, FormattedDate, FormattedTime, Stagger } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { dayBlocks, dayTicks } from "@/lib/rooms/day";
 import { loadOccupancy, loadRoomViews } from "@/server/rooms";
@@ -12,7 +12,7 @@ export async function generateMetadata() {
 }
 
 const linkClass =
-  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border-2 border-border-strong px-3 font-semibold text-text no-underline hover:bg-primary-soft";
+  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-button border border-hairline bg-surface-raised px-4 font-semibold text-text no-underline shadow-xs transition-[background-color,scale] duration-(--dur-2) ease-spring hover:bg-primary-soft active:scale-(--motion-press)";
 
 /** *Foglaltság* (D-60): the day's availability of every room, with the service blocks. */
 export default async function RoomsBoardPage({
@@ -57,7 +57,7 @@ export default async function RoomsBoardPage({
             type="date"
             name="datum"
             defaultValue={date}
-            className="min-h-11 rounded-md border-2 border-border-strong bg-surface-raised px-3"
+            className="min-h-11 rounded-control border border-border-strong bg-surface-raised px-3"
           />
           <button type="submit" className={linkClass}>
             {t("board.show")}
@@ -68,14 +68,14 @@ export default async function RoomsBoardPage({
         <FormattedDate value={date} />
       </h2>
 
-      {views.length === 0 ? <p>{t("empty")}</p> : null}
-      <ul className="flex flex-col gap-3">
+      {views.length === 0 ? <EmptyState size="sm" title={t("empty")} /> : null}
+      <Stagger as="ul" className="flex flex-col gap-3">
         {views.map(({ room, locationName, canBook }) => {
           const blocks = dayBlocks(occupancies, room.id, date);
           return (
             <li
               key={room.id}
-              className="flex flex-col gap-2 rounded-md border border-border bg-surface-raised p-4"
+              className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised shadow-xs p-4"
               data-testid="board-room"
               data-room={room.id}
             >
@@ -97,11 +97,11 @@ export default async function RoomsBoardPage({
                   </ButtonLink>
                 ) : null}
               </div>
-              <div aria-hidden="true" className="relative h-8 rounded-sm bg-success-soft">
+              <div aria-hidden="true" className="relative h-8 rounded-control bg-success-soft">
                 {blocks.map((b) => (
                   <span
                     key={b.occupancy.id}
-                    className={`absolute inset-y-0 rounded-sm ${
+                    className={`absolute inset-y-0 rounded-control ${
                       b.occupancy.source === "service"
                         ? "bg-primary"
                         : b.occupancy.status === "pending"
@@ -161,7 +161,7 @@ export default async function RoomsBoardPage({
             </li>
           );
         })}
-      </ul>
+      </Stagger>
       <ul className="flex flex-wrap gap-3 text-fs-2 text-muted" aria-label={t("board.legend")}>
         <li>
           <Badge tone="success">{t("board.legendFree")}</Badge>

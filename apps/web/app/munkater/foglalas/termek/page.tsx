@@ -1,4 +1,4 @@
-import { Badge, ButtonLink } from "@churchy/ui";
+import { Badge, ButtonLink, Stagger } from "@churchy/ui";
 import { getT } from "@/i18n/server";
 import { loadRoomViews } from "@/server/rooms";
 import { getMemberEnv } from "@/server/workspace";
@@ -24,7 +24,7 @@ export default async function RoomCatalogPage() {
         </h1>
         <p className="mt-1 text-fs-4 text-muted">{t("lead")}</p>
       </header>
-      <ul className="grid gap-3 md:grid-cols-2">
+      <Stagger as="ul" className="grid gap-3 md:grid-cols-2">
         {views.map(({ room, locationName, managers, canBook }) => {
           const access = [
             room.accessibility.wheelchair ? t("wheelchair") : null,
@@ -35,7 +35,7 @@ export default async function RoomCatalogPage() {
           return (
             <li
               key={room.id}
-              className="flex flex-col gap-2 rounded-md border border-border bg-surface-raised p-4"
+              className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised shadow-xs p-4"
               data-testid="catalog-room"
             >
               <h2 className="font-heading text-fs-5 font-bold">{room.name}</h2>
@@ -75,7 +75,7 @@ export default async function RoomCatalogPage() {
             </li>
           );
         })}
-      </ul>
+      </Stagger>
     </div>
   );
 }

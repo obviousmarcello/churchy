@@ -144,7 +144,7 @@ export default async function TeamPage({
               return (
                 <li
                   key={entry.person.id}
-                  className="flex flex-col gap-2 rounded-md border border-border bg-surface-raised p-3"
+                  className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised shadow-xs p-3"
                   data-testid="team-member"
                 >
                   <Link

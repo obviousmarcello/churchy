@@ -124,7 +124,7 @@ export function EntryItem({ entry, labels }: { entry: CalendarEntry; labels: Ent
       </span>
     </>
   );
-  const className = "flex min-h-11 items-start gap-3 rounded-md px-3 py-2";
+  const className = "flex min-h-11 items-start gap-3 rounded-control px-3 py-2";
   return (
     <li data-layer={entry.layer} data-testid="calendar-entry">
       {entry.href === null ? (

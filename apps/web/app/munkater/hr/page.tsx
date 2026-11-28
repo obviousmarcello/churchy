@@ -1,4 +1,4 @@
-import { Alert, ButtonLink } from "@churchy/ui";
+import { EmptyState, Alert, ButtonLink } from "@churchy/ui";
 import { slaStatus, ticketStats, type TicketStatus } from "@churchy/hr";
 import { can } from "@churchy/policy";
 import { TicketRow } from "@/components/hr/badges";
@@ -153,7 +153,7 @@ export default async function HrPage({
       {stats !== null ? (
         <section
           aria-labelledby="hr-dashboard"
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-3 rounded-card border border-hairline bg-surface-raised p-(--space-card) shadow-xs sm:p-6"
           data-testid="hr-dashboard"
         >
           <h2 id="hr-dashboard" className="font-heading text-fs-5 font-bold text-primary">
@@ -169,7 +169,12 @@ export default async function HrPage({
                   : Math.round(stats.medianResolutionMinutes / 60),
             })}
           </p>
-          <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={t("dashboard")}>
+          <div
+            className="relative overflow-x-auto"
+            tabIndex={0}
+            role="region"
+            aria-label={t("dashboard")}
+          >
             <table className="w-full min-w-96 text-left">
               <caption className="sr-only">{t("dashboard")}</caption>
               <thead>
@@ -219,7 +224,7 @@ export default async function HrPage({
       {approvals.length > 0 ? (
         <section
           aria-labelledby="hr-approvals"
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-3 rounded-card border border-hairline bg-surface-raised p-(--space-card) shadow-xs sm:p-6"
           data-testid="hr-approvals"
         >
           <h2 id="hr-approvals" className="font-heading text-fs-5 font-bold text-primary">
@@ -230,7 +235,11 @@ export default async function HrPage({
       ) : null}
 
       {rows.some((r) => r.access.handle && !r.access.mine) ? (
-        <section aria-labelledby="hr-inbox" className="flex flex-col gap-3" data-testid="hr-inbox">
+        <section
+          aria-labelledby="hr-inbox"
+          className="flex flex-col gap-3 rounded-card border border-hairline bg-surface-raised p-(--space-card) shadow-xs sm:p-6"
+          data-testid="hr-inbox"
+        >
           <h2 id="hr-inbox" className="font-heading text-fs-5 font-bold text-primary">
             {t("inbox")}
           </h2>
@@ -240,21 +249,25 @@ export default async function HrPage({
                 key={s ?? "all"}
                 href={s === undefined ? "/munkater/hr" : `/munkater/hr?allapot=${s}`}
                 aria-current={filter === s ? "page" : undefined}
-                className="inline-flex min-h-11 items-center rounded-md border border-border px-3 aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast"
+                className="inline-flex min-h-11 items-center rounded-control border border-hairline px-3 aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast"
               >
                 {s === undefined ? t("all") : common(s)}
               </a>
             ))}
           </nav>
-          {inbox.length === 0 ? <p>{t("emptyFiltered")}</p> : render(inbox)}
+          {inbox.length === 0 ? <EmptyState size="sm" title={t("emptyFiltered")} /> : render(inbox)}
         </section>
       ) : null}
 
-      <section aria-labelledby="hr-mine" className="flex flex-col gap-3" data-testid="hr-mine">
+      <section
+        aria-labelledby="hr-mine"
+        className="flex flex-col gap-3 rounded-card border border-hairline bg-surface-raised p-(--space-card) shadow-xs sm:p-6"
+        data-testid="hr-mine"
+      >
         <h2 id="hr-mine" className="font-heading text-fs-5 font-bold text-primary">
           {t("mine")}
         </h2>
-        {mine.length === 0 ? <p>{t("emptyMine")}</p> : render(mine)}
+        {mine.length === 0 ? <EmptyState size="sm" title={t("emptyMine")} /> : render(mine)}
       </section>
     </div>
   );

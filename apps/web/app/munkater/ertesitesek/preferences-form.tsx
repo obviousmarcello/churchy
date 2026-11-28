@@ -127,7 +127,7 @@ function Option({
           </span>
         </span>
       </label>
-      {children && <div className="pl-7">{children(on)}</div>}
+      {children && <div className="min-w-0 pl-7">{children(on)}</div>}
     </div>
   );
 }
@@ -153,24 +153,25 @@ function NumberField({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-3">
-        <Input
-          id={name}
-          name={name}
-          type="number"
-          inputMode="numeric"
-          required={on}
-          disabled={!on}
-          min={limits.min}
-          max={limits.max}
-          step={1}
-          defaultValue={defaultValue}
-          className="w-20 shrink-0"
-          aria-invalid={(errors?.length ?? 0) > 0 || undefined}
-          aria-describedby={`${name}-description`}
-        />
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="w-20 shrink-0">
+          <Input
+            id={name}
+            name={name}
+            type="number"
+            inputMode="numeric"
+            required={on}
+            disabled={!on}
+            min={limits.min}
+            max={limits.max}
+            step={1}
+            defaultValue={defaultValue}
+            aria-invalid={(errors?.length ?? 0) > 0 || undefined}
+            aria-describedby={`${name}-description`}
+          />
+        </div>
         {/* `leading-snug`: a label that wraps on a phone keeps its line spacing. */}
-        <Label htmlFor={name} className="leading-snug font-normal">
+        <Label htmlFor={name} className="min-w-0 flex-1 leading-snug font-normal">
           {label}
         </Label>
       </div>

@@ -350,7 +350,7 @@ export function CourseEditor({ course }: { course: CourseEditorDTO }) {
         }
       />
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 py-6 sm:px-6">
+      <div className="flex w-full max-w-6xl flex-col px-4 py-6 sm:px-6">
         {/* One card: the state and the actions of the course on top, the editor below. */}
         <div className="flex flex-col rounded-card border bg-surface-raised">
           <div className="flex flex-col gap-3 border-b p-4 sm:px-6">

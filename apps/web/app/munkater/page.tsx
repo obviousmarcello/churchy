@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Alert, Badge, ButtonLink, FormattedDate, FormattedTime } from "@churchy/ui";
+import { Alert, Badge, ButtonLink, FormattedDate, FormattedTime, Stagger } from "@churchy/ui";
 import { AssignmentButtons } from "@/components/workspace/assignment-buttons";
 import { EntryItem } from "@/components/workspace/entry-item";
 import { getEntryLabels } from "@/components/workspace/entry-labels";
@@ -32,7 +32,7 @@ function Block({
     <section
       aria-labelledby={`${id}-heading`}
       data-testid={`today-${id}`}
-      className="rounded-md border border-border bg-surface-raised p-4"
+      className="rounded-card border border-transparent bg-surface-raised p-(--space-card) shadow-card sm:p-6"
     >
       <h2 id={`${id}-heading`} className="flex items-center gap-2 font-heading text-fs-5 font-bold">
         {title}
@@ -73,7 +73,7 @@ export default async function WorkspaceTodayPage() {
   const greeting = t(`greeting.${greetingKey(env.now)}`);
 
   return (
-    <div className="flex max-w-3xl flex-col gap-4" data-testid="workspace-today">
+    <Stagger className="flex max-w-3xl flex-col gap-4 sm:gap-5" data-testid="workspace-today">
       <header>
         <h1 className="font-heading text-fs-7 leading-[1.05] font-bold text-primary">
           {data.givenName === null
@@ -98,7 +98,7 @@ export default async function WorkspaceTodayPage() {
 
       {data.approvals.length > 0 ? (
         <Block id="approvals" title={t("approvals.title")} count={data.approvals.length}>
-          <ul className="flex flex-col divide-y divide-border">
+          <ul className="flex flex-col divide-y divide-hairline">
             {data.approvals.map((a) => (
               <li
                 key={`${a.kind}-${a.id}`}
@@ -155,7 +155,7 @@ export default async function WorkspaceTodayPage() {
 
       {data.todos.length > 0 ? (
         <Block id="todos" title={t("todos.title")} count={data.todos.length}>
-          <ul className="flex flex-col divide-y divide-border">
+          <ul className="flex flex-col divide-y divide-hairline">
             {data.todos.map((todo) => (
               <li key={todo.id} className="flex flex-col gap-2 py-3" data-testid="todo-assignment">
                 <span className="font-semibold">
@@ -209,7 +209,7 @@ export default async function WorkspaceTodayPage() {
 
       {data.requests.length > 0 ? (
         <Block id="requests" title={t("requests.title")} count={data.requests.length}>
-          <ul className="flex flex-col divide-y divide-border">
+          <ul className="flex flex-col divide-y divide-hairline">
             {data.requests.map((r) => (
               <li
                 key={`${r.kind}-${r.id}`}
@@ -249,6 +249,6 @@ export default async function WorkspaceTodayPage() {
           </ButtonLink>
         ) : null}
       </nav>
-    </div>
+    </Stagger>
   );
 }

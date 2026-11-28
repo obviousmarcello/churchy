@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { can } from "@churchy/policy";
-import { Badge, ButtonLink, FormattedDate, FormattedTime } from "@churchy/ui";
+import { Badge, ButtonLink, FormattedDate, FormattedTime, Stagger } from "@churchy/ui";
 import { CreatePlanForm } from "@/components/worship/create-plan-form";
 import { getEntryLabels } from "@/components/workspace/entry-labels";
 import { getT } from "@/i18n/server";
@@ -84,14 +84,14 @@ export default async function WorshipPage({
         <h2 id="up-h" className="font-heading text-fs-5 font-bold">
           {t("upcoming")}
         </h2>
-        <ul className="flex flex-col gap-2" data-testid="upcoming-services">
+        <Stagger as="ul" className="flex flex-col gap-2" data-testid="upcoming-services">
           {upcoming.map((s) => {
             const plan = s.plan && visibleIds.has(s.plan.id) ? s.plan : null;
             const titled = s.title.charAt(0).toUpperCase() + s.title.slice(1);
             return (
               <li
                 key={s.key}
-                className="flex flex-col gap-2 rounded-md border border-border bg-surface-raised p-3"
+                className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised shadow-xs p-3"
                 data-testid="upcoming-service"
               >
                 <div className="flex flex-wrap items-center gap-2">
@@ -135,7 +135,7 @@ export default async function WorshipPage({
               </li>
             );
           })}
-        </ul>
+        </Stagger>
       </section>
 
       <section aria-labelledby="all-h" className="flex flex-col gap-2">

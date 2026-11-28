@@ -4,3 +4,17 @@
 
 /* Tailwind does not scan linked workspace packages on its own. */
 @source "../../../packages/ui/src";
+
+/*
+ * Workspace (design v2): a bare `border` / `border-b` in the copied music components defaults to
+ * `currentColor` (a black outline). In the base layer it becomes the hairline; explicit
+ * `border-*` colour utilities still win.
+ */
+@layer base {
+  .ws-content,
+  .ws-content *,
+  .ws-content ::before,
+  .ws-content ::after {
+    border-color: var(--color-hairline);
+  }
+}

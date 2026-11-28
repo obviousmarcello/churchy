@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { EmptyState, Stagger } from "@churchy/ui";
 
 import { LocalDateTime } from "@/components/music/local-date-time";
 import { PageHeader } from "@/components/music/page-header";
@@ -48,7 +49,7 @@ export default async function EventsPage() {
           ) : undefined
         }
       />
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-6 sm:px-6">
+      <div className="flex w-full max-w-3xl flex-col gap-8 px-4 py-6 sm:px-6">
         <p className="text-sm text-muted">{t.lead}</p>
         <nav aria-label={t.title} className="flex flex-wrap gap-2">
           <Link
@@ -93,18 +94,18 @@ async function EventList({
   const { m } = await getI18n();
   return (
     <section aria-labelledby={`${title}-h`} className="flex flex-col gap-3">
-      <h2 id={`${title}-h`} className="text-lg font-semibold">
+      <h2 id={`${title}-h`} className="font-heading text-fs-5 font-bold text-primary">
         {title}
       </h2>
       {events.length === 0 ? (
-        <p className="text-sm text-muted">{empty}</p>
+        <EmptyState size="sm" title={empty} />
       ) : (
-        <ul className="flex flex-col gap-2">
+        <Stagger as="ul" className="flex flex-col gap-2">
           {events.map((event) => (
             <li key={event.id}>
               <Link
                 href={`/munkater/esemenyek/${event.id}`}
-                className="flex flex-col gap-1 rounded-card border px-4 py-3 hover:bg-surface"
+                className="flex flex-col gap-1 rounded-card border border-hairline bg-surface-raised px-4 py-3 shadow-xs transition-[box-shadow,translate] duration-(--dur-2) ease-spring hover:-translate-y-px hover:shadow-card focus-visible:outline-2 focus-visible:outline-focus"
               >
                 <span className="font-medium">{event.title}</span>
                 <span className="text-sm text-muted">
@@ -117,7 +118,7 @@ async function EventList({
               </Link>
             </li>
           ))}
-        </ul>
+        </Stagger>
       )}
     </section>
   );

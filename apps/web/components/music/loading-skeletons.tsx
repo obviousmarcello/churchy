@@ -59,10 +59,7 @@ export function EventCardsSkeleton({
   featured?: boolean;
 }) {
   return (
-    <LoadingRegion
-      label={label}
-      className="mx-auto flex w-full max-w-3xl flex-col gap-2 px-4 py-6 sm:px-6"
-    >
+    <LoadingRegion label={label} className="flex w-full max-w-3xl flex-col gap-2 px-4 py-6 sm:px-6">
       {Array.from({ length: count }, (_, index) => {
         const large = featured && index === 0;
         return (

@@ -20,7 +20,7 @@ import type { EntryLabels } from "./entry-labels";
 
 const BASE = "/munkater/naptar";
 const linkClass =
-  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border-2 border-border-strong px-3 font-semibold text-text no-underline hover:bg-primary-soft aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast";
+  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-button border border-hairline bg-surface-raised px-4 font-semibold text-text no-underline shadow-xs transition-[background-color,color,scale] duration-(--dur-2) ease-spring hover:bg-primary-soft active:scale-(--motion-press) aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-contrast";
 
 /** Heading text of the shown period: the month, the week range or the day. */
 export function PeriodTitle({ view, date }: { view: CalendarView | "auto"; date: string }) {
@@ -96,7 +96,7 @@ export async function CalendarToolbar({
         ) : null}
       </div>
       <details
-        className="rounded-md border border-border bg-surface-raised"
+        className="rounded-card border border-hairline bg-surface-raised shadow-xs"
         data-testid="calendar-filter"
       >
         <summary className="flex min-h-11 cursor-pointer items-center px-3 font-semibold">

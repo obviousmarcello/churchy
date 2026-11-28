@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Alert, Badge, FormattedDate, FormattedTime } from "@churchy/ui";
+import { EmptyState, Alert, Badge, FormattedDate, FormattedTime, Stagger } from "@churchy/ui";
 import { DecideButtons } from "@/components/rooms/decide-buttons";
 import { getT } from "@/i18n/server";
 import { decideBooking } from "@/server/room-actions";
@@ -46,13 +46,13 @@ export default async function RoomApprovalsPage() {
         <p className="mt-1 text-fs-4 text-muted">{t("lead")}</p>
       </header>
       {pending.length === 0 ? (
-        <p>{t("empty")}</p>
+        <EmptyState size="sm" title={t("empty")} />
       ) : (
-        <ul className="flex flex-col gap-3">
+        <Stagger as="ul" className="flex flex-col gap-3">
           {pending.map((b) => (
             <li
               key={b.id}
-              className="flex flex-col gap-2 rounded-md border border-border bg-surface-raised p-4"
+              className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-raised shadow-xs p-4"
               data-testid="pending-booking"
             >
               <div className="flex flex-wrap items-center gap-2">
@@ -79,7 +79,7 @@ export default async function RoomApprovalsPage() {
               <DecideButtons id={b.id} name={b.title} decide={decideBooking} />
             </li>
           ))}
-        </ul>
+        </Stagger>
       )}
       {clashing.size > 0 ? (
         <section aria-labelledby="clash-h" data-testid="service-conflicts">
