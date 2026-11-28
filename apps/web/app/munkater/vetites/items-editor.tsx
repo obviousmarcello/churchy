@@ -103,7 +103,7 @@ export function ItemsEditorPanel({
     return failed ? (
       <div
         role="alert"
-        className="flex flex-wrap items-center gap-x-2 px-3 pb-3 text-sm text-destructive"
+        className="flex flex-wrap items-center gap-x-2 px-3 pb-3 text-sm text-danger"
       >
         {t.editorLoadFailed}
         <Button

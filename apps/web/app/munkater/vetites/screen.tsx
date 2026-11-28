@@ -237,7 +237,11 @@ function Idle({ eventId }: { eventId: string | null }) {
       {/* Only for an event: the controller of a rehearsal must be in this browser. */}
       {eventId && controllerUrl && (
         <>
-          <QrCode text={controllerUrl} label={t.scanToControl} className="size-[30vh] rounded-lg" />
+          <QrCode
+            text={controllerUrl}
+            label={t.scanToControl}
+            className="size-[30vh] rounded-card"
+          />
           <p className="text-[3vh] text-white/80">{t.scanToControl}</p>
         </>
       )}

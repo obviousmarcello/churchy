@@ -52,10 +52,10 @@ export function ScheduleStatus({
       className={cn(
         "flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums",
         status.kind === "late"
-          ? "bg-amber-500/15 text-amber-900 dark:text-amber-200"
+          ? "bg-warning-soft text-warning"
           : status.kind === "early"
-            ? "bg-sky-500/15 text-sky-900 dark:text-sky-200"
-            : "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200",
+            ? "bg-info-soft text-info"
+            : "bg-success-soft text-success",
       )}
     >
       <ClockIcon aria-hidden className="size-3" />

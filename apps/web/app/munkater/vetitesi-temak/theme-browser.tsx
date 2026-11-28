@@ -92,7 +92,7 @@ export function ThemeBrowser({
                   aria-current={isSelected ? "true" : undefined}
                   aria-controls="projection-theme-editor"
                   className={cn(
-                    "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors outline-none hover:bg-surface-sunken focus-visible:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset sm:px-6 md:px-4",
+                    "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors outline-none hover:bg-surface-sunken focus-visible:bg-surface-sunken focus-visible:ring-3 focus-visible:ring-focus/50 focus-visible:ring-inset sm:px-6 md:px-4",
                     isSelected && "bg-surface-sunken",
                   )}
                 >
@@ -103,7 +103,7 @@ export function ThemeBrowser({
                     {theme.name}
                   </span>
                   {theme.isDefault && (
-                    <span className="shrink-0 rounded bg-secondary px-1.5 py-0.5 text-xs text-secondary-foreground">
+                    <span className="shrink-0 rounded bg-surface-sunken px-1.5 py-0.5 text-xs text-text">
                       {t.list.defaultBadge}
                     </span>
                   )}

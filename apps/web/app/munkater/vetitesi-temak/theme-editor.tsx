@@ -439,7 +439,10 @@ function Preview({ look }: { look: ProjectionLook }) {
           </NativeSelect>
         </div>
       </div>
-      <div className="overflow-hidden rounded-md border" style={{ aspectRatio: RATIOS[ratio] }}>
+      <div
+        className="overflow-hidden rounded-control border"
+        style={{ aspectRatio: RATIOS[ratio] }}
+      >
         <SlideView slide={slides[sample]} look={look} playVideo />
       </div>
     </section>
@@ -574,7 +577,7 @@ function BackgroundMedia({ theme }: { theme: ProjectionThemeDTO }) {
     <div className="flex flex-col gap-2">
       <span className="text-sm font-medium">{t.backgroundImage}</span>
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex aspect-video w-32 items-center justify-center overflow-hidden rounded-md border bg-surface-sunken">
+        <div className="relative flex aspect-video w-32 items-center justify-center overflow-hidden rounded-control border bg-surface-sunken">
           {image ? (
             // eslint-disable-next-line @next/next/no-img-element -- a private file: the image optimizer cannot read it.
             <img src={image} alt="" className="size-full object-cover" />
